@@ -17,7 +17,7 @@
   let packetInterval = 100; // ms
   let selectedTrainId = null;
   let followTrainId = null;
-  let renderMode = '3d'; // Default to 3D Metro Consist
+  let renderMode = 'dot'; // Default to user's requested white-black dot
   let currentCutawayStation = 'rajiv_chowk';
   let rajivMarker = null;
 
@@ -85,19 +85,19 @@
   }
 
   function initDioramaMap() {
-    // Bounded to the Delhi & Gurugram metropolitan transit corridor
+    // Clean, architectural light-themed MapLibre foundation
     map = new maplibregl.Map({
       container: 'map',
-      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-      center: [77.2282, 28.6675], // Centered at Kashmere Gate initially
-      zoom: 14.5,
-      pitch: 48,      // 3D Isometric Diorama tilt
-      bearing: -14,   // Architectural perspective angle
-      minZoom: 11.5,
-      maxZoom: 17.5,
+      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      center: [77.1600, 28.6050], // Centered for complete 49.3 km corridor overview
+      zoom: 10.6,
+      pitch: 30,      // Subtle architectural tilt
+      bearing: -6,    // Aligns North-South Yellow Line vertically
+      minZoom: 9.0,
+      maxZoom: 18.0,
       maxBounds: [
-        [76.85, 28.32], // Southwest: Gurugram outskirts
-        [77.40, 28.85]  // Northeast: Badli / North Delhi outskirts
+        [76.50, 28.10], // Southwest NCR
+        [77.70, 29.10]  // Northeast NCR
       ],
       attributionControl: false
     });
@@ -524,10 +524,19 @@
     const scale = Math.max(0.25, Math.min(1.05, Math.pow(2, z - 15.0)));
     const el = document.querySelector('.landmark-3d-container');
     if (el) {
-      el.style.setProperty('--marker-scale', scale.toFixed(3));
-      const badge = el.querySelector('.landmark-badge');
-      if (badge) {
-        badge.style.display = z >= 12.8 ? 'flex' : 'none';
+      if (z < 12.4) {
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+        el.style.transform = 'scale(0.5)';
+      } else {
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+        el.style.transform = 'scale(1)';
+        el.style.setProperty('--marker-scale', scale.toFixed(3));
+        const badge = el.querySelector('.landmark-badge');
+        if (badge) {
+          badge.style.display = z >= 13.0 ? 'flex' : 'none';
+        }
       }
     }
   }
@@ -574,22 +583,22 @@
           16, 0.72,
           17, 1.10
         ],
-        'visibility': 'visible'
+        'visibility': 'none'
       }
     });
 
-    // ── Layer C: Simple White-Black Dot (Alternative on Toggle) ──
+    // ── Layer C: Simple White-Black Concentric Target Dot (Default) ──
     map.addLayer({
       id: 'train-dot-white-black',
       type: 'circle',
       source: 'active-trains',
       layout: {
-        'visibility': 'none'
+        'visibility': 'visible'
       },
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 14, 7.5, 16, 11],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 4.0, 12, 6.0, 14, 8.5, 16, 12],
         'circle-color': '#FFFFFF',
-        'circle-stroke-width': 2.8,
+        'circle-stroke-width': 2.6,
         'circle-stroke-color': '#000000'
       }
     });
@@ -599,10 +608,10 @@
       type: 'circle',
       source: 'active-trains',
       layout: {
-        'visibility': 'none'
+        'visibility': 'visible'
       },
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 1.5, 14, 2.5, 16, 3.5],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.8, 12, 2.8, 14, 3.8, 16, 5.0],
         'circle-color': '#000000'
       }
     });
@@ -911,8 +920,10 @@
           map.flyTo({ center: [77.2067, 28.5443], zoom: 15.2, pitch: 50, bearing: -14, duration: 1100 });
         } else if (loc === 'gurgaon') {
           map.flyTo({ center: [77.0725, 28.4594], zoom: 15.0, pitch: 50, bearing: -14, duration: 1100 });
+        } else if (loc === 'centralsec') {
+          map.flyTo({ center: [77.2120, 28.6150], zoom: 15.2, pitch: 50, bearing: -14, duration: 1200 });
         } else if (loc === 'all') {
-          map.flyTo({ center: [77.1650, 28.6000], zoom: 12.0, pitch: 42, bearing: -14, duration: 1200 });
+          map.flyTo({ center: [77.1600, 28.6050], zoom: 10.6, pitch: 30, bearing: -6, duration: 1400 });
         }
       });
     });
