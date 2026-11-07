@@ -119,6 +119,7 @@
       attributionControl: false
     });
     window.map = map;
+    window.mapInstance = map;
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
 
@@ -247,7 +248,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  3. ELEVATED VIADUCT & TWO PARALLEL RAILWAY TRACKS (MODEL RAILWAY PATTERN)
+  //  3. ELEVATED FLYOVER VIADUCT & DUAL TRACKS (LOD-AWARE)
   // ═══════════════════════════════════════════════════════════
   function renderViaductAndDualTracks() {
     if (!trackData) return;
@@ -268,87 +269,142 @@
       }
     });
 
-    // ── Concrete Viaduct Deck & Soft Ambient Ground Shadow ──
+    // ── 1. ELEVATED FLYOVER AMBIENT GROUND DROP SHADOW ────────
+    // Cast on the terrain/roads below to make the viaduct float 15m in the air
     map.addLayer({
-      id: 'viaduct-shadow-south',
+      id: 'flyover-shadow-south',
       type: 'line',
       source: 'track-south',
       paint: {
         'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 18, 16, 28],
-        'line-opacity': 0.12,
-        'line-blur': 5,
-        'line-offset': 3
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4, 11, 7, 14, 16, 17, 26],
+        'line-opacity': 0.16,
+        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
       }
     });
 
     map.addLayer({
-      id: 'viaduct-shadow-north',
+      id: 'flyover-shadow-north',
       type: 'line',
       source: 'track-north',
       paint: {
         'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 18, 16, 28],
-        'line-opacity': 0.12,
-        'line-blur': 5,
-        'line-offset': 3
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4, 11, 7, 14, 16, 17, 26],
+        'line-opacity': 0.16,
+        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
       }
     });
 
-    // Viaduct Concrete Slab (Elevated U-Girder / Box Girder Base)
+    // ── 2. ELEVATED CONCRETE FLYOVER DECK (U-GIRDER SPAN) ─────
+    // Clean, modern precast concrete deck slab
     map.addLayer({
-      id: 'viaduct-slab-south',
+      id: 'flyover-deck-south',
       type: 'line',
       source: 'track-south',
       paint: {
         'line-color': '#E2E8F0',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 14, 16, 16, 24],
-        'line-opacity': 0.95
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3, 11, 5, 14, 13, 17, 22],
+        'line-opacity': 0.96
       }
     });
 
     map.addLayer({
-      id: 'viaduct-slab-north',
+      id: 'flyover-deck-north',
       type: 'line',
       source: 'track-north',
       paint: {
         'line-color': '#E2E8F0',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 14, 16, 16, 24],
-        'line-opacity': 0.95
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3, 11, 5, 14, 13, 17, 22],
+        'line-opacity': 0.96
       }
     });
 
-    // Viaduct Parapet Edge Curb (Subtle Architectural Outline)
+    // Elevated Parapet Safety Curbs (Bridge guardrails)
     map.addLayer({
-      id: 'viaduct-curb-south',
+      id: 'flyover-curb-south',
       type: 'line',
       source: 'track-south',
       paint: {
-        'line-color': '#CBD5E1',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 17, 16, 25],
-        'line-opacity': 0.80
+        'line-color': '#94A3B8',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.8, 11, 6.2, 14, 14.5, 17, 24],
+        'line-opacity': 0.70
       }
-    }, 'viaduct-slab-south');
+    }, 'flyover-deck-south');
 
     map.addLayer({
-      id: 'viaduct-curb-north',
+      id: 'flyover-curb-north',
       type: 'line',
       source: 'track-north',
       paint: {
-        'line-color': '#CBD5E1',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 17, 16, 25],
-        'line-opacity': 0.80
+        'line-color': '#94A3B8',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.8, 11, 6.2, 14, 14.5, 17, 24],
+        'line-opacity': 0.70
       }
-    }, 'viaduct-slab-north');
+    }, 'flyover-deck-north');
 
-    // ── Model Railway Track Pattern (Ballast + Cross-Ties + Twin Steel Rails) ──
+    // ── 3. OVERVIEW CORRIDOR RAILS (ZOOM 9 TO 14) ─────────────
+    // Sleek, razor-sharp architectural dual tracks (eliminates giant ladder clutter at overview!)
+    map.addLayer({
+      id: 'track-1-overview-casing',
+      type: 'line',
+      source: 'track-south',
+      maxzoom: 14.2,
+      paint: {
+        'line-color': '#1E293B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2, 13, 4.5],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.90, 14.2, 0.0]
+      }
+    });
+
+    map.addLayer({
+      id: 'track-1-overview-core',
+      type: 'line',
+      source: 'track-south',
+      maxzoom: 14.2,
+      paint: {
+        'line-color': '#EAB308',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8, 13, 2.6],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 1.0, 14.2, 0.0]
+      }
+    });
+
+    map.addLayer({
+      id: 'track-2-overview-casing',
+      type: 'line',
+      source: 'track-north',
+      maxzoom: 14.2,
+      paint: {
+        'line-color': '#1E293B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2, 13, 4.5],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.90, 14.2, 0.0]
+      }
+    });
+
+    map.addLayer({
+      id: 'track-2-overview-core',
+      type: 'line',
+      source: 'track-north',
+      maxzoom: 14.2,
+      paint: {
+        'line-color': '#EAB308',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8, 13, 2.6],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 1.0, 14.2, 0.0]
+      }
+    });
+
+    // ── 4. CLOSE-UP VECTOR RAILWAY STRUCTURE (ZOOM 13.6 TO 18+) ─
+    // Fades in seamlessly as user zooms in to street / station level
     map.addLayer({
       id: 'track-1-railroad',
       type: 'line',
       source: 'track-south',
+      minzoom: 13.4,
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 12, 9, 14, 13, 16, 18]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 7, 15, 11, 17, 16],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.0, 14.0, 1.0]
       }
     });
 
@@ -356,13 +412,15 @@
       id: 'track-2-railroad',
       type: 'line',
       source: 'track-north',
+      minzoom: 13.4,
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 12, 9, 14, 13, 16, 18]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 7, 15, 11, 17, 16],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.0, 14.0, 1.0]
       }
     });
 
-    // ── Terminal Crossover Switch Tracks ────────────────────
+    // ── 5. TERMINAL CROSSOVER SWITCH TURNOUTS ────────────────
     map.addSource('terminal-crossovers', {
       type: 'geojson',
       data: {
@@ -374,13 +432,29 @@
       }
     });
 
+    // Crossover overview line
+    map.addLayer({
+      id: 'crossover-track-overview',
+      type: 'line',
+      source: 'terminal-crossovers',
+      maxzoom: 14.2,
+      paint: {
+        'line-color': '#EAB308',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.0, 11, 1.6, 13, 2.4],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.9, 14.2, 0.0]
+      }
+    });
+
+    // Crossover close-up pattern
     map.addLayer({
       id: 'crossover-track-railroad',
       type: 'line',
       source: 'terminal-crossovers',
+      minzoom: 13.4,
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 4, 14, 11, 16, 15]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 6, 15, 10, 17, 14],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.0, 14.0, 1.0]
       }
     });
   }
