@@ -3,17 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Unofficial real-time Delhi Metro train tracker using timetable interpolation. Yellow Line live positions." />
+  <meta name="theme-color" content="#080814" />
   <title>Delhi Metro Radar</title>
+
+  <!-- MapLibre GL JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.2/dist/maplibre-gl.css" />
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.2/dist/maplibre-gl.js"></script>
+
+  <!-- Turf.js for spatial math -->
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
+
+  <!-- Fonts: Rajdhani (UI body) + Orbitron (clock/headers) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="src/css/style.css" />
 </head>
 <body>
-  <div id="app">
-    <div id="map"></div>
-    <div id="sidebar">
-      <h1>🚇 Delhi Metro Radar</h1>
-      <p>Live train tracker — coming soon</p>
+
+  <!-- Full-screen map canvas -->
+  <div id="map"></div>
+
+  <!-- ── Sidebar panel ─────────────────────────────────────── -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-icon">🚇</span>
+      <div>
+        <div class="sidebar-label">DELHI METRO</div>
+        <div class="sidebar-title">RADAR</div>
+      </div>
     </div>
+
+    <div class="sidebar-clock" id="clock">00:00:00</div>
+
+    <div class="sidebar-status">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Loading…</span>
+    </div>
+
+    <div class="sidebar-line">
+      <div class="line-swatch"></div>
+      <div class="line-info">
+        <strong>Yellow Line (L2)</strong>
+        <span class="line-route">Samaypur Badli ↔ Millennium City Centre</span>
+        <span class="line-trains" id="train-count">— trains active</span>
+      </div>
+    </div>
+
+    <div class="sidebar-legend">
+      <div class="legend-row"><span class="ld ld-station"></span>Station</div>
+      <div class="legend-row"><span class="ld ld-interchange"></span>Interchange / Terminus</div>
+      <div class="legend-row"><span class="ld ld-train"></span>Active Train</div>
+    </div>
+
+    <div class="sidebar-hint">Click any station for next trains ↑</div>
+
+    <div class="sidebar-footer">
+      ⚠ Unofficial project · Not affiliated with DMRC<br>
+      Positions estimated from public timetable, not GPS.
+    </div>
+  </aside>
+
+  <!-- ── Station popup ─────────────────────────────────────── -->
+  <div id="station-popup" class="station-popup hidden">
+    <button class="popup-close" id="popup-close" title="Close">✕</button>
+    <div class="popup-name" id="popup-name">Station</div>
+    <div class="popup-meta" id="popup-meta">Yellow Line</div>
+    <div class="popup-trains" id="popup-trains"></div>
   </div>
+
+  <!-- ── Map attribution ───────────────────────────────────── -->
+  <div id="map-attr">
+    © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+    contributors · © <a href="https://carto.com/" target="_blank" rel="noopener">CARTO</a>
+  </div>
+
   <script src="src/js/main.js"></script>
 </body>
 </html>

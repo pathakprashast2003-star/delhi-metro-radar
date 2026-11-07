@@ -1,0 +1,308 @@
+/* ============================================================
+ * DELHI METRO RADAR — Cyberpunk Dark Theme
+ * ============================================================ */
+
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --yellow:    #FFD500;
+  --yellow-30: rgba(255, 213, 0, 0.3);
+  --yellow-10: rgba(255, 213, 0, 0.1);
+  --cyan:      #00FFCC;
+  --cyan-30:   rgba(0, 255, 204, 0.3);
+  --cyan-10:   rgba(0, 255, 204, 0.1);
+  --green:     #00FF88;
+  --red:       #FF4455;
+  --bg:        #080814;
+  --panel:     rgba(8, 8, 22, 0.93);
+  --border-y:  rgba(255, 213, 0, 0.25);
+  --border-c:  rgba(0, 255, 204, 0.3);
+  --text:      #DDE0F0;
+  --text-dim:  #6A6A90;
+  --shadow:    0 4px 32px rgba(0,0,0,0.65);
+  --glow-y:    0 0 12px rgba(255, 213, 0, 0.55);
+  --glow-c:    0 0 12px rgba(0, 255, 204, 0.55);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ── MAP ─────────────────────────────────────────────────── */
+#map { position: fixed; inset: 0; }
+
+/* Hide default MapLibre controls chrome */
+.maplibregl-ctrl-logo     { display: none !important; }
+.maplibregl-ctrl-attrib   { display: none !important; }
+.maplibregl-ctrl-top-right { top: 24px; right: 24px; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+#sidebar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 268px;
+  background: var(--panel);
+  border: 1px solid var(--border-y);
+  border-radius: 14px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,213,0,0.08);
+}
+
+/* header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar-icon  { font-size: 26px; line-height: 1; }
+.sidebar-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+}
+.sidebar-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--yellow);
+  text-shadow: var(--glow-y);
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+/* clock */
+.sidebar-clock {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: var(--glow-c);
+  text-align: center;
+  letter-spacing: 0.08em;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0,255,204,0.15);
+}
+
+/* service status */
+.sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #444;
+}
+.status-dot.active   { background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 2.5s ease-in-out infinite; }
+.status-dot.inactive { background: var(--red);   box-shadow: 0 0 8px var(--red); }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* line card */
+.sidebar-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--yellow-10);
+  border: 1px solid var(--border-y);
+  border-radius: 10px;
+}
+.line-swatch {
+  width: 5px;
+  min-height: 52px;
+  border-radius: 3px;
+  background: var(--yellow);
+  box-shadow: 0 0 10px rgba(255,213,0,0.45);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.line-info { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.line-info strong   { font-size: 14px; font-weight: 700; color: var(--yellow); }
+.line-route         { color: var(--text-dim); font-size: 11px; line-height: 1.4; }
+.line-trains        { color: var(--cyan); font-weight: 600; font-size: 12px; }
+
+/* legend */
+.sidebar-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.legend-row { display: flex; align-items: center; gap: 9px; }
+.ld { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.ld-station     { background: #fff; border: 2px solid #555; }
+.ld-interchange { background: var(--yellow); box-shadow: 0 0 7px rgba(255,213,0,0.6); }
+.ld-train       { background: var(--cyan);   box-shadow: 0 0 7px rgba(0,255,204,0.7); }
+
+/* hint */
+.sidebar-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: center;
+}
+
+/* footer */
+.sidebar-footer {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 12px;
+}
+
+/* ── STATION POPUP ───────────────────────────────────────── */
+.station-popup {
+  position: fixed;
+  bottom: 28px;
+  right: 24px;
+  width: 310px;
+  background: var(--panel);
+  border: 1px solid var(--border-c);
+  border-radius: 14px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+  z-index: 20;
+  box-shadow: var(--shadow), 0 0 24px rgba(0,255,204,0.08);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.station-popup.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+.popup-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.popup-close:hover { color: var(--text); }
+
+.popup-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: var(--glow-c);
+  margin-right: 24px;
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+.popup-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  letter-spacing: 0.03em;
+}
+
+.popup-trains { display: flex; flex-direction: column; gap: 0; }
+
+.popup-dir-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 7px;
+  margin-top: 10px;
+}
+.popup-dir-label:first-child { margin-top: 0; }
+
+.popup-train-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  margin-bottom: 4px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 7px;
+}
+.popup-train-label { font-size: 11px; color: var(--text-dim); }
+.popup-train-time  {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+.t-arriving { color: var(--green); text-shadow: 0 0 8px rgba(0,255,136,0.6); }
+.t-soon     { color: var(--cyan);  text-shadow: var(--glow-c); }
+.t-later    { color: var(--text-dim); }
+
+.popup-no-service {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: center;
+  padding: 10px 0 2px;
+}
+
+/* ── MAP ATTRIBUTION ─────────────────────────────────────── */
+#map-attr {
+  position: fixed;
+  bottom: 8px;
+  right: 10px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  z-index: 5;
+  font-family: 'Rajdhani', sans-serif;
+}
+#map-attr a { color: rgba(255,255,255,0.45); text-decoration: none; }
+#map-attr a:hover { color: rgba(255,255,255,0.75); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  #sidebar {
+    top: auto; bottom: 0; left: 0; right: 0; width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 14px 16px;
+    max-height: 42vh;
+    overflow-y: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .sidebar-clock   { font-size: 22px; padding-bottom: 0; border: none; order: -1; width: 100%; }
+  .sidebar-header  { width: 100%; }
+  .sidebar-line,
+  .sidebar-legend  { flex: 1 1 calc(50% - 10px); }
+  .sidebar-hint,
+  .sidebar-footer  { width: 100%; }
+
+  .station-popup {
+    bottom: auto; top: 50%; transform: translate(0, -50%);
+    left: 10px; right: 10px; width: auto;
+  }
+  .station-popup.hidden { transform: translate(0, -40%); }
+}
