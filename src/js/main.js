@@ -17,7 +17,7 @@
   let packetInterval = 100; // ms
   let selectedTrainId = null;
   let followTrainId = null;
-  let renderMode = '3d'; // Default to vibrant 3D top-down train consist
+  let renderMode = 'dot'; // Default to sleek, non-intrusive transit vehicle dot (big trains removed)
   let currentCutawayStation = 'rajiv_chowk';
   let rajivMarker = null;
 
@@ -341,36 +341,36 @@
       }
     });
 
-    // 2. Flyover Outer Parapet Guardrails
+    // 2. Concrete Parapet Guardrail Barriers (Bridge outer edges)
     map.addLayer({
       id: 'flyover-parapet-curb',
       type: 'line',
       source: 'flyover-viaduct-center',
       paint: {
-        'line-color': '#94A3B8',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 5.5, 11, 9.0, 14, 18, 17, 30],
-        'line-opacity': 0.85
+        'line-color': '#64748B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 6.0, 11, 10.0, 14, 20, 17, 34],
+        'line-opacity': 0.95
       }
     });
 
-    // 3. Precast Concrete U-Girder Deck Slab
+    // 3. Precast Reinforced Concrete U-Girder Deck Slab
     map.addLayer({
       id: 'flyover-deck-slab',
       type: 'line',
       source: 'flyover-viaduct-center',
       paint: {
-        'line-color': '#F1F5F9',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.5, 11, 7.5, 14, 15, 17, 26],
+        'line-color': '#F8FAFC',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 5.0, 11, 8.5, 14, 17, 17, 29],
         'line-opacity': 0.98
       }
     });
 
-    // 4. Center Median Barrier Divider
+    // 4. Center Median Structural Barrier
     map.addLayer({
       id: 'flyover-center-divider',
       type: 'line',
       source: 'flyover-viaduct-center',
-      minzoom: 12.0,
+      minzoom: 11.5,
       paint: {
         'line-color': '#CBD5E1',
         'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.0, 14, 1.8, 17, 2.8],
@@ -378,16 +378,17 @@
       }
     });
 
-    // 5. Flyover Tracks - Overview Zoom (Zoom 9 to 11.5)
+    // ── FLYOVER DUAL TRACKS (DETAILED VECTOR RAILROAD) ────────
+    // Overview Lines (Zoom 9 to 11.2)
     map.addLayer({
       id: 'flyover-tracks-overview-casing',
       type: 'line',
       source: 'flyover-tracks',
-      maxzoom: 11.5,
+      maxzoom: 11.2,
       paint: {
-        'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2],
-        'line-opacity': 0.90
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.2, 11, 3.4],
+        'line-opacity': 0.95
       }
     });
 
@@ -395,28 +396,129 @@
       id: 'flyover-tracks-overview-core',
       type: 'line',
       source: 'flyover-tracks',
-      maxzoom: 11.5,
+      maxzoom: 11.2,
       paint: {
         'line-color': '#EAB308',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 11, 2.0],
         'line-opacity': 1.0
       }
     });
 
-    // 6. Flyover Tracks - Detailed Railroad Structure (Zoom 10.8 to 18+)
+    // Detailed Vector Railroad Structure (Zoom 10.8 to 18+)
+    // 5. Ballastless Concrete Plinth Base (Dark anthracite track trough)
     map.addLayer({
-      id: 'flyover-tracks-railroad',
+      id: 'flyover-trackbed-plinth',
       type: 'line',
       source: 'flyover-tracks',
       minzoom: 10.8,
       paint: {
-        'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 12, 6.5, 14, 10, 16, 15],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.4, 11.5, 1.0]
+        'line-color': '#1E293B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.0, 13, 6.5, 15, 10.5, 17, 17.0],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.5, 11.2, 0.95]
       }
     });
 
-    // ── C. SUBTERRANEAN TUBE TUNNEL LAYERS (CENTRAL SECTION) ──
+    // 6. Precast Concrete Transverse Sleepers / Cross Ties
+    map.addLayer({
+      id: 'flyover-sleepers',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#94A3B8',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.6, 13, 5.8, 15, 9.0, 17, 15.0],
+        'line-dasharray': [0.18, 0.35],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.5, 11.2, 1.0]
+      }
+    });
+
+    // 7. Sleeper Core Recess (Tie plate shadow)
+    map.addLayer({
+      id: 'flyover-sleeper-core',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 12.0,
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 2.2, 14, 3.8, 16, 6.0, 17, 9.0],
+        'line-dasharray': [0.18, 0.35],
+        'line-opacity': 0.65
+      }
+    });
+
+    // 8. Left Steel Rail - Base Shadow
+    map.addLayer({
+      id: 'flyover-rail-left-base',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#0F172A',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, -1.0, 13, -1.6, 15, -2.6, 17, -4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 13, 1.6, 15, 2.2, 17, 3.5],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.5, 11.2, 1.0]
+      }
+    });
+
+    // 9. Left Steel Rail - Gleaming Mirror Crown
+    map.addLayer({
+      id: 'flyover-rail-left-head',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#FFFFFF',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, -1.0, 13, -1.6, 15, -2.6, 17, -4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.6, 13, 0.9, 15, 1.3, 17, 2.0],
+        'line-opacity': 1.0
+      }
+    });
+
+    // 10. Right Steel Rail - Base Shadow
+    map.addLayer({
+      id: 'flyover-rail-right-base',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#0F172A',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 13, 1.6, 15, 2.6, 17, 4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 13, 1.6, 15, 2.2, 17, 3.5],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.5, 11.2, 1.0]
+      }
+    });
+
+    // 11. Right Steel Rail - Gleaming Mirror Crown
+    map.addLayer({
+      id: 'flyover-rail-right-head',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#FFFFFF',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 13, 1.6, 15, 2.6, 17, 4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.6, 13, 0.9, 15, 1.3, 17, 2.0],
+        'line-opacity': 1.0
+      }
+    });
+
+    // 12. Golden Power Conductor Rail (Third Rail)
+    map.addLayer({
+      id: 'flyover-third-rail',
+      type: 'line',
+      source: 'flyover-tracks',
+      minzoom: 12.5,
+      paint: {
+        'line-color': '#F59E0B',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 12, 2.4, 14, 3.6, 16, 5.8, 17, 8.2],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.8, 14, 1.2, 16, 1.8, 17, 2.5],
+        'line-opacity': 0.95
+      }
+    });
+
+    // ══════════════════════════════════════════════════════════
+    // ── C. SUBTERRANEAN TUBE TUNNEL INFRASTRUCTURE ───────────
+    // ══════════════════════════════════════════════════════════
     // Authentic underground subway bore through Old & New Delhi (NO surface drop shadow!)
     // 1. Heavy Bedrock Excavation Casing
     map.addLayer({
@@ -424,9 +526,9 @@
       type: 'line',
       source: 'tunnel-tube-center',
       paint: {
-        'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.5, 11, 8.0, 14, 18, 17, 30],
-        'line-opacity': 0.92
+        'line-color': '#0B0F19',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 5.0, 11, 8.5, 14, 19, 17, 32],
+        'line-opacity': 0.94
       }
     });
 
@@ -437,7 +539,7 @@
       source: 'tunnel-tube-center',
       paint: {
         'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.5, 11, 6.5, 14, 15, 17, 26],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.0, 11, 7.0, 14, 16, 17, 28],
         'line-opacity': 0.98
       }
     });
@@ -449,13 +551,13 @@
       source: 'tunnel-tube-center',
       paint: {
         'line-color': '#F59E0B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 4.0, 14, 9, 17, 16],
-        'line-opacity': 0.32,
-        'line-blur': 4
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.5, 11, 4.5, 14, 11, 17, 18],
+        'line-opacity': 0.35,
+        'line-blur': 5
       }
     });
 
-    // 4. Precast Segmented Concrete TBM Tunnel Rings (Ribbed Pattern)
+    // 4. Precast Segmented Concrete TBM Tunnel Rings (Ribbed Structure)
     map.addLayer({
       id: 'tunnel-tbm-rings',
       type: 'line',
@@ -463,21 +565,22 @@
       minzoom: 11.0,
       paint: {
         'line-color': '#334155',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 5.0, 14, 13, 17, 23],
-        'line-dasharray': [0.3, 0.6],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 5.5, 14, 14, 17, 25],
+        'line-dasharray': [0.25, 0.55],
         'line-opacity': 0.75
       }
     });
 
-    // 5. Tunnel Tracks - Overview Zoom (Zoom 9 to 11.5)
+    // ── SUBTERRANEAN DUAL TRACKS ──────────────────────────────
+    // Overview Lines (Zoom 9 to 11.2)
     map.addLayer({
       id: 'tunnel-tracks-overview-casing',
       type: 'line',
       source: 'tunnel-tracks',
-      maxzoom: 11.5,
+      maxzoom: 11.2,
       paint: {
-        'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.8, 11, 2.8],
+        'line-color': '#0B0F19',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.0],
         'line-opacity': 0.95
       }
     });
@@ -486,24 +589,102 @@
       id: 'tunnel-tracks-overview-core',
       type: 'line',
       source: 'tunnel-tracks',
-      maxzoom: 11.5,
+      maxzoom: 11.2,
       paint: {
         'line-color': '#F59E0B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.0, 11, 1.6],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8],
         'line-opacity': 1.0
       }
     });
 
-    // 6. Tunnel Tracks - Detailed Railroad Structure (Zoom 10.8 to 18+)
+    // Detailed Subterranean Vector Rails (Zoom 10.8 to 18+)
+    // 5. Subterranean Trackbed Trough
     map.addLayer({
-      id: 'tunnel-tracks-railroad',
+      id: 'tunnel-trackbed-plinth',
       type: 'line',
       source: 'tunnel-tracks',
       minzoom: 10.8,
       paint: {
-        'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 12, 6.5, 14, 10, 16, 15],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.4, 11.5, 1.0]
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.0, 13, 6.5, 15, 10.5, 17, 17.0],
+        'line-opacity': 0.95
+      }
+    });
+
+    // 6. Subterranean Concrete Sleepers
+    map.addLayer({
+      id: 'tunnel-sleepers',
+      type: 'line',
+      source: 'tunnel-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#475569',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.6, 13, 5.8, 15, 9.0, 17, 15.0],
+        'line-dasharray': [0.18, 0.35],
+        'line-opacity': 0.95
+      }
+    });
+
+    // 7. Subterranean Left Steel Rail
+    map.addLayer({
+      id: 'tunnel-rail-left-base',
+      type: 'line',
+      source: 'tunnel-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#0F172A',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, -1.0, 13, -1.6, 15, -2.6, 17, -4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 13, 1.6, 15, 2.2, 17, 3.5]
+      }
+    });
+
+    map.addLayer({
+      id: 'tunnel-rail-left-head',
+      type: 'line',
+      source: 'tunnel-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#E2E8F0',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, -1.0, 13, -1.6, 15, -2.6, 17, -4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.6, 13, 0.9, 15, 1.3, 17, 2.0]
+      }
+    });
+
+    // 8. Subterranean Right Steel Rail
+    map.addLayer({
+      id: 'tunnel-rail-right-base',
+      type: 'line',
+      source: 'tunnel-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#0F172A',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 13, 1.6, 15, 2.6, 17, 4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 13, 1.6, 15, 2.2, 17, 3.5]
+      }
+    });
+
+    map.addLayer({
+      id: 'tunnel-rail-right-head',
+      type: 'line',
+      source: 'tunnel-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-color': '#E2E8F0',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 13, 1.6, 15, 2.6, 17, 4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.6, 13, 0.9, 15, 1.3, 17, 2.0]
+      }
+    });
+
+    // 9. Subterranean Amber Third Rail
+    map.addLayer({
+      id: 'tunnel-third-rail',
+      type: 'line',
+      source: 'tunnel-tracks',
+      minzoom: 12.5,
+      paint: {
+        'line-color': '#FBBF24',
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 12, 2.4, 14, 3.6, 16, 5.8, 17, 8.2],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.8, 14, 1.2, 16, 1.8, 17, 2.5]
       }
     });
 
@@ -583,29 +764,34 @@
       }
     });
 
-    // Crossover overview line
     map.addLayer({
-      id: 'crossover-track-overview',
+      id: 'crossover-track-plinth',
       type: 'line',
       source: 'terminal-crossovers',
-      maxzoom: 14.2,
       paint: {
-        'line-color': '#EAB308',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.0, 11, 1.6, 13, 2.4],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.9, 14.2, 0.0]
+        'line-color': '#1E293B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 13, 5.5, 15, 9.0, 17, 15.0]
       }
     });
 
-    // Crossover close-up pattern
     map.addLayer({
-      id: 'crossover-track-railroad',
+      id: 'crossover-track-sleepers',
       type: 'line',
       source: 'terminal-crossovers',
-      minzoom: 13.4,
       paint: {
-        'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 6, 15, 10, 17, 14],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.0, 14.0, 1.0]
+        'line-color': '#94A3B8',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.2, 13, 5.0, 15, 8.0, 17, 13.0],
+        'line-dasharray': [0.18, 0.35]
+      }
+    });
+
+    map.addLayer({
+      id: 'crossover-track-rails',
+      type: 'line',
+      source: 'terminal-crossovers',
+      paint: {
+        'line-color': '#FFFFFF',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 13, 1.6, 15, 2.4, 17, 3.6]
       }
     });
   }
@@ -856,7 +1042,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  6. TRAINS LAYERS (DELHI METRO TRAIN CONSISTS & DOTS)
+  //  6. TRAINS LAYERS (SLEEK MINIMALIST FLEET - BIG TRAINS REMOVED)
   // ═══════════════════════════════════════════════════════════
   function renderTrainsLayers() {
     map.addSource('active-trains', {
@@ -864,73 +1050,63 @@
       data: { type: 'FeatureCollection', features: [] }
     });
 
-    // ── Layer A: Train Ground Drop Shadow ──
-    // ONLY cast shadow on elevated tracks! Underground trains have 0 shadow.
+    // ── Layer A: Train Ground Drop Shadow (Only for elevated trains!) ──
     map.addLayer({
       id: 'train-drop-shadow',
       type: 'circle',
       source: 'active-trains',
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 9, 16, 14],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4.0, 14, 6.5, 16, 9.0],
         'circle-color': '#0F172A',
         'circle-opacity': [
           'case',
           ['==', ['get', 'structure'], 'underground'], 0.0,
-          0.22
+          0.20
         ],
         'circle-blur': 0.6,
-        'circle-translate': [0, 3]
+        'circle-translate': [0, 2]
       }
     });
 
-    // ── Layer B: Real Delhi Metro Train Consist (Vibrant Aerodynamic Model) ──
+    // ── Layer B: Sleek Precision Transit Vehicle Pip (Crisp & Non-Intrusive) ──
+    // Does NOT cover or hide the railway tracks!
+    map.addLayer({
+      id: 'train-dot-white-black',
+      type: 'circle',
+      source: 'active-trains',
+      layout: {
+        'visibility': 'visible'
+      },
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3.2, 12, 4.5, 14, 6.0, 16, 8.0],
+        'circle-color': '#FFFFFF',
+        'circle-stroke-width': 2.0,
+        'circle-stroke-color': '#0F172A'
+      }
+    });
+
+    // Inner DMRC Golden Yellow Core
+    map.addLayer({
+      id: 'train-dot-pupil',
+      type: 'circle',
+      source: 'active-trains',
+      layout: {
+        'visibility': 'visible'
+      },
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.4, 12, 2.0, 14, 2.8, 16, 3.8],
+        'circle-color': '#EAB308'
+      }
+    });
+
+    // Big 3D Train Consist is HIDDEN/REMOVED by default so rails are completely visible!
     map.addLayer({
       id: 'train-consist-3d',
       type: 'symbol',
       source: 'active-trains',
       layout: {
         'icon-image': 'delhi-metro-consist',
-        'icon-rotate': ['get', 'bearing'],
-        'icon-rotation-alignment': 'map', // Rotates and curves with the rails!
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-        'icon-size': [
-          'interpolate', ['linear'], ['zoom'],
-          10, 0.24,
-          12, 0.44,
-          14, 0.72,
-          16, 1.05
-        ],
-        'visibility': 'visible'
-      }
-    });
-
-    // ── Layer C: Simple White-Black Concentric Target Dot (Optional Toggle) ──
-    map.addLayer({
-      id: 'train-dot-white-black',
-      type: 'circle',
-      source: 'active-trains',
-      layout: {
         'visibility': 'none'
-      },
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 4.0, 12, 6.0, 14, 8.5, 16, 12],
-        'circle-color': '#FFFFFF',
-        'circle-stroke-width': 2.6,
-        'circle-stroke-color': '#000000'
-      }
-    });
-
-    map.addLayer({
-      id: 'train-dot-pupil',
-      type: 'circle',
-      source: 'active-trains',
-      layout: {
-        'visibility': 'none'
-      },
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.8, 12, 2.8, 14, 3.8, 16, 5.0],
-        'circle-color': '#000000'
       }
     });
   }
@@ -1189,31 +1365,37 @@
       map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
     });
 
-    // Vehicle Render Mode: Real 3D Train Consist vs White-Black Dot
+    // Vehicle Render Mode: Sleek Minimalist Fleet vs Pure Tracks Only
     const modeDot = document.getElementById('mode-dot');
-    const mode3D = document.getElementById('mode-3d');
+    const modeTracks = document.getElementById('mode-tracks');
 
-    modeDot.addEventListener('click', () => {
-      modeDot.classList.add('active');
-      mode3D.classList.remove('active');
-      renderMode = 'dot';
-      if (map && map.getLayer('train-dot-white-black')) {
-        map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
-        map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
-        map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
-      }
-    });
+    if (modeDot) {
+      modeDot.addEventListener('click', () => {
+        modeDot.classList.add('active');
+        if (modeTracks) modeTracks.classList.remove('active');
+        renderMode = 'dot';
+        if (map && map.getLayer('train-dot-white-black')) {
+          map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
+          map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
+          map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
+          map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+        }
+      });
+    }
 
-    mode3D.addEventListener('click', () => {
-      mode3D.classList.add('active');
-      modeDot.classList.remove('active');
-      renderMode = '3d';
-      if (map && map.getLayer('train-dot-white-black')) {
-        map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
-        map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
-        map.setLayoutProperty('train-consist-3d', 'visibility', 'visible');
-      }
-    });
+    if (modeTracks) {
+      modeTracks.addEventListener('click', () => {
+        modeTracks.classList.add('active');
+        if (modeDot) modeDot.classList.remove('active');
+        renderMode = 'tracks';
+        if (map && map.getLayer('train-dot-white-black')) {
+          map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
+          map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
+          map.setLayoutProperty('train-drop-shadow', 'visibility', 'none');
+          map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+        }
+      });
+    }
 
     // Speed Multipliers
     document.querySelectorAll('.speed-btn').forEach(btn => {

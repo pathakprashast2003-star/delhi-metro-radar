@@ -19,54 +19,49 @@ async function verify() {
   await page.goto('http://localhost:8080', { waitUntil: 'domcontentloaded' });
   await new Promise(r => setTimeout(r, 3500));
 
-  // 1. Overview screenshot
-  const overviewPath = path.join(ARTIFACT_DIR, 'infra_corridor_overview.png');
-  await page.screenshot({ path: overviewPath });
-  console.log(`Saved: ${overviewPath}`);
-
-  // 2. North Portal (Model Town -> GTB Nagar)
-  console.log('Focusing on North Portal (Model Town -> GTB Nagar)...');
+  // 1. Detailed Flyover Rails (Qutab Minar -> Chhatarpur)
+  console.log('Focusing on Detailed Flyover Rails...');
   await page.evaluate(() => {
     if (window.mapInstance) {
       window.mapInstance.flyTo({
-        center: [77.2001, 28.70045], // North Portal
-        zoom: 15.0,
+        center: [77.1770, 28.5108], // Flyover viaduct between Qutab Minar & Chhatarpur
+        zoom: 16.5,
         pitch: 45,
-        bearing: -15,
+        bearing: -18,
         duration: 0
       });
     }
   });
   await new Promise(r => setTimeout(r, 2500));
-  const northPortalPath = path.join(ARTIFACT_DIR, 'infra_north_portal.png');
-  await page.screenshot({ path: northPortalPath });
-  console.log(`Saved: ${northPortalPath}`);
+  const flyoverRailsPath = path.join(ARTIFACT_DIR, 'detailed_rail_flyover.png');
+  await page.screenshot({ path: flyoverRailsPath });
+  console.log(`Saved: ${flyoverRailsPath}`);
 
-  // 3. Central Underground Tube Tunnel (Rajiv Chowk & Patel Chowk)
-  console.log('Focusing on Central Underground Tunnel (Rajiv Chowk)...');
+  // 2. Detailed Underground Tunnel Rails (Rajiv Chowk)
+  console.log('Focusing on Detailed Underground Tunnel Rails...');
   await page.evaluate(() => {
     if (window.mapInstance) {
       window.mapInstance.flyTo({
         center: [77.2196, 28.6329], // Rajiv Chowk
-        zoom: 15.4,
-        pitch: 45,
+        zoom: 16.5,
+        pitch: 42,
         bearing: -14,
         duration: 0
       });
     }
   });
   await new Promise(r => setTimeout(r, 2500));
-  const undergroundPath = path.join(ARTIFACT_DIR, 'infra_central_underground.png');
-  await page.screenshot({ path: undergroundPath });
-  console.log(`Saved: ${undergroundPath}`);
+  const tunnelRailsPath = path.join(ARTIFACT_DIR, 'detailed_rail_tunnel.png');
+  await page.screenshot({ path: tunnelRailsPath });
+  console.log(`Saved: ${tunnelRailsPath}`);
 
-  // 4. South Portal (Saket -> Qutab Minar)
-  console.log('Focusing on South Portal (Saket -> Qutab Minar)...');
+  // 3. North Portal Transition (Model Town -> GTB Nagar)
+  console.log('Focusing on North Portal Transition...');
   await page.evaluate(() => {
     if (window.mapInstance) {
       window.mapInstance.flyTo({
-        center: [77.1956, 28.5186], // South Portal
-        zoom: 15.0,
+        center: [77.2001, 28.70045], // North Portal
+        zoom: 16.0,
         pitch: 45,
         bearing: -15,
         duration: 0
@@ -74,30 +69,20 @@ async function verify() {
     }
   });
   await new Promise(r => setTimeout(r, 2500));
-  const southPortalPath = path.join(ARTIFACT_DIR, 'infra_south_portal.png');
-  await page.screenshot({ path: southPortalPath });
-  console.log(`Saved: ${southPortalPath}`);
+  const portalPath = path.join(ARTIFACT_DIR, 'detailed_rail_portal.png');
+  await page.screenshot({ path: portalPath });
+  console.log(`Saved: ${portalPath}`);
 
-  // 5. South Elevated Flyover Viaduct (Qutab Minar -> Chhatarpur)
-  console.log('Focusing on South Elevated Flyover Viaduct (Qutab Minar)...');
-  await page.evaluate(() => {
-    if (window.mapInstance) {
-      window.mapInstance.flyTo({
-        center: [77.1770, 28.5108], // Between Qutab Minar and Chhatarpur
-        zoom: 15.5,
-        pitch: 48,
-        bearing: -20,
-        duration: 0
-      });
-    }
-  });
-  await new Promise(r => setTimeout(r, 2500));
-  const flyoverPath = path.join(ARTIFACT_DIR, 'infra_south_flyover.png');
-  await page.screenshot({ path: flyoverPath });
-  console.log(`Saved: ${flyoverPath}`);
+  // 4. Pure Tracks Only Mode (Clicking Tracks Only toggle)
+  console.log('Testing Tracks Only Mode...');
+  await page.click('#mode-tracks');
+  await new Promise(r => setTimeout(r, 1000));
+  const tracksOnlyPath = path.join(ARTIFACT_DIR, 'detailed_rail_tracks_only.png');
+  await page.screenshot({ path: tracksOnlyPath });
+  console.log(`Saved: ${tracksOnlyPath}`);
 
   await browser.close();
-  console.log('All verification screenshots captured successfully!');
+  console.log('All detailed rail verification screenshots captured successfully!');
 }
 
 verify().catch(console.error);
