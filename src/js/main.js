@@ -17,7 +17,7 @@
   let packetInterval = 100; // ms
   let selectedTrainId = null;
   let followTrainId = null;
-  let renderMode = 'dot'; // Default to user's requested white-black dot
+  let renderMode = '3d'; // Default to vibrant 3D top-down train consist
   let currentCutawayStation = 'rajiv_chowk';
   let rajivMarker = null;
 
@@ -125,7 +125,7 @@
 
     map.on('styleimagemissing', (e) => {
       if (e.id === 'delhi-metro-consist') {
-        preloadImage('/public/metro_train_consist.png', 'delhi-metro-consist');
+        preloadImage('/public/metro_train_topdown_vibrant.png', 'delhi-metro-consist');
       } else if (e.id === 'dmrc-rail-pattern') {
         preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern');
       }
@@ -136,7 +136,7 @@
       enhanceMapColors();
 
       await Promise.all([
-        preloadImage('/public/metro_train_consist.png', 'delhi-metro-consist'),
+        preloadImage('/public/metro_train_topdown_vibrant.png', 'delhi-metro-consist'),
         preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern')
       ]);
 
@@ -166,21 +166,21 @@
 
   function enhanceMapColors() {
     try {
-      // 1. Vibrant Azure Water (Yamuna River, lakes & canals)
+      // 1. Vibrant Turquoise/Azure Water (Yamuna River, lakes & canals like Image 1)
       if (map.getLayer('water')) {
-        map.setPaintProperty('water', 'fill-color', '#8AD0DE');
+        map.setPaintProperty('water', 'fill-color', '#0284C7');
         map.setPaintProperty('water', 'fill-opacity', 0.95);
       }
       if (map.getLayer('waterway')) {
-        map.setPaintProperty('waterway', 'line-color', '#65BED0');
+        map.setPaintProperty('waterway', 'line-color', '#0EA5E9');
       }
 
-      // 2. Fresh Pastel Green Parks (Central Vista, Lodhi Gardens, Ridge Forest, Mughal Gardens)
-      const parkColor = '#C4E8C2';
+      // 2. Rich Lush Emerald Green Nature & Parks (Central Vista, Lodhi Gardens, Ridge Forest)
+      const parkColor = '#48A962';
       ['park_national_park', 'park_nature_reserve', 'landcover', 'landuse'].forEach(layerId => {
         if (map.getLayer(layerId)) {
           map.setPaintProperty(layerId, 'fill-color', parkColor);
-          map.setPaintProperty(layerId, 'fill-opacity', 0.70);
+          map.setPaintProperty(layerId, 'fill-opacity', 0.85);
         }
       });
 
@@ -188,21 +188,21 @@
       const trunkRoads = ['road_trunk_fill_ramp', 'road_trunk_fill_noramp', 'road_mot_fill_ramp', 'road_mot_fill_noramp', 'bridge_trunk_fill', 'bridge_mot_fill'];
       trunkRoads.forEach(layerId => {
         if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#FCD34D');
+          map.setPaintProperty(layerId, 'line-color', '#F59E0B');
         }
       });
 
-      // 4. Soft Peach & Cream Arteries
+      // 4. Soft Warm Peach Arteries
       const primaryRoads = ['road_pri_fill_ramp', 'road_pri_fill_noramp', 'road_sec_fill_noramp', 'bridge_pri_fill', 'bridge_sec_fill'];
       primaryRoads.forEach(layerId => {
         if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#FED7AA');
+          map.setPaintProperty(layerId, 'line-color', '#FDBA74');
         }
       });
 
-      // 5. Warm Alabaster Land Background
+      // 5. Warm Alabaster/Sand Land Background
       if (map.getLayer('background')) {
-        map.setPaintProperty('background', 'background-color', '#FAF8F3');
+        map.setPaintProperty('background', 'background-color', '#F6F3EA');
       }
     } catch (e) {}
   }
@@ -319,17 +319,16 @@
       }, 'flyover-deck-slab');
     }
 
-    // ── 3. OVERVIEW CORRIDOR RAILS (ZOOM 9 TO 14) ─────────────
-    // Sleek, razor-sharp architectural dual tracks (eliminates giant ladder clutter at overview!)
+    // ── 3. OVERVIEW CORRIDOR RAILS (ZOOM 9 TO 11.5) ───────────
     map.addLayer({
       id: 'track-1-overview-casing',
       type: 'line',
       source: 'track-south',
-      maxzoom: 14.2,
+      maxzoom: 11.5,
       paint: {
         'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2, 13, 4.5],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.90, 14.2, 0.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2],
+        'line-opacity': 0.90
       }
     });
 
@@ -337,11 +336,11 @@
       id: 'track-1-overview-core',
       type: 'line',
       source: 'track-south',
-      maxzoom: 14.2,
+      maxzoom: 11.5,
       paint: {
         'line-color': '#EAB308',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8, 13, 2.6],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 1.0, 14.2, 0.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8],
+        'line-opacity': 1.0
       }
     });
 
@@ -349,11 +348,11 @@
       id: 'track-2-overview-casing',
       type: 'line',
       source: 'track-north',
-      maxzoom: 14.2,
+      maxzoom: 11.5,
       paint: {
         'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2, 13, 4.5],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.90, 14.2, 0.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2],
+        'line-opacity': 0.90
       }
     });
 
@@ -361,25 +360,25 @@
       id: 'track-2-overview-core',
       type: 'line',
       source: 'track-north',
-      maxzoom: 14.2,
+      maxzoom: 11.5,
       paint: {
         'line-color': '#EAB308',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8, 13, 2.6],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 1.0, 14.2, 0.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8],
+        'line-opacity': 1.0
       }
     });
 
-    // ── 4. CLOSE-UP VECTOR RAILWAY STRUCTURE (ZOOM 13.6 TO 18+) ─
-    // Fades in seamlessly as user zooms in to street / station level
+    // ── 4. TACTILE VECTOR RAILWAY STRUCTURE (ZOOM 11.0 TO 18+) ──
+    // Clearly visible with concrete sleepers and twin gleaming steel rails
     map.addLayer({
       id: 'track-1-railroad',
       type: 'line',
       source: 'track-south',
-      minzoom: 13.4,
+      minzoom: 10.8,
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 7, 15, 11, 17, 16],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.0, 14.0, 1.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 12, 6.5, 14, 10, 16, 15],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.4, 11.5, 1.0]
       }
     });
 
@@ -387,11 +386,11 @@
       id: 'track-2-railroad',
       type: 'line',
       source: 'track-north',
-      minzoom: 13.4,
+      minzoom: 10.8,
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 7, 15, 11, 17, 16],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 13.4, 0.0, 14.0, 1.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 12, 6.5, 14, 10, 16, 15],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.4, 11.5, 1.0]
       }
     });
 
@@ -654,7 +653,7 @@
       }
     });
 
-    // ── Layer B: Real Delhi Metro Train Consist (3-Car Aerodynamic Model) ──
+    // ── Layer B: Real Delhi Metro Train Consist (Vibrant Aerodynamic Model) ──
     map.addLayer({
       id: 'train-consist-3d',
       type: 'symbol',
@@ -667,23 +666,22 @@
         'icon-ignore-placement': true,
         'icon-size': [
           'interpolate', ['linear'], ['zoom'],
-          11, 0.12,
-          13, 0.22,
-          14.5, 0.40,
-          16, 0.72,
-          17, 1.10
+          10, 0.24,
+          12, 0.44,
+          14, 0.72,
+          16, 1.05
         ],
-        'visibility': 'none'
+        'visibility': 'visible'
       }
     });
 
-    // ── Layer C: Simple White-Black Concentric Target Dot (Default) ──
+    // ── Layer C: Simple White-Black Concentric Target Dot (Optional Toggle) ──
     map.addLayer({
       id: 'train-dot-white-black',
       type: 'circle',
       source: 'active-trains',
       layout: {
-        'visibility': 'visible'
+        'visibility': 'none'
       },
       paint: {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 4.0, 12, 6.0, 14, 8.5, 16, 12],
@@ -698,7 +696,7 @@
       type: 'circle',
       source: 'active-trains',
       layout: {
-        'visibility': 'visible'
+        'visibility': 'none'
       },
       paint: {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.8, 12, 2.8, 14, 3.8, 16, 5.0],
