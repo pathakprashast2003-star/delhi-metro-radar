@@ -85,10 +85,10 @@
   }
 
   function initDioramaMap() {
-    // Clean, architectural light-themed MapLibre foundation
+    // Vibrant, colorful architectural MapLibre foundation
     map = new maplibregl.Map({
       container: 'map',
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       center: [77.1600, 28.6050], // Centered for complete 49.3 km corridor overview
       zoom: 10.6,
       pitch: 30,      // Subtle architectural tilt
@@ -123,6 +123,7 @@
 
     map.on('load', () => {
       suppressMapClutter();
+      enhanceMapColors();
       loadTrainSprite();
 
       add3DBuildings();
@@ -142,10 +143,53 @@
       const style = map.getStyle();
       if (!style || !style.layers) return;
       style.layers.forEach(l => {
-        if (l.id.includes('shield') || l.id.includes('motorway') || l.id.includes('state-boundary')) {
+        if (l.id.includes('shield') || l.id.includes('state-boundary')) {
           map.setLayoutProperty(l.id, 'visibility', 'none');
         }
       });
+    } catch (e) {}
+  }
+
+  function enhanceMapColors() {
+    try {
+      // 1. Vibrant Azure Water (Yamuna River, lakes & canals)
+      if (map.getLayer('water')) {
+        map.setPaintProperty('water', 'fill-color', '#8AD0DE');
+        map.setPaintProperty('water', 'fill-opacity', 0.95);
+      }
+      if (map.getLayer('waterway')) {
+        map.setPaintProperty('waterway', 'line-color', '#65BED0');
+      }
+
+      // 2. Fresh Pastel Green Parks (Central Vista, Lodhi Gardens, Ridge Forest, Mughal Gardens)
+      const parkColor = '#C4E8C2';
+      ['park_national_park', 'park_nature_reserve', 'landcover', 'landuse'].forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'fill-color', parkColor);
+          map.setPaintProperty(layerId, 'fill-opacity', 0.70);
+        }
+      });
+
+      // 3. Warm Golden-Amber Highway Fills
+      const trunkRoads = ['road_trunk_fill_ramp', 'road_trunk_fill_noramp', 'road_mot_fill_ramp', 'road_mot_fill_noramp', 'bridge_trunk_fill', 'bridge_mot_fill'];
+      trunkRoads.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'line-color', '#FCD34D');
+        }
+      });
+
+      // 4. Soft Peach & Cream Arteries
+      const primaryRoads = ['road_pri_fill_ramp', 'road_pri_fill_noramp', 'road_sec_fill_noramp', 'bridge_pri_fill', 'bridge_sec_fill'];
+      primaryRoads.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'line-color', '#FED7AA');
+        }
+      });
+
+      // 5. Warm Alabaster Land Background
+      if (map.getLayer('background')) {
+        map.setPaintProperty('background', 'background-color', '#FAF8F3');
+      }
     } catch (e) {}
   }
 
@@ -170,15 +214,20 @@
         type: 'fill-extrusion',
         minzoom: 12,
         paint: {
-          'fill-extrusion-color': '#F4EFE6',
+          'fill-extrusion-color': [
+            'interpolate', ['linear'], ['zoom'],
+            12, '#FBF7F0',
+            14, '#FDF2E2',
+            16, '#FEEBC8'
+          ],
           'fill-extrusion-height': [
             'interpolate', ['linear'], ['zoom'],
-            12, 5,
-            14, 18,
-            16, 32
+            12, 6,
+            14, 22,
+            16, 40
           ],
           'fill-extrusion-base': 0,
-          'fill-extrusion-opacity': 0.85
+          'fill-extrusion-opacity': 0.90
         }
       }, firstSymbolId);
     } catch (e) {}
