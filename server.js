@@ -61,7 +61,7 @@ const STATIONS = [
 ];
 
 const N = STATIONS.length;
-const TRACK_OFFSET = 0.00010; // ~11m realistic flyover dual-track separation (both tracks on same viaduct deck)
+const TRACK_OFFSET = 0.00018; // ~20m clear physical dual-track separation (40m corridor envelope)
 
 // Precompute parallel track coordinates
 // Track 1 (Southbound): +normal vector
@@ -176,8 +176,8 @@ const TUNNEL_PORTALS = {
 };
 
 // Portal Cutaway Ramps (Reinforced concrete U-troughs entering ground)
-const R_LEN = 0.00060;
-const R_WID = 0.00018;
+const R_LEN = 0.00065;
+const R_WID = 0.00028; // Envelops both tracks comfortably
 const rN1 = [PORTAL_NORTH[0] - txN * R_LEN - nxN * R_WID, PORTAL_NORTH[1] - tyN * R_LEN - nyN * R_WID];
 const rN2 = [PORTAL_NORTH[0] + txN * R_LEN - nxN * R_WID, PORTAL_NORTH[1] + tyN * R_LEN - nyN * R_WID];
 const rN3 = [PORTAL_NORTH[0] + txN * R_LEN + nxN * R_WID, PORTAL_NORTH[1] + tyN * R_LEN + nyN * R_WID];
@@ -213,7 +213,7 @@ const PLATFORM_CANOPIES = [];
 const UNDERGROUND_PLATFORMS = [];
 
 const P_LEN = 0.00065; // ~70m length
-const P_WID = 0.00016; // ~18m width (enveloping both tracks on flyover)
+const P_WID = 0.00028; // Envelops both tracks comfortably (40m envelope)
 
 for (let i = 0; i < N; i++) {
   const s = STATIONS[i];
