@@ -1,7 +1,8 @@
 /**
  * Delhi Metro Radar — Backend Dispatch Engine (Continuous Loop)
  * Simulates active metro trains on two parallel railway tracks (Up & Down line).
- * Trains reverse at terminals (Samaypur Badli & Millennium City Centre) and cross each other.
+ * Features 100% authentic real-world physical track geometry from OpenStreetMap Relation 447210
+ * with 389 smooth curvature nodes following MG Road, Sri Aurobindo Marg, and GT Karnal Road.
  * Node.js Native HTTP & SSE.
  */
 
@@ -13,134 +14,87 @@ const url = require('url');
 const PORT = process.env.PORT || 8080;
 
 // ══════════════════════════════════════════════════════════════
-//  YELLOW LINE CORRIDOR (37 STATIONS: ELEVATED FLYOVERS & UNDERGROUND TUNNELS)
+//  1. LOAD OFFICIAL OPENSTREETMAP RELATION 447210 GEOMETRY
 // ══════════════════════════════════════════════════════════════
-const STATIONS = [
-  // North Elevated Flyover Viaduct Section (Stations 0..6: +15m Elevation)
-  { id: 'samaypur_badli',       name: 'Samaypur Badli',        coords: [77.1465, 28.7429], terminus: true,  major: true,  structure: 'elevated', elevM: 15 },
-  { id: 'rohini_18_19',         name: 'Rohini Sector 18, 19',  coords: [77.1356, 28.7402], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'haiderpur_badli_mor',  name: 'Haiderpur Badli Mor',   coords: [77.1500, 28.7187], terminus: false, major: false, structure: 'elevated', elevM: 16 },
-  { id: 'jahangirpuri',         name: 'Jahangirpuri',          coords: [77.1612, 28.7282], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'adarsh_nagar',         name: 'Adarsh Nagar',          coords: [77.1673, 28.7144], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'azadpur',              name: 'Azadpur',               coords: [77.1799, 28.7073], terminus: false, major: true,  structure: 'elevated', elevM: 17 },
-  { id: 'model_town',           name: 'Model Town',            coords: [77.1938, 28.7028], terminus: false, major: false, structure: 'elevated', elevM: 14 },
+const OSM_DATA = JSON.parse(fs.readFileSync(path.join(__dirname, 'yellow_line_accurate_osm.json'), 'utf-8'));
 
-  // Central Subterranean Underground Tube Tunnel Section (Stations 7..26: -16m to -30m Depth)
-  { id: 'gtb_nagar',            name: 'GTB Nagar',             coords: [77.2064, 28.6981], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'vishwavidyalaya',      name: 'Vishwavidyalaya',       coords: [77.2124, 28.6948], terminus: false, major: false, structure: 'underground', elevM: -18 },
-  { id: 'vidhan_sabha',         name: 'Vidhan Sabha',          coords: [77.2216, 28.6878], terminus: false, major: false, structure: 'underground', elevM: -18 },
-  { id: 'civil_lines',          name: 'Civil Lines',           coords: [77.2250, 28.6769], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'kashmere_gate',        name: 'Kashmere Gate',         coords: [77.2282, 28.6675], terminus: false, major: true,  structure: 'underground', elevM: -22 },
-  { id: 'chandni_chowk',        name: 'Chandni Chowk',        coords: [77.2292, 28.6564], terminus: false, major: false, structure: 'underground', elevM: -20 },
-  { id: 'chawri_bazar',         name: 'Chawri Bazar',          coords: [77.2263, 28.6496], terminus: false, major: false, structure: 'underground', elevM: -30 }, // Deepest station
-  { id: 'new_delhi',            name: 'New Delhi',             coords: [77.2224, 28.6429], terminus: false, major: true,  structure: 'underground', elevM: -22 },
-  { id: 'rajiv_chowk',          name: 'Rajiv Chowk',          coords: [77.2196, 28.6329], terminus: false, major: true,  structure: 'underground', elevM: -20 },
-  { id: 'patel_chowk',          name: 'Patel Chowk',          coords: [77.2123, 28.6230], terminus: false, major: false, structure: 'underground', elevM: -18 },
-  { id: 'central_secretariat',  name: 'Central Secretariat',  coords: [77.2120, 28.6150], terminus: false, major: true,  structure: 'underground', elevM: -18 },
-  { id: 'udyog_bhawan',         name: 'Udyog Bhawan',         coords: [77.2101, 28.6115], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'lok_kalyan_marg',      name: 'Lok Kalyan Marg',      coords: [77.2091, 28.5975], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'jor_bagh',             name: 'Jor Bagh',             coords: [77.2129, 28.5878], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'dilli_haat_ina',       name: 'Dilli Haat - INA',     coords: [77.2108, 28.5741], terminus: false, major: true,  structure: 'underground', elevM: -18 },
-  { id: 'aiims',                name: 'AIIMS',                coords: [77.2078, 28.5669], terminus: false, major: false, structure: 'underground', elevM: -18 },
-  { id: 'green_park',           name: 'Green Park',           coords: [77.2057, 28.5595], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'hauz_khas',            name: 'Hauz Khas',            coords: [77.2067, 28.5443], terminus: false, major: true,  structure: 'underground', elevM: -28 },
-  { id: 'malviya_nagar',        name: 'Malviya Nagar',        coords: [77.2098, 28.5355], terminus: false, major: false, structure: 'underground', elevM: -16 },
-  { id: 'saket',                name: 'Saket',                coords: [77.2069, 28.5238], terminus: false, major: false, structure: 'underground', elevM: -16 },
+const STATIONS = OSM_DATA.stations;
+const CENTERLINE = OSM_DATA.centerline;
+const FLYOVER_NORTH_CENTER = OSM_DATA.flyoverNorthCenter;
+const TUNNEL_CENTER = OSM_DATA.tunnelCenter;
+const FLYOVER_SOUTH_CENTER = OSM_DATA.flyoverSouthCenter;
+const PORTAL_NORTH = OSM_DATA.portalNorth;
+const PORTAL_SOUTH = OSM_DATA.portalSouth;
+const NP_NODE_IDX = OSM_DATA.portalNorthNodeIndex; // 110
+const SP_NODE_IDX = OSM_DATA.portalSouthNodeIndex; // 232
 
-  // South Elevated Flyover Viaduct Section (Stations 27..36: +15m Elevation)
-  { id: 'qutab_minar',          name: 'Qutab Minar',          coords: [77.1843, 28.5134], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'chhatarpur',           name: 'Chhatarpur',           coords: [77.1706, 28.5082], terminus: false, major: false, structure: 'elevated', elevM: 16 },
-  { id: 'sultanpur',            name: 'Sultanpur',            coords: [77.1478, 28.4975], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'ghitorni',             name: 'Ghitorni',             coords: [77.1352, 28.4891], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'arjan_garh',           name: 'Arjan Garh',           coords: [77.1264, 28.4795], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'guru_dronacharya',     name: 'Guru Dronacharya',     coords: [77.1084, 28.4802], terminus: false, major: false, structure: 'elevated', elevM: 16 },
-  { id: 'sikanderpur',          name: 'Sikanderpur',          coords: [77.0931, 28.4827], terminus: false, major: true,  structure: 'elevated', elevM: 18 },
-  { id: 'mg_road',              name: 'MG Road',              coords: [77.0848, 28.4787], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'iffco_chowk',          name: 'IFFCO Chowk',          coords: [77.0722, 28.4725], terminus: false, major: false, structure: 'elevated', elevM: 15 },
-  { id: 'millennium_city_centre', name: 'Millennium City Centre', coords: [77.0725, 28.4594], terminus: true, major: true, structure: 'elevated', elevM: 16 }
-];
+const N = STATIONS.length;   // 37 stations
+const M = CENTERLINE.length; // 389 physical curvature nodes
 
-const N = STATIONS.length;
+// Precompute cumulative physical distances in meters along the 389 nodes
+const CUM_DIST = [0];
+for (let i = 0; i < M - 1; i++) {
+  const p1 = CENTERLINE[i];
+  const p2 = CENTERLINE[i + 1];
+  const latAvg = (p1[1] + p2[1]) / 2 * Math.PI / 180;
+  const dx = (p2[0] - p1[0]) * 111320 * Math.cos(latAvg);
+  const dy = (p2[1] - p1[1]) * 110852;
+  const d = Math.hypot(dx, dy);
+  CUM_DIST.push(CUM_DIST[CUM_DIST.length - 1] + d);
+}
+
+const TOTAL_ROUTE_METERS = CUM_DIST[M - 1]; // ~47.62 km
+const CROSSOVER_METERS = 380; // Terminal switch turnaround length
+const HALF_LOOP_METERS = TOTAL_ROUTE_METERS + CROSSOVER_METERS;
+const FULL_LOOP_METERS = HALF_LOOP_METERS * 2; // ~96 km continuous loop
+
+const STATION_DISTANCES = STATIONS.map(s => CUM_DIST[s.trackNodeIndex]);
+
+// ══════════════════════════════════════════════════════════════
+//  2. DUAL-TRACK OFFSET GEOMETRY (TRACK 1 SOUTHBOUND & TRACK 2 NORTHBOUND)
+// ══════════════════════════════════════════════════════════════
 const TRACK_OFFSET = 0.00018; // ~20m clear physical dual-track separation (40m corridor envelope)
 
-// Precompute parallel track coordinates
-// Track 1 (Southbound): +normal vector
-// Track 2 (Northbound): -normal vector
 const TRACK_SOUTH = [];
 const TRACK_NORTH = [];
 
-for (let i = 0; i < N; i++) {
+for (let i = 0; i < M; i++) {
   let dx = 0, dy = 0;
-  if (i < N - 1) {
-    dx = STATIONS[i + 1].coords[0] - STATIONS[i].coords[0];
-    dy = STATIONS[i + 1].coords[1] - STATIONS[i].coords[1];
+  if (i < M - 1) {
+    dx = CENTERLINE[i + 1][0] - CENTERLINE[i][0];
+    dy = CENTERLINE[i + 1][1] - CENTERLINE[i][1];
   } else {
-    dx = STATIONS[i].coords[0] - STATIONS[i - 1].coords[0];
-    dy = STATIONS[i].coords[1] - STATIONS[i - 1].coords[1];
+    dx = CENTERLINE[i][0] - CENTERLINE[i - 1][0];
+    dy = CENTERLINE[i][1] - CENTERLINE[i - 1][1];
   }
   const L = Math.hypot(dx, dy) || 1;
   const nx = -dy / L;
   const ny = dx / L;
 
   TRACK_SOUTH.push([
-    STATIONS[i].coords[0] + nx * TRACK_OFFSET,
-    STATIONS[i].coords[1] + ny * TRACK_OFFSET
+    Number((CENTERLINE[i][0] + nx * TRACK_OFFSET).toFixed(6)),
+    Number((CENTERLINE[i][1] + ny * TRACK_OFFSET).toFixed(6))
   ]);
 
   TRACK_NORTH.push([
-    STATIONS[i].coords[0] - nx * TRACK_OFFSET,
-    STATIONS[i].coords[1] - ny * TRACK_OFFSET
+    Number((CENTERLINE[i][0] - nx * TRACK_OFFSET).toFixed(6)),
+    Number((CENTERLINE[i][1] - ny * TRACK_OFFSET).toFixed(6))
   ]);
 }
 
+// Subdivided track segments for Flyovers (North/South) and Subterranean Tunnel
+const trackSouthFlyoverNorth = TRACK_SOUTH.slice(0, NP_NODE_IDX + 1);
+const trackNorthFlyoverNorth = TRACK_NORTH.slice(0, NP_NODE_IDX + 1);
+
+const trackSouthTunnel = TRACK_SOUTH.slice(NP_NODE_IDX, SP_NODE_IDX + 1);
+const trackNorthTunnel = TRACK_NORTH.slice(NP_NODE_IDX, SP_NODE_IDX + 1);
+
+const trackSouthFlyoverSouth = TRACK_SOUTH.slice(SP_NODE_IDX);
+const trackNorthFlyoverSouth = TRACK_NORTH.slice(SP_NODE_IDX);
+
 // ══════════════════════════════════════════════════════════════
-//  INFRASTRUCTURE SPLIT: ELEVATED FLYOVERS, SUBTERRANEAN TUNNELS & PORTALS
+//  3. TUNNEL PORTALS & TRANSITION RAMPS (EXACT PHYSICAL COORDINATES)
 // ══════════════════════════════════════════════════════════════
-// North Portal: Midpoint between Model Town (Station 6) and GTB Nagar (Station 7)
-const PORTAL_NORTH = [
-  (STATIONS[6].coords[0] + STATIONS[7].coords[0]) / 2,
-  (STATIONS[6].coords[1] + STATIONS[7].coords[1]) / 2
-];
-
-// South Portal: Midpoint between Saket (Station 26) and Qutab Minar (Station 27)
-const PORTAL_SOUTH = [
-  (STATIONS[26].coords[0] + STATIONS[27].coords[0]) / 2,
-  (STATIONS[26].coords[1] + STATIONS[27].coords[1]) / 2
-];
-
-// Vector tangents and offsets for Portals
-const dxN = STATIONS[7].coords[0] - STATIONS[6].coords[0];
-const dyN = STATIONS[7].coords[1] - STATIONS[6].coords[1];
-const lenN = Math.hypot(dxN, dyN) || 1;
-const nxN = -dyN / lenN, nyN = dxN / lenN;
-const txN = dxN / lenN, tyN = dyN / lenN;
-const portalNorthTrackSouth = [PORTAL_NORTH[0] + nxN * TRACK_OFFSET, PORTAL_NORTH[1] + nyN * TRACK_OFFSET];
-const portalNorthTrackNorth = [PORTAL_NORTH[0] - nxN * TRACK_OFFSET, PORTAL_NORTH[1] - nyN * TRACK_OFFSET];
-
-const dxS = STATIONS[27].coords[0] - STATIONS[26].coords[0];
-const dyS = STATIONS[27].coords[1] - STATIONS[26].coords[1];
-const lenS = Math.hypot(dxS, dyS) || 1;
-const nxS = -dyS / lenS, nyS = dxS / lenS;
-const txS = dxS / lenS, tyS = dyS / lenS;
-const portalSouthTrackSouth = [PORTAL_SOUTH[0] + nxS * TRACK_OFFSET, PORTAL_SOUTH[1] + nyS * TRACK_OFFSET];
-const portalSouthTrackNorth = [PORTAL_SOUTH[0] - nxS * TRACK_OFFSET, PORTAL_SOUTH[1] - nyS * TRACK_OFFSET];
-
-// Center viaduct lines
-const FLYOVER_NORTH_CENTER = [...STATIONS.slice(0, 7).map(s => s.coords), PORTAL_NORTH];
-const TUNNEL_CENTER = [PORTAL_NORTH, ...STATIONS.slice(7, 27).map(s => s.coords), PORTAL_SOUTH];
-const FLYOVER_SOUTH_CENTER = [PORTAL_SOUTH, ...STATIONS.slice(27, 37).map(s => s.coords)];
-
-// Split parallel tracks for distinct styling
-const trackSouthFlyoverNorth = [...TRACK_SOUTH.slice(0, 7), portalNorthTrackSouth];
-const trackNorthFlyoverNorth = [...TRACK_NORTH.slice(0, 7), portalNorthTrackNorth];
-
-const trackSouthTunnel = [portalNorthTrackSouth, ...TRACK_SOUTH.slice(7, 27), portalSouthTrackSouth];
-const trackNorthTunnel = [portalNorthTrackNorth, ...TRACK_NORTH.slice(7, 27), portalSouthTrackNorth];
-
-const trackSouthFlyoverSouth = [portalSouthTrackSouth, ...TRACK_SOUTH.slice(27, 37)];
-const trackNorthFlyoverSouth = [portalSouthTrackNorth, ...TRACK_NORTH.slice(27, 37)];
-
-// Transition Portals GeoJSON
 const TUNNEL_PORTALS = {
   type: 'FeatureCollection',
   features: [
@@ -175,18 +129,27 @@ const TUNNEL_PORTALS = {
   ]
 };
 
-// Portal Cutaway Ramps (Reinforced concrete U-troughs entering ground)
-const R_LEN = 0.00065;
-const R_WID = 0.00028; // Envelops both tracks comfortably
-const rN1 = [PORTAL_NORTH[0] - txN * R_LEN - nxN * R_WID, PORTAL_NORTH[1] - tyN * R_LEN - nyN * R_WID];
-const rN2 = [PORTAL_NORTH[0] + txN * R_LEN - nxN * R_WID, PORTAL_NORTH[1] + tyN * R_LEN - nyN * R_WID];
-const rN3 = [PORTAL_NORTH[0] + txN * R_LEN + nxN * R_WID, PORTAL_NORTH[1] + tyN * R_LEN + nyN * R_WID];
-const rN4 = [PORTAL_NORTH[0] - txN * R_LEN + nxN * R_WID, PORTAL_NORTH[1] - tyN * R_LEN + nyN * R_WID];
+// Portal Cutaway Ramps oriented along the true track tangents
+function getPortalRampCoords(nodeIdx, lenM, widM) {
+  const p = CENTERLINE[nodeIdx];
+  const pNext = CENTERLINE[Math.min(M - 1, nodeIdx + 1)];
+  const pPrev = CENTERLINE[Math.max(0, nodeIdx - 1)];
+  const dx = pNext[0] - pPrev[0];
+  const dy = pNext[1] - pPrev[1];
+  const L = Math.hypot(dx, dy) || 1;
+  const tx = dx / L, ty = dy / L;
+  const nx = -ty, ny = tx;
 
-const rS1 = [PORTAL_SOUTH[0] - txS * R_LEN - nxS * R_WID, PORTAL_SOUTH[1] - tyS * R_LEN - nyS * R_WID];
-const rS2 = [PORTAL_SOUTH[0] + txS * R_LEN - nxS * R_WID, PORTAL_SOUTH[1] + tyS * R_LEN - nyS * R_WID];
-const rS3 = [PORTAL_SOUTH[0] + txS * R_LEN + nxS * R_WID, PORTAL_SOUTH[1] + tyS * R_LEN + nyS * R_WID];
-const rS4 = [PORTAL_SOUTH[0] - txS * R_LEN + nxS * R_WID, PORTAL_SOUTH[1] - tyS * R_LEN - nyS * R_WID];
+  const R_LEN = lenM;
+  const R_WID = widM;
+
+  const c1 = [p[0] - tx * R_LEN - nx * R_WID, p[1] - ty * R_LEN - ny * R_WID];
+  const c2 = [p[0] + tx * R_LEN - nx * R_WID, p[1] + ty * R_LEN - ny * R_WID];
+  const c3 = [p[0] + tx * R_LEN + nx * R_WID, p[1] + ty * R_LEN + ny * R_WID];
+  const c4 = [p[0] - tx * R_LEN + nx * R_WID, p[1] - ty * R_LEN + ny * R_WID];
+
+  return [[c1, c2, c3, c4, c1]];
+}
 
 const PORTAL_RAMPS = {
   type: 'FeatureCollection',
@@ -194,18 +157,18 @@ const PORTAL_RAMPS = {
     {
       type: 'Feature',
       properties: { id: 'ramp_north', name: 'Model Town Portal Cutaway Ramp', type: 'portal_ramp' },
-      geometry: { type: 'Polygon', coordinates: [[rN1, rN2, rN3, rN4, rN1]] }
+      geometry: { type: 'Polygon', coordinates: getPortalRampCoords(NP_NODE_IDX, 0.00065, 0.00028) }
     },
     {
       type: 'Feature',
       properties: { id: 'ramp_south', name: 'Saket Portal Cutaway Ramp', type: 'portal_ramp' },
-      geometry: { type: 'Polygon', coordinates: [[rS1, rS2, rS3, rS4, rS1]] }
+      geometry: { type: 'Polygon', coordinates: getPortalRampCoords(SP_NODE_IDX, 0.00065, 0.00028) }
     }
   ]
 };
 
 // ══════════════════════════════════════════════════════════════
-//  PRECOMPUTE PHYSICAL STATION PLATFORMS, CANOPIES & UNDERGROUND CHAMBERS
+//  4. PRECOMPUTE PHYSICAL STATION PLATFORMS, CANOPIES & CHAMBERS
 // ══════════════════════════════════════════════════════════════
 const PLATFORM_SLABS = [];
 const TACTILE_EDGES = [];
@@ -213,17 +176,19 @@ const PLATFORM_CANOPIES = [];
 const UNDERGROUND_PLATFORMS = [];
 
 const P_LEN = 0.00065; // ~70m length
-const P_WID = 0.00028; // Envelops both tracks comfortably (40m envelope)
+const P_WID = 0.00028; // ~30m width (enveloping both tracks comfortably)
 
 for (let i = 0; i < N; i++) {
   const s = STATIONS[i];
+  const nodeIdx = s.trackNodeIndex;
+
   let dx = 0, dy = 0;
-  if (i < N - 1) {
-    dx = STATIONS[i + 1].coords[0] - STATIONS[i].coords[0];
-    dy = STATIONS[i + 1].coords[1] - STATIONS[i].coords[1];
+  if (nodeIdx < M - 1) {
+    dx = CENTERLINE[nodeIdx + 1][0] - CENTERLINE[nodeIdx][0];
+    dy = CENTERLINE[nodeIdx + 1][1] - CENTERLINE[nodeIdx][1];
   } else {
-    dx = STATIONS[i].coords[0] - STATIONS[i - 1].coords[0];
-    dy = STATIONS[i].coords[1] - STATIONS[i - 1].coords[1];
+    dx = CENTERLINE[nodeIdx][0] - CENTERLINE[nodeIdx - 1][0];
+    dy = CENTERLINE[nodeIdx][1] - CENTERLINE[nodeIdx - 1][1];
   }
   const L = Math.hypot(dx, dy) || 1;
   const tx = dx / L, ty = dy / L;
@@ -251,8 +216,8 @@ for (let i = 0; i < N; i++) {
     geometry: {
       type: 'LineString',
       coordinates: [
-        [x - tx * P_LEN + nx * (P_WID - 0.00002), y - ty * P_LEN + ny * (P_WID - 0.00002)],
-        [x + tx * P_LEN + nx * (P_WID - 0.00002), y + ty * P_LEN + ny * (P_WID - 0.00002)]
+        [x - tx * P_LEN + nx * (P_WID - 0.00003), y - ty * P_LEN + ny * (P_WID - 0.00003)],
+        [x + tx * P_LEN + nx * (P_WID - 0.00003), y + ty * P_LEN + ny * (P_WID - 0.00003)]
       ]
     }
   });
@@ -263,8 +228,8 @@ for (let i = 0; i < N; i++) {
     geometry: {
       type: 'LineString',
       coordinates: [
-        [x - tx * P_LEN - nx * (P_WID - 0.00002), y - ty * P_LEN - ny * (P_WID - 0.00002)],
-        [x + tx * P_LEN - nx * (P_WID - 0.00002), y + ty * P_LEN - ny * (P_WID - 0.00002)]
+        [x - tx * P_LEN - nx * (P_WID - 0.00003), y - ty * P_LEN - ny * (P_WID - 0.00003)],
+        [x + tx * P_LEN - nx * (P_WID - 0.00003), y + ty * P_LEN - ny * (P_WID - 0.00003)]
       ]
     }
   });
@@ -301,89 +266,109 @@ for (let i = 0; i < N; i++) {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  CONTINUOUS CLOSED-LOOP TRAIN FLEET SIMULATOR
+//  5. CONTINUOUS CLOSED-LOOP FLEET SIMULATOR (SMOOTH 389-NODE INTERPOLATION)
 // ══════════════════════════════════════════════════════════════
-// Total loop = 36 Southbound segments + 1 Millennium Crossover
-//            + 36 Northbound segments + 1 Badli Crossover
-//            = 74 continuous units!
 const FLEET_SIZE = 16;
-const LOOP_UNITS = (N - 1) * 2 + 2; // 74 units
-
-// Speed multiplier (can be adjusted via /api/speed)
 let simSpeed = 1.0;
 let simulationTick = 0;
 
-// Returns train state for given loop position (0.0 to LOOP_UNITS)
-function getTrainAtLoopPosition(loopPos, trainIndex) {
-  const normPos = ((loopPos % LOOP_UNITS) + LOOP_UNITS) % LOOP_UNITS;
+// High-speed binary search along precomputed physical cumulative distances
+function getPointAlongPolyline(pts, targetD) {
+  if (targetD <= 0) {
+    const p1 = pts[0], p2 = pts[1];
+    const b = (Math.atan2(p2[0] - p1[0], p2[1] - p1[1]) * 180 / Math.PI + 360) % 360;
+    return { pt: pts[0], bearing: b, seg: 0, prog: 0 };
+  }
+  if (targetD >= TOTAL_ROUTE_METERS) {
+    const p1 = pts[M - 2], p2 = pts[M - 1];
+    const b = (Math.atan2(p2[0] - p1[0], p2[1] - p1[1]) * 180 / Math.PI + 360) % 360;
+    return { pt: pts[M - 1], bearing: b, seg: M - 2, prog: 1 };
+  }
+
+  let low = 0, high = M - 1;
+  while (low <= high) {
+    const mid = (low + high) >> 1;
+    if (CUM_DIST[mid] <= targetD) low = mid + 1;
+    else high = mid - 1;
+  }
+  const seg = Math.max(0, Math.min(M - 2, high));
+  const d0 = CUM_DIST[seg];
+  const d1 = CUM_DIST[seg + 1];
+  const prog = (targetD - d0) / Math.max(1e-6, d1 - d0);
+  const p1 = pts[seg];
+  const p2 = pts[seg + 1];
+
+  const pt = [
+    Number((p1[0] + (p2[0] - p1[0]) * prog).toFixed(6)),
+    Number((p1[1] + (p2[1] - p1[1]) * prog).toFixed(6))
+  ];
+  const bearing = (Math.atan2(p2[0] - p1[0], p2[1] - p1[1]) * 180 / Math.PI + 360) % 360;
+  return { pt, bearing, seg, prog };
+}
+
+function getTrainAtLoopPosition(loopMeters, trainIndex) {
+  const normMeters = ((loopMeters % FULL_LOOP_METERS) + FULL_LOOP_METERS) % FULL_LOOP_METERS;
 
   let coords, fromStation, toStation, directionLabel, speedKph, track, bearing;
   let structure, elevM, elevLabel;
 
-  if (normPos < 36) {
-    // 1. Southbound on Track 1 (Down Line): Stations 0 to 36
-    const segIdx = Math.floor(normPos);
-    const progress = normPos - segIdx; // 0.0 to 1.0
-    const nextIdx = Math.min(N - 1, segIdx + 1);
+  if (normMeters < TOTAL_ROUTE_METERS) {
+    // ── 1. SOUTHBOUND on Track 1 (Down Line): Samaypur Badli ➔ Millennium City Centre ──
+    const targetD = normMeters;
+    const res = getPolylinePointSafe(TRACK_SOUTH, targetD);
+    coords = res.pt;
+    bearing = Math.round(res.bearing);
 
-    const c1 = TRACK_SOUTH[segIdx];
-    const c2 = TRACK_SOUTH[nextIdx];
-    coords = [
-      c1[0] + (c2[0] - c1[0]) * progress,
-      c1[1] + (c2[1] - c1[1]) * progress
-    ];
-
-    bearing = (Math.atan2(c2[0] - c1[0], c2[1] - c1[1]) * 180 / Math.PI + 360) % 360;
-
-    fromStation = STATIONS[segIdx].name;
-    toStation = STATIONS[nextIdx].name;
+    // Find current station interval
+    let k = 0;
+    while (k < N - 1 && STATION_DISTANCES[k + 1] <= targetD) {
+      k++;
+    }
+    fromStation = STATIONS[k].name;
+    toStation = STATIONS[Math.min(N - 1, k + 1)].name;
     directionLabel = 'Southbound ➔ Millennium City Centre';
     track = 'Track 1 (Down Line)';
 
-    const bell = Math.sin(progress * Math.PI);
-    speedKph = Math.round(25 + 45 * bell);
+    // Smooth sinusoidal acceleration between stations
+    const dFrom = STATION_DISTANCES[k];
+    const dTo = STATION_DISTANCES[Math.min(N - 1, k + 1)];
+    const stProgress = (targetD - dFrom) / Math.max(10, dTo - dFrom);
+    const bell = Math.sin(Math.min(1.0, Math.max(0.0, stProgress)) * Math.PI);
+    speedKph = Math.round(30 + 45 * bell);
 
-    // Structure & Elevation calculation (Southbound)
-    if (segIdx < 6) {
-      // Elevated Flyover North (Badli to Model Town)
+    // Physical Elevation & Structure based on real-world node index
+    if (res.seg < NP_NODE_IDX) {
       structure = 'elevated';
-      elevM = STATIONS[segIdx].elevM || 15;
-      elevLabel = `Elevated Viaduct (+${elevM}m)`;
-    } else if (segIdx === 6) {
-      // Model Town (+14m) ➔ GTB Nagar (-16m) Portal Ramp Descent
-      elevM = Math.round(14 + (-16 - 14) * progress);
-      structure = progress < 0.5 ? 'elevated' : 'underground';
+      elevM = 15;
+      elevLabel = 'Elevated Viaduct (+15m)';
+    } else if (res.seg === NP_NODE_IDX) {
+      elevM = Math.round(14 + (-16 - 14) * res.prog);
+      structure = res.prog < 0.5 ? 'elevated' : 'underground';
       elevLabel = `North Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
-    } else if (segIdx >= 7 && segIdx < 26) {
-      // Subterranean Tube Tunnel (GTB Nagar to Saket)
-      const e1 = STATIONS[segIdx].elevM;
-      const e2 = STATIONS[nextIdx].elevM;
-      elevM = Math.round(e1 + (e2 - e1) * progress);
+    } else if (res.seg > NP_NODE_IDX && res.seg < SP_NODE_IDX) {
+      elevM = -18;
       structure = 'underground';
-      elevLabel = `Subterranean Tube (${elevM}m)`;
-    } else if (segIdx === 26) {
-      // Saket (-16m) ➔ Qutab Minar (+15m) Portal Ramp Ascent
-      elevM = Math.round(-16 + (15 - (-16)) * progress);
-      structure = progress < 0.5 ? 'underground' : 'elevated';
+      elevLabel = 'Subterranean Tube (-16m to -28m)';
+    } else if (res.seg === SP_NODE_IDX) {
+      elevM = Math.round(-16 + (15 - (-16)) * res.prog);
+      structure = res.prog < 0.5 ? 'underground' : 'elevated';
       elevLabel = `South Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
     } else {
-      // Elevated Flyover South (Qutab Minar to Millennium)
       structure = 'elevated';
-      elevM = STATIONS[segIdx].elevM || 15;
-      elevLabel = `Elevated Viaduct (+${elevM}m)`;
+      elevM = 15;
+      elevLabel = 'Elevated Viaduct (+15m)';
     }
 
-  } else if (normPos < 37) {
-    // 2. Millennium City Centre Crossover Reversal (Track 1 ➔ Track 2)
-    const progress = normPos - 36;
-    const c1 = TRACK_SOUTH[N - 1];
-    const c2 = TRACK_NORTH[N - 1];
+  } else if (normMeters < HALF_LOOP_METERS) {
+    // ── 2. Millennium City Centre Crossover Reversal (Track 1 ➔ Track 2) ──
+    const revProg = (normMeters - TOTAL_ROUTE_METERS) / CROSSOVER_METERS;
+    const c1 = TRACK_SOUTH[M - 1];
+    const c2 = TRACK_NORTH[M - 1];
     coords = [
-      c1[0] + (c2[0] - c1[0]) * progress,
-      c1[1] + (c2[1] - c1[1]) * progress
+      Number((c1[0] + (c2[0] - c1[0]) * revProg).toFixed(6)),
+      Number((c1[1] + (c2[1] - c1[1]) * revProg).toFixed(6))
     ];
-
-    bearing = (Math.atan2(c2[0] - c1[0], c2[1] - c1[1]) * 180 / Math.PI + 360) % 360;
+    bearing = Math.round((Math.atan2(c2[0] - c1[0], c2[1] - c1[1]) * 180 / Math.PI + 360) % 360);
 
     fromStation = 'Millennium City Centre (Platform 1)';
     toStation = 'Millennium City Centre (Platform 2)';
@@ -394,73 +379,61 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
     elevM = 16;
     elevLabel = 'Elevated Terminal (+16m)';
 
-  } else if (normPos < 73) {
-    // 3. Northbound on Track 2 (Up Line): Stations 36 down to 0
-    const northPos = normPos - 37;
-    const segIdx = Math.floor(northPos);
-    const progress = northPos - segIdx;
+  } else if (normMeters < HALF_LOOP_METERS + TOTAL_ROUTE_METERS) {
+    // ── 3. NORTHBOUND on Track 2 (Up Line): Millennium City Centre ➔ Samaypur Badli ──
+    const targetD = TOTAL_ROUTE_METERS - (normMeters - HALF_LOOP_METERS);
+    const res = getPolylinePointSafe(TRACK_NORTH, targetD);
+    coords = res.pt;
+    // Reverse bearing because train is heading Northwards
+    bearing = Math.round((res.bearing + 180) % 360);
 
-    const fromStationIdx = N - 1 - segIdx;
-    const toStationIdx = Math.max(0, fromStationIdx - 1);
-
-    const c1 = TRACK_NORTH[fromStationIdx];
-    const c2 = TRACK_NORTH[toStationIdx];
-    coords = [
-      c1[0] + (c2[0] - c1[0]) * progress,
-      c1[1] + (c2[1] - c1[1]) * progress
-    ];
-
-    bearing = (Math.atan2(c2[0] - c1[0], c2[1] - c1[1]) * 180 / Math.PI + 360) % 360;
-
-    fromStation = STATIONS[fromStationIdx].name;
-    toStation = STATIONS[toStationIdx].name;
+    let k = N - 1;
+    while (k > 0 && STATION_DISTANCES[k - 1] >= targetD) {
+      k--;
+    }
+    fromStation = STATIONS[k].name;
+    toStation = STATIONS[Math.max(0, k - 1)].name;
     directionLabel = 'Northbound ➔ Samaypur Badli';
     track = 'Track 2 (Up Line)';
 
-    const bell = Math.sin(progress * Math.PI);
-    speedKph = Math.round(25 + 45 * bell);
+    const dFrom = STATION_DISTANCES[k];
+    const dTo = STATION_DISTANCES[Math.max(0, k - 1)];
+    const stProgress = (dFrom - targetD) / Math.max(10, dFrom - dTo);
+    const bell = Math.sin(Math.min(1.0, Math.max(0.0, stProgress)) * Math.PI);
+    speedKph = Math.round(30 + 45 * bell);
 
-    // Structure & Elevation calculation (Northbound)
-    if (fromStationIdx > 27) {
-      // Elevated Flyover South (Millennium to Qutab Minar)
+    if (res.seg > SP_NODE_IDX) {
       structure = 'elevated';
-      elevM = STATIONS[fromStationIdx].elevM || 15;
-      elevLabel = `Elevated Viaduct (+${elevM}m)`;
-    } else if (fromStationIdx === 27) {
-      // Qutab Minar (+15m) ➔ Saket (-16m) Portal Ramp Descent
-      elevM = Math.round(15 + (-16 - 15) * progress);
-      structure = progress < 0.5 ? 'elevated' : 'underground';
+      elevM = 15;
+      elevLabel = 'Elevated Viaduct (+15m)';
+    } else if (res.seg === SP_NODE_IDX) {
+      elevM = Math.round(15 + (-16 - 15) * (1 - res.prog));
+      structure = res.prog > 0.5 ? 'elevated' : 'underground';
       elevLabel = `South Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
-    } else if (fromStationIdx <= 26 && fromStationIdx > 7) {
-      // Subterranean Tube Tunnel (Saket to GTB Nagar)
-      const e1 = STATIONS[fromStationIdx].elevM;
-      const e2 = STATIONS[toStationIdx].elevM;
-      elevM = Math.round(e1 + (e2 - e1) * progress);
+    } else if (res.seg > NP_NODE_IDX && res.seg < SP_NODE_IDX) {
+      elevM = -18;
       structure = 'underground';
-      elevLabel = `Subterranean Tube (${elevM}m)`;
-    } else if (fromStationIdx === 7) {
-      // GTB Nagar (-16m) ➔ Model Town (+14m) Portal Ramp Ascent
-      elevM = Math.round(-16 + (14 - (-16)) * progress);
-      structure = progress < 0.5 ? 'underground' : 'elevated';
+      elevLabel = 'Subterranean Tube (-16m to -28m)';
+    } else if (res.seg === NP_NODE_IDX) {
+      elevM = Math.round(-16 + (14 - (-16)) * (1 - res.prog));
+      structure = res.prog > 0.5 ? 'elevated' : 'underground';
       elevLabel = `North Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
     } else {
-      // Elevated Flyover North (Model Town to Badli)
       structure = 'elevated';
-      elevM = STATIONS[fromStationIdx].elevM || 15;
-      elevLabel = `Elevated Viaduct (+${elevM}m)`;
+      elevM = 15;
+      elevLabel = 'Elevated Viaduct (+15m)';
     }
 
   } else {
-    // 4. Samaypur Badli Crossover Reversal (Track 2 ➔ Track 1)
-    const progress = normPos - 73;
+    // ── 4. Samaypur Badli Crossover Reversal (Track 2 ➔ Track 1) ──
+    const revProg = (normMeters - (HALF_LOOP_METERS + TOTAL_ROUTE_METERS)) / CROSSOVER_METERS;
     const c1 = TRACK_NORTH[0];
     const c2 = TRACK_SOUTH[0];
     coords = [
-      c1[0] + (c2[0] - c1[0]) * progress,
-      c1[1] + (c2[1] - c1[1]) * progress
+      Number((c1[0] + (c2[0] - c1[0]) * revProg).toFixed(6)),
+      Number((c1[1] + (c2[1] - c1[1]) * revProg).toFixed(6))
     ];
-
-    bearing = (Math.atan2(c2[0] - c1[0], c2[1] - c1[1]) * 180 / Math.PI + 360) % 360;
+    bearing = Math.round((Math.atan2(c2[0] - c1[0], c2[1] - c1[1]) * 180 / Math.PI + 360) % 360);
 
     fromStation = 'Samaypur Badli (Platform 2)';
     toStation = 'Samaypur Badli (Platform 1)';
@@ -475,7 +448,7 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
   return {
     id: `Y-${String(trainIndex + 1).padStart(2, '0')}`,
     coords,
-    bearing: Math.round(bearing),
+    bearing,
     fromStation,
     toStation,
     directionLabel,
@@ -487,12 +460,17 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
   };
 }
 
+function getPolylinePointSafe(pts, targetD) {
+  return getPointAlongPolyline(pts, targetD);
+}
+
 function getActiveFleet() {
   const trains = [];
-  const spacing = LOOP_UNITS / FLEET_SIZE;
+  const spacing = FULL_LOOP_METERS / FLEET_SIZE;
 
+  // 1 tick = 100ms. Average speed ~48 km/h = ~13.3 m/s = 1.33 m per 100ms tick
   for (let i = 0; i < FLEET_SIZE; i++) {
-    const pos = simulationTick * 0.035 * simSpeed + i * spacing;
+    const pos = simulationTick * 1.35 * simSpeed + i * spacing;
     trains.push(getTrainAtLoopPosition(pos, i));
   }
 
@@ -506,12 +484,12 @@ function getActiveFleet() {
 
 // Tick loop (10 Hz = every 100ms for ultra-smooth movement)
 setInterval(() => {
-  simulationTick += 0.1;
+  simulationTick += 1.0;
   broadcastSSE();
 }, 100);
 
 // ══════════════════════════════════════════════════════════════
-//  HTTP SERVER & SERVER-SENT EVENTS (SSE)
+//  6. HTTP SERVER & SERVER-SENT EVENTS (SSE)
 // ══════════════════════════════════════════════════════════════
 const sseClients = new Set();
 
@@ -573,7 +551,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       stations: STATIONS,
-      viaductCenter: STATIONS.map(s => s.coords),
+      viaductCenter: CENTERLINE,
       flyoverNorthCenter: FLYOVER_NORTH_CENTER,
       tunnelCenter: TUNNEL_CENTER,
       flyoverSouthCenter: FLYOVER_SOUTH_CENTER,
@@ -586,7 +564,7 @@ const server = http.createServer((req, res) => {
       trackSouthFlyoverSouth,
       trackNorthFlyoverSouth,
       crossoverNorth: [TRACK_NORTH[0], TRACK_SOUTH[0]],
-      crossoverSouth: [TRACK_SOUTH[N - 1], TRACK_NORTH[N - 1]],
+      crossoverSouth: [TRACK_SOUTH[M - 1], TRACK_NORTH[M - 1]],
       tunnelPortals: TUNNEL_PORTALS,
       portalRamps: PORTAL_RAMPS,
       platformSlabs: { type: 'FeatureCollection', features: PLATFORM_SLABS },
