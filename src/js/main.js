@@ -84,6 +84,23 @@
     startClockTicker();
   }
 
+  function preloadImage(url, id) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        if (map && !map.hasImage(id)) {
+          map.addImage(id, img);
+        }
+        resolve(img);
+      };
+      img.onerror = (e) => {
+        console.error('Failed to load image', url, e);
+        resolve(null);
+      };
+      img.src = url;
+    });
+  }
+
   function initDioramaMap() {
     // Vibrant, colorful architectural MapLibre foundation
     map = new maplibregl.Map({
@@ -105,26 +122,22 @@
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
 
-    function loadTrainSprite() {
-      const img = new Image();
-      img.onload = () => {
-        if (map && !map.hasImage('delhi-metro-consist')) {
-          map.addImage('delhi-metro-consist', img);
-        }
-      };
-      img.src = '/public/metro_train_consist.png';
-    }
-
     map.on('styleimagemissing', (e) => {
       if (e.id === 'delhi-metro-consist') {
-        loadTrainSprite();
+        preloadImage('/public/metro_train_consist.png', 'delhi-metro-consist');
+      } else if (e.id === 'dmrc-rail-pattern') {
+        preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern');
       }
     });
 
-    map.on('load', () => {
+    map.on('load', async () => {
       suppressMapClutter();
       enhanceMapColors();
-      loadTrainSprite();
+
+      await Promise.all([
+        preloadImage('/public/metro_train_consist.png', 'delhi-metro-consist'),
+        preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern')
+      ]);
 
       add3DBuildings();
       renderViaductAndDualTracks();
@@ -236,70 +249,8 @@
   // ═══════════════════════════════════════════════════════════
   //  3. ELEVATED VIADUCT & TWO PARALLEL RAILWAY TRACKS (MODEL RAILWAY PATTERN)
   // ═══════════════════════════════════════════════════════════
-  function registerTrackPattern() {
-    const w = 24, h = 32;
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    const ctx = c.getContext('2d');
-
-    // 1. Crushed Basalt Ballast Bed (Natural warm grey granite)
-    ctx.fillStyle = '#4B5563';
-    ctx.fillRect(0, 0, w, h);
-
-    // Ballast texture grain
-    ctx.fillStyle = '#374151';
-    for (let x = 0; x < w; x += 3) {
-      for (let y = 0; y < h; y += 3) {
-        if ((x + y) % 5 === 0) ctx.fillRect(x, y, 1.5, 1.5);
-      }
-    }
-
-    // 2. Concrete Sleeper (Cross-Tie) - placed perpendicular across track
-    const tieX = 4, tieW = 8;
-    ctx.fillStyle = '#E5E7EB'; // Pre-stressed concrete
-    ctx.fillRect(tieX, 2, tieW, 28);
-
-    // Sleeper drop shadow (bottom edge)
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-    ctx.fillRect(tieX + tieW - 1, 2, 1.5, 28);
-    // Sleeper top highlight
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.fillRect(tieX, 2, 1.2, 28);
-
-    // 3. Steel Tie Plates & Fasteners (Pandrol Clips)
-    ctx.fillStyle = '#1F2937';
-    ctx.fillRect(tieX, 4, tieW, 4);   // Left rail fastener
-    ctx.fillRect(tieX, 24, tieW, 4);  // Right rail fastener
-
-    // 4. Twin Steel Rails (1435 mm / 1676 mm Gauge)
-    // Left Rail Base (Dark manganese steel web)
-    ctx.fillStyle = '#111827';
-    ctx.fillRect(0, 5, w, 3.5);
-    // Left Rail Crown (Polished reflective steel head)
-    ctx.fillStyle = '#F3F4F6';
-    ctx.fillRect(0, 6, w, 1.6);
-
-    // Right Rail Base
-    ctx.fillStyle = '#111827';
-    ctx.fillRect(0, 23.5, w, 3.5);
-    // Right Rail Crown
-    ctx.fillStyle = '#F3F4F6';
-    ctx.fillRect(0, 24.5, w, 1.6);
-
-    // 5. Signature DMRC Yellow Line Center Guide
-    ctx.fillStyle = '#EAB308';
-    ctx.fillRect(0, 15, w, 1.8);
-
-    const imgData = ctx.getImageData(0, 0, w, h);
-    if (!map.hasImage('dmrc-rail-pattern')) {
-      map.addImage('dmrc-rail-pattern', imgData);
-    }
-  }
-
   function renderViaductAndDualTracks() {
     if (!trackData) return;
-
-    registerTrackPattern();
 
     map.addSource('track-south', {
       type: 'geojson',
@@ -324,10 +275,10 @@
       source: 'track-south',
       paint: {
         'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 16, 16, 24],
-        'line-opacity': 0.10,
-        'line-blur': 4,
-        'line-offset': 2
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 18, 16, 28],
+        'line-opacity': 0.12,
+        'line-blur': 5,
+        'line-offset': 3
       }
     });
 
@@ -337,22 +288,22 @@
       source: 'track-north',
       paint: {
         'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 16, 16, 24],
-        'line-opacity': 0.10,
-        'line-blur': 4,
-        'line-offset': 2
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 18, 16, 28],
+        'line-opacity': 0.12,
+        'line-blur': 5,
+        'line-offset': 3
       }
     });
 
-    // Viaduct Concrete Slab
+    // Viaduct Concrete Slab (Elevated U-Girder / Box Girder Base)
     map.addLayer({
       id: 'viaduct-slab-south',
       type: 'line',
       source: 'track-south',
       paint: {
         'line-color': '#E2E8F0',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 6, 14, 14, 16, 20],
-        'line-opacity': 0.90
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 14, 16, 16, 24],
+        'line-opacity': 0.95
       }
     });
 
@@ -362,10 +313,33 @@
       source: 'track-north',
       paint: {
         'line-color': '#E2E8F0',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 6, 14, 14, 16, 20],
-        'line-opacity': 0.90
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 14, 16, 16, 24],
+        'line-opacity': 0.95
       }
     });
+
+    // Viaduct Parapet Edge Curb (Subtle Architectural Outline)
+    map.addLayer({
+      id: 'viaduct-curb-south',
+      type: 'line',
+      source: 'track-south',
+      paint: {
+        'line-color': '#CBD5E1',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 17, 16, 25],
+        'line-opacity': 0.80
+      }
+    }, 'viaduct-slab-south');
+
+    map.addLayer({
+      id: 'viaduct-curb-north',
+      type: 'line',
+      source: 'track-north',
+      paint: {
+        'line-color': '#CBD5E1',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 8, 14, 17, 16, 25],
+        'line-opacity': 0.80
+      }
+    }, 'viaduct-slab-north');
 
     // ── Model Railway Track Pattern (Ballast + Cross-Ties + Twin Steel Rails) ──
     map.addLayer({
@@ -374,7 +348,7 @@
       source: 'track-south',
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 12, 9, 14, 14, 16, 20]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 12, 9, 14, 13, 16, 18]
       }
     });
 
@@ -384,7 +358,7 @@
       source: 'track-north',
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 12, 9, 14, 14, 16, 20]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 12, 9, 14, 13, 16, 18]
       }
     });
 
@@ -406,7 +380,7 @@
       source: 'terminal-crossovers',
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 4, 14, 12, 16, 16]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 4, 14, 11, 16, 15]
       }
     });
   }

@@ -1037,13 +1037,17 @@ html, body {
 }
 
 .swatch.track-1 {
-  background: var(--accent-yellow);
-  border: 1px solid var(--accent-yellow-casing);
+  background: #334155;
+  border-top: 1.5px solid #CBD5E1;
+  border-bottom: 1.5px solid #CBD5E1;
+  box-shadow: 0 0 0 1px #94A3B8;
 }
 
 .swatch.track-2 {
-  background: #FBBF24;
-  border: 1px solid var(--accent-yellow-casing);
+  background: #334155;
+  border-top: 1.5px solid #CBD5E1;
+  border-bottom: 1.5px solid #CBD5E1;
+  box-shadow: 0 0 0 1px #94A3B8;
 }
 
 .swatch.platform-swatch {
