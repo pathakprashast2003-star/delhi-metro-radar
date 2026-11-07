@@ -13,46 +13,51 @@ const url = require('url');
 const PORT = process.env.PORT || 8080;
 
 // ══════════════════════════════════════════════════════════════
-//  YELLOW LINE CORRIDOR (37 STATIONS)
+//  YELLOW LINE CORRIDOR (37 STATIONS: ELEVATED FLYOVERS & UNDERGROUND TUNNELS)
 // ══════════════════════════════════════════════════════════════
 const STATIONS = [
-  { id: 'samaypur_badli',       name: 'Samaypur Badli',        coords: [77.1465, 28.7429], terminus: true,  major: true },
-  { id: 'rohini_18_19',         name: 'Rohini Sector 18, 19',  coords: [77.1356, 28.7402], terminus: false, major: false },
-  { id: 'haiderpur_badli_mor',  name: 'Haiderpur Badli Mor',   coords: [77.1500, 28.7187], terminus: false, major: false },
-  { id: 'jahangirpuri',         name: 'Jahangirpuri',          coords: [77.1612, 28.7282], terminus: false, major: false },
-  { id: 'adarsh_nagar',         name: 'Adarsh Nagar',          coords: [77.1673, 28.7144], terminus: false, major: false },
-  { id: 'azadpur',              name: 'Azadpur',               coords: [77.1799, 28.7073], terminus: false, major: true },
-  { id: 'model_town',           name: 'Model Town',            coords: [77.1938, 28.7028], terminus: false, major: false },
-  { id: 'gtb_nagar',            name: 'GTB Nagar',             coords: [77.2064, 28.6981], terminus: false, major: false },
-  { id: 'vishwavidyalaya',      name: 'Vishwavidyalaya',       coords: [77.2124, 28.6948], terminus: false, major: false },
-  { id: 'vidhan_sabha',         name: 'Vidhan Sabha',          coords: [77.2216, 28.6878], terminus: false, major: false },
-  { id: 'civil_lines',          name: 'Civil Lines',           coords: [77.2250, 28.6769], terminus: false, major: false },
-  { id: 'kashmere_gate',        name: 'Kashmere Gate',         coords: [77.2282, 28.6675], terminus: false, major: true },
-  { id: 'chandni_chowk',        name: 'Chandni Chowk',        coords: [77.2292, 28.6564], terminus: false, major: false },
-  { id: 'chawri_bazar',         name: 'Chawri Bazar',          coords: [77.2263, 28.6496], terminus: false, major: false },
-  { id: 'new_delhi',            name: 'New Delhi',             coords: [77.2224, 28.6429], terminus: false, major: true },
-  { id: 'rajiv_chowk',          name: 'Rajiv Chowk',          coords: [77.2196, 28.6329], terminus: false, major: true },
-  { id: 'patel_chowk',          name: 'Patel Chowk',          coords: [77.2123, 28.6230], terminus: false, major: false },
-  { id: 'central_secretariat',  name: 'Central Secretariat',  coords: [77.2120, 28.6150], terminus: false, major: true },
-  { id: 'udyog_bhawan',         name: 'Udyog Bhawan',         coords: [77.2101, 28.6115], terminus: false, major: false },
-  { id: 'lok_kalyan_marg',      name: 'Lok Kalyan Marg',      coords: [77.2091, 28.5975], terminus: false, major: false },
-  { id: 'jor_bagh',             name: 'Jor Bagh',             coords: [77.2129, 28.5878], terminus: false, major: false },
-  { id: 'dilli_haat_ina',       name: 'Dilli Haat - INA',     coords: [77.2108, 28.5741], terminus: false, major: true },
-  { id: 'aiims',                name: 'AIIMS',                coords: [77.2078, 28.5669], terminus: false, major: false },
-  { id: 'green_park',           name: 'Green Park',           coords: [77.2057, 28.5595], terminus: false, major: false },
-  { id: 'hauz_khas',            name: 'Hauz Khas',            coords: [77.2067, 28.5443], terminus: false, major: true },
-  { id: 'malviya_nagar',        name: 'Malviya Nagar',        coords: [77.2098, 28.5355], terminus: false, major: false },
-  { id: 'saket',                name: 'Saket',                coords: [77.2069, 28.5238], terminus: false, major: false },
-  { id: 'qutab_minar',          name: 'Qutab Minar',          coords: [77.1843, 28.5134], terminus: false, major: false },
-  { id: 'chhatarpur',           name: 'Chhatarpur',           coords: [77.1706, 28.5082], terminus: false, major: false },
-  { id: 'sultanpur',            name: 'Sultanpur',            coords: [77.1478, 28.4975], terminus: false, major: false },
-  { id: 'ghitorni',             name: 'Ghitorni',             coords: [77.1352, 28.4891], terminus: false, major: false },
-  { id: 'arjan_garh',           name: 'Arjan Garh',           coords: [77.1264, 28.4795], terminus: false, major: false },
-  { id: 'guru_dronacharya',     name: 'Guru Dronacharya',     coords: [77.1084, 28.4802], terminus: false, major: false },
-  { id: 'sikanderpur',          name: 'Sikanderpur',          coords: [77.0931, 28.4827], terminus: false, major: true },
-  { id: 'mg_road',              name: 'MG Road',              coords: [77.0848, 28.4787], terminus: false, major: false },
-  { id: 'iffco_chowk',          name: 'IFFCO Chowk',          coords: [77.0722, 28.4725], terminus: false, major: false },
-  { id: 'millennium_city_centre', name: 'Millennium City Centre', coords: [77.0725, 28.4594], terminus: true, major: true }
+  // North Elevated Flyover Viaduct Section (Stations 0..6: +15m Elevation)
+  { id: 'samaypur_badli',       name: 'Samaypur Badli',        coords: [77.1465, 28.7429], terminus: true,  major: true,  structure: 'elevated', elevM: 15 },
+  { id: 'rohini_18_19',         name: 'Rohini Sector 18, 19',  coords: [77.1356, 28.7402], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'haiderpur_badli_mor',  name: 'Haiderpur Badli Mor',   coords: [77.1500, 28.7187], terminus: false, major: false, structure: 'elevated', elevM: 16 },
+  { id: 'jahangirpuri',         name: 'Jahangirpuri',          coords: [77.1612, 28.7282], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'adarsh_nagar',         name: 'Adarsh Nagar',          coords: [77.1673, 28.7144], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'azadpur',              name: 'Azadpur',               coords: [77.1799, 28.7073], terminus: false, major: true,  structure: 'elevated', elevM: 17 },
+  { id: 'model_town',           name: 'Model Town',            coords: [77.1938, 28.7028], terminus: false, major: false, structure: 'elevated', elevM: 14 },
+
+  // Central Subterranean Underground Tube Tunnel Section (Stations 7..26: -16m to -30m Depth)
+  { id: 'gtb_nagar',            name: 'GTB Nagar',             coords: [77.2064, 28.6981], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'vishwavidyalaya',      name: 'Vishwavidyalaya',       coords: [77.2124, 28.6948], terminus: false, major: false, structure: 'underground', elevM: -18 },
+  { id: 'vidhan_sabha',         name: 'Vidhan Sabha',          coords: [77.2216, 28.6878], terminus: false, major: false, structure: 'underground', elevM: -18 },
+  { id: 'civil_lines',          name: 'Civil Lines',           coords: [77.2250, 28.6769], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'kashmere_gate',        name: 'Kashmere Gate',         coords: [77.2282, 28.6675], terminus: false, major: true,  structure: 'underground', elevM: -22 },
+  { id: 'chandni_chowk',        name: 'Chandni Chowk',        coords: [77.2292, 28.6564], terminus: false, major: false, structure: 'underground', elevM: -20 },
+  { id: 'chawri_bazar',         name: 'Chawri Bazar',          coords: [77.2263, 28.6496], terminus: false, major: false, structure: 'underground', elevM: -30 }, // Deepest station
+  { id: 'new_delhi',            name: 'New Delhi',             coords: [77.2224, 28.6429], terminus: false, major: true,  structure: 'underground', elevM: -22 },
+  { id: 'rajiv_chowk',          name: 'Rajiv Chowk',          coords: [77.2196, 28.6329], terminus: false, major: true,  structure: 'underground', elevM: -20 },
+  { id: 'patel_chowk',          name: 'Patel Chowk',          coords: [77.2123, 28.6230], terminus: false, major: false, structure: 'underground', elevM: -18 },
+  { id: 'central_secretariat',  name: 'Central Secretariat',  coords: [77.2120, 28.6150], terminus: false, major: true,  structure: 'underground', elevM: -18 },
+  { id: 'udyog_bhawan',         name: 'Udyog Bhawan',         coords: [77.2101, 28.6115], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'lok_kalyan_marg',      name: 'Lok Kalyan Marg',      coords: [77.2091, 28.5975], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'jor_bagh',             name: 'Jor Bagh',             coords: [77.2129, 28.5878], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'dilli_haat_ina',       name: 'Dilli Haat - INA',     coords: [77.2108, 28.5741], terminus: false, major: true,  structure: 'underground', elevM: -18 },
+  { id: 'aiims',                name: 'AIIMS',                coords: [77.2078, 28.5669], terminus: false, major: false, structure: 'underground', elevM: -18 },
+  { id: 'green_park',           name: 'Green Park',           coords: [77.2057, 28.5595], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'hauz_khas',            name: 'Hauz Khas',            coords: [77.2067, 28.5443], terminus: false, major: true,  structure: 'underground', elevM: -28 },
+  { id: 'malviya_nagar',        name: 'Malviya Nagar',        coords: [77.2098, 28.5355], terminus: false, major: false, structure: 'underground', elevM: -16 },
+  { id: 'saket',                name: 'Saket',                coords: [77.2069, 28.5238], terminus: false, major: false, structure: 'underground', elevM: -16 },
+
+  // South Elevated Flyover Viaduct Section (Stations 27..36: +15m Elevation)
+  { id: 'qutab_minar',          name: 'Qutab Minar',          coords: [77.1843, 28.5134], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'chhatarpur',           name: 'Chhatarpur',           coords: [77.1706, 28.5082], terminus: false, major: false, structure: 'elevated', elevM: 16 },
+  { id: 'sultanpur',            name: 'Sultanpur',            coords: [77.1478, 28.4975], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'ghitorni',             name: 'Ghitorni',             coords: [77.1352, 28.4891], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'arjan_garh',           name: 'Arjan Garh',           coords: [77.1264, 28.4795], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'guru_dronacharya',     name: 'Guru Dronacharya',     coords: [77.1084, 28.4802], terminus: false, major: false, structure: 'elevated', elevM: 16 },
+  { id: 'sikanderpur',          name: 'Sikanderpur',          coords: [77.0931, 28.4827], terminus: false, major: true,  structure: 'elevated', elevM: 18 },
+  { id: 'mg_road',              name: 'MG Road',              coords: [77.0848, 28.4787], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'iffco_chowk',          name: 'IFFCO Chowk',          coords: [77.0722, 28.4725], terminus: false, major: false, structure: 'elevated', elevM: 15 },
+  { id: 'millennium_city_centre', name: 'Millennium City Centre', coords: [77.0725, 28.4594], terminus: true, major: true, structure: 'elevated', elevM: 16 }
 ];
 
 const N = STATIONS.length;
@@ -89,11 +94,123 @@ for (let i = 0; i < N; i++) {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  PRECOMPUTE PHYSICAL STATION PLATFORMS & CANOPIES
+//  INFRASTRUCTURE SPLIT: ELEVATED FLYOVERS, SUBTERRANEAN TUNNELS & PORTALS
+// ══════════════════════════════════════════════════════════════
+// North Portal: Midpoint between Model Town (Station 6) and GTB Nagar (Station 7)
+const PORTAL_NORTH = [
+  (STATIONS[6].coords[0] + STATIONS[7].coords[0]) / 2,
+  (STATIONS[6].coords[1] + STATIONS[7].coords[1]) / 2
+];
+
+// South Portal: Midpoint between Saket (Station 26) and Qutab Minar (Station 27)
+const PORTAL_SOUTH = [
+  (STATIONS[26].coords[0] + STATIONS[27].coords[0]) / 2,
+  (STATIONS[26].coords[1] + STATIONS[27].coords[1]) / 2
+];
+
+// Vector tangents and offsets for Portals
+const dxN = STATIONS[7].coords[0] - STATIONS[6].coords[0];
+const dyN = STATIONS[7].coords[1] - STATIONS[6].coords[1];
+const lenN = Math.hypot(dxN, dyN) || 1;
+const nxN = -dyN / lenN, nyN = dxN / lenN;
+const txN = dxN / lenN, tyN = dyN / lenN;
+const portalNorthTrackSouth = [PORTAL_NORTH[0] + nxN * TRACK_OFFSET, PORTAL_NORTH[1] + nyN * TRACK_OFFSET];
+const portalNorthTrackNorth = [PORTAL_NORTH[0] - nxN * TRACK_OFFSET, PORTAL_NORTH[1] - nyN * TRACK_OFFSET];
+
+const dxS = STATIONS[27].coords[0] - STATIONS[26].coords[0];
+const dyS = STATIONS[27].coords[1] - STATIONS[26].coords[1];
+const lenS = Math.hypot(dxS, dyS) || 1;
+const nxS = -dyS / lenS, nyS = dxS / lenS;
+const txS = dxS / lenS, tyS = dyS / lenS;
+const portalSouthTrackSouth = [PORTAL_SOUTH[0] + nxS * TRACK_OFFSET, PORTAL_SOUTH[1] + nyS * TRACK_OFFSET];
+const portalSouthTrackNorth = [PORTAL_SOUTH[0] - nxS * TRACK_OFFSET, PORTAL_SOUTH[1] - nyS * TRACK_OFFSET];
+
+// Center viaduct lines
+const FLYOVER_NORTH_CENTER = [...STATIONS.slice(0, 7).map(s => s.coords), PORTAL_NORTH];
+const TUNNEL_CENTER = [PORTAL_NORTH, ...STATIONS.slice(7, 27).map(s => s.coords), PORTAL_SOUTH];
+const FLYOVER_SOUTH_CENTER = [PORTAL_SOUTH, ...STATIONS.slice(27, 37).map(s => s.coords)];
+
+// Split parallel tracks for distinct styling
+const trackSouthFlyoverNorth = [...TRACK_SOUTH.slice(0, 7), portalNorthTrackSouth];
+const trackNorthFlyoverNorth = [...TRACK_NORTH.slice(0, 7), portalNorthTrackNorth];
+
+const trackSouthTunnel = [portalNorthTrackSouth, ...TRACK_SOUTH.slice(7, 27), portalSouthTrackSouth];
+const trackNorthTunnel = [portalNorthTrackNorth, ...TRACK_NORTH.slice(7, 27), portalSouthTrackNorth];
+
+const trackSouthFlyoverSouth = [portalSouthTrackSouth, ...TRACK_SOUTH.slice(27, 37)];
+const trackNorthFlyoverSouth = [portalSouthTrackNorth, ...TRACK_NORTH.slice(27, 37)];
+
+// Transition Portals GeoJSON
+const TUNNEL_PORTALS = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      id: 'portal_north',
+      properties: {
+        id: 'portal_north',
+        name: 'Model Town ➔ GTB Nagar Tunnel Portal',
+        shortName: 'North Tunnel Portal',
+        desc: 'Elevated Flyover (+14m) ➔ Subterranean Tube Tunnel (-16m) Ramp',
+        type: 'north_descent',
+        elevFrom: '+14m',
+        elevTo: '-16m'
+      },
+      geometry: { type: 'Point', coordinates: PORTAL_NORTH }
+    },
+    {
+      type: 'Feature',
+      id: 'portal_south',
+      properties: {
+        id: 'portal_south',
+        name: 'Saket ➔ Qutab Minar Tunnel Portal',
+        shortName: 'South Tunnel Portal',
+        desc: 'Subterranean Tube Tunnel (-16m) ➔ Elevated Flyover (+15m) Ramp',
+        type: 'south_ascent',
+        elevFrom: '-16m',
+        elevTo: '+15m'
+      },
+      geometry: { type: 'Point', coordinates: PORTAL_SOUTH }
+    }
+  ]
+};
+
+// Portal Cutaway Ramps (Reinforced concrete U-troughs entering ground)
+const R_LEN = 0.00060;
+const R_WID = 0.00018;
+const rN1 = [PORTAL_NORTH[0] - txN * R_LEN - nxN * R_WID, PORTAL_NORTH[1] - tyN * R_LEN - nyN * R_WID];
+const rN2 = [PORTAL_NORTH[0] + txN * R_LEN - nxN * R_WID, PORTAL_NORTH[1] + tyN * R_LEN - nyN * R_WID];
+const rN3 = [PORTAL_NORTH[0] + txN * R_LEN + nxN * R_WID, PORTAL_NORTH[1] + tyN * R_LEN + nyN * R_WID];
+const rN4 = [PORTAL_NORTH[0] - txN * R_LEN + nxN * R_WID, PORTAL_NORTH[1] - tyN * R_LEN + nyN * R_WID];
+
+const rS1 = [PORTAL_SOUTH[0] - txS * R_LEN - nxS * R_WID, PORTAL_SOUTH[1] - tyS * R_LEN - nyS * R_WID];
+const rS2 = [PORTAL_SOUTH[0] + txS * R_LEN - nxS * R_WID, PORTAL_SOUTH[1] + tyS * R_LEN - nyS * R_WID];
+const rS3 = [PORTAL_SOUTH[0] + txS * R_LEN + nxS * R_WID, PORTAL_SOUTH[1] + tyS * R_LEN + nyS * R_WID];
+const rS4 = [PORTAL_SOUTH[0] - txS * R_LEN + nxS * R_WID, PORTAL_SOUTH[1] - tyS * R_LEN - nyS * R_WID];
+
+const PORTAL_RAMPS = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: { id: 'ramp_north', name: 'Model Town Portal Cutaway Ramp', type: 'portal_ramp' },
+      geometry: { type: 'Polygon', coordinates: [[rN1, rN2, rN3, rN4, rN1]] }
+    },
+    {
+      type: 'Feature',
+      properties: { id: 'ramp_south', name: 'Saket Portal Cutaway Ramp', type: 'portal_ramp' },
+      geometry: { type: 'Polygon', coordinates: [[rS1, rS2, rS3, rS4, rS1]] }
+    }
+  ]
+};
+
+// ══════════════════════════════════════════════════════════════
+//  PRECOMPUTE PHYSICAL STATION PLATFORMS, CANOPIES & UNDERGROUND CHAMBERS
 // ══════════════════════════════════════════════════════════════
 const PLATFORM_SLABS = [];
 const TACTILE_EDGES = [];
 const PLATFORM_CANOPIES = [];
+const UNDERGROUND_PLATFORMS = [];
 
 const P_LEN = 0.00065; // ~70m length
 const P_WID = 0.00016; // ~18m width (enveloping both tracks on flyover)
@@ -123,14 +240,14 @@ for (let i = 0; i < N; i++) {
 
   PLATFORM_SLABS.push({
     type: 'Feature',
-    properties: { id: s.id, name: s.name, major: s.major, index: i },
+    properties: { id: s.id, name: s.name, major: s.major, index: i, structure: s.structure, elevM: s.elevM },
     geometry: { type: 'Polygon', coordinates: [[c1, c2, c3, c4, c1]] }
   });
 
   // Tactile Yellow Hazard Edges along the platform facing the tracks
   TACTILE_EDGES.push({
     type: 'Feature',
-    properties: { id: s.id + '_edge1', side: 'down' },
+    properties: { id: s.id + '_edge1', side: 'down', structure: s.structure },
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -142,7 +259,7 @@ for (let i = 0; i < N; i++) {
 
   TACTILE_EDGES.push({
     type: 'Feature',
-    properties: { id: s.id + '_edge2', side: 'up' },
+    properties: { id: s.id + '_edge2', side: 'up', structure: s.structure },
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -152,19 +269,35 @@ for (let i = 0; i < N; i++) {
     }
   });
 
-  // Modern Cantilevered Canopy Roof (Hovering in 3D above platform)
-  const CL = P_LEN * 0.85;
-  const CW = P_WID * 0.95;
-  const k1 = [x - tx * CL - nx * CW, y - ty * CL - ny * CW];
-  const k2 = [x + tx * CL - nx * CW, y + ty * CL - ny * CW];
-  const k3 = [x + tx * CL + nx * CW, y + ty * CL + ny * CW];
-  const k4 = [x - tx * CL + nx * CW, y - ty * CL + ny * CW];
+  if (s.structure === 'elevated') {
+    // Modern Cantilevered Sky-Blue Canopy Roof (Hovering in 3D ONLY above elevated flyover stations)
+    const CL = P_LEN * 0.85;
+    const CW = P_WID * 0.95;
+    const k1 = [x - tx * CL - nx * CW, y - ty * CL - ny * CW];
+    const k2 = [x + tx * CL - nx * CW, y + ty * CL - ny * CW];
+    const k3 = [x + tx * CL + nx * CW, y + ty * CL + ny * CW];
+    const k4 = [x - tx * CL + nx * CW, y - ty * CL + ny * CW];
 
-  PLATFORM_CANOPIES.push({
-    type: 'Feature',
-    properties: { id: s.id, name: s.name, height: s.major ? 9 : 7, base: 4.5 },
-    geometry: { type: 'Polygon', coordinates: [[k1, k2, k3, k4, k1]] }
-  });
+    PLATFORM_CANOPIES.push({
+      type: 'Feature',
+      properties: { id: s.id, name: s.name, height: s.major ? 9 : 7, base: 4.5, structure: 'elevated', elevM: s.elevM },
+      geometry: { type: 'Polygon', coordinates: [[k1, k2, k3, k4, k1]] }
+    });
+  } else {
+    // Subterranean Station Chamber Cutaway Box (Dark Slate Vault with Depth Badge)
+    const UL = P_LEN * 1.1;
+    const UW = P_WID * 1.25;
+    const u1 = [x - tx * UL - nx * UW, y - ty * UL - ny * UW];
+    const u2 = [x + tx * UL - nx * UW, y + ty * UL - ny * UW];
+    const u3 = [x + tx * UL + nx * UW, y + ty * UL + ny * UW];
+    const u4 = [x - tx * UL + nx * UW, y - ty * UL + ny * UW];
+
+    UNDERGROUND_PLATFORMS.push({
+      type: 'Feature',
+      properties: { id: s.id, name: s.name, depth: s.elevM, major: s.major, structure: 'underground' },
+      geometry: { type: 'Polygon', coordinates: [[u1, u2, u3, u4, u1]] }
+    });
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -185,6 +318,7 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
   const normPos = ((loopPos % LOOP_UNITS) + LOOP_UNITS) % LOOP_UNITS;
 
   let coords, fromStation, toStation, directionLabel, speedKph, track, bearing;
+  let structure, elevM, elevLabel;
 
   if (normPos < 36) {
     // 1. Southbound on Track 1 (Down Line): Stations 0 to 36
@@ -209,6 +343,36 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
     const bell = Math.sin(progress * Math.PI);
     speedKph = Math.round(25 + 45 * bell);
 
+    // Structure & Elevation calculation (Southbound)
+    if (segIdx < 6) {
+      // Elevated Flyover North (Badli to Model Town)
+      structure = 'elevated';
+      elevM = STATIONS[segIdx].elevM || 15;
+      elevLabel = `Elevated Viaduct (+${elevM}m)`;
+    } else if (segIdx === 6) {
+      // Model Town (+14m) ➔ GTB Nagar (-16m) Portal Ramp Descent
+      elevM = Math.round(14 + (-16 - 14) * progress);
+      structure = progress < 0.5 ? 'elevated' : 'underground';
+      elevLabel = `North Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
+    } else if (segIdx >= 7 && segIdx < 26) {
+      // Subterranean Tube Tunnel (GTB Nagar to Saket)
+      const e1 = STATIONS[segIdx].elevM;
+      const e2 = STATIONS[nextIdx].elevM;
+      elevM = Math.round(e1 + (e2 - e1) * progress);
+      structure = 'underground';
+      elevLabel = `Subterranean Tube (${elevM}m)`;
+    } else if (segIdx === 26) {
+      // Saket (-16m) ➔ Qutab Minar (+15m) Portal Ramp Ascent
+      elevM = Math.round(-16 + (15 - (-16)) * progress);
+      structure = progress < 0.5 ? 'underground' : 'elevated';
+      elevLabel = `South Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
+    } else {
+      // Elevated Flyover South (Qutab Minar to Millennium)
+      structure = 'elevated';
+      elevM = STATIONS[segIdx].elevM || 15;
+      elevLabel = `Elevated Viaduct (+${elevM}m)`;
+    }
+
   } else if (normPos < 37) {
     // 2. Millennium City Centre Crossover Reversal (Track 1 ➔ Track 2)
     const progress = normPos - 36;
@@ -226,6 +390,9 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
     directionLabel = '🔄 Terminal Crossover Switch ➔ Reversing North';
     track = 'Terminal Crossover Loop';
     speedKph = 15;
+    structure = 'elevated';
+    elevM = 16;
+    elevLabel = 'Elevated Terminal (+16m)';
 
   } else if (normPos < 73) {
     // 3. Northbound on Track 2 (Up Line): Stations 36 down to 0
@@ -253,6 +420,36 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
     const bell = Math.sin(progress * Math.PI);
     speedKph = Math.round(25 + 45 * bell);
 
+    // Structure & Elevation calculation (Northbound)
+    if (fromStationIdx > 27) {
+      // Elevated Flyover South (Millennium to Qutab Minar)
+      structure = 'elevated';
+      elevM = STATIONS[fromStationIdx].elevM || 15;
+      elevLabel = `Elevated Viaduct (+${elevM}m)`;
+    } else if (fromStationIdx === 27) {
+      // Qutab Minar (+15m) ➔ Saket (-16m) Portal Ramp Descent
+      elevM = Math.round(15 + (-16 - 15) * progress);
+      structure = progress < 0.5 ? 'elevated' : 'underground';
+      elevLabel = `South Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
+    } else if (fromStationIdx <= 26 && fromStationIdx > 7) {
+      // Subterranean Tube Tunnel (Saket to GTB Nagar)
+      const e1 = STATIONS[fromStationIdx].elevM;
+      const e2 = STATIONS[toStationIdx].elevM;
+      elevM = Math.round(e1 + (e2 - e1) * progress);
+      structure = 'underground';
+      elevLabel = `Subterranean Tube (${elevM}m)`;
+    } else if (fromStationIdx === 7) {
+      // GTB Nagar (-16m) ➔ Model Town (+14m) Portal Ramp Ascent
+      elevM = Math.round(-16 + (14 - (-16)) * progress);
+      structure = progress < 0.5 ? 'underground' : 'elevated';
+      elevLabel = `North Portal Ramp (${elevM >= 0 ? '+' : ''}${elevM}m)`;
+    } else {
+      // Elevated Flyover North (Model Town to Badli)
+      structure = 'elevated';
+      elevM = STATIONS[fromStationIdx].elevM || 15;
+      elevLabel = `Elevated Viaduct (+${elevM}m)`;
+    }
+
   } else {
     // 4. Samaypur Badli Crossover Reversal (Track 2 ➔ Track 1)
     const progress = normPos - 73;
@@ -270,6 +467,9 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
     directionLabel = '🔄 Terminal Crossover Switch ➔ Reversing South';
     track = 'Terminal Crossover Loop';
     speedKph = 15;
+    structure = 'elevated';
+    elevM = 15;
+    elevLabel = 'Elevated Terminal (+15m)';
   }
 
   return {
@@ -280,7 +480,10 @@ function getTrainAtLoopPosition(loopPos, trainIndex) {
     toStation,
     directionLabel,
     speedKph,
-    track
+    track,
+    structure,
+    elevM,
+    elevLabel
   };
 }
 
@@ -365,19 +568,31 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 3. Topology (Stations, Dual Tracks, Platforms & Canopies GeoJSON)
+  // 3. Topology (Stations, Dual Tracks, Elevated Flyovers, Subterranean Tunnels & Portals)
   if (pathname === '/api/tracks') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       stations: STATIONS,
       viaductCenter: STATIONS.map(s => s.coords),
+      flyoverNorthCenter: FLYOVER_NORTH_CENTER,
+      tunnelCenter: TUNNEL_CENTER,
+      flyoverSouthCenter: FLYOVER_SOUTH_CENTER,
       trackSouth: TRACK_SOUTH,
       trackNorth: TRACK_NORTH,
+      trackSouthFlyoverNorth,
+      trackNorthFlyoverNorth,
+      trackSouthTunnel,
+      trackNorthTunnel,
+      trackSouthFlyoverSouth,
+      trackNorthFlyoverSouth,
       crossoverNorth: [TRACK_NORTH[0], TRACK_SOUTH[0]],
       crossoverSouth: [TRACK_SOUTH[N - 1], TRACK_NORTH[N - 1]],
+      tunnelPortals: TUNNEL_PORTALS,
+      portalRamps: PORTAL_RAMPS,
       platformSlabs: { type: 'FeatureCollection', features: PLATFORM_SLABS },
       tactileEdges: { type: 'FeatureCollection', features: TACTILE_EDGES },
-      platformCanopies: { type: 'FeatureCollection', features: PLATFORM_CANOPIES }
+      platformCanopies: { type: 'FeatureCollection', features: PLATFORM_CANOPIES },
+      undergroundPlatforms: { type: 'FeatureCollection', features: UNDERGROUND_PLATFORMS }
     }));
     return;
   }

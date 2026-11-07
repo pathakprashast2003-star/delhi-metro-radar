@@ -248,82 +248,141 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  3. ELEVATED FLYOVER VIADUCT & DUAL TRACKS (LOD-AWARE)
+  //  3. INFRASTRUCTURE: ELEVATED FLYOVERS, SUBTERRANEAN TUNNELS & PORTALS
   // ═══════════════════════════════════════════════════════════
   function renderViaductAndDualTracks() {
     if (!trackData) return;
 
-    map.addSource('track-south', {
+    // ── A. GEOJSON SOURCES ────────────────────────────────────
+    // 1. Flyover Viaduct Centers (North & South Elevated Sections)
+    map.addSource('flyover-viaduct-center', {
       type: 'geojson',
       data: {
-        type: 'Feature',
-        geometry: { type: 'LineString', coordinates: trackData.trackSouth }
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { section: 'north', name: 'North Elevated Flyover Viaduct (+15m)' },
+            geometry: { type: 'LineString', coordinates: trackData.flyoverNorthCenter }
+          },
+          {
+            type: 'Feature',
+            properties: { section: 'south', name: 'South Elevated Flyover Viaduct (+15m)' },
+            geometry: { type: 'LineString', coordinates: trackData.flyoverSouthCenter }
+          }
+        ]
       }
     });
 
-    map.addSource('track-north', {
+    // 2. Central Subterranean Tube Tunnel Center (GTB Nagar -> Saket)
+    map.addSource('tunnel-tube-center', {
       type: 'geojson',
       data: {
         type: 'Feature',
-        geometry: { type: 'LineString', coordinates: trackData.trackNorth }
+        properties: { section: 'central', name: 'Central Subterranean Tube Tunnel (-16m to -30m)' },
+        geometry: { type: 'LineString', coordinates: trackData.tunnelCenter }
       }
     });
 
-    if (trackData.viaductCenter) {
-      map.addSource('viaduct-center', {
+    // 3. Flyover Tracks (North & South)
+    map.addSource('flyover-tracks', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          { type: 'Feature', properties: { line: 'down_north' }, geometry: { type: 'LineString', coordinates: trackData.trackSouthFlyoverNorth } },
+          { type: 'Feature', properties: { line: 'up_north' }, geometry: { type: 'LineString', coordinates: trackData.trackNorthFlyoverNorth } },
+          { type: 'Feature', properties: { line: 'down_south' }, geometry: { type: 'LineString', coordinates: trackData.trackSouthFlyoverSouth } },
+          { type: 'Feature', properties: { line: 'up_south' }, geometry: { type: 'LineString', coordinates: trackData.trackNorthFlyoverSouth } }
+        ]
+      }
+    });
+
+    // 4. Central Tunnel Tracks (Subterranean Dual Tracks)
+    map.addSource('tunnel-tracks', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          { type: 'Feature', properties: { line: 'down_tunnel' }, geometry: { type: 'LineString', coordinates: trackData.trackSouthTunnel } },
+          { type: 'Feature', properties: { line: 'up_tunnel' }, geometry: { type: 'LineString', coordinates: trackData.trackNorthTunnel } }
+        ]
+      }
+    });
+
+    // 5. Tunnel Portals & Transition Ramps
+    if (trackData.tunnelPortals) {
+      map.addSource('tunnel-portals', {
         type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: { type: 'LineString', coordinates: trackData.viaductCenter }
-        }
+        data: trackData.tunnelPortals
       });
-
-      // ── 1. UNIFIED FLYOVER AMBIENT GROUND DROP SHADOW ─────────
-      // Cast on the terrain/roads below to make the viaduct float 15m in the air
-      map.addLayer({
-        id: 'flyover-ground-shadow',
-        type: 'line',
-        source: 'viaduct-center',
-        paint: {
-          'line-color': '#0F172A',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 6, 11, 10, 14, 20, 17, 34],
-          'line-opacity': 0.18,
-          'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
-          'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
-        }
-      });
-
-      // ── 2. UNIFIED CONCRETE FLYOVER DECK (U-Girder Viaduct) ───
-      // Single continuous concrete deck carrying both parallel tracks
-      map.addLayer({
-        id: 'flyover-deck-slab',
-        type: 'line',
-        source: 'viaduct-center',
-        paint: {
-          'line-color': '#E2E8F0',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.5, 11, 7.5, 14, 16, 17, 28],
-          'line-opacity': 0.98
-        }
-      });
-
-      // Outer Parapet Safety Barrier Curbs (Bridge guardrails)
-      map.addLayer({
-        id: 'flyover-parapet-curb',
-        type: 'line',
-        source: 'viaduct-center',
-        paint: {
-          'line-color': '#94A3B8',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 5.5, 11, 9.0, 14, 18, 17, 30],
-          'line-opacity': 0.75
-        }
-      }, 'flyover-deck-slab');
     }
 
-    // ── 3. OVERVIEW CORRIDOR RAILS (ZOOM 9 TO 11.5) ───────────
+    if (trackData.portalRamps) {
+      map.addSource('portal-ramps', {
+        type: 'geojson',
+        data: trackData.portalRamps
+      });
+    }
+
+    // ── B. ELEVATED FLYOVER VIADUCT LAYERS (NORTH & SOUTH) ───
+    // 1. Ambient Ground Drop Shadow (ONLY ON ELEVATED FLYOVERS!)
+    // Makes the flyover visually float +15m over city streets and roundabouts
     map.addLayer({
-      id: 'track-1-overview-casing',
+      id: 'flyover-ground-shadow',
       type: 'line',
-      source: 'track-south',
+      source: 'flyover-viaduct-center',
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 6, 11, 10, 14, 22, 17, 36],
+        'line-opacity': 0.22,
+        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
+      }
+    });
+
+    // 2. Flyover Outer Parapet Guardrails
+    map.addLayer({
+      id: 'flyover-parapet-curb',
+      type: 'line',
+      source: 'flyover-viaduct-center',
+      paint: {
+        'line-color': '#94A3B8',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 5.5, 11, 9.0, 14, 18, 17, 30],
+        'line-opacity': 0.85
+      }
+    });
+
+    // 3. Precast Concrete U-Girder Deck Slab
+    map.addLayer({
+      id: 'flyover-deck-slab',
+      type: 'line',
+      source: 'flyover-viaduct-center',
+      paint: {
+        'line-color': '#F1F5F9',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.5, 11, 7.5, 14, 15, 17, 26],
+        'line-opacity': 0.98
+      }
+    });
+
+    // 4. Center Median Barrier Divider
+    map.addLayer({
+      id: 'flyover-center-divider',
+      type: 'line',
+      source: 'flyover-viaduct-center',
+      minzoom: 12.0,
+      paint: {
+        'line-color': '#CBD5E1',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.0, 14, 1.8, 17, 2.8],
+        'line-opacity': 0.90
+      }
+    });
+
+    // 5. Flyover Tracks - Overview Zoom (Zoom 9 to 11.5)
+    map.addLayer({
+      id: 'flyover-tracks-overview-casing',
+      type: 'line',
+      source: 'flyover-tracks',
       maxzoom: 11.5,
       paint: {
         'line-color': '#1E293B',
@@ -333,9 +392,9 @@
     });
 
     map.addLayer({
-      id: 'track-1-overview-core',
+      id: 'flyover-tracks-overview-core',
       type: 'line',
-      source: 'track-south',
+      source: 'flyover-tracks',
       maxzoom: 11.5,
       paint: {
         'line-color': '#EAB308',
@@ -344,36 +403,102 @@
       }
     });
 
+    // 6. Flyover Tracks - Detailed Railroad Structure (Zoom 10.8 to 18+)
     map.addLayer({
-      id: 'track-2-overview-casing',
+      id: 'flyover-tracks-railroad',
       type: 'line',
-      source: 'track-north',
-      maxzoom: 11.5,
+      source: 'flyover-tracks',
+      minzoom: 10.8,
+      paint: {
+        'line-pattern': 'dmrc-rail-pattern',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 12, 6.5, 14, 10, 16, 15],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.4, 11.5, 1.0]
+      }
+    });
+
+    // ── C. SUBTERRANEAN TUBE TUNNEL LAYERS (CENTRAL SECTION) ──
+    // Authentic underground subway bore through Old & New Delhi (NO surface drop shadow!)
+    // 1. Heavy Bedrock Excavation Casing
+    map.addLayer({
+      id: 'tunnel-tube-outer-casing',
+      type: 'line',
+      source: 'tunnel-tube-center',
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.5, 11, 8.0, 14, 18, 17, 30],
+        'line-opacity': 0.92
+      }
+    });
+
+    // 2. Circular TBM Tube Chamber Bore
+    map.addLayer({
+      id: 'tunnel-tube-bore',
+      type: 'line',
+      source: 'tunnel-tube-center',
       paint: {
         'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 3.2],
-        'line-opacity': 0.90
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.5, 11, 6.5, 14, 15, 17, 26],
+        'line-opacity': 0.98
+      }
+    });
+
+    // 3. Subterranean Safety & Tunnel Inspection Amber Glow
+    map.addLayer({
+      id: 'tunnel-interior-glow',
+      type: 'line',
+      source: 'tunnel-tube-center',
+      paint: {
+        'line-color': '#F59E0B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 4.0, 14, 9, 17, 16],
+        'line-opacity': 0.32,
+        'line-blur': 4
+      }
+    });
+
+    // 4. Precast Segmented Concrete TBM Tunnel Rings (Ribbed Pattern)
+    map.addLayer({
+      id: 'tunnel-tbm-rings',
+      type: 'line',
+      source: 'tunnel-tube-center',
+      minzoom: 11.0,
+      paint: {
+        'line-color': '#334155',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 5.0, 14, 13, 17, 23],
+        'line-dasharray': [0.3, 0.6],
+        'line-opacity': 0.75
+      }
+    });
+
+    // 5. Tunnel Tracks - Overview Zoom (Zoom 9 to 11.5)
+    map.addLayer({
+      id: 'tunnel-tracks-overview-casing',
+      type: 'line',
+      source: 'tunnel-tracks',
+      maxzoom: 11.5,
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.8, 11, 2.8],
+        'line-opacity': 0.95
       }
     });
 
     map.addLayer({
-      id: 'track-2-overview-core',
+      id: 'tunnel-tracks-overview-core',
       type: 'line',
-      source: 'track-north',
+      source: 'tunnel-tracks',
       maxzoom: 11.5,
       paint: {
-        'line-color': '#EAB308',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 11, 1.8],
+        'line-color': '#F59E0B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.0, 11, 1.6],
         'line-opacity': 1.0
       }
     });
 
-    // ── 4. TACTILE VECTOR RAILWAY STRUCTURE (ZOOM 11.0 TO 18+) ──
-    // Clearly visible with concrete sleepers and twin gleaming steel rails
+    // 6. Tunnel Tracks - Detailed Railroad Structure (Zoom 10.8 to 18+)
     map.addLayer({
-      id: 'track-1-railroad',
+      id: 'tunnel-tracks-railroad',
       type: 'line',
-      source: 'track-south',
+      source: 'tunnel-tracks',
       minzoom: 10.8,
       paint: {
         'line-pattern': 'dmrc-rail-pattern',
@@ -382,19 +507,71 @@
       }
     });
 
-    map.addLayer({
-      id: 'track-2-railroad',
-      type: 'line',
-      source: 'track-north',
-      minzoom: 10.8,
-      paint: {
-        'line-pattern': 'dmrc-rail-pattern',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 12, 6.5, 14, 10, 16, 15],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.4, 11.5, 1.0]
-      }
-    });
+    // ── D. TRANSITION PORTALS & CUTAWAY RAMPS ────────────────
+    if (map.getSource('portal-ramps')) {
+      // Concrete U-trough ramp retaining walls
+      map.addLayer({
+        id: 'portal-ramps-casing',
+        type: 'fill',
+        source: 'portal-ramps',
+        paint: {
+          'fill-color': '#0F172A',
+          'fill-opacity': 0.85,
+          'fill-outline-color': '#64748B'
+        }
+      });
 
-    // ── 5. TERMINAL CROSSOVER SWITCH TURNOUTS ────────────────
+      // Ramp roadbed descending into earth
+      map.addLayer({
+        id: 'portal-ramps-bed',
+        type: 'fill',
+        source: 'portal-ramps',
+        paint: {
+          'fill-color': '#334155',
+          'fill-opacity': 0.95
+        }
+      });
+    }
+
+    if (map.getSource('tunnel-portals')) {
+      // High-visibility engineering portal beacons
+      map.addLayer({
+        id: 'portal-markers-outer',
+        type: 'circle',
+        source: 'tunnel-portals',
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 4, 12, 6.5, 15, 9],
+          'circle-color': '#E11D48',
+          'circle-stroke-width': 2.5,
+          'circle-stroke-color': '#FFFFFF'
+        }
+      });
+
+      map.addLayer({
+        id: 'portal-labels',
+        type: 'symbol',
+        source: 'tunnel-portals',
+        minzoom: 11.2,
+        layout: {
+          'text-field': [
+            'case',
+            ['==', ['get', 'id'], 'portal_north'], '🔻 NORTH PORTAL · Model Town ➔ GTB Nagar (-16m)',
+            '🔺 SOUTH PORTAL · Saket ➔ Qutab Minar (+15m)'
+          ],
+          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 11, 9.5, 14, 11, 16, 12.5],
+          'text-offset': [0, 1.8],
+          'text-anchor': 'top'
+        },
+        paint: {
+          'text-color': '#BE123C',
+          'text-halo-color': '#FFFFFF',
+          'text-halo-width': 3.0
+        }
+      });
+    }
+
+    // ── E. TERMINAL CROSSOVER SWITCH TURNOUTS ────────────────
     map.addSource('terminal-crossovers', {
       type: 'geojson',
       data: {
@@ -434,44 +611,79 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  4. RENDER PHYSICAL STATION PLATFORMS, TACTILE EDGES & 3D CANOPIES
+  //  4. RENDER PHYSICAL PLATFORMS, CANOPIES & UNDERGROUND CHAMBERS
   // ═══════════════════════════════════════════════════════════
   function renderPhysicalPlatforms() {
     if (!trackData) return;
 
-    // 1. Platform Slabs (Concrete Raised Platform Deck)
+    // 1. Platform Slabs
     if (trackData.platformSlabs) {
       map.addSource('platform-slabs', {
         type: 'geojson',
         data: trackData.platformSlabs
       });
 
-      // Platform Ambient Ground Shadow
+      // Ambient Ground Shadow ONLY for Elevated Stations (0..6 and 27..36)
       map.addLayer({
         id: 'platform-slab-shadow',
         type: 'fill',
         source: 'platform-slabs',
+        filter: ['==', ['get', 'structure'], 'elevated'],
         paint: {
           'fill-color': '#0F172A',
-          'fill-opacity': 0.16,
+          'fill-opacity': 0.18,
           'fill-translate': [2, 3]
         }
       });
 
-      // Platform Concrete Deck
+      // Platform Raised Concrete Deck (Elevated)
       map.addLayer({
-        id: 'platform-slab-deck',
+        id: 'platform-slab-deck-elevated',
         type: 'fill',
         source: 'platform-slabs',
+        filter: ['==', ['get', 'structure'], 'elevated'],
         paint: {
           'fill-color': '#FFFFFF',
           'fill-outline-color': '#1E293B',
           'fill-opacity': 0.98
         }
       });
+
+      // Subterranean Station Floor Slab (Underground)
+      map.addLayer({
+        id: 'platform-slab-deck-underground',
+        type: 'fill',
+        source: 'platform-slabs',
+        filter: ['==', ['get', 'structure'], 'underground'],
+        paint: {
+          'fill-color': '#1E293B',
+          'fill-outline-color': '#475569',
+          'fill-opacity': 0.95
+        }
+      });
     }
 
-    // 2. Yellow Tactile Hazard Edges along the Platform (facing tracks)
+    // 2. Subterranean Station Chamber Cutaway Boxes (Underground Stations 7..26)
+    if (trackData.undergroundPlatforms) {
+      map.addSource('underground-platforms', {
+        type: 'geojson',
+        data: trackData.undergroundPlatforms
+      });
+
+      map.addLayer({
+        id: 'underground-chamber-casing',
+        type: 'fill',
+        source: 'underground-platforms',
+        minzoom: 12.0,
+        paint: {
+          'fill-color': '#0A0E17',
+          'fill-outline-color': '#38BDF8',
+          'fill-opacity': 0.88
+        }
+      });
+    }
+
+    // 3. Tactile Hazard / Guidance Platform Edges
     if (trackData.tactileEdges) {
       map.addSource('platform-tactile-edges', {
         type: 'geojson',
@@ -490,7 +702,7 @@
       });
     }
 
-    // 3. 3D Cantilevered Canopy Roofs (Hovering in 3D above the platform)
+    // 4. Modern Cantilevered Sky-Blue Canopy Roofs (ONLY on Elevated Stations)
     if (trackData.platformCanopies) {
       map.addSource('platform-canopies', {
         type: 'geojson',
@@ -511,7 +723,7 @@
       });
     }
 
-    // 4. Station Architectural Labels & Platforms Signage
+    // 5. Station Architectural Labels & Platform Signage
     if (trackData.stations) {
       map.addSource('stations', {
         type: 'geojson',
@@ -525,21 +737,29 @@
               name: s.name,
               major: s.major,
               terminus: s.terminus,
+              structure: s.structure,
+              elevM: s.elevM,
+              elevText: s.structure === 'elevated' ? `+${s.elevM}m Viaduct` : `${s.elevM}m Tube`,
               index: idx
             }
           }))
         }
       });
 
-      // Major Station Names (Swiss Typography)
+      // Major Station Names with Elevation & Structure Badges
       map.addLayer({
         id: 'station-labels-major',
         type: 'symbol',
         source: 'stations',
         filter: ['get', 'major'],
-        minzoom: 11,
+        minzoom: 10.8,
         layout: {
-          'text-field': ['concat', ['get', 'name'], ' · P1/P2'],
+          'text-field': [
+            'concat',
+            ['get', 'name'],
+            ' · ',
+            ['get', 'elevText']
+          ],
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
           'text-size': 11,
           'text-offset': [0, 1.8],
@@ -558,9 +778,14 @@
         type: 'symbol',
         source: 'stations',
         filter: ['!', ['get', 'major']],
-        minzoom: 13,
+        minzoom: 12.8,
         layout: {
-          'text-field': ['get', 'name'],
+          'text-field': [
+            'concat',
+            ['get', 'name'],
+            ' · ',
+            ['get', 'elevText']
+          ],
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           'text-size': 10,
           'text-offset': [0, 1.6],
@@ -640,6 +865,7 @@
     });
 
     // ── Layer A: Train Ground Drop Shadow ──
+    // ONLY cast shadow on elevated tracks! Underground trains have 0 shadow.
     map.addLayer({
       id: 'train-drop-shadow',
       type: 'circle',
@@ -647,7 +873,11 @@
       paint: {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 5, 14, 9, 16, 14],
         'circle-color': '#0F172A',
-        'circle-opacity': 0.22,
+        'circle-opacity': [
+          'case',
+          ['==', ['get', 'structure'], 'underground'], 0.0,
+          0.22
+        ],
         'circle-blur': 0.6,
         'circle-translate': [0, 3]
       }
@@ -776,7 +1006,10 @@
               directionLabel: target.data.directionLabel,
               fromStation: target.data.fromStation,
               toStation: target.data.toStation,
-              speedKph: target.data.speedKph
+              speedKph: target.data.speedKph,
+              structure: target.data.structure || 'elevated',
+              elevM: target.data.elevM || 15,
+              elevLabel: target.data.elevLabel || 'Elevated Viaduct (+15m)'
             }
           });
 
@@ -1040,7 +1273,10 @@
     map.on('click', 'train-dot-white-black', onTrainClick);
 
     // Click station platform to open cutaway
-    map.on('click', 'platform-slab-deck', (e) => {
+    map.on('click', 'platform-slab-deck-elevated', (e) => {
+      window.switchSurface('cutaway');
+    });
+    map.on('click', 'platform-slab-deck-underground', (e) => {
       window.switchSurface('cutaway');
     });
 
@@ -1059,13 +1295,15 @@
     map.on('mouseleave', 'train-consist-3d', () => { map.getCanvas().style.cursor = ''; });
     map.on('mouseenter', 'train-dot-white-black', () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', 'train-dot-white-black', () => { map.getCanvas().style.cursor = ''; });
-    map.on('mouseenter', 'platform-slab-deck', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'platform-slab-deck', () => { map.getCanvas().style.cursor = ''; });
+    map.on('mouseenter', 'platform-slab-deck-elevated', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'platform-slab-deck-elevated', () => { map.getCanvas().style.cursor = ''; });
+    map.on('mouseenter', 'platform-slab-deck-underground', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'platform-slab-deck-underground', () => { map.getCanvas().style.cursor = ''; });
   }
 
   function updateCalloutCard(props) {
     document.getElementById('ins-id').textContent = `Train ${props.id}`;
-    document.getElementById('ins-track').textContent = props.track;
+    document.getElementById('ins-track').textContent = `${props.track} · ${props.elevLabel || ''}`;
     document.getElementById('ins-dir').textContent = props.directionLabel;
     document.getElementById('ins-between').textContent = `${props.fromStation} ➔ ${props.toStation}`;
     document.getElementById('ins-speed').textContent = `${props.speedKph} km/h`;
