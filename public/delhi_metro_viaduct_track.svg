@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 128" width="512" height="128">
+  <defs>
+    <!-- Concrete Viaduct Deck Gradient -->
+    <linearGradient id="deckGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#CBD5E1" />
+      <stop offset="4%" stop-color="#F1F5F9" />
+      <stop offset="12%" stop-color="#E2E8F0" />
+      <stop offset="88%" stop-color="#E2E8F0" />
+      <stop offset="96%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+
+    <!-- Concrete Plinth Beam Gradient (Raised Slab) -->
+    <linearGradient id="plinthGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="15%" stop-color="#E2E8F0" />
+      <stop offset="85%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+
+    <!-- Steel Rail Crown Specular Gradient -->
+    <linearGradient id="railCrown" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569" />
+      <stop offset="30%" stop-color="#FFFFFF" />
+      <stop offset="70%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+
+    <!-- Center Drainage / Cable Tray -->
+    <linearGradient id="trayGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="20%" stop-color="#334155" />
+      <stop offset="80%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+
+    <!-- Fastener Pad (Pandrol / Vossloh Clip Base) -->
+    <g id="fastener">
+      <!-- Dark rubber tie pad -->
+      <rect x="-7" y="-11" width="14" height="22" rx="2" fill="#1E293B" />
+      <!-- Steel baseplate -->
+      <rect x="-5" y="-9" width="10" height="18" rx="1.5" fill="#475569" />
+      <!-- Top Pandrol spring clip (curved amber/copper clip) -->
+      <path d="M-4,-7 C-2,-10 2,-10 4,-7 C5,-4 3,-2 0,-3" fill="none" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" />
+      <!-- Bottom Pandrol spring clip -->
+      <path d="M-4,7 C-2,10 2,10 4,7 C5,4 3,2 0,3" fill="none" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" />
+      <!-- Anchor bolt heads -->
+      <circle cx="-3" cy="0" r="1.2" fill="#94A3B8" />
+      <circle cx="3" cy="0" r="1.2" fill="#94A3B8" />
+    </g>
+  </defs>
+
+  <!-- 1. Viaduct Concrete Deck Base (U-Girder Trough) -->
+  <rect x="0" y="0" width="512" height="128" fill="url(#deckGrad)" />
+
+  <!-- Outer Parapet Safety Barrier Walls (Curbs) -->
+  <rect x="0" y="0" width="512" height="7" fill="#94A3B8" />
+  <line x1="0" y1="7" x2="512" y2="7" stroke="#64748B" stroke-width="1" />
+  <rect x="0" y="121" width="512" height="7" fill="#64748B" />
+  <line x1="0" y1="121" x2="512" y2="121" stroke="#334155" stroke-width="1" />
+
+  <!-- Maintenance Evacuation Walkway (Top Side with non-slip grating) -->
+  <rect x="0" y="8" width="512" height="14" fill="#CBD5E1" opacity="0.6" />
+  <!-- Walkway safety railing stanchions spaced every 64px -->
+  <g stroke="#64748B" stroke-width="1.5">
+    <line x1="0" y1="9" x2="512" y2="9" />
+    <line x1="0" y1="15" x2="512" y2="15" stroke-dasharray="2,4" />
+  </g>
+
+  <!-- 2. Central Recessed Drainage & Cable Utility Trough -->
+  <rect x="0" y="58" width="512" height="12" fill="url(#trayGrad)" />
+  <!-- Cable tray cover grating (perforated metal slits) -->
+  <path d="M0,64 L512,64" stroke="#475569" stroke-width="1" stroke-dasharray="4,4" />
+  <line x1="0" y1="58" x2="512" y2="58" stroke="#0F172A" stroke-width="1" />
+  <line x1="0" y1="70" x2="512" y2="70" stroke="#0F172A" stroke-width="1" />
+
+  <!-- 3. Concrete Plinth Trackbeds (Raised ballastless concrete beams) -->
+  <!-- Plinth 1 for Rail 1 (Top) -->
+  <rect x="0" y="26" width="512" height="28" rx="2" fill="url(#plinthGrad)" />
+  <line x1="0" y1="26" x2="512" y2="26" stroke="#FFFFFF" stroke-width="1" />
+  <line x1="0" y1="54" x2="512" y2="54" stroke="#64748B" stroke-width="1" />
+
+  <!-- Plinth 2 for Rail 2 (Bottom) -->
+  <rect x="0" y="74" width="512" height="28" rx="2" fill="url(#plinthGrad)" />
+  <line x1="0" y1="74" x2="512" y2="74" stroke="#FFFFFF" stroke-width="1" />
+  <line x1="0" y1="102" x2="512" y2="102" stroke="#64748B" stroke-width="1" />
+
+  <!-- 4. Elastic Rail Fasteners (Pandrol Baseplates, 16 fasteners per 512px = every 32px) -->
+  <g id="fasteners-layer">
+    <use href="#fastener" x="16" y="40" />
+    <use href="#fastener" x="16" y="88" />
+    <use href="#fastener" x="48" y="40" />
+    <use href="#fastener" x="48" y="88" />
+    <use href="#fastener" x="80" y="40" />
+    <use href="#fastener" x="80" y="88" />
+    <use href="#fastener" x="112" y="40" />
+    <use href="#fastener" x="112" y="88" />
+    <use href="#fastener" x="144" y="40" />
+    <use href="#fastener" x="144" y="88" />
+    <use href="#fastener" x="176" y="40" />
+    <use href="#fastener" x="176" y="88" />
+    <use href="#fastener" x="208" y="40" />
+    <use href="#fastener" x="208" y="88" />
+    <use href="#fastener" x="240" y="40" />
+    <use href="#fastener" x="240" y="88" />
+    <use href="#fastener" x="272" y="40" />
+    <use href="#fastener" x="272" y="88" />
+    <use href="#fastener" x="304" y="40" />
+    <use href="#fastener" x="304" y="88" />
+    <use href="#fastener" x="336" y="40" />
+    <use href="#fastener" x="336" y="88" />
+    <use href="#fastener" x="368" y="40" />
+    <use href="#fastener" x="368" y="88" />
+    <use href="#fastener" x="400" y="40" />
+    <use href="#fastener" x="400" y="88" />
+    <use href="#fastener" x="432" y="40" />
+    <use href="#fastener" x="432" y="88" />
+    <use href="#fastener" x="464" y="40" />
+    <use href="#fastener" x="464" y="88" />
+    <use href="#fastener" x="496" y="40" />
+    <use href="#fastener" x="496" y="88" />
+  </g>
+
+  <!-- 5. Derailment Guard Rails (Inner safety containment steel angles) -->
+  <!-- Inner guard rail 1 -->
+  <rect x="0" y="47" width="512" height="2.5" fill="#475569" />
+  <line x1="0" y1="47" x2="512" y2="47" stroke="#64748B" stroke-width="0.8" />
+  <!-- Inner guard rail 2 -->
+  <rect x="0" y="78.5" width="512" height="2.5" fill="#475569" />
+  <line x1="0" y1="81" x2="512" y2="81" stroke="#64748B" stroke-width="0.8" />
+
+  <!-- 6. Twin Continuous Steel Running Rails -->
+  <!-- ── RAIL 1 (Top Running Rail at y=40) ── -->
+  <!-- Base flange shadow -->
+  <rect x="0" y="42.5" width="512" height="2.5" fill="#0F172A" opacity="0.6" />
+  <!-- Base flange -->
+  <rect x="0" y="37.5" width="512" height="5" fill="#334155" />
+  <!-- Rail web (stem) -->
+  <rect x="0" y="38.5" width="512" height="3" fill="#64748B" />
+  <!-- Polished steel rail crown (Head with chrome highlight) -->
+  <rect x="0" y="39" width="512" height="2" fill="url(#railCrown)" />
+  <line x1="0" y1="39.5" x2="512" y2="39.5" stroke="#FFFFFF" stroke-width="0.8" />
+
+  <!-- ── RAIL 2 (Bottom Running Rail at y=88) ── -->
+  <!-- Base flange shadow -->
+  <rect x="0" y="90.5" width="512" height="2.5" fill="#0F172A" opacity="0.6" />
+  <!-- Base flange -->
+  <rect x="0" y="85.5" width="512" height="5" fill="#334155" />
+  <!-- Rail web (stem) -->
+  <rect x="0" y="86.5" width="512" height="3" fill="#64748B" />
+  <!-- Polished steel rail crown (Head with chrome highlight) -->
+  <rect x="0" y="87" width="512" height="2" fill="url(#railCrown)" />
+  <line x1="0" y1="87.5" x2="512" y2="87.5" stroke="#FFFFFF" stroke-width="0.8" />
+
+  <!-- 7. Power Conductor Rail (Third Rail with Yellow Protective Shroud at y=112) -->
+  <rect x="0" y="110" width="512" height="5" rx="1" fill="#F59E0B" />
+  <line x1="0" y1="110" x2="512" y2="110" stroke="#FCD34D" stroke-width="0.8" />
+  <line x1="0" y1="115" x2="512" y2="115" stroke="#B45309" stroke-width="0.8" />
+  <!-- Support insulator brackets spaced every 64px -->
+  <rect x="29" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="93" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="157" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="221" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="285" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="349" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="413" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+  <rect x="477" y="107" width="6" height="9" rx="1" fill="#1E293B" />
+</svg>
