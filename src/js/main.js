@@ -305,15 +305,38 @@
       }
     });
 
-    // ── Railway Sleepers (Cross-Ties) ──────────────────────
+    // ── 1. Crushed-Stone Ballast Bed ────────────────────────────
+    map.addLayer({
+      id: 'track-1-ballast',
+      type: 'line',
+      source: 'track-south',
+      paint: {
+        'line-color': '#334155', // Crushed basalt/granite ballast
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 14, 11, 16, 20],
+        'line-opacity': 0.95
+      }
+    });
+
+    map.addLayer({
+      id: 'track-2-ballast',
+      type: 'line',
+      source: 'track-north',
+      paint: {
+        'line-color': '#334155',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 14, 11, 16, 20],
+        'line-opacity': 0.95
+      }
+    });
+
+    // ── 2. Concrete Sleepers (Cross-Ties) ────────────────────────
     map.addLayer({
       id: 'track-1-sleepers',
       type: 'line',
       source: 'track-south',
       paint: {
-        'line-color': '#9CA3AF',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 14, 7, 16, 12],
-        'line-dasharray': [0.4, 0.8]
+        'line-color': '#E2E8F0', // Pre-stressed concrete cross-ties
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 14, 8.5, 16, 16],
+        'line-dasharray': [0.25, 0.55]
       }
     });
 
@@ -322,40 +345,69 @@
       type: 'line',
       source: 'track-north',
       paint: {
-        'line-color': '#9CA3AF',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 14, 7, 16, 12],
-        'line-dasharray': [0.4, 0.8]
+        'line-color': '#E2E8F0',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 14, 8.5, 16, 16],
+        'line-dasharray': [0.25, 0.55]
       }
     });
 
-    // ── Twin Steel Rails & DMRC Yellow Line Core ───────────
+    // ── 3. Twin Steel Rails (Physical Gauge Separation) ──────────
+    // Track 1: Left Steel Rail (outer)
     map.addLayer({
-      id: 'track-1-rails',
+      id: 'track-1-rail-left',
       type: 'line',
       source: 'track-south',
       paint: {
-        'line-color': '#475569',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 2, 14, 4.5, 16, 8]
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.8, 14, 1.6, 16, 2.6],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, -1.2, 14, -2.4, 16, -4.2]
       }
     });
 
+    // Track 1: Right Steel Rail (inner)
+    map.addLayer({
+      id: 'track-1-rail-right',
+      type: 'line',
+      source: 'track-south',
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.8, 14, 1.6, 16, 2.6],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 14, 2.4, 16, 4.2]
+      }
+    });
+
+    // Track 2: Left Steel Rail (inner)
+    map.addLayer({
+      id: 'track-2-rail-left',
+      type: 'line',
+      source: 'track-north',
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.8, 14, 1.6, 16, 2.6],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, -1.2, 14, -2.4, 16, -4.2]
+      }
+    });
+
+    // Track 2: Right Steel Rail (outer)
+    map.addLayer({
+      id: 'track-2-rail-right',
+      type: 'line',
+      source: 'track-north',
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.8, 14, 1.6, 16, 2.6],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 14, 2.4, 16, 4.2]
+      }
+    });
+
+    // ── 4. DMRC Yellow Line Core Centerline ───────────────────────
     map.addLayer({
       id: 'track-1-core',
       type: 'line',
       source: 'track-south',
       paint: {
         'line-color': '#EAB308',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 14, 2.5, 16, 4.5]
-      }
-    });
-
-    map.addLayer({
-      id: 'track-2-rails',
-      type: 'line',
-      source: 'track-north',
-      paint: {
-        'line-color': '#475569',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 2, 14, 4.5, 16, 8]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 14, 2.0, 16, 3.2]
       }
     });
 
@@ -364,12 +416,12 @@
       type: 'line',
       source: 'track-north',
       paint: {
-        'line-color': '#FBBF24',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 14, 2.5, 16, 4.5]
+        'line-color': '#F59E0B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 14, 2.0, 16, 3.2]
       }
     });
 
-    // ── Terminal Crossover Switch Tracks ────────────────────
+    // ── 5. Terminal Crossover Switches (Ballast + Rails) ──────────
     map.addSource('terminal-crossovers', {
       type: 'geojson',
       data: {
@@ -382,13 +434,33 @@
     });
 
     map.addLayer({
-      id: 'crossover-track-lines',
+      id: 'crossover-ballast',
       type: 'line',
       source: 'terminal-crossovers',
       paint: {
-        'line-color': '#E11D48',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 2, 14, 3.5],
-        'line-dasharray': [2, 1]
+        'line-color': '#334155',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 14, 8, 16, 14]
+      }
+    });
+
+    map.addLayer({
+      id: 'crossover-sleepers',
+      type: 'line',
+      source: 'terminal-crossovers',
+      paint: {
+        'line-color': '#E2E8F0',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 2.5, 14, 6, 16, 10],
+        'line-dasharray': [0.25, 0.55]
+      }
+    });
+
+    map.addLayer({
+      id: 'crossover-steel-rails',
+      type: 'line',
+      source: 'terminal-crossovers',
+      paint: {
+        'line-color': '#E11D48', // Turnout guide line
+        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.5, 14, 3.0, 16, 4.5]
       }
     });
   }
