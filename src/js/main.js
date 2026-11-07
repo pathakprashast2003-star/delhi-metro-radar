@@ -269,80 +269,55 @@
       }
     });
 
-    // ── 1. ELEVATED FLYOVER AMBIENT GROUND DROP SHADOW ────────
-    // Cast on the terrain/roads below to make the viaduct float 15m in the air
-    map.addLayer({
-      id: 'flyover-shadow-south',
-      type: 'line',
-      source: 'track-south',
-      paint: {
-        'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4, 11, 7, 14, 16, 17, 26],
-        'line-opacity': 0.16,
-        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
-      }
-    });
+    if (trackData.viaductCenter) {
+      map.addSource('viaduct-center', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: trackData.viaductCenter }
+        }
+      });
 
-    map.addLayer({
-      id: 'flyover-shadow-north',
-      type: 'line',
-      source: 'track-north',
-      paint: {
-        'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4, 11, 7, 14, 16, 17, 26],
-        'line-opacity': 0.16,
-        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
-      }
-    });
+      // ── 1. UNIFIED FLYOVER AMBIENT GROUND DROP SHADOW ─────────
+      // Cast on the terrain/roads below to make the viaduct float 15m in the air
+      map.addLayer({
+        id: 'flyover-ground-shadow',
+        type: 'line',
+        source: 'viaduct-center',
+        paint: {
+          'line-color': '#0F172A',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 6, 11, 10, 14, 20, 17, 34],
+          'line-opacity': 0.18,
+          'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
+          'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
+        }
+      });
 
-    // ── 2. ELEVATED CONCRETE FLYOVER DECK (U-GIRDER SPAN) ─────
-    // Clean, modern precast concrete deck slab
-    map.addLayer({
-      id: 'flyover-deck-south',
-      type: 'line',
-      source: 'track-south',
-      paint: {
-        'line-color': '#E2E8F0',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3, 11, 5, 14, 13, 17, 22],
-        'line-opacity': 0.96
-      }
-    });
+      // ── 2. UNIFIED CONCRETE FLYOVER DECK (U-Girder Viaduct) ───
+      // Single continuous concrete deck carrying both parallel tracks
+      map.addLayer({
+        id: 'flyover-deck-slab',
+        type: 'line',
+        source: 'viaduct-center',
+        paint: {
+          'line-color': '#E2E8F0',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.5, 11, 7.5, 14, 16, 17, 28],
+          'line-opacity': 0.98
+        }
+      });
 
-    map.addLayer({
-      id: 'flyover-deck-north',
-      type: 'line',
-      source: 'track-north',
-      paint: {
-        'line-color': '#E2E8F0',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3, 11, 5, 14, 13, 17, 22],
-        'line-opacity': 0.96
-      }
-    });
-
-    // Elevated Parapet Safety Curbs (Bridge guardrails)
-    map.addLayer({
-      id: 'flyover-curb-south',
-      type: 'line',
-      source: 'track-south',
-      paint: {
-        'line-color': '#94A3B8',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.8, 11, 6.2, 14, 14.5, 17, 24],
-        'line-opacity': 0.70
-      }
-    }, 'flyover-deck-south');
-
-    map.addLayer({
-      id: 'flyover-curb-north',
-      type: 'line',
-      source: 'track-north',
-      paint: {
-        'line-color': '#94A3B8',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.8, 11, 6.2, 14, 14.5, 17, 24],
-        'line-opacity': 0.70
-      }
-    }, 'flyover-deck-north');
+      // Outer Parapet Safety Barrier Curbs (Bridge guardrails)
+      map.addLayer({
+        id: 'flyover-parapet-curb',
+        type: 'line',
+        source: 'viaduct-center',
+        paint: {
+          'line-color': '#94A3B8',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 5.5, 11, 9.0, 14, 18, 17, 30],
+          'line-opacity': 0.75
+        }
+      }, 'flyover-deck-slab');
+    }
 
     // ── 3. OVERVIEW CORRIDOR RAILS (ZOOM 9 TO 14) ─────────────
     // Sleek, razor-sharp architectural dual tracks (eliminates giant ladder clutter at overview!)
@@ -529,10 +504,10 @@
         source: 'platform-canopies',
         minzoom: 12.5,
         paint: {
-          'fill-extrusion-color': '#F8FAFC',
-          'fill-extrusion-height': 8.5,
+          'fill-extrusion-color': '#0284C7', // Signature Sky-Blue Vaulted Arch Canopy
+          'fill-extrusion-height': 9.5,
           'fill-extrusion-base': 4.5,
-          'fill-extrusion-opacity': 0.94
+          'fill-extrusion-opacity': 0.90
         }
       });
     }

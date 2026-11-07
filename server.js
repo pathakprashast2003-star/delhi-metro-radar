@@ -56,7 +56,7 @@ const STATIONS = [
 ];
 
 const N = STATIONS.length;
-const TRACK_OFFSET = 0.00035; // ~38m dual track separation
+const TRACK_OFFSET = 0.00010; // ~11m realistic flyover dual-track separation (both tracks on same viaduct deck)
 
 // Precompute parallel track coordinates
 // Track 1 (Southbound): +normal vector
@@ -95,8 +95,8 @@ const PLATFORM_SLABS = [];
 const TACTILE_EDGES = [];
 const PLATFORM_CANOPIES = [];
 
-const P_LEN = 0.00075; // ~82m length
-const P_WID = 0.00022; // ~24m width
+const P_LEN = 0.00065; // ~70m length
+const P_WID = 0.00016; // ~18m width (enveloping both tracks on flyover)
 
 for (let i = 0; i < N; i++) {
   const s = STATIONS[i];
@@ -134,8 +134,8 @@ for (let i = 0; i < N; i++) {
     geometry: {
       type: 'LineString',
       coordinates: [
-        [x - tx * P_LEN + nx * (P_WID - 0.00003), y - ty * P_LEN + ny * (P_WID - 0.00003)],
-        [x + tx * P_LEN + nx * (P_WID - 0.00003), y + ty * P_LEN + ny * (P_WID - 0.00003)]
+        [x - tx * P_LEN + nx * (P_WID - 0.00002), y - ty * P_LEN + ny * (P_WID - 0.00002)],
+        [x + tx * P_LEN + nx * (P_WID - 0.00002), y + ty * P_LEN + ny * (P_WID - 0.00002)]
       ]
     }
   });
@@ -146,15 +146,15 @@ for (let i = 0; i < N; i++) {
     geometry: {
       type: 'LineString',
       coordinates: [
-        [x - tx * P_LEN - nx * (P_WID - 0.00003), y - ty * P_LEN - ny * (P_WID - 0.00003)],
-        [x + tx * P_LEN - nx * (P_WID - 0.00003), y + ty * P_LEN - ny * (P_WID - 0.00003)]
+        [x - tx * P_LEN - nx * (P_WID - 0.00002), y - ty * P_LEN - ny * (P_WID - 0.00002)],
+        [x + tx * P_LEN - nx * (P_WID - 0.00002), y + ty * P_LEN - ny * (P_WID - 0.00002)]
       ]
     }
   });
 
   // Modern Cantilevered Canopy Roof (Hovering in 3D above platform)
-  const CL = P_LEN * 0.7;
-  const CW = P_WID * 0.85;
+  const CL = P_LEN * 0.85;
+  const CW = P_WID * 0.95;
   const k1 = [x - tx * CL - nx * CW, y - ty * CL - ny * CW];
   const k2 = [x + tx * CL - nx * CW, y + ty * CL - ny * CW];
   const k3 = [x + tx * CL + nx * CW, y + ty * CL + ny * CW];
@@ -370,6 +370,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       stations: STATIONS,
+      viaductCenter: STATIONS.map(s => s.coords),
       trackSouth: TRACK_SOUTH,
       trackNorth: TRACK_NORTH,
       crossoverNorth: [TRACK_NORTH[0], TRACK_SOUTH[0]],
