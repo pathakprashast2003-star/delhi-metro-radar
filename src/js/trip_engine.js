@@ -450,6 +450,13 @@ window.TripEngine = (function() {
     const startSec = parseTimeToSec(variant.firstTrain);
     const endSec = parseTimeToSec(variant.lastTrain);
 
+    // Compute optimal offsets so short-turn departures interleave evenly in the core
+    const southCstOffset = computeInterleavedShortTurnOffset('south', hOuter);
+    const northCstOffset = computeInterleavedShortTurnOffset('north', hOuter);
+    const southShuttleActive = !!(serviceConfig.corridorSections && serviceConfig.corridorSections.south_outer && serviceConfig.corridorSections.south_outer.enable_south_shuttle);
+    const southSsOffset = southShuttleActive ? computeSouthShuttleOffset('south', hOuter) : 0;
+    const northSsOffset = southShuttleActive ? computeSouthShuttleOffset('north', hOuter) : 0;
+
     // 1. Southbound Trips
     for (let t0 = startSec; t0 <= endSec; t0 += hOuter) {
       const sched = southSchedules.FULL_LINE;
@@ -458,11 +465,20 @@ window.TripEngine = (function() {
         if (train) activeTrains.push(train);
       }
     }
-    for (let t0 = startSec + hCore; t0 <= endSec; t0 += hOuter) {
+    for (let t0 = startSec + southCstOffset; t0 <= endSec; t0 += hOuter) {
       const sched = southSchedules.CENTRAL_SHORT_TURN;
       if (t0 <= secOfDay && secOfDay <= t0 + sched.totalSec) {
         const train = computeTrainState(t0, secOfDay, sched, 'south', 'CENTRAL_SHORT_TURN');
         if (train) activeTrains.push(train);
+      }
+    }
+    if (southShuttleActive && southSchedules.SOUTH_SHUTTLE) {
+      for (let t0 = startSec + southSsOffset; t0 <= endSec; t0 += hOuter) {
+        const sched = southSchedules.SOUTH_SHUTTLE;
+        if (t0 <= secOfDay && secOfDay <= t0 + sched.totalSec) {
+          const train = computeTrainState(t0, secOfDay, sched, 'south', 'SOUTH_SHUTTLE');
+          if (train) activeTrains.push(train);
+        }
       }
     }
 
@@ -474,11 +490,20 @@ window.TripEngine = (function() {
         if (train) activeTrains.push(train);
       }
     }
-    for (let t0 = startSec + hCore; t0 <= endSec; t0 += hOuter) {
+    for (let t0 = startSec + northCstOffset; t0 <= endSec; t0 += hOuter) {
       const sched = northSchedules.CENTRAL_SHORT_TURN;
       if (t0 <= secOfDay && secOfDay <= t0 + sched.totalSec) {
         const train = computeTrainState(t0, secOfDay, sched, 'north', 'CENTRAL_SHORT_TURN');
         if (train) activeTrains.push(train);
+      }
+    }
+    if (southShuttleActive && northSchedules.SOUTH_SHUTTLE) {
+      for (let t0 = startSec + northSsOffset; t0 <= endSec; t0 += hOuter) {
+        const sched = northSchedules.SOUTH_SHUTTLE;
+        if (t0 <= secOfDay && secOfDay <= t0 + sched.totalSec) {
+          const train = computeTrainState(t0, secOfDay, sched, 'north', 'SOUTH_SHUTTLE');
+          if (train) activeTrains.push(train);
+        }
       }
     }
 
@@ -614,6 +639,43 @@ window.TripEngine = (function() {
     };
   }
 
+  function computeInterleavedShortTurnOffset(dir, headwayOuter) {
+    const scheds = (dir === 'south') ? southSchedules : northSchedules;
+    const refIdx = 15; // Rajiv Chowk (central core reference station)
+    const flStop = scheds.FULL_LINE ? scheds.FULL_LINE.stops.find(s => s.stIdx === refIdx) : null;
+    const cstStop = scheds.CENTRAL_SHORT_TURN ? scheds.CENTRAL_SHORT_TURN.stops.find(s => s.stIdx === refIdx) : null;
+    if (!flStop || !cstStop) return Math.round(headwayOuter / 2);
+
+    const halfGap = Math.round(headwayOuter / 2);
+    // Offset CST departure so CST arrives at Rajiv Chowk exactly halfGap seconds after Full Line
+    const offset = ((flStop.arrSec - cstStop.arrSec + halfGap) % headwayOuter + headwayOuter) % headwayOuter;
+    return offset;
+  }
+
+  function computeSouthShuttleOffset(dir, headwayOuter) {
+    const scheds = (dir === 'south') ? southSchedules : northSchedules;
+    const refIdx = 35; // IFFCO Chowk (south outer reference station)
+    const flStop = scheds.FULL_LINE ? scheds.FULL_LINE.stops.find(s => s.stIdx === refIdx) : null;
+    const ssStop = scheds.SOUTH_SHUTTLE ? scheds.SOUTH_SHUTTLE.stops.find(s => s.stIdx === refIdx) : null;
+    if (!flStop || !ssStop) return Math.round(headwayOuter / 2);
+
+    const halfGap = Math.round(headwayOuter / 2);
+    const offset = ((flStop.arrSec - ssStop.arrSec + halfGap) % headwayOuter + headwayOuter) % headwayOuter;
+    return offset;
+  }
+
+  function getStationCorridorSection(stIndex) {
+    if (!serviceConfig || !serviceConfig.corridorSections) {
+      if (stIndex < 8) return { id: 'north_outer', name: 'North Outer Section', reduced_frequency: true, frequency_status: 'unverified' };
+      if (stIndex <= 27) return { id: 'central_core', name: 'Central Core Section', reduced_frequency: false, frequency_status: 'verified_high_frequency' };
+      return { id: 'south_outer', name: 'South Outer Section', reduced_frequency: true, frequency_status: 'unverified' };
+    }
+    const secs = serviceConfig.corridorSections;
+    if (stIndex <= secs.north_outer.toIndex) return secs.north_outer;
+    if (stIndex <= secs.central_core.toIndex) return secs.central_core;
+    return secs.south_outer;
+  }
+
   function getStationArrivals(stIndex, direction, secOfDay, dayVariant, limit = 3) {
     const isSouth = (direction === 'south');
     const scheds = isSouth ? southSchedules : northSchedules;
@@ -625,6 +687,10 @@ window.TripEngine = (function() {
     const band = getActiveBand(secOfDay, dayVariant);
     const hOuter = Math.max(120, band.headway_outer_sec || 360);
     const hCore = Math.max(90, band.headway_core_sec || 180);
+
+    const cstOffset = computeInterleavedShortTurnOffset(direction, hOuter);
+    const southShuttleActive = !!(serviceConfig.corridorSections && serviceConfig.corridorSections.south_outer && serviceConfig.corridorSections.south_outer.enable_south_shuttle);
+    const ssOffset = southShuttleActive ? computeSouthShuttleOffset(direction, hOuter) : 0;
 
     function checkArrivals(patternId, tStep, offset) {
       const sched = scheds[patternId];
@@ -649,7 +715,10 @@ window.TripEngine = (function() {
     }
 
     checkArrivals('FULL_LINE', hOuter, 0);
-    checkArrivals('CENTRAL_SHORT_TURN', hOuter, hCore);
+    checkArrivals('CENTRAL_SHORT_TURN', hOuter, cstOffset);
+    if (southShuttleActive) {
+      checkArrivals('SOUTH_SHUTTLE', hOuter, ssOffset);
+    }
 
     candidateTrips.sort((a, b) => a.arrTime - b.arrTime);
     if (!candidateTrips.length) {
@@ -706,6 +775,7 @@ window.TripEngine = (function() {
     getActiveBand,
     getStationNextArrival,
     getStationArrivals,
+    getStationCorridorSection,
     getTrackData: () => trackDataBundle,
     getStations: () => STATIONS,
     getCenterline: () => CENTERLINE,

@@ -1673,12 +1673,22 @@
       subEl.textContent = `${structText} · Station ${stIdx + 1} of ${stations.length}`;
     }
 
-    const isCore = (stIdx >= 8 && stIdx <= 27);
+    const secInfo = TripEngine.getStationCorridorSection ? TripEngine.getStationCorridorSection(stIdx) : null;
+    const isCore = secInfo ? (secInfo.id === 'central_core') : (stIdx >= 8 && stIdx <= 27);
+    const isNorthOuter = secInfo ? (secInfo.id === 'north_outer') : (stIdx < 8);
+
     if (freqTextEl) {
       if (isCore) {
-        freqTextEl.textContent = 'Central High-Frequency Zone · Trains every ~2.5 min (24 tph)';
+        freqTextEl.textContent = 'Central High-Frequency Zone · Trains every ~2.5 min (150s evenly spaced)';
+      } else if (isNorthOuter) {
+        freqTextEl.textContent = 'North Outer Sector (Samaypur Badli–Vishwavidyalaya) · Trains every ~5.0 min (unverified)';
       } else {
-        freqTextEl.textContent = 'Outer Sector · Trains every ~5.0 min (12 tph · Half Frequency)';
+        const shuttleActive = secInfo && secInfo.enable_south_shuttle;
+        if (shuttleActive) {
+          freqTextEl.textContent = 'South Outer Sector (Qutab–Gurugram Shuttle Active) · Trains every ~2.5 min (unverified)';
+        } else {
+          freqTextEl.textContent = 'South Outer Sector (Qutab Minar–Millennium City) · Trains every ~5.0 min (unverified)';
+        }
       }
     }
 

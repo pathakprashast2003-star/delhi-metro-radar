@@ -745,6 +745,48 @@
       "activeSchedule": "Interleaved with Central Service"
     }
   ],
+  "corridorSections": {
+    "north_outer": {
+      "id": "north_outer",
+      "name": "North Outer Section (Samaypur Badli ⮂ Vishwavidyalaya)",
+      "fromIndex": 0,
+      "toIndex": 8,
+      "fromStation": "Samaypur Badli",
+      "toStation": "Vishwavidyalaya",
+      "reduced_frequency": true,
+      "frequency_status": "unverified",
+      "active_patterns": ["FULL_LINE"],
+      "description": "Outer North Delhi sector. Operates at lower frequency when central short-turn loops terminate at Vishwavidyalaya.",
+      "verification_note": "Marked unverified until confirmed by physical platform counts."
+    },
+    "central_core": {
+      "id": "central_core",
+      "name": "Central Core Section (Vishwavidyalaya ⮂ Qutab Minar)",
+      "fromIndex": 8,
+      "toIndex": 27,
+      "fromStation": "Vishwavidyalaya",
+      "toStation": "Qutab Minar",
+      "reduced_frequency": false,
+      "frequency_status": "verified_high_frequency",
+      "active_patterns": ["FULL_LINE", "CENTRAL_SHORT_TURN"],
+      "description": "High-density core through Old Delhi, Connaught Place, and South Delhi with interleaved short-turn services.",
+      "verification_note": "Interleaved service pattern with ~150s peak headway."
+    },
+    "south_outer": {
+      "id": "south_outer",
+      "name": "South Outer Section (Qutab Minar ⮂ Millennium City Centre)",
+      "fromIndex": 27,
+      "toIndex": 36,
+      "fromStation": "Qutab Minar",
+      "toStation": "Millennium City Centre Gurugram",
+      "reduced_frequency": true,
+      "frequency_status": "unverified",
+      "enable_south_shuttle": false,
+      "active_patterns": ["FULL_LINE"],
+      "description": "Gurugram elevated sector. If enable_south_shuttle is set to true, extra Qutab–Gurugram shuttles run, raising frequency here so north_outer becomes the only reduced-frequency end.",
+      "verification_note": "Marked unverified until confirmed by physical platform counts. GTFS hints south has extra shuttles."
+    }
+  },
   "sectionRuntimes": [
     {
       "fromIndex": 0,
