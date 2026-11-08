@@ -19,8 +19,13 @@
   let followTrainId = null;
   let renderMode = 'dot'; // Default to sleek, non-intrusive transit vehicle dot (big trains removed)
   let currentCutawayStation = 'rajiv_chowk';
+  let activeStationIndex = null;
   let rajivMarker = null;
   let isDraggingSlider = false;
+  let timeMode = 'live'; // 'live' | 'custom'
+  let customTimeSeconds = 9 * 3600 + 15 * 60; // default 09:15 AM
+  let simSpeed = 1.0;
+  let lastSimulationTick = performance.now();
 
   const STATION_DETAILS = {
     'kashmere_gate': {
@@ -73,16 +78,14 @@
     setupControls();
 
     try {
-      const res = await fetch('/api/tracks');
-      trackData = await res.json();
+      trackData = await TripEngine.loadData();
     } catch (e) {
-      console.error('Failed to load track topology', e);
+      console.error('Failed to load track topology from TripEngine', e);
     }
 
     initDioramaMap();
-    connectSSEStream();
+    startClientSimulationTicker();
     startAnimationLoop();
-    startClockTicker();
   }
 
   function preloadImage(url, id) {
@@ -123,6 +126,10 @@
     window.mapInstance = map;
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
+    map.addControl(new maplibregl.AttributionControl({
+      compact: false,
+      customAttribution: 'Unofficial · Not affiliated with DMRC | © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+    }), 'bottom-left');
 
     map.on('styleimagemissing', (e) => {
       if (e.id === 'delhi-metro-consist') {
@@ -1069,102 +1076,136 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  7. LIVE SSE TELEMETRY STREAM & PACKET INGESTION
+  //  7. CLIENT-SIDE SYMMETRIC TRIP SIMULATION ENGINE (100% FRONTEND)
   // ═══════════════════════════════════════════════════════════
-  function connectSSEStream() {
-    const evtSource = new EventSource('/api/trains/stream');
+  function startClientSimulationTicker() {
+    function tick() {
+      const nowPerf = performance.now();
+      const dt = Math.min(1.0, (nowPerf - lastSimulationTick) / 1000);
+      lastSimulationTick = nowPerf;
 
-    evtSource.onmessage = (e) => {
-      try {
-        const payload = JSON.parse(e.data);
-        const incoming = payload.trains || [];
-        const now = performance.now();
+      let sec = 0;
+      let dayVariant = 'weekday';
+      let timeStr = '';
 
-        packetInterval = Math.max(50, now - lastPacketTime);
-        lastPacketTime = now;
-
-        const countEl = document.getElementById('fleet-count');
-        if (countEl) countEl.textContent = `${incoming.length} Trains`;
-
-        // Update live clock & schedule status
-        if (payload.timeStr) {
-          const clockEl = document.getElementById('live-clock-text');
-          if (clockEl) clockEl.textContent = payload.timeStr;
-        }
-
-        const modeBtn = document.getElementById('btn-toggle-time-mode');
-        if (modeBtn) {
-          modeBtn.textContent = payload.timeMode === 'live' ? '🔴 Live IST' : '⏱️ Custom Scrub';
-          modeBtn.style.background = payload.timeMode === 'live' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(37, 99, 235, 0.4)';
-        }
-
-        if (payload.servicePhase) {
-          const phaseTitle = document.getElementById('phase-title');
-          const phaseDetail = document.getElementById('phase-detail');
-          const phaseIcon = document.getElementById('phase-icon');
-
-          if (phaseTitle) phaseTitle.textContent = payload.servicePhase.replace(/_/g, ' ');
-          if (phaseDetail) phaseDetail.textContent = payload.serviceMessage || '';
-
-          if (payload.servicePhase === 'SERVICE_CLOSED') {
-            if (phaseIcon) phaseIcon.textContent = '🛑';
-          } else if (payload.servicePhase === 'FIRST_TRAINS') {
-            if (phaseIcon) phaseIcon.textContent = '🌅';
-          } else if (payload.servicePhase.includes('PEAK')) {
-            if (phaseIcon) phaseIcon.textContent = '🏢';
-          } else if (payload.servicePhase === 'LAST_TRAINS') {
-            if (phaseIcon) phaseIcon.textContent = '🌙';
-          } else {
-            if (phaseIcon) phaseIcon.textContent = '🟢';
-          }
-        }
-
-        // Night Maintenance Banner
-        const nightBanner = document.getElementById('night-maintenance-banner');
-        if (nightBanner) {
-          if (payload.servicePhase === 'SERVICE_CLOSED') {
-            nightBanner.classList.remove('hidden');
-          } else {
-            nightBanner.classList.add('hidden');
-          }
-        }
-
-        // Sync slider when not dragging
-        if (!isDraggingSlider && payload.simTimeSeconds !== undefined) {
-          const slider = document.getElementById('timeline-slider');
-          if (slider) slider.value = payload.simTimeSeconds;
-          const label = document.getElementById('timeline-current-label');
-          if (label) {
-            const h = Math.floor(payload.simTimeSeconds / 3600);
-            const m = Math.floor((payload.simTimeSeconds % 3600) / 60);
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            const h12 = h % 12 || 12;
-            label.textContent = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
-          }
-        }
-
-        incoming.forEach(t => {
-          const prev = trainTargetStates.get(t.id) || { coords: t.coords, bearing: t.bearing, time: now };
-          trainPrevStates.set(t.id, prev);
-          trainTargetStates.set(t.id, { coords: t.coords, bearing: t.bearing, time: now, data: t });
-        });
-
-        activeTrains = incoming;
-
-        if (incoming.length === 0) {
-          const card = document.getElementById('inspector-card');
-          if (card) card.classList.add('hidden');
-          selectedTrainId = null;
-        } else if (selectedTrainId) {
-          const t = activeTrains.find(x => x.id === selectedTrainId);
-          if (t) updateCalloutCard(t);
-        }
-
-        updateCutawayPlatformETAs();
-      } catch (err) {
-        console.error('SSE Error', err);
+      if (timeMode === 'live') {
+        const now = new Date();
+        const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+        const ist = new Date(utc + 5.5 * 3600000);
+        sec = ist.getHours() * 3600 + ist.getMinutes() * 60 + ist.getSeconds();
+        const d = ist.getDay();
+        dayVariant = (d === 0) ? 'sunday' : (d === 6 ? 'saturday' : 'weekday');
+        timeStr = `${String(ist.getHours()).padStart(2, '0')}:${String(ist.getMinutes()).padStart(2, '0')}:${String(ist.getSeconds()).padStart(2, '0')} IST`;
+      } else {
+        customTimeSeconds = (customTimeSeconds + dt * simSpeed) % 86400;
+        sec = Math.floor(customTimeSeconds);
+        dayVariant = 'weekday';
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = Math.floor(sec % 60);
+        timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} IST (${simSpeed}x)`;
       }
-    };
+
+      if (!window.TripEngine) return;
+
+      const { trains, schedule } = TripEngine.getActiveFleet(sec, dayVariant);
+      const incoming = trains || [];
+      const now = performance.now();
+
+      packetInterval = 100;
+      lastPacketTime = now;
+
+      const countEl = document.getElementById('fleet-count');
+      if (countEl) countEl.textContent = `${incoming.length} Trains (${schedule.phase || 'ACTIVE'})`;
+
+      const clockEl = document.getElementById('live-clock-text');
+      if (clockEl) clockEl.textContent = timeStr;
+
+      const modeBtn = document.getElementById('btn-toggle-time-mode');
+      if (modeBtn) {
+        modeBtn.textContent = timeMode === 'live' ? '⏱️ Current IST' : '⏱️ Custom Scrub';
+        modeBtn.style.background = timeMode === 'live' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.4)';
+      }
+
+      if (schedule.phase) {
+        const phaseTitle = document.getElementById('phase-title');
+        const phaseDetail = document.getElementById('phase-detail');
+        const phaseIcon = document.getElementById('phase-icon');
+
+        if (phaseTitle) phaseTitle.textContent = schedule.phase.replace(/_/g, ' ');
+        if (phaseDetail) phaseDetail.textContent = schedule.message || '';
+
+        if (schedule.phase === 'SERVICE_CLOSED') {
+          if (phaseIcon) phaseIcon.textContent = '🛑';
+        } else if (schedule.phase === 'FIRST_TRAINS') {
+          if (phaseIcon) phaseIcon.textContent = '🌅';
+        } else if (schedule.phase.includes('PEAK')) {
+          if (phaseIcon) phaseIcon.textContent = '🏢';
+        } else if (schedule.phase === 'LAST_TRAINS') {
+          if (phaseIcon) phaseIcon.textContent = '🌙';
+        } else {
+          if (phaseIcon) phaseIcon.textContent = '🟢';
+        }
+      }
+
+      // Night Maintenance Banner
+      const nightBanner = document.getElementById('night-maintenance-banner');
+      if (nightBanner) {
+        if (schedule.phase === 'SERVICE_CLOSED') {
+          nightBanner.classList.remove('hidden');
+        } else {
+          nightBanner.classList.add('hidden');
+        }
+      }
+
+      // Sync slider when not dragging
+      if (!isDraggingSlider) {
+        const slider = document.getElementById('timeline-slider');
+        if (slider) slider.value = sec;
+        const label = document.getElementById('timeline-current-label');
+        if (label) {
+          const h = Math.floor(sec / 3600);
+          const m = Math.floor((sec % 3600) / 60);
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          const h12 = h % 12 || 12;
+          label.textContent = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+        }
+      }
+
+      // Clean up old trains not active anymore
+      const activeIds = new Set(incoming.map(t => t.id));
+      for (const id of trainTargetStates.keys()) {
+        if (!activeIds.has(id)) {
+          trainTargetStates.delete(id);
+          trainPrevStates.delete(id);
+        }
+      }
+
+      incoming.forEach(t => {
+        const prev = trainTargetStates.get(t.id) || { coords: t.coords, bearing: t.bearing, time: now };
+        trainPrevStates.set(t.id, prev);
+        trainTargetStates.set(t.id, { coords: t.coords, bearing: t.bearing, time: now, data: t });
+      });
+
+      activeTrains = incoming;
+
+      if (incoming.length === 0) {
+        const card = document.getElementById('inspector-card');
+        if (card) card.classList.add('hidden');
+        selectedTrainId = null;
+      } else if (selectedTrainId) {
+        const t = activeTrains.find(x => x.id === selectedTrainId);
+        if (t) updateCalloutCard(t);
+      }
+
+      updateCutawayPlatformETAs(sec, dayVariant);
+      if (activeStationIndex !== null) {
+        renderStationPanel(activeStationIndex, sec, dayVariant);
+      }
+    }
+
+    lastSimulationTick = performance.now();
+    setInterval(tick, 100); // 10 Hz simulation step
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -1248,12 +1289,11 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  9. MASTER THREE-TIER SURFACE SWITCHER
+  //  9. MASTER TRANSIT SURFACE SWITCHER
   // ═══════════════════════════════════════════════════════════
   function setupMasterNavigation() {
     const tabs = document.querySelectorAll('.mode-tab');
     const mapSurface = document.getElementById('map');
-    const threeSurface = document.getElementById('three-container');
     const cutawaySurface = document.getElementById('cutaway-fullscreen-view');
     const heroCard = document.querySelector('.diorama-hero-card');
     const controlCluster = document.querySelector('.control-cluster');
@@ -1264,31 +1304,16 @@
 
       if (surfaceName === 'corridor') {
         mapSurface.classList.remove('hidden');
-        threeSurface.classList.add('hidden');
         cutawaySurface.classList.add('hidden');
-        heroCard.style.display = 'flex';
-        controlCluster.style.display = 'flex';
-        legendStrip.style.display = 'flex';
-        if (window.Diorama3D) window.Diorama3D.stop();
+        if (heroCard) heroCard.style.display = 'flex';
+        if (controlCluster) controlCluster.style.display = 'flex';
+        if (legendStrip) legendStrip.style.display = 'flex';
       } else if (surfaceName === 'cutaway') {
         cutawaySurface.classList.remove('hidden');
         mapSurface.classList.add('hidden');
-        threeSurface.classList.add('hidden');
-        heroCard.style.display = 'none';
-        controlCluster.style.display = 'none';
-        legendStrip.style.display = 'none';
-        if (window.Diorama3D) window.Diorama3D.stop();
-      } else if (surfaceName === 'threejs') {
-        threeSurface.classList.remove('hidden');
-        mapSurface.classList.add('hidden');
-        cutawaySurface.classList.add('hidden');
-        heroCard.style.display = 'none';
-        controlCluster.style.display = 'none';
-        legendStrip.style.display = 'none';
-        if (window.Diorama3D) {
-          window.Diorama3D.init(threeSurface);
-          window.Diorama3D.start();
-        }
+        if (heroCard) heroCard.style.display = 'none';
+        if (controlCluster) controlCluster.style.display = 'none';
+        if (legendStrip) legendStrip.style.display = 'none';
       }
     };
 
@@ -1300,7 +1325,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const initialSurface = urlParams.get('surface');
-    if (initialSurface && ['corridor', 'cutaway', 'threejs'].includes(initialSurface)) {
+    if (initialSurface && ['corridor', 'cutaway'].includes(initialSurface)) {
       window.switchSurface(initialSurface);
     }
 
@@ -1366,13 +1391,20 @@
     }
   }
 
-  function updateCutawayPlatformETAs() {
+  function updateCutawayPlatformETAs(secOfDay, dayVariant) {
     const p1 = document.getElementById('cutaway-p1-time');
     const p2 = document.getElementById('cutaway-p2-time');
-    if (!p1 || !p2 || !activeTrains.length) return;
+    if (!p1 || !p2 || !currentCutawayStation) return;
 
-    p1.textContent = 'Due in 1 min 15s';
-    p2.textContent = 'Due in 2 min 40s';
+    const meta = STATION_DETAILS[currentCutawayStation];
+    const stIdx = meta ? meta.index : 15; // default Rajiv Chowk (15)
+
+    if (window.TripEngine) {
+      const eta1 = TripEngine.getStationNextArrival(stIdx, 'south', secOfDay, dayVariant);
+      const eta2 = TripEngine.getStationNextArrival(stIdx, 'north', secOfDay, dayVariant);
+      p1.textContent = eta1 ? eta1.text : 'Scheduled';
+      p2.textContent = eta2 ? eta2.text : 'Scheduled';
+    }
   }
 
   function startClockTicker() {
@@ -1438,13 +1470,14 @@
       });
     }
 
-    // Speed Multipliers
+    // Speed Multipliers (Pure Client-Side)
     document.querySelectorAll('.speed-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const spd = btn.getAttribute('data-speed');
-        fetch(`/api/speed?m=${spd}`).catch(console.error);
+        const spd = parseFloat(btn.getAttribute('data-speed')) || 1.0;
+        simSpeed = spd;
+        timeMode = 'custom';
       });
     });
 
@@ -1490,6 +1523,15 @@
       followTrainId = null;
     });
 
+    // Close Station Panel
+    const closeStationBtn = document.getElementById('close-station-panel');
+    if (closeStationBtn) {
+      closeStationBtn.addEventListener('click', () => {
+        document.getElementById('station-panel').classList.add('hidden');
+        activeStationIndex = null;
+      });
+    }
+
     // 24-Hour Timeline Scrubbing
     const timelineSlider = document.getElementById('timeline-slider');
     const timelineLabel = document.getElementById('timeline-current-label');
@@ -1508,12 +1550,8 @@
       timelineSlider.addEventListener('change', () => {
         isDraggingSlider = false;
         const sec = parseInt(timelineSlider.value, 10);
-        fetch('/api/time', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mode: 'custom', timeSeconds: sec })
-        }).catch(console.error);
-
+        customTimeSeconds = sec;
+        timeMode = 'custom';
         document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
       });
     }
@@ -1522,17 +1560,7 @@
     const toggleTimeModeBtn = document.getElementById('btn-toggle-time-mode');
     if (toggleTimeModeBtn) {
       toggleTimeModeBtn.addEventListener('click', () => {
-        fetch('/api/time')
-          .then(r => r.json())
-          .then(data => {
-            const nextMode = data.timeMode === 'live' ? 'custom' : 'live';
-            fetch('/api/time', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ mode: nextMode })
-            }).catch(console.error);
-          })
-          .catch(console.error);
+        timeMode = (timeMode === 'live') ? 'custom' : 'live';
       });
     }
 
@@ -1542,12 +1570,8 @@
         document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         const sec = parseInt(chip.getAttribute('data-time'), 10);
-
-        fetch('/api/time', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mode: 'custom', timeSeconds: sec })
-        }).catch(console.error);
+        customTimeSeconds = sec;
+        timeMode = 'custom';
       });
     });
   }
@@ -1556,12 +1580,20 @@
     map.on('click', 'train-consist-3d', onTrainClick);
     map.on('click', 'train-dot-white-black', onTrainClick);
 
-    // Click station platform to open cutaway
+    // Click station platform to open Station Schedule Panel
     map.on('click', 'platform-slab-deck-elevated', (e) => {
-      window.switchSurface('cutaway');
+      const feat = e.features && e.features[0];
+      if (feat && feat.properties) {
+        const val = (feat.properties.index !== undefined && feat.properties.index !== null) ? parseInt(feat.properties.index, 10) : feat.properties.name;
+        openStationPanel(val);
+      }
     });
     map.on('click', 'platform-slab-deck-underground', (e) => {
-      window.switchSurface('cutaway');
+      const feat = e.features && e.features[0];
+      if (feat && feat.properties) {
+        const val = (feat.properties.index !== undefined && feat.properties.index !== null) ? parseInt(feat.properties.index, 10) : feat.properties.name;
+        openStationPanel(val);
+      }
     });
 
     function onTrainClick(e) {
@@ -1584,6 +1616,97 @@
     map.on('mouseenter', 'platform-slab-deck-underground', () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', 'platform-slab-deck-underground', () => { map.getCanvas().style.cursor = ''; });
   }
+
+  function openStationPanel(stIndexOrName) {
+    if (!window.TripEngine) return;
+    const stations = TripEngine.getStations();
+    let stIdx = -1;
+    if (typeof stIndexOrName === 'number') {
+      stIdx = stIndexOrName;
+    } else {
+      stIdx = stations.findIndex(s => s.name.toLowerCase() === String(stIndexOrName).toLowerCase() || s.id === stIndexOrName);
+    }
+    if (stIdx < 0 || stIdx >= stations.length) return;
+    activeStationIndex = stIdx;
+
+    let sec = 0;
+    let dayVariant = 'weekday';
+    if (timeMode === 'live') {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const ist = new Date(utc + 5.5 * 3600000);
+      sec = ist.getHours() * 3600 + ist.getMinutes() * 60 + ist.getSeconds();
+      const d = ist.getDay();
+      dayVariant = (d === 0) ? 'sunday' : (d === 6 ? 'saturday' : 'weekday');
+    } else {
+      sec = Math.floor(customTimeSeconds);
+      dayVariant = 'weekday';
+    }
+
+    renderStationPanel(activeStationIndex, sec, dayVariant);
+    const panel = document.getElementById('station-panel');
+    if (panel) panel.classList.remove('hidden');
+
+    const st = stations[activeStationIndex];
+    if (map && st && st.coords) {
+      map.easeTo({ center: st.coords, zoom: Math.max(map.getZoom(), 14.5), duration: 800 });
+    }
+  }
+
+  function renderStationPanel(stIdx, sec, dayVariant) {
+    if (!window.TripEngine) return;
+    const stations = TripEngine.getStations();
+    const st = stations[stIdx];
+    if (!st) return;
+
+    const titleEl = document.getElementById('st-panel-title');
+    const subEl = document.getElementById('st-panel-sub');
+    const freqTextEl = document.getElementById('st-panel-freq-text');
+    const p1List = document.getElementById('st-p1-arrivals');
+    const p2List = document.getElementById('st-p2-arrivals');
+
+    if (titleEl) titleEl.textContent = st.name;
+    if (subEl) {
+      const structText = st.structure === 'underground' 
+        ? `Underground Tube Chamber (${st.elevM || -16}m)` 
+        : `Elevated Viaduct (+${st.elevM || 15}m)`;
+      subEl.textContent = `${structText} · Station ${stIdx + 1} of ${stations.length}`;
+    }
+
+    const isCore = (stIdx >= 8 && stIdx <= 27);
+    if (freqTextEl) {
+      if (isCore) {
+        freqTextEl.textContent = 'Central High-Frequency Zone · Trains every ~2.5 min (24 tph)';
+      } else {
+        freqTextEl.textContent = 'Outer Sector · Trains every ~5.0 min (12 tph · Half Frequency)';
+      }
+    }
+
+    const p1Arrivals = TripEngine.getStationArrivals(stIdx, 'south', sec, dayVariant, 3);
+    const p2Arrivals = TripEngine.getStationArrivals(stIdx, 'north', sec, dayVariant, 3);
+
+    function buildArrivalsHTML(list) {
+      if (!list || !list.length || list[0].status === 'closed') {
+        return '<div class="st-arrival-item"><span class="st-arr-clock">--:--</span><span class="st-arr-dest">Service Closed</span><span class="st-arr-badge badge-scheduled">Closed</span></div>';
+      }
+      return list.map(item => {
+        let badgeClass = 'badge-scheduled';
+        if (item.status === 'boarding') badgeClass = 'badge-boarding';
+        else if (item.status === 'approaching') badgeClass = 'badge-approaching';
+
+        return `<div class="st-arrival-item">
+          <span class="st-arr-clock">${item.clockTime}</span>
+          <span class="st-arr-dest">➔ ${item.dest}</span>
+          <span class="st-arr-badge ${badgeClass}">${item.text}</span>
+        </div>`;
+      }).join('');
+    }
+
+    if (p1List) p1List.innerHTML = buildArrivalsHTML(p1Arrivals);
+    if (p2List) p2List.innerHTML = buildArrivalsHTML(p2Arrivals);
+  }
+
+  window.openStationPanel = openStationPanel;
 
   function updateCalloutCard(props) {
     document.getElementById('ins-id').textContent = `Train ${props.id}`;

@@ -1483,3 +1483,196 @@ html, body {
   }
 }
 
+/* ── Floating Placeholder Disclaimer Pill ───────────────────── */
+.placeholder-disclaimer-pill {
+  position: absolute;
+  top: 76px;
+  right: 20px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(241, 245, 249, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  pointer-events: auto;
+  transition: all 0.2s ease;
+}
+.placeholder-disclaimer-pill:hover {
+  background: #E2E8F0;
+  border-color: #64748B;
+}
+
+/* ── Unofficial Disclaimer ──────────────────────────────────── */
+.unofficial-disclaimer {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #64748B;
+  margin-top: 4px;
+  padding: 3px 8px;
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 4px;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+/* ── Station Schedule Callout Card ──────────────────────────── */
+.station-callout-card {
+  position: fixed;
+  bottom: 24px;
+  left: 20px;
+  width: 370px;
+  max-width: calc(100vw - 40px);
+  z-index: 30;
+}
+
+.st-structure-sub {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.st-freq-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.st-platforms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.st-platform-block {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.st-plat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #F1F5F9;
+  padding-bottom: 4px;
+}
+
+.st-plat-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.p1-tag {
+  background: rgba(220, 38, 38, 0.1);
+  color: #DC2626;
+}
+
+.p2-tag {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563EB;
+}
+
+.st-plat-dest {
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.st-arrivals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.st-arrival-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: #F8FAFC;
+  font-size: 11px;
+}
+
+.st-arr-clock {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.st-arr-dest {
+  font-size: 10.5px;
+  color: #64748B;
+  flex: 1;
+  margin: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-arr-badge {
+  font-weight: 700;
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-boarding {
+  background: rgba(22, 163, 74, 0.15);
+  color: #15803D;
+}
+
+.badge-approaching {
+  background: rgba(234, 179, 8, 0.2);
+  color: #A16207;
+}
+
+.badge-scheduled {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+}
+
+.st-panel-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 6px;
+  font-size: 10px;
+  color: #94A3B8;
+}
+
+.st-disclaimer {
+  font-weight: 600;
+  color: #64748B;
+}
+
+.st-unofficial {
+  font-size: 9.5px;
+}
+
+
+

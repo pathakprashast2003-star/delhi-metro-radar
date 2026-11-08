@@ -1,0 +1,713 @@
+{
+  "network": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "blue-line",
+          "name": "Blue Line (Line 3)",
+          "color": "#0055A5",
+          "interchangeWithYellow": "Rajiv Chowk",
+          "lengthKm": 65.3
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.0195,
+              28.5522
+            ],
+            [
+              77.0378,
+              28.5702
+            ],
+            [
+              77.0583,
+              28.5925
+            ],
+            [
+              77.0678,
+              28.608
+            ],
+            [
+              77.0865,
+              28.6295
+            ],
+            [
+              77.1022,
+              28.6365
+            ],
+            [
+              77.1215,
+              28.6445
+            ],
+            [
+              77.1425,
+              28.6515
+            ],
+            [
+              77.1645,
+              28.6545
+            ],
+            [
+              77.1855,
+              28.6505
+            ],
+            [
+              77.2025,
+              28.6435
+            ],
+            [
+              77.2115,
+              28.6365
+            ],
+            [
+              77.2195,
+              28.6328
+            ],
+            [
+              77.2285,
+              28.6305
+            ],
+            [
+              77.2345,
+              28.6255
+            ],
+            [
+              77.2495,
+              28.6225
+            ],
+            [
+              77.2655,
+              28.6185
+            ],
+            [
+              77.2885,
+              28.6165
+            ],
+            [
+              77.3025,
+              28.6255
+            ],
+            [
+              77.3085,
+              28.6055
+            ],
+            [
+              77.3245,
+              28.5875
+            ],
+            [
+              77.3385,
+              28.5745
+            ],
+            [
+              77.3525,
+              28.5685
+            ],
+            [
+              77.3755,
+              28.5785
+            ],
+            [
+              77.3915,
+              28.5885
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "red-line",
+          "name": "Red Line (Line 1)",
+          "color": "#E21E26",
+          "interchangeWithYellow": "Kashmere Gate",
+          "lengthKm": 34.7
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.1065,
+              28.7205
+            ],
+            [
+              77.1225,
+              28.7125
+            ],
+            [
+              77.1385,
+              28.7055
+            ],
+            [
+              77.1525,
+              28.6965
+            ],
+            [
+              77.1705,
+              28.6875
+            ],
+            [
+              77.1905,
+              28.6755
+            ],
+            [
+              77.2085,
+              28.6695
+            ],
+            [
+              77.2281,
+              28.6675
+            ],
+            [
+              77.2425,
+              28.6695
+            ],
+            [
+              77.2565,
+              28.6745
+            ],
+            [
+              77.2725,
+              28.6785
+            ],
+            [
+              77.2915,
+              28.6805
+            ],
+            [
+              77.3125,
+              28.6815
+            ],
+            [
+              77.3455,
+              28.6825
+            ],
+            [
+              77.3785,
+              28.6845
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "violet-line",
+          "name": "Violet Line (Line 6)",
+          "color": "#7C3AED",
+          "interchangeWithYellow": "Kashmere Gate & Central Secretariat",
+          "lengthKm": 46.6
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.2281,
+              28.6675
+            ],
+            [
+              77.2385,
+              28.6565
+            ],
+            [
+              77.2415,
+              28.6495
+            ],
+            [
+              77.2425,
+              28.6385
+            ],
+            [
+              77.2415,
+              28.6295
+            ],
+            [
+              77.2345,
+              28.6255
+            ],
+            [
+              77.2275,
+              28.6185
+            ],
+            [
+              77.212,
+              28.6149
+            ],
+            [
+              77.2185,
+              28.6005
+            ],
+            [
+              77.2295,
+              28.5885
+            ],
+            [
+              77.2415,
+              28.5705
+            ],
+            [
+              77.2525,
+              28.5585
+            ],
+            [
+              77.2585,
+              28.5445
+            ],
+            [
+              77.2605,
+              28.5385
+            ],
+            [
+              77.2695,
+              28.5285
+            ],
+            [
+              77.2885,
+              28.5085
+            ],
+            [
+              77.3025,
+              28.4985
+            ],
+            [
+              77.3185,
+              28.4285
+            ],
+            [
+              77.3245,
+              28.3755
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "magenta-line",
+          "name": "Magenta Line (Line 8)",
+          "color": "#C026D3",
+          "interchangeWithYellow": "Hauz Khas",
+          "lengthKm": 37.5
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.0865,
+              28.6295
+            ],
+            [
+              77.0985,
+              28.6125
+            ],
+            [
+              77.1085,
+              28.5945
+            ],
+            [
+              77.1185,
+              28.5825
+            ],
+            [
+              77.1265,
+              28.5685
+            ],
+            [
+              77.1385,
+              28.5585
+            ],
+            [
+              77.1585,
+              28.5525
+            ],
+            [
+              77.1725,
+              28.5485
+            ],
+            [
+              77.1855,
+              28.5455
+            ],
+            [
+              77.1955,
+              28.5445
+            ],
+            [
+              77.2067,
+              28.5442
+            ],
+            [
+              77.2185,
+              28.5435
+            ],
+            [
+              77.2345,
+              28.5415
+            ],
+            [
+              77.2485,
+              28.5405
+            ],
+            [
+              77.2605,
+              28.5385
+            ],
+            [
+              77.2755,
+              28.5485
+            ],
+            [
+              77.2985,
+              28.5585
+            ],
+            [
+              77.3155,
+              28.5545
+            ],
+            [
+              77.3325,
+              28.5625
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "pink-line",
+          "name": "Pink Line (Ring Railway)",
+          "color": "#DB2777",
+          "interchangeWithYellow": "Azadpur & Dilli Haat - INA",
+          "lengthKm": 58.6
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.1825,
+              28.7185
+            ],
+            [
+              77.1798,
+              28.7072
+            ],
+            [
+              77.1685,
+              28.6985
+            ],
+            [
+              77.1525,
+              28.6965
+            ],
+            [
+              77.1355,
+              28.6825
+            ],
+            [
+              77.1215,
+              28.6705
+            ],
+            [
+              77.1215,
+              28.6445
+            ],
+            [
+              77.1325,
+              28.6325
+            ],
+            [
+              77.1485,
+              28.6185
+            ],
+            [
+              77.1625,
+              28.5985
+            ],
+            [
+              77.1685,
+              28.5855
+            ],
+            [
+              77.1855,
+              28.5785
+            ],
+            [
+              77.1985,
+              28.5755
+            ],
+            [
+              77.2055,
+              28.5745
+            ],
+            [
+              77.2108,
+              28.5741
+            ],
+            [
+              77.2285,
+              28.5715
+            ],
+            [
+              77.2415,
+              28.5705
+            ],
+            [
+              77.2555,
+              28.5785
+            ],
+            [
+              77.2685,
+              28.5905
+            ],
+            [
+              77.2855,
+              28.6055
+            ],
+            [
+              77.3085,
+              28.6055
+            ],
+            [
+              77.3225,
+              28.6285
+            ],
+            [
+              77.3185,
+              28.6485
+            ],
+            [
+              77.3055,
+              28.6655
+            ],
+            [
+              77.2725,
+              28.6785
+            ],
+            [
+              77.2685,
+              28.7055
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "airport-express",
+          "name": "Airport Express Line",
+          "color": "#EA580C",
+          "interchangeWithYellow": "New Delhi",
+          "lengthKm": 22.7
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.2223,
+              28.6429
+            ],
+            [
+              77.2125,
+              28.6285
+            ],
+            [
+              77.1685,
+              28.5885
+            ],
+            [
+              77.1205,
+              28.5505
+            ],
+            [
+              77.0855,
+              28.5555
+            ],
+            [
+              77.0195,
+              28.5522
+            ],
+            [
+              76.9985,
+              28.5485
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "rapid-metro",
+          "name": "Rapid Metro Gurugram",
+          "color": "#059669",
+          "interchangeWithYellow": "Sikanderpur",
+          "lengthKm": 12.8
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.0935,
+              28.4815
+            ],
+            [
+              77.0895,
+              28.4905
+            ],
+            [
+              77.0885,
+              28.4985
+            ],
+            [
+              77.0895,
+              28.5025
+            ],
+            [
+              77.0985,
+              28.4995
+            ],
+            [
+              77.1025,
+              28.4925
+            ],
+            [
+              77.0935,
+              28.4815
+            ],
+            [
+              77.0945,
+              28.4685
+            ],
+            [
+              77.0985,
+              28.4555
+            ],
+            [
+              77.1045,
+              28.4425
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "interchanges": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Rajiv Chowk",
+          "lines": "Yellow ✕ Blue"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.2195,
+            28.6328
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Kashmere Gate",
+          "lines": "Yellow ✕ Red ✕ Violet"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.2281,
+            28.6675
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Central Secretariat",
+          "lines": "Yellow ✕ Violet"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.212,
+            28.6149
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Hauz Khas",
+          "lines": "Yellow ✕ Magenta"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.2067,
+            28.5442
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Azadpur",
+          "lines": "Yellow ✕ Pink"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.1798,
+            28.7072
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Dilli Haat - INA",
+          "lines": "Yellow ✕ Pink"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.2108,
+            28.5741
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "New Delhi",
+          "lines": "Yellow ✕ Airport Express"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.2223,
+            28.6429
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Sikanderpur",
+          "lines": "Yellow ✕ Rapid Metro"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.0935,
+            28.4815
+          ]
+        }
+      }
+    ]
+  }
+}

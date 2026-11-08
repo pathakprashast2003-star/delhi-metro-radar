@@ -944,7 +944,22 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  // 6. Static Files
+  // 6. Comprehensive DMRC Interconnected Network
+  if (pathname === '/api/network') {
+    const netPath = path.join(__dirname, 'dmrc_network_geojson.json');
+    fs.readFile(netPath, 'utf8', (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to load network' }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(data);
+      }
+    });
+    return;
+  }
+
+  // 7. Static Files
   let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';

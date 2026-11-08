@@ -1,0 +1,1331 @@
+{
+  "meta": {
+    "line": "Delhi Metro Yellow Line (Line 2)",
+    "corridor": "Samaypur Badli ⮂ Millennium City Centre Gurugram",
+    "totalStations": 37,
+    "routeDistanceKm": 47.62,
+    "timezone": "Asia/Kolkata",
+    "version": "1.0.0",
+    "dataDisclaimer": "All section runtimes and headways are UNVERIFIED PLACEHOLDERS. Edit this file to update real timings after verifying with DMRC journey planner and physical ride logs."
+  },
+  "stations": [
+    {
+      "index": 0,
+      "id": "samaypur_badli",
+      "name": "Samaypur Badli",
+      "alias": null,
+      "coordinates": [
+        77.138299,
+        28.744639
+      ],
+      "trackNodeIndex": 0,
+      "distanceMeters": 0,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": true,
+      "isTerminal": true,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 1,
+      "id": "rohini_18_19",
+      "name": "Rohini Sector 18, 19",
+      "alias": null,
+      "coordinates": [
+        77.139864,
+        28.738344
+      ],
+      "trackNodeIndex": 22,
+      "distanceMeters": 819,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 2,
+      "id": "haiderpur_badli_mor",
+      "name": "Haiderpur Badli Mor",
+      "alias": null,
+      "coordinates": [
+        77.148872,
+        28.729917
+      ],
+      "trackNodeIndex": 59,
+      "distanceMeters": 2613,
+      "structure": "elevated",
+      "elevM": 16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 3,
+      "id": "jahangirpuri",
+      "name": "Jahangirpuri",
+      "alias": null,
+      "coordinates": [
+        77.162683,
+        28.725987
+      ],
+      "trackNodeIndex": 80,
+      "distanceMeters": 4402,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 4,
+      "id": "adarsh_nagar",
+      "name": "Adarsh Nagar",
+      "alias": null,
+      "coordinates": [
+        77.170447,
+        28.716598
+      ],
+      "trackNodeIndex": 86,
+      "distanceMeters": 5691,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 5,
+      "id": "azadpur",
+      "name": "Azadpur",
+      "alias": null,
+      "coordinates": [
+        77.180383,
+        28.707069
+      ],
+      "trackNodeIndex": 94,
+      "distanceMeters": 7147,
+      "structure": "elevated",
+      "elevM": 17,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 6,
+      "id": "model_town",
+      "name": "Model Town",
+      "alias": null,
+      "coordinates": [
+        77.194006,
+        28.702739
+      ],
+      "trackNodeIndex": 109,
+      "distanceMeters": 8568,
+      "structure": "elevated",
+      "elevM": 14,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 7,
+      "id": "gtb_nagar",
+      "name": "GTB Nagar",
+      "alias": null,
+      "coordinates": [
+        77.206423,
+        28.698156
+      ],
+      "trackNodeIndex": 112,
+      "distanceMeters": 9883,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 8,
+      "id": "vishwavidyalaya",
+      "name": "Vishwavidyalaya",
+      "alias": null,
+      "coordinates": [
+        77.214748,
+        28.695099
+      ],
+      "trackNodeIndex": 114,
+      "distanceMeters": 10764,
+      "structure": "underground",
+      "elevM": -18,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": true,
+      "dwellSeconds": 35,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 9,
+      "id": "vidhan_sabha",
+      "name": "Vidhan Sabha",
+      "alias": null,
+      "coordinates": [
+        77.221758,
+        28.686327
+      ],
+      "trackNodeIndex": 127,
+      "distanceMeters": 12113,
+      "structure": "underground",
+      "elevM": -18,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 10,
+      "id": "civil_lines",
+      "name": "Civil Lines",
+      "alias": null,
+      "coordinates": [
+        77.225056,
+        28.676857
+      ],
+      "trackNodeIndex": 139,
+      "distanceMeters": 13223,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 11,
+      "id": "kashmere_gate",
+      "name": "Kashmere Gate",
+      "alias": null,
+      "coordinates": [
+        77.228217,
+        28.667526
+      ],
+      "trackNodeIndex": 152,
+      "distanceMeters": 14307,
+      "structure": "underground",
+      "elevM": -22,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 45,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 12,
+      "id": "chandni_chowk",
+      "name": "Chandni Chowk",
+      "alias": null,
+      "coordinates": [
+        77.230366,
+        28.658421
+      ],
+      "trackNodeIndex": 156,
+      "distanceMeters": 15353,
+      "structure": "underground",
+      "elevM": -20,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 13,
+      "id": "chawri_bazar",
+      "name": "Chawri Bazar",
+      "alias": null,
+      "coordinates": [
+        77.226544,
+        28.649251
+      ],
+      "trackNodeIndex": 159,
+      "distanceMeters": 16448,
+      "structure": "underground",
+      "elevM": -30,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 14,
+      "id": "new_delhi",
+      "name": "New Delhi",
+      "alias": null,
+      "coordinates": [
+        77.222771,
+        28.643471
+      ],
+      "trackNodeIndex": 161,
+      "distanceMeters": 17187,
+      "structure": "underground",
+      "elevM": -22,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 15,
+      "id": "rajiv_chowk",
+      "name": "Rajiv Chowk",
+      "alias": null,
+      "coordinates": [
+        77.219424,
+        28.632742
+      ],
+      "trackNodeIndex": 165,
+      "distanceMeters": 18421,
+      "structure": "underground",
+      "elevM": -20,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 45,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 16,
+      "id": "patel_chowk",
+      "name": "Patel Chowk",
+      "alias": null,
+      "coordinates": [
+        77.214059,
+        28.622954
+      ],
+      "trackNodeIndex": 173,
+      "distanceMeters": 19645,
+      "structure": "underground",
+      "elevM": -18,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 17,
+      "id": "central_secretariat",
+      "name": "Central Secretariat",
+      "alias": null,
+      "coordinates": [
+        77.212313,
+        28.615878
+      ],
+      "trackNodeIndex": 178,
+      "distanceMeters": 20468,
+      "structure": "underground",
+      "elevM": -18,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 18,
+      "id": "udyog_bhawan",
+      "name": "Udyog Bhawan",
+      "alias": null,
+      "coordinates": [
+        77.211825,
+        28.609512
+      ],
+      "trackNodeIndex": 180,
+      "distanceMeters": 21175,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 19,
+      "id": "lok_kalyan_marg",
+      "name": "Lok Kalyan Marg",
+      "alias": null,
+      "coordinates": [
+        77.211127,
+        28.597355
+      ],
+      "trackNodeIndex": 182,
+      "distanceMeters": 22526,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 20,
+      "id": "jor_bagh",
+      "name": "Jor Bagh",
+      "alias": null,
+      "coordinates": [
+        77.212564,
+        28.586594
+      ],
+      "trackNodeIndex": 185,
+      "distanceMeters": 23737,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 21,
+      "id": "dilli_haat_ina",
+      "name": "Dilli Haat - INA",
+      "alias": null,
+      "coordinates": [
+        77.209331,
+        28.574159
+      ],
+      "trackNodeIndex": 188,
+      "distanceMeters": 25159,
+      "structure": "underground",
+      "elevM": -18,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 22,
+      "id": "aiims",
+      "name": "AIIMS",
+      "alias": null,
+      "coordinates": [
+        77.207832,
+        28.566854
+      ],
+      "trackNodeIndex": 192,
+      "distanceMeters": 25982,
+      "structure": "underground",
+      "elevM": -18,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 23,
+      "id": "green_park",
+      "name": "Green Park",
+      "alias": null,
+      "coordinates": [
+        77.206821,
+        28.558002
+      ],
+      "trackNodeIndex": 196,
+      "distanceMeters": 26970,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 24,
+      "id": "hauz_khas",
+      "name": "Hauz Khas",
+      "alias": null,
+      "coordinates": [
+        77.20674,
+        28.544258
+      ],
+      "trackNodeIndex": 206,
+      "distanceMeters": 28521,
+      "structure": "underground",
+      "elevM": -28,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 25,
+      "id": "malviya_nagar",
+      "name": "Malviya Nagar",
+      "alias": null,
+      "coordinates": [
+        77.204854,
+        28.529067
+      ],
+      "trackNodeIndex": 213,
+      "distanceMeters": 30233,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 26,
+      "id": "saket",
+      "name": "Saket",
+      "alias": null,
+      "coordinates": [
+        77.201898,
+        28.520873
+      ],
+      "trackNodeIndex": 221,
+      "distanceMeters": 31227,
+      "structure": "underground",
+      "elevM": -16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 27,
+      "id": "qutab_minar",
+      "name": "Qutab Minar",
+      "alias": null,
+      "coordinates": [
+        77.186472,
+        28.51293
+      ],
+      "trackNodeIndex": 238,
+      "distanceMeters": 33048,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": true,
+      "dwellSeconds": 35,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 28,
+      "id": "chhatarpur",
+      "name": "Chhatarpur",
+      "alias": null,
+      "coordinates": [
+        77.174936,
+        28.506755
+      ],
+      "trackNodeIndex": 257,
+      "distanceMeters": 34402,
+      "structure": "elevated",
+      "elevM": 16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 29,
+      "id": "sultanpur",
+      "name": "Sultanpur",
+      "alias": null,
+      "coordinates": [
+        77.16091,
+        28.498971
+      ],
+      "trackNodeIndex": 284,
+      "distanceMeters": 36053,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 30,
+      "id": "ghitorni",
+      "name": "Ghitorni",
+      "alias": null,
+      "coordinates": [
+        77.149198,
+        28.493728
+      ],
+      "trackNodeIndex": 293,
+      "distanceMeters": 37338,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 31,
+      "id": "arjan_garh",
+      "name": "Arjan Garh",
+      "alias": null,
+      "coordinates": [
+        77.125784,
+        28.480716
+      ],
+      "trackNodeIndex": 305,
+      "distanceMeters": 40070,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 32,
+      "id": "guru_dronacharya",
+      "name": "Guru Dronacharya",
+      "alias": null,
+      "coordinates": [
+        77.102272,
+        28.481998
+      ],
+      "trackNodeIndex": 347,
+      "distanceMeters": 42549,
+      "structure": "elevated",
+      "elevM": 16,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 33,
+      "id": "sikanderpur",
+      "name": "Sikanderpur",
+      "alias": null,
+      "coordinates": [
+        77.093007,
+        28.481244
+      ],
+      "trackNodeIndex": 358,
+      "distanceMeters": 43468,
+      "structure": "elevated",
+      "elevM": 18,
+      "major": true,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 34,
+      "id": "mg_road",
+      "name": "MG Road",
+      "alias": null,
+      "coordinates": [
+        77.079899,
+        28.479524
+      ],
+      "trackNodeIndex": 366,
+      "distanceMeters": 44769,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 35,
+      "id": "iffco_chowk",
+      "name": "IFFCO Chowk",
+      "alias": null,
+      "coordinates": [
+        77.072452,
+        28.472331
+      ],
+      "trackNodeIndex": 377,
+      "distanceMeters": 46139,
+      "structure": "elevated",
+      "elevM": 15,
+      "major": false,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    },
+    {
+      "index": 36,
+      "id": "millennium_city_centre",
+      "name": "Millennium City Centre Gurugram",
+      "alias": "HUDA City Centre",
+      "coordinates": [
+        77.072686,
+        28.459331
+      ],
+      "trackNodeIndex": 388,
+      "distanceMeters": 47624,
+      "structure": "elevated",
+      "elevM": 16,
+      "major": true,
+      "isTerminal": true,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 25,
+      "dwellStatus": "unverified_placeholder"
+    }
+  ],
+  "routePatterns": [
+    {
+      "id": "FULL_LINE",
+      "name": "Full Corridor Service",
+      "fromIndex": 0,
+      "toIndex": 36,
+      "fromName": "Samaypur Badli",
+      "toName": "Millennium City Centre Gurugram",
+      "stopCount": 37,
+      "activeSchedule": "All operational hours"
+    },
+    {
+      "id": "CENTRAL_SHORT_TURN",
+      "name": "Central High-Frequency Corridor",
+      "fromIndex": 8,
+      "toIndex": 27,
+      "fromName": "Vishwavidyalaya",
+      "toName": "Qutab Minar",
+      "stopCount": 20,
+      "activeSchedule": "Peak & Daytime High-Frequency"
+    },
+    {
+      "id": "SOUTH_SHUTTLE",
+      "name": "Gurugram Section Shuttle",
+      "fromIndex": 27,
+      "toIndex": 36,
+      "fromName": "Qutab Minar",
+      "toName": "Millennium City Centre Gurugram",
+      "stopCount": 10,
+      "activeSchedule": "Interleaved with Central Service"
+    }
+  ],
+  "sectionRuntimes": [
+    {
+      "fromIndex": 0,
+      "toIndex": 1,
+      "fromName": "Samaypur Badli",
+      "toName": "Rohini Sector 18, 19",
+      "distanceMeters": 819,
+      "runtimeSeconds": 71,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 1,
+      "toIndex": 2,
+      "fromName": "Rohini Sector 18, 19",
+      "toName": "Haiderpur Badli Mor",
+      "distanceMeters": 1794,
+      "runtimeSeconds": 154,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 2,
+      "toIndex": 3,
+      "fromName": "Haiderpur Badli Mor",
+      "toName": "Jahangirpuri",
+      "distanceMeters": 1789,
+      "runtimeSeconds": 154,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 3,
+      "toIndex": 4,
+      "fromName": "Jahangirpuri",
+      "toName": "Adarsh Nagar",
+      "distanceMeters": 1289,
+      "runtimeSeconds": 111,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 4,
+      "toIndex": 5,
+      "fromName": "Adarsh Nagar",
+      "toName": "Azadpur",
+      "distanceMeters": 1456,
+      "runtimeSeconds": 125,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 5,
+      "toIndex": 6,
+      "fromName": "Azadpur",
+      "toName": "Model Town",
+      "distanceMeters": 1422,
+      "runtimeSeconds": 122,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 6,
+      "toIndex": 7,
+      "fromName": "Model Town",
+      "toName": "GTB Nagar",
+      "distanceMeters": 1315,
+      "runtimeSeconds": 113,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 7,
+      "toIndex": 8,
+      "fromName": "GTB Nagar",
+      "toName": "Vishwavidyalaya",
+      "distanceMeters": 881,
+      "runtimeSeconds": 76,
+      "dwellSeconds": 35,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 8,
+      "toIndex": 9,
+      "fromName": "Vishwavidyalaya",
+      "toName": "Vidhan Sabha",
+      "distanceMeters": 1349,
+      "runtimeSeconds": 116,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 9,
+      "toIndex": 10,
+      "fromName": "Vidhan Sabha",
+      "toName": "Civil Lines",
+      "distanceMeters": 1110,
+      "runtimeSeconds": 96,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 10,
+      "toIndex": 11,
+      "fromName": "Civil Lines",
+      "toName": "Kashmere Gate",
+      "distanceMeters": 1084,
+      "runtimeSeconds": 93,
+      "dwellSeconds": 45,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 11,
+      "toIndex": 12,
+      "fromName": "Kashmere Gate",
+      "toName": "Chandni Chowk",
+      "distanceMeters": 1046,
+      "runtimeSeconds": 90,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 12,
+      "toIndex": 13,
+      "fromName": "Chandni Chowk",
+      "toName": "Chawri Bazar",
+      "distanceMeters": 1095,
+      "runtimeSeconds": 94,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 13,
+      "toIndex": 14,
+      "fromName": "Chawri Bazar",
+      "toName": "New Delhi",
+      "distanceMeters": 739,
+      "runtimeSeconds": 64,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 14,
+      "toIndex": 15,
+      "fromName": "New Delhi",
+      "toName": "Rajiv Chowk",
+      "distanceMeters": 1234,
+      "runtimeSeconds": 106,
+      "dwellSeconds": 45,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 15,
+      "toIndex": 16,
+      "fromName": "Rajiv Chowk",
+      "toName": "Patel Chowk",
+      "distanceMeters": 1225,
+      "runtimeSeconds": 105,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 16,
+      "toIndex": 17,
+      "fromName": "Patel Chowk",
+      "toName": "Central Secretariat",
+      "distanceMeters": 822,
+      "runtimeSeconds": 71,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 17,
+      "toIndex": 18,
+      "fromName": "Central Secretariat",
+      "toName": "Udyog Bhawan",
+      "distanceMeters": 707,
+      "runtimeSeconds": 61,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 18,
+      "toIndex": 19,
+      "fromName": "Udyog Bhawan",
+      "toName": "Lok Kalyan Marg",
+      "distanceMeters": 1351,
+      "runtimeSeconds": 116,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 19,
+      "toIndex": 20,
+      "fromName": "Lok Kalyan Marg",
+      "toName": "Jor Bagh",
+      "distanceMeters": 1212,
+      "runtimeSeconds": 104,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 20,
+      "toIndex": 21,
+      "fromName": "Jor Bagh",
+      "toName": "Dilli Haat - INA",
+      "distanceMeters": 1421,
+      "runtimeSeconds": 122,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 21,
+      "toIndex": 22,
+      "fromName": "Dilli Haat - INA",
+      "toName": "AIIMS",
+      "distanceMeters": 823,
+      "runtimeSeconds": 71,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 22,
+      "toIndex": 23,
+      "fromName": "AIIMS",
+      "toName": "Green Park",
+      "distanceMeters": 989,
+      "runtimeSeconds": 85,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 23,
+      "toIndex": 24,
+      "fromName": "Green Park",
+      "toName": "Hauz Khas",
+      "distanceMeters": 1550,
+      "runtimeSeconds": 133,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 24,
+      "toIndex": 25,
+      "fromName": "Hauz Khas",
+      "toName": "Malviya Nagar",
+      "distanceMeters": 1712,
+      "runtimeSeconds": 147,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 25,
+      "toIndex": 26,
+      "fromName": "Malviya Nagar",
+      "toName": "Saket",
+      "distanceMeters": 995,
+      "runtimeSeconds": 86,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 26,
+      "toIndex": 27,
+      "fromName": "Saket",
+      "toName": "Qutab Minar",
+      "distanceMeters": 1820,
+      "runtimeSeconds": 157,
+      "dwellSeconds": 35,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 27,
+      "toIndex": 28,
+      "fromName": "Qutab Minar",
+      "toName": "Chhatarpur",
+      "distanceMeters": 1354,
+      "runtimeSeconds": 117,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 28,
+      "toIndex": 29,
+      "fromName": "Chhatarpur",
+      "toName": "Sultanpur",
+      "distanceMeters": 1651,
+      "runtimeSeconds": 142,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 29,
+      "toIndex": 30,
+      "fromName": "Sultanpur",
+      "toName": "Ghitorni",
+      "distanceMeters": 1285,
+      "runtimeSeconds": 111,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 30,
+      "toIndex": 31,
+      "fromName": "Ghitorni",
+      "toName": "Arjan Garh",
+      "distanceMeters": 2732,
+      "runtimeSeconds": 235,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 31,
+      "toIndex": 32,
+      "fromName": "Arjan Garh",
+      "toName": "Guru Dronacharya",
+      "distanceMeters": 2479,
+      "runtimeSeconds": 213,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 32,
+      "toIndex": 33,
+      "fromName": "Guru Dronacharya",
+      "toName": "Sikanderpur",
+      "distanceMeters": 919,
+      "runtimeSeconds": 79,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 33,
+      "toIndex": 34,
+      "fromName": "Sikanderpur",
+      "toName": "MG Road",
+      "distanceMeters": 1301,
+      "runtimeSeconds": 112,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 34,
+      "toIndex": 35,
+      "fromName": "MG Road",
+      "toName": "IFFCO Chowk",
+      "distanceMeters": 1369,
+      "runtimeSeconds": 118,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    },
+    {
+      "fromIndex": 35,
+      "toIndex": 36,
+      "fromName": "IFFCO Chowk",
+      "toName": "Millennium City Centre Gurugram",
+      "distanceMeters": 1485,
+      "runtimeSeconds": 128,
+      "dwellSeconds": 25,
+      "status": "unverified_placeholder",
+      "note": "Initial distance-weighted placeholder calibrated to ~84m DMRC total journey time. Verify with ride/journey planner."
+    }
+  ],
+  "serviceVariants": {
+    "weekday": {
+      "description": "Monday through Friday schedule",
+      "firstTrain": "05:30:00",
+      "lastTrain": "23:00:00",
+      "bands": [
+        {
+          "name": "Early Morning Startup",
+          "start": "05:30:00",
+          "end": "08:00:00",
+          "headway_core_sec": 300,
+          "headway_outer_sec": 480,
+          "status": "unverified_placeholder",
+          "description": "Service startup from terminals and depot leads"
+        },
+        {
+          "name": "Morning Peak Rush",
+          "start": "08:00:00",
+          "end": "11:00:00",
+          "headway_core_sec": 150,
+          "headway_outer_sec": 300,
+          "status": "unverified_placeholder",
+          "description": "Intense peak service with interleaved short-turn loops"
+        },
+        {
+          "name": "Midday Regular",
+          "start": "11:00:00",
+          "end": "17:00:00",
+          "headway_core_sec": 240,
+          "headway_outer_sec": 420,
+          "status": "unverified_placeholder",
+          "description": "Standard daytime revenue operations"
+        },
+        {
+          "name": "Evening Peak Commute",
+          "start": "17:00:00",
+          "end": "21:00:00",
+          "headway_core_sec": 165,
+          "headway_outer_sec": 330,
+          "status": "unverified_placeholder",
+          "description": "Return commute rush across NCR"
+        },
+        {
+          "name": "Late Evening Taper",
+          "start": "21:00:00",
+          "end": "23:30:00",
+          "headway_core_sec": 420,
+          "headway_outer_sec": 600,
+          "status": "unverified_placeholder",
+          "description": "Post-peak wind-down; last terminal departures at 23:00"
+        },
+        {
+          "name": "Night Maintenance (Closed)",
+          "start": "23:30:00",
+          "end": "05:30:00",
+          "headway_core_sec": 0,
+          "headway_outer_sec": 0,
+          "status": "verified_operational",
+          "description": "Tracks de-energized, passenger revenue service closed"
+        }
+      ]
+    },
+    "saturday": {
+      "description": "Saturday weekend schedule",
+      "firstTrain": "05:30:00",
+      "lastTrain": "23:00:00",
+      "bands": [
+        {
+          "name": "Early Morning Startup",
+          "start": "05:30:00",
+          "end": "08:00:00",
+          "headway_core_sec": 360,
+          "headway_outer_sec": 576,
+          "status": "unverified_placeholder",
+          "description": "Service startup from terminals and depot leads"
+        },
+        {
+          "name": "Morning Peak Rush",
+          "start": "08:00:00",
+          "end": "11:00:00",
+          "headway_core_sec": 180,
+          "headway_outer_sec": 360,
+          "status": "unverified_placeholder",
+          "description": "Intense peak service with interleaved short-turn loops"
+        },
+        {
+          "name": "Midday Regular",
+          "start": "11:00:00",
+          "end": "17:00:00",
+          "headway_core_sec": 288,
+          "headway_outer_sec": 504,
+          "status": "unverified_placeholder",
+          "description": "Standard daytime revenue operations"
+        },
+        {
+          "name": "Evening Peak Commute",
+          "start": "17:00:00",
+          "end": "21:00:00",
+          "headway_core_sec": 198,
+          "headway_outer_sec": 396,
+          "status": "unverified_placeholder",
+          "description": "Return commute rush across NCR"
+        },
+        {
+          "name": "Late Evening Taper",
+          "start": "21:00:00",
+          "end": "23:30:00",
+          "headway_core_sec": 504,
+          "headway_outer_sec": 720,
+          "status": "unverified_placeholder",
+          "description": "Post-peak wind-down; last terminal departures at 23:00"
+        },
+        {
+          "name": "Night Maintenance (Closed)",
+          "start": "23:30:00",
+          "end": "05:30:00",
+          "headway_core_sec": 0,
+          "headway_outer_sec": 0,
+          "status": "verified_operational",
+          "description": "Tracks de-energized, passenger revenue service closed"
+        }
+      ]
+    },
+    "sunday": {
+      "description": "Sunday schedule (later startup and relaxed frequency)",
+      "firstTrain": "06:00:00",
+      "lastTrain": "23:00:00",
+      "bands": [
+        {
+          "name": "Early Morning Startup",
+          "start": "05:30:00",
+          "end": "08:00:00",
+          "headway_core_sec": 420,
+          "headway_outer_sec": 672,
+          "status": "unverified_placeholder",
+          "description": "Service startup from terminals and depot leads"
+        },
+        {
+          "name": "Morning Peak Rush",
+          "start": "08:00:00",
+          "end": "11:00:00",
+          "headway_core_sec": 210,
+          "headway_outer_sec": 420,
+          "status": "unverified_placeholder",
+          "description": "Intense peak service with interleaved short-turn loops"
+        },
+        {
+          "name": "Midday Regular",
+          "start": "11:00:00",
+          "end": "17:00:00",
+          "headway_core_sec": 336,
+          "headway_outer_sec": 588,
+          "status": "unverified_placeholder",
+          "description": "Standard daytime revenue operations"
+        },
+        {
+          "name": "Evening Peak Commute",
+          "start": "17:00:00",
+          "end": "21:00:00",
+          "headway_core_sec": 231,
+          "headway_outer_sec": 462,
+          "status": "unverified_placeholder",
+          "description": "Return commute rush across NCR"
+        },
+        {
+          "name": "Late Evening Taper",
+          "start": "21:00:00",
+          "end": "23:30:00",
+          "headway_core_sec": 588,
+          "headway_outer_sec": 840,
+          "status": "unverified_placeholder",
+          "description": "Post-peak wind-down; last terminal departures at 23:00"
+        },
+        {
+          "name": "Night Maintenance (Closed)",
+          "start": "23:30:00",
+          "end": "05:30:00",
+          "headway_core_sec": 0,
+          "headway_outer_sec": 0,
+          "status": "verified_operational",
+          "description": "Tracks de-energized, passenger revenue service closed"
+        }
+      ]
+    }
+  }
+}
