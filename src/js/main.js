@@ -20,6 +20,7 @@
   let renderMode = 'dot'; // Default to sleek, non-intrusive transit vehicle dot (big trains removed)
   let currentCutawayStation = 'rajiv_chowk';
   let rajivMarker = null;
+  let isDraggingSlider = false;
 
   const STATION_DETAILS = {
     'kashmere_gate': {
@@ -1035,9 +1036,9 @@
       },
       paint: {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3.2, 12, 4.5, 14, 6.0, 16, 8.0],
-        'circle-color': '#FFFFFF',
-        'circle-stroke-width': 2.0,
-        'circle-stroke-color': '#0F172A'
+        'circle-color': ['case', ['==', ['get', 'speedKph'], 0], '#EF4444', '#FFFFFF'],
+        'circle-stroke-width': ['case', ['==', ['get', 'speedKph'], 0], 3.0, 2.0],
+        'circle-stroke-color': ['case', ['==', ['get', 'speedKph'], 0], '#991B1B', '#0F172A']
       }
     });
 
@@ -1085,6 +1086,63 @@
         const countEl = document.getElementById('fleet-count');
         if (countEl) countEl.textContent = `${incoming.length} Trains`;
 
+        // Update live clock & schedule status
+        if (payload.timeStr) {
+          const clockEl = document.getElementById('live-clock-text');
+          if (clockEl) clockEl.textContent = payload.timeStr;
+        }
+
+        const modeBtn = document.getElementById('btn-toggle-time-mode');
+        if (modeBtn) {
+          modeBtn.textContent = payload.timeMode === 'live' ? '🔴 Live IST' : '⏱️ Custom Scrub';
+          modeBtn.style.background = payload.timeMode === 'live' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(37, 99, 235, 0.4)';
+        }
+
+        if (payload.servicePhase) {
+          const phaseTitle = document.getElementById('phase-title');
+          const phaseDetail = document.getElementById('phase-detail');
+          const phaseIcon = document.getElementById('phase-icon');
+
+          if (phaseTitle) phaseTitle.textContent = payload.servicePhase.replace(/_/g, ' ');
+          if (phaseDetail) phaseDetail.textContent = payload.serviceMessage || '';
+
+          if (payload.servicePhase === 'SERVICE_CLOSED') {
+            if (phaseIcon) phaseIcon.textContent = '🛑';
+          } else if (payload.servicePhase === 'FIRST_TRAINS') {
+            if (phaseIcon) phaseIcon.textContent = '🌅';
+          } else if (payload.servicePhase.includes('PEAK')) {
+            if (phaseIcon) phaseIcon.textContent = '🏢';
+          } else if (payload.servicePhase === 'LAST_TRAINS') {
+            if (phaseIcon) phaseIcon.textContent = '🌙';
+          } else {
+            if (phaseIcon) phaseIcon.textContent = '🟢';
+          }
+        }
+
+        // Night Maintenance Banner
+        const nightBanner = document.getElementById('night-maintenance-banner');
+        if (nightBanner) {
+          if (payload.servicePhase === 'SERVICE_CLOSED') {
+            nightBanner.classList.remove('hidden');
+          } else {
+            nightBanner.classList.add('hidden');
+          }
+        }
+
+        // Sync slider when not dragging
+        if (!isDraggingSlider && payload.simTimeSeconds !== undefined) {
+          const slider = document.getElementById('timeline-slider');
+          if (slider) slider.value = payload.simTimeSeconds;
+          const label = document.getElementById('timeline-current-label');
+          if (label) {
+            const h = Math.floor(payload.simTimeSeconds / 3600);
+            const m = Math.floor((payload.simTimeSeconds % 3600) / 60);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const h12 = h % 12 || 12;
+            label.textContent = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+          }
+        }
+
         incoming.forEach(t => {
           const prev = trainTargetStates.get(t.id) || { coords: t.coords, bearing: t.bearing, time: now };
           trainPrevStates.set(t.id, prev);
@@ -1093,7 +1151,11 @@
 
         activeTrains = incoming;
 
-        if (selectedTrainId) {
+        if (incoming.length === 0) {
+          const card = document.getElementById('inspector-card');
+          if (card) card.classList.add('hidden');
+          selectedTrainId = null;
+        } else if (selectedTrainId) {
           const t = activeTrains.find(x => x.id === selectedTrainId);
           if (t) updateCalloutCard(t);
         }
@@ -1155,6 +1217,13 @@
               fromStation: target.data.fromStation,
               toStation: target.data.toStation,
               speedKph: target.data.speedKph,
+              state: target.data.state,
+              stateLabel: target.data.stateLabel,
+              dwellRemaining: target.data.dwellRemaining,
+              dwellTotal: target.data.dwellTotal,
+              isExtendedDwell: target.data.isExtendedDwell,
+              dwellReason: target.data.dwellReason,
+              currentStation: target.data.currentStation,
               structure: target.data.structure || 'elevated',
               elevM: target.data.elevM || 15,
               elevLabel: target.data.elevLabel || 'Elevated Viaduct (+15m)'
@@ -1420,6 +1489,67 @@
       selectedTrainId = null;
       followTrainId = null;
     });
+
+    // 24-Hour Timeline Scrubbing
+    const timelineSlider = document.getElementById('timeline-slider');
+    const timelineLabel = document.getElementById('timeline-current-label');
+
+    if (timelineSlider) {
+      timelineSlider.addEventListener('input', () => {
+        isDraggingSlider = true;
+        const sec = parseInt(timelineSlider.value, 10);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        if (timelineLabel) timelineLabel.textContent = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+      });
+
+      timelineSlider.addEventListener('change', () => {
+        isDraggingSlider = false;
+        const sec = parseInt(timelineSlider.value, 10);
+        fetch('/api/time', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'custom', timeSeconds: sec })
+        }).catch(console.error);
+
+        document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
+      });
+    }
+
+    // Toggle between Live IST Clock & Custom Scrub Mode
+    const toggleTimeModeBtn = document.getElementById('btn-toggle-time-mode');
+    if (toggleTimeModeBtn) {
+      toggleTimeModeBtn.addEventListener('click', () => {
+        fetch('/api/time')
+          .then(r => r.json())
+          .then(data => {
+            const nextMode = data.timeMode === 'live' ? 'custom' : 'live';
+            fetch('/api/time', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mode: nextMode })
+            }).catch(console.error);
+          })
+          .catch(console.error);
+      });
+    }
+
+    // Quick 24h Timeline Preset Buttons (05:30 First, 09:15 Peak, 23:00 Last, 02:00 Maintenance)
+    document.querySelectorAll('.time-preset-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const sec = parseInt(chip.getAttribute('data-time'), 10);
+
+        fetch('/api/time', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'custom', timeSeconds: sec })
+        }).catch(console.error);
+      });
+    });
   }
 
   function setupInteractions() {
@@ -1459,8 +1589,44 @@
     document.getElementById('ins-id').textContent = `Train ${props.id}`;
     document.getElementById('ins-track').textContent = `${props.track} · ${props.elevLabel || ''}`;
     document.getElementById('ins-dir').textContent = props.directionLabel;
-    document.getElementById('ins-between').textContent = `${props.fromStation} ➔ ${props.toStation}`;
+    document.getElementById('ins-between').textContent = props.currentStation ? `📍 At Platform: ${props.currentStation}` : `${props.fromStation} ➔ ${props.toStation}`;
     document.getElementById('ins-speed').textContent = `${props.speedKph} km/h`;
+
+    const stateEl = document.getElementById('ins-state');
+    if (stateEl) {
+      stateEl.textContent = props.stateLabel || props.state || 'CRUISING';
+      stateEl.className = 'spec-v state-badge';
+      if (props.state === 'STOPPED') {
+        stateEl.classList.add('state-stopped');
+      } else if (props.state === 'BRAKING') {
+        stateEl.classList.add('state-braking');
+      } else if (props.state === 'ACCELERATING') {
+        stateEl.classList.add('state-accel');
+      } else {
+        stateEl.classList.add('state-cruising');
+      }
+    }
+
+    const dwellRow = document.getElementById('ins-dwell-row');
+    if (dwellRow) {
+      if (props.state === 'STOPPED') {
+        dwellRow.classList.remove('hidden');
+        const timerEl = document.getElementById('ins-dwell-timer');
+        const totalEl = document.getElementById('ins-dwell-total');
+        const reasonEl = document.getElementById('ins-dwell-reason');
+        const fillEl = document.getElementById('ins-dwell-fill');
+
+        if (timerEl) timerEl.textContent = `${props.dwellRemaining}s remaining`;
+        if (totalEl) totalEl.textContent = `/ ${props.dwellTotal}s dwell`;
+        if (reasonEl) reasonEl.textContent = props.dwellReason || 'Passenger Boarding';
+        if (fillEl && props.dwellTotal > 0) {
+          const pct = Math.max(0, Math.min(100, (props.dwellRemaining / props.dwellTotal) * 100));
+          fillEl.style.width = `${pct}%`;
+        }
+      } else {
+        dwellRow.classList.add('hidden');
+      }
+    }
   }
 
   document.addEventListener('DOMContentLoaded', init);

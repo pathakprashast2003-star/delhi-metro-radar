@@ -1066,6 +1066,390 @@ html, body {
   box-shadow: 0 0 0 1px #0F172A;
 }
 
+/* ── 6. TIMETABLE DOCK & 24H SCHEDULE CONTROLLER ──────────── */
+.timetable-dock {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(840px, calc(100% - 380px));
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  z-index: 24;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timetable-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clock-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+}
+
+.live-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  animation: pulse-live 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.clock-digits {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.time-mode-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.time-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.schedule-phase-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F1F5F9;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  flex: 1;
+  min-width: 200px;
+}
+
+.phase-icon {
+  font-size: 14px;
+}
+
+.phase-texts {
+  display: flex;
+  flex-direction: column;
+}
+
+.phase-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.phase-detail {
+  font-size: 10px;
+  color: var(--ink-secondary);
+  line-height: 1.2;
+}
+
+.quick-timeline-presets {
+  display: flex;
+  gap: 5px;
+}
+
+.time-preset-chip {
+  background: #F8FAFC;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--ink-heading);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.time-preset-chip:hover {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+}
+
+.time-preset-chip.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.timeline-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeline-bound-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-subtle);
+  font-weight: 600;
+}
+
+.slider-track-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.timeline-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #E2E8F0;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #E11D48;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.timeline-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider-milestone-marker {
+  position: absolute;
+  top: -14px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--ink-subtle);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.slider-milestone-marker.m-first {
+  left: 23%; /* 05:30 is 22.9% of 24h */
+}
+
+.slider-milestone-marker.m-last {
+  left: 95.8%; /* 23:00 is 95.8% of 24h */
+}
+
+.timeline-current-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+/* ── 7. INSPECTOR CARD KINEMATIC DWELL UI ─────────────────── */
+.state-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.state-badge.state-stopped {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+}
+
+.state-badge.state-braking {
+  background: #FEF3C7;
+  color: #D97706;
+  border: 1px solid #FDE68A;
+}
+
+.state-badge.state-cruising {
+  background: #DCFCE7;
+  color: #16A34A;
+  border: 1px solid #86EFAC;
+}
+
+.state-badge.state-accel {
+  background: #DBEAFE;
+  color: #2563EB;
+  border: 1px solid #93C5FD;
+}
+
+.dwell-row {
+  align-items: flex-start !important;
+}
+
+.dwell-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.dwell-top-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dwell-timer {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #DC2626;
+}
+
+.dwell-total {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink-subtle);
+}
+
+.dwell-reason {
+  font-size: 10px;
+  color: var(--ink-secondary);
+  line-height: 1.2;
+}
+
+.dwell-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #E2E8F0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dwell-fill {
+  height: 100%;
+  background: #EF4444;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+/* ── 8. NIGHT TRACK MAINTENANCE OVERLAY MODAL ─────────────── */
+.night-maintenance-modal {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(650px, 90%);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.night-maintenance-modal.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -15px);
+}
+
+.night-banner-content {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.night-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.night-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.night-badge {
+  display: inline-block;
+  background: rgba(239, 68, 68, 0.25);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+.night-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.night-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #CBD5E1;
+  margin: 0;
+}
+
+.night-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #94A3B8;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 8px;
+}
+
+.night-stats strong {
+  color: #F8FAFC;
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 860px) {
   .master-mode-strip {
@@ -1083,6 +1467,11 @@ html, body {
   .control-cluster {
     display: none;
   }
+  .timetable-dock {
+    width: 95%;
+    bottom: 10px;
+    padding: 8px 12px;
+  }
   .bottom-legend-strip {
     display: none;
   }
@@ -1093,3 +1482,4 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+

@@ -254,6 +254,21 @@
 
     <div class="callout-specs">
       <div class="spec-row">
+        <span class="spec-k">Kinematic State</span>
+        <span class="spec-v state-badge" id="ins-state">🟢 CRUISING</span>
+      </div>
+      <div class="spec-row dwell-row hidden" id="ins-dwell-row">
+        <span class="spec-k">Station Dwell</span>
+        <div class="dwell-box">
+          <div class="dwell-top-line">
+            <span class="dwell-timer" id="ins-dwell-timer">18s remaining</span>
+            <span class="dwell-total" id="ins-dwell-total">/ 50s total</span>
+          </div>
+          <span class="dwell-reason" id="ins-dwell-reason">Interchange Crowd Clearance</span>
+          <div class="dwell-progress-bar"><div class="dwell-fill" id="ins-dwell-fill" style="width: 45%;"></div></div>
+        </div>
+      </div>
+      <div class="spec-row">
         <span class="spec-k">Track Assignment</span>
         <span class="spec-v" id="ins-track">Track 1 (Down Line)</span>
       </div>
@@ -266,12 +281,69 @@
         <span class="spec-v highlight-station" id="ins-between">Kashmere Gate ➔ Chandni Chowk</span>
       </div>
       <div class="spec-row">
-        <span class="spec-k">Speed</span>
-        <span class="spec-v speed-badge" id="ins-speed">48 km/h</span>
+        <span class="spec-k">Instantaneous Speed</span>
+        <span class="spec-v speed-badge" id="ins-speed">74 km/h</span>
       </div>
       <div class="spec-row">
         <span class="spec-k">Flight Camera</span>
         <button class="track-follow-btn" id="btn-follow-train">Follow This Train 📹</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. 24-Hour DMRC Master Timetable & Timeline Controller (Floating Dock) ── -->
+  <div class="timetable-dock" id="timetable-dock">
+    <div class="timetable-status-bar">
+      <!-- Live Clock & Mode -->
+      <div class="clock-badge">
+        <span class="live-pulse-dot" id="clock-pulse"></span>
+        <span class="clock-digits" id="live-clock-text">09:25:30 IST</span>
+        <button class="time-mode-btn" id="btn-toggle-time-mode" title="Toggle Real-Time IST vs Timeline Scrub">🔴 Live IST</button>
+      </div>
+
+      <!-- Schedule Phase Badge -->
+      <div class="schedule-phase-pill" id="schedule-phase-pill">
+        <span class="phase-icon" id="phase-icon">🏢</span>
+        <div class="phase-texts">
+          <span class="phase-title" id="phase-title">MORNING PEAK RUSH</span>
+          <span class="phase-detail" id="phase-detail">16 Trains Active · High Interchange Crowds</span>
+        </div>
+      </div>
+
+      <!-- Quick 24h Jump Presets -->
+      <div class="quick-timeline-presets">
+        <button class="time-preset-chip" data-time="19800" title="05:30 AM First Metro Startup">🌅 05:30 First Metro</button>
+        <button class="time-preset-chip active" data-time="33300" title="09:15 AM Peak Commuter Rush">🏢 09:15 Peak</button>
+        <button class="time-preset-chip" data-time="82800" title="23:00 PM Last Metro Terminal Departures">🌙 23:00 Last Metro</button>
+        <button class="time-preset-chip" data-time="7200" title="02:00 AM Night Track Maintenance (No Metros Running)">🛑 02:00 Night Tracks</button>
+      </div>
+    </div>
+
+    <!-- Timeline 24-Hour Slider -->
+    <div class="timeline-slider-row">
+      <span class="timeline-bound-time">00:00</span>
+      <div class="slider-track-container">
+        <input type="range" id="timeline-slider" min="0" max="86399" step="60" value="33930" class="timeline-slider" />
+        <div class="slider-milestone-marker m-first" title="05:30 AM First Train">05:30 First</div>
+        <div class="slider-milestone-marker m-last" title="23:00 PM Last Train">23:00 Last</div>
+      </div>
+      <span class="timeline-bound-time">23:59</span>
+      <span class="timeline-current-label" id="timeline-current-label">09:25 AM</span>
+    </div>
+  </div>
+
+  <!-- Night Track Maintenance Banner (00:15 - 05:30 Window) -->
+  <div id="night-maintenance-banner" class="night-maintenance-modal hidden">
+    <div class="night-banner-content">
+      <div class="night-icon">🌙</div>
+      <div class="night-text">
+        <div class="night-badge">DMRC NIGHT NON-REVENUE WINDOW (00:15 – 05:30)</div>
+        <h3 class="night-title">Mainline Tracks De-Energized for Maintenance</h3>
+        <p class="night-desc">Zero passenger metro trains currently running on main tracks. Ultrasonic rail flaw detection, ballast tamping, and 25 kV catenary maintenance are actively underway. All 16 train consists are safely stabled in <strong>Sultanpur Depot</strong> and <strong>Khyber Pass Depot</strong>.</p>
+        <div class="night-stats">
+          <span>🌅 <strong>First Revenue Train:</strong> 05:30 AM (Samaypur Badli & Millennium City Centre)</span>
+          <span>🛑 <strong>Active Mainline Trains:</strong> 0</span>
+        </div>
       </div>
     </div>
   </div>
