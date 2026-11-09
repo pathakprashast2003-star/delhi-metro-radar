@@ -571,6 +571,146 @@ html, body {
   color: var(--ink-secondary);
 }
 
+/* Live 8-Car Coach Passenger Occupancy Meter (DMRC Notice 555) */
+.cutaway-coach-occupancy-wrap {
+  background: #F8FAFC;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coach-occupancy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.co-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--ink-subtle);
+  letter-spacing: 0.06em;
+}
+
+.co-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: #059669;
+  background: #D1FAE5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.coach-cars-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+.diorama-coach-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+  transition: transform 0.15s ease;
+}
+
+.diorama-coach-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 23, 42, 0.2);
+}
+
+.diorama-coach-card.ladies-car {
+  border-top: 2.5px solid #EC4899;
+}
+
+.diorama-coach-card.accessible-car {
+  border-top: 2.5px solid #3B82F6;
+}
+
+.car-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink-heading);
+}
+
+.car-crowd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-heading);
+}
+
+.car-gauge {
+  width: 90%;
+  height: 4px;
+  background: #E2E8F0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* Station Amenities & Operational Metadata Strip */
+.cutaway-station-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.meta-card {
+  background: #F8FAFC;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.meta-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink-subtle);
+  letter-spacing: 0.05em;
+}
+
+.meta-val {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-heading);
+}
+
+.meta-sub {
+  font-size: 10px;
+  color: var(--ink-secondary);
+}
+
+.meta-link {
+  color: #0284C7;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.meta-link:hover {
+  text-decoration: underline;
+}
+
 /* Station Switcher & Jump to Radar */
 .cutaway-bottom-row {
   display: flex;

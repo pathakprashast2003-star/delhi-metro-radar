@@ -735,25 +735,25 @@
 
     // ── D. TRANSITION PORTALS & CUTAWAY RAMPS ────────────────
     if (map.getSource('portal-ramps')) {
-      // Concrete U-trough ramp retaining walls
+      // Precast concrete U-trough ramp retaining walls (Blends seamlessly into viaduct)
       map.addLayer({
         id: 'portal-ramps-casing',
         type: 'fill',
         source: 'portal-ramps',
         paint: {
-          'fill-color': '#0F172A',
-          'fill-opacity': 0.85,
-          'fill-outline-color': '#64748B'
+          'fill-color': '#E2E8F0',
+          'fill-opacity': 0.95,
+          'fill-outline-color': '#94A3B8'
         }
       });
 
-      // Ramp roadbed descending into earth
+      // Smooth concrete ramp roadbed descending into earth
       map.addLayer({
         id: 'portal-ramps-bed',
         type: 'fill',
         source: 'portal-ramps',
         paint: {
-          'fill-color': '#334155',
+          'fill-color': '#F1F5F9',
           'fill-opacity': 0.95
         }
       });
@@ -962,10 +962,10 @@
         source: 'platform-canopies',
         minzoom: 12.5,
         paint: {
-          'fill-extrusion-color': '#334155', // Sleek architectural graphite steel canopy
-          'fill-extrusion-height': 9.5,
+          'fill-extrusion-color': '#CBD5E1', // Translucent architectural canopy structure
+          'fill-extrusion-height': 8.0,
           'fill-extrusion-base': 4.5,
-          'fill-extrusion-opacity': 0.88
+          'fill-extrusion-opacity': 0.60
         }
       });
     }
@@ -1427,10 +1427,8 @@
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    const initialSurface = urlParams.get('surface');
-    if (initialSurface && ['corridor', 'cutaway'].includes(initialSurface)) {
-      window.switchSurface(initialSurface);
-    }
+    const initialSurface = urlParams.get('surface') || 'cutaway';
+    window.switchSurface(initialSurface);
 
     // Central Line Cutaway Station Switcher & Jump to Radar
     let activeCutawayKey = 'rajiv';
@@ -1440,6 +1438,12 @@
         sub: 'Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform (Yellow & Blue Line)',
         image: '/public/dmrc_underground_tube_diorama.png',
         type: 'Underground Tube (Cutaway)',
+        firstLast: '05:29 AM – 23:47 PM',
+        gates: 'Gate 1 & Gate 2 (♿ Divyang)',
+        phone: '011-23417910',
+        leftAnnot: 'Platform 1 · Towards Millennium',
+        rightAnnot: 'Platform 2 · Towards Badli',
+        fleetAnnot: '8-Car Wide-Body Consist',
         coords: [77.2196, 28.6329],
         zoom: 15.6
       },
@@ -1448,6 +1452,12 @@
         sub: 'Architectural 3D Cutaway Pedestal · Red, Yellow & Violet Line Triple Interchange Station',
         image: '/public/dmrc_underground_tube_diorama.png',
         type: 'Underground Multi-Level Tube',
+        firstLast: '05:25 AM – 23:55 PM',
+        gates: 'Gate 1, 2 & 5 (♿ Divyang Ramp)',
+        phone: '011-23860012',
+        leftAnnot: 'Platform 3 · Towards Millennium',
+        rightAnnot: 'Platform 4 · Towards Badli',
+        fleetAnnot: 'Triple Interchange Junction',
         coords: [77.2282, 28.6675],
         zoom: 15.6
       },
@@ -1456,6 +1466,12 @@
         sub: 'Architectural 3D Cutaway Pedestal · 29m Deep Underground Tube Station (Yellow & Magenta Line)',
         image: '/public/dmrc_underground_tube_diorama.png',
         type: 'Subterranean Deep Tube (-29m)',
+        firstLast: '05:38 AM – 23:42 PM',
+        gates: 'Gate 2 & Gate 4 (♿ Accessible)',
+        phone: '011-26511234',
+        leftAnnot: 'Platform 1 · Towards Millennium',
+        rightAnnot: 'Platform 2 · Towards Badli',
+        fleetAnnot: '29m Subterranean Bore',
         coords: [77.2067, 28.5443],
         zoom: 15.6
       },
@@ -1464,6 +1480,12 @@
         sub: 'Architectural 3D Cutaway Pedestal · Elevated Viaduct Deck, Steel Arch Canopy & Rapid Metro Terminus',
         image: '/public/dmrc_elevated_viaduct_diorama.png',
         type: 'Elevated Viaduct (+15m)',
+        firstLast: '05:50 AM – 23:05 PM',
+        gates: 'Gate 1, 2 & 4 (♿ Elevator Access)',
+        phone: '0124-2804567',
+        leftAnnot: 'Platform 1 · Southbound Terminal',
+        rightAnnot: 'Platform 2 · Turnaround Siding',
+        fleetAnnot: 'Viaduct Piers & Arched Canopy',
         coords: [77.0725, 28.4594],
         zoom: 15.4
       }
@@ -1479,11 +1501,28 @@
         if (meta) {
           const titleEl = document.getElementById('cutaway-main-station-title');
           if (titleEl) titleEl.textContent = meta.title;
-          const subEl = document.querySelector('.cutaway-spotlight-sub');
+          const subEl = document.getElementById('cutaway-main-station-sub') || document.querySelector('.cutaway-spotlight-sub');
           if (subEl) subEl.textContent = meta.sub;
           const typeBadge = document.getElementById('cutaway-station-type-badge');
           if (typeBadge) typeBadge.textContent = meta.type;
           
+          const flEl = document.getElementById('meta-first-last-val');
+          if (flEl && meta.firstLast) flEl.textContent = meta.firstLast;
+          const gatesEl = document.getElementById('meta-gates-val');
+          if (gatesEl && meta.gates) gatesEl.textContent = meta.gates;
+          const phoneEl = document.getElementById('meta-phone-link');
+          if (phoneEl && meta.phone) {
+            phoneEl.textContent = '📞 ' + meta.phone;
+            phoneEl.href = 'tel:' + meta.phone.replace(/[^0-9]/g, '');
+          }
+
+          const al = document.getElementById('annot-left-text');
+          if (al && meta.leftAnnot) al.textContent = meta.leftAnnot;
+          const ar = document.getElementById('annot-right-text');
+          if (ar && meta.rightAnnot) ar.textContent = meta.rightAnnot;
+          const af = document.getElementById('annot-fleet-text');
+          if (af && meta.fleetAnnot) af.textContent = meta.fleetAnnot;
+
           const imgEl = document.getElementById('cutaway-img-element') || document.querySelector('.cutaway-centerpiece-img');
           if (imgEl && meta.image && imgEl.src !== meta.image) {
             imgEl.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
@@ -1498,6 +1537,21 @@
         }
       });
     });
+
+    // Interactive 3D Mouse Parallax Tilt on Pedestal Stage
+    const cutawayStage = document.querySelector('.cutaway-render-stage');
+    const cutawayImg = document.getElementById('cutaway-img-element');
+    if (cutawayStage && cutawayImg) {
+      cutawayStage.addEventListener('mousemove', (e) => {
+        const rect = cutawayStage.getBoundingClientRect();
+        const normX = (e.clientX - rect.left) / rect.width - 0.5;
+        const normY = (e.clientY - rect.top) / rect.height - 0.5;
+        cutawayImg.style.transform = `perspective(1000px) rotateY(${normX * 12}deg) rotateX(${-normY * 12}deg) scale(1.02)`;
+      });
+      cutawayStage.addEventListener('mouseleave', () => {
+        cutawayImg.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1)';
+      });
+    }
 
     const jumpBtn = document.getElementById('btn-jump-radar-from-cutaway');
     if (jumpBtn) {

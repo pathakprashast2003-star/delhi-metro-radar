@@ -31,18 +31,18 @@
 
   <!-- ── 1. Master Mode Navigation Strip (Top Center) ────────── -->
   <nav class="master-mode-strip">
-    <button class="mode-tab active" data-surface="corridor" id="tab-corridor">
+    <button class="mode-tab active" data-surface="cutaway" id="tab-cutaway">
+      <span class="tab-icon">🏛️</span>
+      <div class="tab-text">
+        <span class="tab-title">Station 3D Diorama</span>
+        <span class="tab-sub">Interactive Architectural Cutaway</span>
+      </div>
+    </button>
+    <button class="mode-tab" data-surface="corridor" id="tab-corridor">
       <span class="tab-icon">🗺️</span>
       <div class="tab-text">
         <span class="tab-title">Corridor Radar</span>
-        <span class="tab-sub">49 km Scheduled Dual-Track</span>
-      </div>
-    </button>
-    <button class="mode-tab" data-surface="cutaway" id="tab-cutaway">
-      <span class="tab-icon">🏛️</span>
-      <div class="tab-text">
-        <span class="tab-title">Station Cutaway</span>
-        <span class="tab-sub">Tube Tunnel Diorama</span>
+        <span class="tab-sub">49.3 km Route Overview</span>
       </div>
     </button>
   </nav>
@@ -59,15 +59,8 @@
     <div class="station-search-results hidden" id="station-search-results"></div>
   </div>
 
-  <!-- SURFACE A: Full-Screen MapLibre Radar -->
-  <div id="map" class="view-surface active"></div>
-  <div class="placeholder-disclaimer-pill" id="line-status-pill">
-    <span class="disc-dot" id="line-status-dot">🟢</span>
-    <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
-  </div>
-
-  <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase -->
-  <section id="cutaway-fullscreen-view" class="view-surface hidden">
+  <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase (PRIMARY HERO) -->
+  <section id="cutaway-fullscreen-view" class="view-surface active">
     <div class="cutaway-hero-container">
       <div class="cutaway-spotlight-card">
         <div class="cutaway-card-top">
@@ -77,14 +70,14 @@
           </div>
           <div class="service-tag-pill">
             <span class="service-beacon"></span>
-            <span>[Service Status: Minor Delays]</span>
+            <span id="cutaway-status-beacon-text">[Service Status: Minor Delays]</span>
           </div>
         </div>
 
         <div class="cutaway-title-row">
           <div>
             <h2 class="cutaway-spotlight-title" id="cutaway-main-station-title">Rajiv Chowk Intermodal</h2>
-            <p class="cutaway-spotlight-sub">Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform</p>
+            <p class="cutaway-spotlight-sub" id="cutaway-main-station-sub">Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform</p>
           </div>
           <div class="cutaway-type-badge" id="cutaway-station-type-badge">Underground Tube Cutaway</div>
         </div>
@@ -97,15 +90,15 @@
           <!-- Technical Annotation Badges floating over the diorama (Nano Banana reference) -->
           <div class="diorama-annot-badge annot-left">
             <span class="annot-dot pulse-amber"></span>
-            <span class="annot-text">Platform 1 · Towards Millennium</span>
+            <span class="annot-text" id="annot-left-text">Platform 1 · Towards Millennium</span>
           </div>
           <div class="diorama-annot-badge annot-right">
             <span class="annot-dot pulse-green"></span>
-            <span class="annot-text">Platform 2 · Towards Badli</span>
+            <span class="annot-text" id="annot-right-text">Platform 2 · Towards Badli</span>
           </div>
           <div class="diorama-annot-badge annot-fleet">
             <span class="annot-icon">🚇</span>
-            <span class="annot-text">8-Car Consist Docked</span>
+            <span class="annot-text" id="annot-fleet-text">8-Car Wide-Body Consist</span>
           </div>
         </div>
 
@@ -125,6 +118,75 @@
           </div>
         </div>
 
+        <!-- Live 8-Car Coach Passenger Occupancy Meter (DMRC Notice 555) -->
+        <div class="cutaway-coach-occupancy-wrap">
+          <div class="coach-occupancy-header">
+            <span class="co-title">8-CAR COACH PASSENGER OCCUPANCY · LIVE TELEMETRY</span>
+            <span class="co-badge">DMRC Notice 555 Calibrated</span>
+          </div>
+          <div class="coach-cars-row">
+            <div class="diorama-coach-card ladies-car" title="Coach 1: Reserved for Women Passengers">
+              <span class="car-badge">🌸 Car 1</span>
+              <span class="car-crowd">24%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 24%; background: #EC4899;"></div></div>
+            </div>
+            <div class="diorama-coach-card" title="Coach 2: General Passenger Carriage">
+              <span class="car-badge">Car 2</span>
+              <span class="car-crowd">45%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 45%; background: #10B981;"></div></div>
+            </div>
+            <div class="diorama-coach-card" title="Coach 3: General Passenger Carriage">
+              <span class="car-badge">Car 3</span>
+              <span class="car-crowd">78%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 78%; background: #F59E0B;"></div></div>
+            </div>
+            <div class="diorama-coach-card" title="Coach 4: Central Escalator Access (Highest Load)">
+              <span class="car-badge">Car 4</span>
+              <span class="car-crowd">88%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 88%; background: #EF4444;"></div></div>
+            </div>
+            <div class="diorama-coach-card" title="Coach 5: Concourse Staircase Access">
+              <span class="car-badge">Car 5</span>
+              <span class="car-crowd">72%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 72%; background: #F59E0B;"></div></div>
+            </div>
+            <div class="diorama-coach-card" title="Coach 6: General Passenger Carriage">
+              <span class="car-badge">Car 6</span>
+              <span class="car-crowd">52%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 52%; background: #10B981;"></div></div>
+            </div>
+            <div class="diorama-coach-card" title="Coach 7: General Passenger Carriage">
+              <span class="car-badge">Car 7</span>
+              <span class="car-crowd">35%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 35%; background: #10B981;"></div></div>
+            </div>
+            <div class="diorama-coach-card accessible-car" title="Coach 8: Divyang Wheelchair Space & Assistance">
+              <span class="car-badge">♿ Car 8</span>
+              <span class="car-crowd">28%</span>
+              <div class="car-gauge"><div class="gauge-fill" style="width: 28%; background: #3B82F6;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Station Amenities & Operational Metadata Strip -->
+        <div class="cutaway-station-meta-grid">
+          <div class="meta-card">
+            <span class="meta-label">FIRST / LAST TRAINS</span>
+            <div class="meta-val" id="meta-first-last-val">05:29 AM – 23:47 PM</div>
+            <div class="meta-sub">Standard Day Operations · 3m Headways</div>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">KEY EXIT GATES</span>
+            <div class="meta-val" id="meta-gates-val">Gate 1 & Gate 2 (♿ Divyang)</div>
+            <div class="meta-sub">Direct access to Connaught Place & Janpath</div>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">STATION HELPLINE</span>
+            <div class="meta-val"><a href="tel:01123417910" class="meta-link" id="meta-phone-link">📞 011-23417910</a></div>
+            <div class="meta-sub">Station Control Room · Direct Line</div>
+          </div>
+        </div>
+
         <!-- Station Switcher Buttons & Jump to Radar -->
         <div class="cutaway-bottom-row">
           <div class="cutaway-station-switcher">
@@ -134,11 +196,18 @@
             <button class="station-switch-btn" data-st="hauzkhas">Hauz Khas (Deep Tube)</button>
             <button class="station-switch-btn" data-st="millennium">Millennium City (Elevated)</button>
           </div>
-          <button class="cutaway-jump-radar-btn" id="btn-jump-radar-from-cutaway">📍 View on Radar ➔</button>
+          <button class="cutaway-jump-radar-btn" id="btn-jump-radar-from-cutaway">🗺️ View Corridor Radar ➔</button>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- SURFACE A: Full-Screen MapLibre Radar -->
+  <div id="map" class="view-surface hidden"></div>
+  <div class="placeholder-disclaimer-pill hidden" id="line-status-pill">
+    <span class="disc-dot" id="line-status-dot">🟢</span>
+    <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
+  </div>
 
   <!-- ── 3. Overlays & Floating HUD ──────────────────────────── -->
 
