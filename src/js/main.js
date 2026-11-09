@@ -1143,48 +1143,10 @@
   let landmarkMarkers = [];
 
   function add3DStationLandmarks() {
-    // Clear any previous markers
+    // Clean map view: remove heavy floating image cards from map view so rails,
+    // physical 3D station slabs, and moving trains remain crisp and unoccluded.
     landmarkMarkers.forEach(m => m.remove());
     landmarkMarkers = [];
-
-    SIGNATURE_LANDMARKS.forEach(lm => {
-      const el = document.createElement('div');
-      el.className = 'landmark-3d-container';
-      el.setAttribute('data-st-index', lm.index);
-      el.innerHTML = `
-        <div class="landmark-model-wrap">
-          <img src="${lm.img}" alt="${lm.name}" class="landmark-img" />
-          <div class="landmark-ground-shadow"></div>
-        </div>
-        <div class="landmark-badge">
-          <span class="landmark-dot"></span>
-          <span>${lm.badge}</span>
-        </div>
-      `;
-
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        map.flyTo({
-          center: lm.coords,
-          zoom: 15.6,
-          pitch: 52,
-          bearing: -14,
-          duration: 900
-        });
-        openStationPanel(lm.index);
-      });
-
-      const marker = new maplibregl.Marker({
-        element: el,
-        anchor: 'bottom',
-        pitchAlignment: 'viewport',
-        rotationAlignment: 'viewport'
-      })
-        .setLngLat(lm.coords)
-        .addTo(map);
-
-      landmarkMarkers.push(marker);
-    });
   }
 
   function updateMarkerScale() {
@@ -1966,6 +1928,18 @@
       if (feat && feat.properties) {
         openStationPanel(feat.properties.name);
       }
+    });
+
+    ['station-labels-major', 'station-labels-local'].forEach(layerId => {
+      map.on('click', layerId, (e) => {
+        const feat = e.features && e.features[0];
+        if (feat && feat.properties) {
+          const val = (feat.properties.index !== undefined && feat.properties.index !== null) ? parseInt(feat.properties.index, 10) : feat.properties.name;
+          openStationPanel(val);
+        }
+      });
+      map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
     });
 
     map.on('dragstart', () => {
