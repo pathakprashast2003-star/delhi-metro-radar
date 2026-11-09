@@ -1,0 +1,43 @@
+-- Yellow Line stations, in the same order as src/data/yellow_line_service.json
+insert into public.lines (id, name) values ('yellow', 'Yellow Line')
+on conflict (id) do update set name = excluded.name;
+
+insert into public.stations (line_id, idx, id, name) values
+  ('yellow', 0,  'samaypur_badli',        'Samaypur Badli'),
+  ('yellow', 1,  'rohini_18_19',          'Rohini Sector 18, 19'),
+  ('yellow', 2,  'haiderpur_badli_mor',   'Haiderpur Badli Mor'),
+  ('yellow', 3,  'jahangirpuri',          'Jahangirpuri'),
+  ('yellow', 4,  'adarsh_nagar',          'Adarsh Nagar'),
+  ('yellow', 5,  'azadpur',               'Azadpur'),
+  ('yellow', 6,  'model_town',            'Model Town'),
+  ('yellow', 7,  'gtb_nagar',             'GTB Nagar'),
+  ('yellow', 8,  'vishwavidyalaya',       'Vishwavidyalaya'),
+  ('yellow', 9,  'vidhan_sabha',          'Vidhan Sabha'),
+  ('yellow', 10, 'civil_lines',           'Civil Lines'),
+  ('yellow', 11, 'kashmere_gate',         'Kashmere Gate'),
+  ('yellow', 12, 'chandni_chowk',         'Chandni Chowk'),
+  ('yellow', 13, 'chawri_bazar',          'Chawri Bazar'),
+  ('yellow', 14, 'new_delhi',             'New Delhi'),
+  ('yellow', 15, 'rajiv_chowk',           'Rajiv Chowk'),
+  ('yellow', 16, 'patel_chowk',           'Patel Chowk'),
+  ('yellow', 17, 'central_secretariat',   'Central Secretariat'),
+  ('yellow', 18, 'udyog_bhawan',          'Udyog Bhawan'),
+  ('yellow', 19, 'lok_kalyan_marg',       'Lok Kalyan Marg'),
+  ('yellow', 20, 'jor_bagh',              'Jor Bagh'),
+  ('yellow', 21, 'dilli_haat_ina',        'Dilli Haat - INA'),
+  ('yellow', 22, 'aiims',                 'AIIMS'),
+  ('yellow', 23, 'green_park',            'Green Park'),
+  ('yellow', 24, 'hauz_khas',             'Hauz Khas'),
+  ('yellow', 25, 'malviya_nagar',         'Malviya Nagar'),
+  ('yellow', 26, 'saket',                 'Saket'),
+  ('yellow', 27, 'qutab_minar',           'Qutab Minar'),
+  ('yellow', 28, 'chhatarpur',            'Chhatarpur'),
+  ('yellow', 29, 'sultanpur',             'Sultanpur'),
+  ('yellow', 30, 'ghitorni',              'Ghitorni'),
+  ('yellow', 31, 'arjan_garh',            'Arjan Garh'),
+  ('yellow', 32, 'guru_dronacharya',      'Guru Dronacharya'),
+  ('yellow', 33, 'sikanderpur',           'Sikanderpur'),
+  ('yellow', 34, 'mg_road',               'MG Road'),
+  ('yellow', 35, 'iffco_chowk',           'IFFCO Chowk'),
+  ('yellow', 36, 'millennium_city_centre','Millennium City Centre Gurugram')
+on conflict (line_id, idx) do update set id = excluded.id, name = excluded.name;

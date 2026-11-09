@@ -1,0 +1,15 @@
+{
+  "name": "delhi-metro-radar-backend",
+  "version": "1.0.0",
+  "description": "Live reports backend (Supabase SQL) + tests",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node tests/run_tests.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.17"
+  },
+  "private": true
+}

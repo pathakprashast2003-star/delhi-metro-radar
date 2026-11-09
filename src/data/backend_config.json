@@ -1,0 +1,8 @@
+{
+  "supabaseUrl": "",
+  "supabaseAnonKey": "",
+  "line": "yellow",
+  "pollIntervalMs": 30000,
+  "enabled": false,
+  "comment": "Set enabled to true and fill supabaseUrl + supabaseAnonKey when deploying to Supabase. When disabled, app runs 100% locally with zero errors."
+}

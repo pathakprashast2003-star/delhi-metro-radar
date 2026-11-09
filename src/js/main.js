@@ -137,6 +137,23 @@
     await checkServiceAdvisories();
     setInterval(checkServiceAdvisories, 60000);
 
+    if (window.LiveClient) {
+      try {
+        await LiveClient.init();
+        LiveClient.onStateUpdate((state) => {
+          if (state && state.alerts && state.alerts.length > 0) {
+            updateAdvisoryUI({
+              active: true,
+              title: state.alerts[0].title || 'Rider-Reported Hold',
+              message: state.alerts[0].message || 'Crowd observations indicate unusual delay.'
+            });
+          }
+        });
+      } catch (e) {
+        console.warn('[LiveClient] Init warning:', e);
+      }
+    }
+
     initDioramaMap();
     startClientSimulationTicker();
     startAnimationLoop();
@@ -1803,8 +1820,14 @@
         const currentSaved = localStorage.getItem(delayKey);
         if (currentSaved && (Date.now() - Number(currentSaved) < 900000)) {
           localStorage.removeItem(delayKey);
+          if (window.LiveClient) {
+            LiveClient.submitReport({ kind: 'cleared', stationIdx: stIdx, direction: 1 });
+          }
         } else {
           localStorage.setItem(delayKey, Date.now());
+          if (window.LiveClient) {
+            LiveClient.submitReport({ kind: 'stuck', stationIdx: stIdx, direction: 1 });
+          }
         }
         renderStationPanel(stIdx, sec, dayVariant);
       };
