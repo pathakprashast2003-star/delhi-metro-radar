@@ -189,10 +189,10 @@
     map = new maplibregl.Map({
       container: 'map',
       style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-      center: [77.1600, 28.6050], // Centered for complete 49.3 km corridor overview
-      zoom: 11.2,
-      pitch: 48,      // Isometric 3D architectural tilt
-      bearing: -14,   // Isometric alignment
+      center: [77.1400, 28.5850], // Centered for complete 49.3 km corridor overview from Samaypur Badli to Millennium City
+      zoom: 10.35,
+      pitch: 0,       // Clean 2D plan on overview load (no squashed foreshortening)
+      bearing: 0,
       minZoom: 9.0,
       maxZoom: 18.0,
       maxBounds: [
@@ -367,7 +367,92 @@
   function renderViaductAndDualTracks() {
     if (!trackData) return;
 
-    // ── A. GEOJSON SOURCES ────────────────────────────────────
+    // ── 0. UNIFIED OVERVIEW CORRIDOR RIBBON (z < 13.5) ────────
+    // Continuous 49.3 km route centerline for a flawless, glowing jewel-ribbon at overview zooms.
+    // Zero seams, zero aliased sleepers, zero cluttered CAD borders.
+    const continuousOverviewRoute = [
+      ...trackData.flyoverNorthCenter,
+      ...trackData.tunnelCenter,
+      ...trackData.flyoverSouthCenter
+    ];
+    map.addSource('corridor-overview-centerline', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: { name: 'Delhi Metro Yellow Line Corridor' },
+        geometry: {
+          type: 'LineString',
+          coordinates: continuousOverviewRoute
+        }
+      }
+    });
+
+    // 0a. Soft Amber Ambient Luminous Glow (z9 to z13.5)
+    map.addLayer({
+      id: 'overview-corridor-aura',
+      type: 'line',
+      source: 'corridor-overview-centerline',
+      maxzoom: 13.5,
+      paint: {
+        'line-color': '#F59E0B',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 7.0, 11, 13.0, 13.5, 18.0],
+        'line-opacity': 0.28,
+        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 3, 11, 5, 13.5, 7]
+      }
+    });
+
+    // 0b. Deep Obsidian Slate Contrast Casing (z9 to z13.5)
+    map.addLayer({
+      id: 'overview-corridor-casing',
+      type: 'line',
+      source: 'corridor-overview-centerline',
+      maxzoom: 13.5,
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': '#0F172A',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.6, 11, 5.8, 13.5, 8.8],
+        'line-opacity': 0.95
+      }
+    });
+
+    // 0c. Radiant DMRC Yellow Line Core (z9 to z13.5)
+    map.addLayer({
+      id: 'overview-corridor-core',
+      type: 'line',
+      source: 'corridor-overview-centerline',
+      maxzoom: 13.5,
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': '#FBBF24',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.2, 11, 3.8, 13.5, 6.2],
+        'line-opacity': 1.0
+      }
+    });
+
+    // 0d. Polished Mirror Crown Light Sheen (z9 to z13.5)
+    map.addLayer({
+      id: 'overview-corridor-gleam',
+      type: 'line',
+      source: 'corridor-overview-centerline',
+      maxzoom: 13.5,
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': '#FEF3C7',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.6, 11, 1.1, 13.5, 1.6],
+        'line-opacity': 0.90
+      }
+    });
+
+    // ── A. GEOJSON SOURCES FOR CLOSE-UP 3D (z >= 13.5) ────────
     // 1. Flyover Viaduct Centers (North & South Elevated Sections)
     map.addSource('flyover-viaduct-center', {
       type: 'geojson',
@@ -439,10 +524,7 @@
       });
     }
 
-    // ── HELPER: BUILD MULTI-TIER TRACK SYSTEM (PURE TOP-LEVEL INTERPOLATE) ──
-    // Eliminates nested case/interpolate errors in MapLibre GL.
-    // Guarantees Track 1 (Southbound) and Track 2 (Northbound) are separated by 7.5 to 9.6 screen pixels
-    // at overview zooms (z9 to z14), completely solving the "looks like one line on open" problem!
+    // ── HELPER: BUILD MULTI-TIER TRACK SYSTEM FOR CLOSE-UP 3D (z >= 13.5) ──
     function addTrackRailSystem(structureType, sourceId, dir, sign) {
       const isDown = sign < 0;
       const isTunnel = structureType === 'tunnel';
@@ -450,185 +532,141 @@
       const sleeperColor = isTunnel ? '#64748B' : '#94A3B8';
 
       const plinthOffset = isDown
-        ? ['interpolate', ['linear'], ['zoom'], 9, -3.2, 11, -4.0, 13, -4.8, 14.5, -2.0, 16, 0.0]
-        : ['interpolate', ['linear'], ['zoom'], 9,  3.2, 11,  4.0, 13,  4.8, 14.5,  2.0, 16, 0.0];
+        ? ['interpolate', ['linear'], ['zoom'], 13.5, -3.2, 15, -2.0, 16, 0.0]
+        : ['interpolate', ['linear'], ['zoom'], 13.5,  3.2, 15,  2.0, 16, 0.0];
 
       const leftRailOffset = isDown
-        ? ['interpolate', ['linear'], ['zoom'], 9, -4.3, 11, -5.2, 13, -6.6, 15, -2.6, 17, -4.5]
-        : ['interpolate', ['linear'], ['zoom'], 9,  2.1, 11,  2.8, 13,  3.0, 15, -2.6, 17, -4.5];
+        ? ['interpolate', ['linear'], ['zoom'], 13.5, -4.8, 15, -2.6, 17, -4.5]
+        : ['interpolate', ['linear'], ['zoom'], 13.5,  2.4, 15, -2.6, 17, -4.5];
 
       const rightRailOffset = isDown
-        ? ['interpolate', ['linear'], ['zoom'], 9, -2.1, 11, -2.8, 13, -3.0, 15,  2.6, 17,  4.5]
-        : ['interpolate', ['linear'], ['zoom'], 9,  4.3, 11,  5.2, 13,  6.6, 15,  2.6, 17,  4.5];
+        ? ['interpolate', ['linear'], ['zoom'], 13.5, -2.4, 15,  2.6, 17,  4.5]
+        : ['interpolate', ['linear'], ['zoom'], 13.5,  4.8, 15,  2.6, 17,  4.5];
 
       const thirdOffset = isDown
-        ? ['interpolate', ['linear'], ['zoom'], 12, -2.0, 14, -0.4, 16, 5.8, 17, 8.2]
-        : ['interpolate', ['linear'], ['zoom'], 12,  7.0, 14,  7.6, 16, 5.8, 17, 8.2];
+        ? ['interpolate', ['linear'], ['zoom'], 14, -0.4, 16, 5.8, 17, 8.2]
+        : ['interpolate', ['linear'], ['zoom'], 14,  7.6, 16, 5.8, 17, 8.2];
 
-      // 1. Overview Track Plinth Casing (z9 to z12.0)
-      map.addLayer({
-        id: `${structureType}-track-${dir}-overview-casing`,
-        type: 'line',
-        source: sourceId,
-        filter: ['==', ['get', 'dir'], dir],
-        maxzoom: 12.0,
-        paint: {
-          'line-offset': plinthOffset,
-          'line-color': plinthColor,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.4, 11, 3.6, 12, 4.4],
-          'line-opacity': 0.95
-        }
-      });
-
-      // 2. Overview Vibrant Yellow Line Core (z9 to z12.0)
-      map.addLayer({
-        id: `${structureType}-track-${dir}-overview-core`,
-        type: 'line',
-        source: sourceId,
-        filter: ['==', ['get', 'dir'], dir],
-        maxzoom: 12.0,
-        paint: {
-          'line-offset': plinthOffset,
-          'line-color': '#F59E0B',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 11, 2.2, 12, 2.8],
-          'line-opacity': 1.0
-        }
-      });
-
-      // 3. Overview Polished Steel Rail Crown Gleam (z9 to z12.0)
-      map.addLayer({
-        id: `${structureType}-track-${dir}-overview-gleam`,
-        type: 'line',
-        source: sourceId,
-        filter: ['==', ['get', 'dir'], dir],
-        maxzoom: 12.0,
-        paint: {
-          'line-offset': plinthOffset,
-          'line-color': '#FFFFFF',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.6, 11, 0.9, 12, 1.2],
-          'line-opacity': 0.90
-        }
-      });
-
-      // 4. Detailed Ballastless Concrete Trackbed Plinth (z10.8 to 18+)
+      // 1. Detailed Ballastless Concrete Trackbed Plinth (z >= 13.5)
       map.addLayer({
         id: `${structureType}-track-${dir}-plinth`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 10.8,
+        minzoom: 13.5,
         paint: {
           'line-offset': plinthOffset,
           'line-color': plinthColor,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 4.2, 13, 6.8, 15, 11.0, 17, 18.0],
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.3, 11.5, 0.95]
+          'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 5.0, 15, 11.0, 17, 18.0],
+          'line-opacity': 0.95
         }
       });
 
-      // 5. Precast Concrete Transverse Sleepers (z10.8 to 18+)
+      // 2. Precast Concrete Transverse Sleepers (z >= 14.0)
       map.addLayer({
         id: `${structureType}-track-${dir}-sleepers`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 10.8,
+        minzoom: 14.0,
         paint: {
           'line-offset': plinthOffset,
           'line-color': sleeperColor,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.8, 13, 6.0, 15, 9.5, 17, 16.0],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14.0, 6.5, 15, 9.5, 17, 16.0],
           'line-dasharray': [0.18, 0.35],
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.3, 11.5, 1.0]
+          'line-opacity': 1.0
         }
       });
 
-      // 6. Left Steel Rail - Base Shadow (z10.8 to 18+)
+      // 3. Left Steel Rail - Base Shadow (z >= 14.0)
       map.addLayer({
         id: `${structureType}-track-${dir}-rail-left-base`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 10.8,
+        minzoom: 14.0,
         paint: {
           'line-offset': leftRailOffset,
           'line-color': '#0F172A',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 13, 1.6, 15, 2.2, 17, 3.5],
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.3, 11.5, 1.0]
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14.0, 1.8, 15, 2.2, 17, 3.5],
+          'line-opacity': 1.0
         }
       });
 
-      // 7. Left Steel Rail - Gleaming Mirror Crown (z10.8 to 18+)
+      // 4. Left Steel Rail - Gleaming Mirror Crown (z >= 14.0)
       map.addLayer({
         id: `${structureType}-track-${dir}-rail-left-head`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 10.8,
+        minzoom: 14.0,
         paint: {
           'line-offset': leftRailOffset,
           'line-color': '#FFFFFF',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.7, 13, 1.0, 15, 1.4, 17, 2.2],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14.0, 1.1, 15, 1.4, 17, 2.2],
           'line-opacity': 1.0
         }
       });
 
-      // 8. Right Steel Rail - Base Shadow (z10.8 to 18+)
+      // 5. Right Steel Rail - Base Shadow (z >= 14.0)
       map.addLayer({
         id: `${structureType}-track-${dir}-rail-right-base`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 10.8,
+        minzoom: 14.0,
         paint: {
           'line-offset': rightRailOffset,
           'line-color': '#0F172A',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.2, 13, 1.6, 15, 2.2, 17, 3.5],
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 10.8, 0.3, 11.5, 1.0]
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14.0, 1.8, 15, 2.2, 17, 3.5],
+          'line-opacity': 1.0
         }
       });
 
-      // 9. Right Steel Rail - Gleaming Mirror Crown (z10.8 to 18+)
+      // 6. Right Steel Rail - Gleaming Mirror Crown (z >= 14.0)
       map.addLayer({
         id: `${structureType}-track-${dir}-rail-right-head`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 10.8,
+        minzoom: 14.0,
         paint: {
           'line-offset': rightRailOffset,
           'line-color': '#FFFFFF',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.7, 13, 1.0, 15, 1.4, 17, 2.2],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14.0, 1.1, 15, 1.4, 17, 2.2],
           'line-opacity': 1.0
         }
       });
 
-      // 10. Golden Power Conductor Rail / Third Rail (z12.0 to 18+)
+      // 7. Golden Power Conductor Rail / Third Rail (z >= 14.2)
       map.addLayer({
         id: `${structureType}-track-${dir}-third-rail`,
         type: 'line',
         source: sourceId,
         filter: ['==', ['get', 'dir'], dir],
-        minzoom: 12.0,
+        minzoom: 14.2,
         paint: {
           'line-offset': thirdOffset,
           'line-color': '#F59E0B',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.8, 14, 1.2, 16, 1.8, 17, 2.5],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14.2, 1.2, 16, 1.8, 17, 2.5],
           'line-opacity': 0.95
         }
       });
     }
 
-    // ── B. ELEVATED FLYOVER VIADUCT LAYERS (NORTH & SOUTH) ───
+    // ── B. ELEVATED FLYOVER VIADUCT LAYERS (NORTH & SOUTH, z >= 13.5) ───
     // 1. Ambient Ground Drop Shadow (ONLY ON ELEVATED FLYOVERS!)
     map.addLayer({
       id: 'flyover-ground-shadow',
       type: 'line',
       source: 'flyover-viaduct-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 8, 11, 16, 14, 26, 17, 44],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 22, 15, 30, 17, 44],
         'line-opacity': 0.22,
-        'line-blur': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 5, 17, 8],
-        'line-offset': ['interpolate', ['linear'], ['zoom'], 9, 2, 14, 4, 17, 6]
+        'line-blur': ['interpolate', ['linear'], ['zoom'], 13.5, 4, 17, 8],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 13.5, 3, 17, 6]
       }
     });
 
@@ -637,9 +675,10 @@
       id: 'flyover-parapet-curb',
       type: 'line',
       source: 'flyover-viaduct-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#64748B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 8.5, 11, 15.5, 14, 25.0, 17, 40.0],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 20.0, 15, 28.0, 17, 40.0],
         'line-opacity': 0.95
       }
     });
@@ -649,9 +688,10 @@
       id: 'flyover-deck-slab',
       type: 'line',
       source: 'flyover-viaduct-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#FFFFFF',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 7.0, 11, 13.5, 14, 22.0, 17, 36.0],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 17.0, 15, 25.0, 17, 36.0],
         'line-opacity': 0.98
       }
     });
@@ -661,9 +701,10 @@
       id: 'flyover-center-divider',
       type: 'line',
       source: 'flyover-viaduct-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#CBD5E1',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.0, 11, 1.6, 14, 2.4, 17, 3.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 1.8, 15, 2.6, 17, 3.5],
         'line-opacity': 0.90
       }
     });
@@ -673,7 +714,7 @@
     addTrackRailSystem('flyover', 'flyover-tracks', 'up', 1);
 
     // ══════════════════════════════════════════════════════════
-    // ── C. SUBTERRANEAN TUBE TUNNEL INFRASTRUCTURE ───────────
+    // ── C. SUBTERRANEAN TUBE TUNNEL INFRASTRUCTURE (z >= 13.5)
     // ══════════════════════════════════════════════════════════
     // Authentic underground subway bore through Old & New Delhi (NO surface drop shadow!)
     // 1. Excavation Casing (Deep architectural graphite slate - NOT a solid black bar!)
@@ -681,9 +722,10 @@
       id: 'tunnel-tube-outer-casing',
       type: 'line',
       source: 'tunnel-tube-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 8.5, 11, 15.5, 14, 25.0, 17, 40.0],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 20.0, 15, 28.0, 17, 40.0],
         'line-opacity': 0.90
       }
     });
@@ -693,9 +735,10 @@
       id: 'tunnel-tube-bore',
       type: 'line',
       source: 'tunnel-tube-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#0F172A',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 7.0, 11, 13.5, 14, 22.0, 17, 36.0],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 17.0, 15, 25.0, 17, 36.0],
         'line-opacity': 0.98
       }
     });
@@ -705,9 +748,10 @@
       id: 'tunnel-interior-glow',
       type: 'line',
       source: 'tunnel-tube-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#334155',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.0, 11, 6.0, 14, 10.0, 17, 16.0],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 8.0, 15, 12.0, 17, 16.0],
         'line-opacity': 0.22,
         'line-blur': 2
       }
@@ -718,9 +762,10 @@
       id: 'tunnel-center-divider',
       type: 'line',
       source: 'tunnel-tube-center',
+      minzoom: 13.5,
       paint: {
         'line-color': '#334155',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.0, 11, 1.6, 14, 2.4, 17, 3.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 1.8, 15, 2.6, 17, 3.5],
         'line-opacity': 0.90
       }
     });
@@ -730,10 +775,10 @@
       id: 'tunnel-tbm-rings',
       type: 'line',
       source: 'tunnel-tube-center',
-      minzoom: 12.0,
+      minzoom: 13.8,
       paint: {
         'line-color': '#334155',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 7.5, 14, 14, 17, 25],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 13.8, 12, 15, 18, 17, 25],
         'line-dasharray': [0.25, 0.55],
         'line-opacity': 0.75
       }
@@ -750,6 +795,7 @@
         id: 'portal-ramps-casing',
         type: 'fill',
         source: 'portal-ramps',
+        minzoom: 13.5,
         paint: {
           'fill-color': '#E2E8F0',
           'fill-opacity': 0.95,
@@ -762,6 +808,7 @@
         id: 'portal-ramps-bed',
         type: 'fill',
         source: 'portal-ramps',
+        minzoom: 13.5,
         paint: {
           'fill-color': '#F1F5F9',
           'fill-opacity': 0.95
@@ -775,8 +822,9 @@
         id: 'portal-markers-outer',
         type: 'circle',
         source: 'tunnel-portals',
+        minzoom: 13.8,
         paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 4, 12, 6.5, 15, 9],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 13.8, 5, 15, 8, 17, 10],
           'circle-color': '#E11D48',
           'circle-stroke-width': 2.5,
           'circle-stroke-color': '#FFFFFF'
@@ -787,7 +835,7 @@
         id: 'portal-labels',
         type: 'symbol',
         source: 'tunnel-portals',
-        minzoom: 11.2,
+        minzoom: 14.0,
         layout: {
           'text-field': [
             'case',
@@ -795,7 +843,7 @@
             '🔺 SOUTH PORTAL · Saket ➔ Qutab Minar (+15m)'
           ],
           'text-font': ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
-          'text-size': ['interpolate', ['linear'], ['zoom'], 11, 9.5, 14, 11, 16, 12.5],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 14, 11, 16, 12.5],
           'text-offset': [0, 1.8],
           'text-anchor': 'top'
         },
@@ -807,7 +855,7 @@
       });
     }
 
-    // ── E. TERMINAL CROSSOVER SWITCH TURNOUTS ────────────────
+    // ── E. TERMINAL CROSSOVER SWITCH TURNOUTS (z >= 14.0) ────
     map.addSource('terminal-crossovers', {
       type: 'geojson',
       data: {
@@ -823,9 +871,10 @@
       id: 'crossover-track-plinth',
       type: 'line',
       source: 'terminal-crossovers',
+      minzoom: 14.0,
       paint: {
         'line-color': '#1E293B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.5, 13, 5.5, 15, 9.0, 17, 15.0]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 14, 6.0, 15, 9.0, 17, 15.0]
       }
     });
 
@@ -833,9 +882,10 @@
       id: 'crossover-track-sleepers',
       type: 'line',
       source: 'terminal-crossovers',
+      minzoom: 14.0,
       paint: {
         'line-color': '#94A3B8',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 3.2, 13, 5.0, 15, 8.0, 17, 13.0],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 14, 5.5, 15, 8.0, 17, 13.0],
         'line-dasharray': [0.18, 0.35]
       }
     });
@@ -844,9 +894,10 @@
       id: 'crossover-track-rails',
       type: 'line',
       source: 'terminal-crossovers',
+      minzoom: 14.0,
       paint: {
         'line-color': '#FFFFFF',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 11, 1.0, 13, 1.6, 15, 2.4, 17, 3.6]
+        'line-width': ['interpolate', ['linear'], ['zoom'], 14, 1.8, 15, 2.4, 17, 3.6]
       }
     });
   }
@@ -857,19 +908,20 @@
   function renderPhysicalPlatforms() {
     if (!trackData) return;
 
-    // 1. Platform Slabs
+    // 1. Platform Slabs (Reveals at z >= 13.5 close-up views)
     if (trackData.platformSlabs) {
       map.addSource('platform-slabs', {
         type: 'geojson',
         data: trackData.platformSlabs
       });
 
-      // Ambient Ground Shadow ONLY for Elevated Stations (0..6 and 27..36)
+      // Ambient Ground Shadow ONLY for Elevated Stations (z >= 13.5)
       map.addLayer({
         id: 'platform-slab-shadow',
         type: 'fill',
         source: 'platform-slabs',
         filter: ['==', ['get', 'structure'], 'elevated'],
+        minzoom: 13.5,
         paint: {
           'fill-color': '#0F172A',
           'fill-opacity': 0.18,
@@ -877,13 +929,13 @@
         }
       });
 
-      // Platform Raised Concrete Deck & Ground Concourse Piers (Elevated Stations)
-      // Solid architectural building rising 15m from the ground to support the platforms
+      // Platform Raised Concrete Deck & Ground Concourse Piers (Elevated Stations, z >= 13.5)
       map.addLayer({
         id: 'platform-slab-deck-elevated',
         type: 'fill-extrusion',
         source: 'platform-slabs',
         filter: ['==', ['get', 'structure'], 'elevated'],
+        minzoom: 13.5,
         paint: {
           'fill-extrusion-color': '#FFFFFF',
           'fill-extrusion-height': 15.0,
@@ -892,13 +944,13 @@
         }
       });
 
-      // Subterranean Station Floor Slab (Underground)
-      // Crisp luminous passenger waiting decks inside the excavated chamber
+      // Subterranean Station Floor Slab (Underground Stations, z >= 13.5)
       map.addLayer({
         id: 'platform-slab-deck-underground',
         type: 'fill',
         source: 'platform-slabs',
         filter: ['==', ['get', 'structure'], 'underground'],
+        minzoom: 13.5,
         paint: {
           'fill-color': '#F8FAFC',
           'fill-outline-color': '#334155',
@@ -907,7 +959,7 @@
       });
     }
 
-    // 2. Subterranean Station Chamber Cutaway Boxes (Underground Stations 7..26)
+    // 2. Subterranean Station Chamber Cutaway Boxes (Underground Stations, z >= 13.5)
     if (trackData.undergroundPlatforms) {
       map.addSource('underground-platforms', {
         type: 'geojson',
@@ -919,7 +971,7 @@
         id: 'underground-chamber-casing',
         type: 'fill',
         source: 'underground-platforms',
-        minzoom: 11.5,
+        minzoom: 13.5,
         paint: {
           'fill-color': '#1E293B',
           'fill-outline-color': '#475569',
@@ -932,10 +984,10 @@
         id: 'underground-chamber-glow',
         type: 'line',
         source: 'underground-platforms',
-        minzoom: 11.5,
+        minzoom: 13.5,
         paint: {
           'line-color': '#64748B',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.0, 15, 1.8, 17, 2.8],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 13.5, 1.4, 15, 1.8, 17, 2.8],
           'line-opacity': 0.65
         }
       });
@@ -945,7 +997,7 @@
         id: 'underground-portal-cubes',
         type: 'fill-extrusion',
         source: 'underground-platforms',
-        minzoom: 13.0,
+        minzoom: 13.8,
         paint: {
           'fill-extrusion-color': '#FFFFFF',
           'fill-extrusion-height': 4.5,
@@ -955,7 +1007,7 @@
       });
     }
 
-    // 3. Tactile Hazard / Guidance Platform Edges
+    // 3. Tactile Hazard Platform Edges (z >= 14.0)
     if (trackData.tactileEdges) {
       map.addSource('platform-tactile-edges', {
         type: 'geojson',
@@ -966,16 +1018,16 @@
         id: 'platform-tactile-strips',
         type: 'line',
         source: 'platform-tactile-edges',
+        minzoom: 14.0,
         paint: {
-          'line-color': '#F59E0B', // DMRC Yellow Safety Line
-          'line-width': ['interpolate', ['linear'], ['zoom'], 11, 2.5, 14, 4.5, 16, 7],
+          'line-color': '#F59E0B',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14, 4.5, 16, 7],
           'line-dasharray': [1, 0.4]
         }
       });
     }
 
-    // 4. Modern Vaulted Arch Steel Canopy Roofs (ONLY on Elevated Stations)
-    // Matches the architectural diorama canopy in dmrc_elevated_viaduct_diorama.png
+    // 4. Modern Vaulted Arch Steel Canopy Roofs (ONLY on Elevated Stations, z >= 14.0)
     if (trackData.platformCanopies) {
       map.addSource('platform-canopies', {
         type: 'geojson',
@@ -986,11 +1038,11 @@
         id: 'platform-canopy-3d',
         type: 'fill-extrusion',
         source: 'platform-canopies',
-        minzoom: 11.0,
+        minzoom: 14.0,
         paint: {
-          'fill-extrusion-color': '#E2E8F0', // Architectural curved steel & glass structure
-          'fill-extrusion-height': 24.0,     // 9m vaulted canopy above platform
-          'fill-extrusion-base': 15.0,       // Starts at track / platform level
+          'fill-extrusion-color': '#E2E8F0',
+          'fill-extrusion-height': 24.0,
+          'fill-extrusion-base': 15.0,
           'fill-extrusion-opacity': 0.88
         }
       });
@@ -999,9 +1051,9 @@
         id: 'platform-canopy-ridge',
         type: 'fill-extrusion',
         source: 'platform-canopies',
-        minzoom: 12.8,
+        minzoom: 14.0,
         paint: {
-          'fill-extrusion-color': '#94A3B8', // Structural titanium spine
+          'fill-extrusion-color': '#94A3B8',
           'fill-extrusion-height': 24.8,
           'fill-extrusion-base': 23.8,
           'fill-extrusion-opacity': 0.95
@@ -1009,7 +1061,7 @@
       });
     }
 
-    // 5. Station Architectural Labels & Platform Signage
+    // 5. Station Architectural Nodes & Typography
     if (trackData.stations) {
       map.addSource('stations', {
         type: 'geojson',
@@ -1032,33 +1084,69 @@
         }
       });
 
-      // Major Station Names with Elevation & Structure Badges
+      // 5a. Clean Modern Transit Station Nodes (Major Transfer Hubs)
+      map.addLayer({
+        id: 'station-nodes-major',
+        type: 'circle',
+        source: 'stations',
+        filter: ['get', 'major'],
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3.8, 11, 5.2, 14, 7.5],
+          'circle-color': '#FFFFFF',
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 2.0, 11, 2.4, 14, 3.2],
+          'circle-stroke-color': '#0F172A'
+        }
+      });
+
+      // Inner DMRC Golden Yellow Core Pupil
+      map.addLayer({
+        id: 'station-nodes-major-pupil',
+        type: 'circle',
+        source: 'stations',
+        filter: ['get', 'major'],
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 11, 2.2, 14, 3.2],
+          'circle-color': '#F59E0B'
+        }
+      });
+
+      // 5b. Local Station Minimalist Dots (Reveals as user zooms past z11.2)
+      map.addLayer({
+        id: 'station-nodes-local',
+        type: 'circle',
+        source: 'stations',
+        filter: ['!', ['get', 'major']],
+        minzoom: 11.2,
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 11.2, 1.8, 13, 2.6, 15, 4.2],
+          'circle-color': '#FFFFFF',
+          'circle-stroke-width': 1.2,
+          'circle-stroke-color': '#475569'
+        }
+      });
+
+      // 5c. Major Station Names (Clean typography, no cluttered -18m Tube badges at overview!)
       map.addLayer({
         id: 'station-labels-major',
         type: 'symbol',
         source: 'stations',
         filter: ['get', 'major'],
-        minzoom: 10.8,
+        minzoom: 10.2,
         layout: {
-          'text-field': [
-            'concat',
-            ['get', 'name'],
-            ' · ',
-            ['get', 'elevText']
-          ],
+          'text-field': ['get', 'name'],
           'text-font': ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
-          'text-size': 11,
-          'text-offset': [0, 1.8],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 10, 10.5, 12, 11.5, 14, 13.0],
+          'text-offset': [0, 1.4],
           'text-anchor': 'top'
         },
         paint: {
           'text-color': '#0F172A',
           'text-halo-color': '#FFFFFF',
-          'text-halo-width': 2.8
+          'text-halo-width': 3.0
         }
       });
 
-      // Local Station Names
+      // 5d. Local Station Names (Reveals cleanly when zoomed into neighborhood)
       map.addLayer({
         id: 'station-labels-local',
         type: 'symbol',
@@ -1066,15 +1154,10 @@
         filter: ['!', ['get', 'major']],
         minzoom: 12.8,
         layout: {
-          'text-field': [
-            'concat',
-            ['get', 'name'],
-            ' · ',
-            ['get', 'elevText']
-          ],
+          'text-field': ['get', 'name'],
           'text-font': ['Montserrat Medium', 'Open Sans Regular', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
           'text-size': 10,
-          'text-offset': [0, 1.6],
+          'text-offset': [0, 1.3],
           'text-anchor': 'top'
         },
         paint: {
@@ -1181,13 +1264,14 @@
       data: { type: 'FeatureCollection', features: [] }
     });
 
-    // ── Layer A: Train Ground Drop Shadow (Only for elevated trains!) ──
+    // ── Layer A: Train Ground Drop Shadow (Close-up 3D only, z >= 13.2) ──
     map.addLayer({
       id: 'train-drop-shadow',
       type: 'circle',
       source: 'active-trains',
+      minzoom: 13.2,
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4.0, 14, 8.5, 16, 14.0],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 13.2, 7.0, 15, 11.0, 17, 16.0],
         'circle-color': '#0F172A',
         'circle-opacity': [
           'case',
@@ -1199,12 +1283,12 @@
       }
     });
 
-    // ── Layer B: Real 3D Delhi Metro Train Consist (Multi-Car Aerodynamic Rake) ──
-    // Glides smoothly along the dual rails, curving accurately with the tracks in 3D!
+    // ── Layer B: Real 3D Delhi Metro Train Consist (Close-up 3D only, z >= 13.2) ──
     map.addLayer({
       id: 'train-consist-3d',
       type: 'symbol',
       source: 'active-trains',
+      minzoom: 13.2,
       layout: {
         'icon-image': 'delhi-metro-consist',
         'icon-rotate': ['get', 'bearing'],
@@ -1214,9 +1298,7 @@
         'icon-ignore-placement': true,
         'icon-size': [
           'interpolate', ['linear'], ['zoom'],
-          10, 0.20,
-          11.5, 0.36,
-          13, 0.65,
+          13.2, 0.70,
           15, 1.05,
           17, 1.65
         ],
@@ -1224,43 +1306,37 @@
       }
     });
 
-    // ── Layer C: Overview Radar Dots (Visible at overview zooms, fading smoothly as 3D consist takes over) ──
+    // ── Layer C: Overview Radar Dots (Sleek transit capsule, z < 13.5) ──
     map.addLayer({
       id: 'train-dot-white-black',
       type: 'circle',
       source: 'active-trains',
+      maxzoom: 13.5,
       layout: {
         'visibility': 'visible'
       },
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3.2, 12, 4.5, 14, 6.0, 16, 8.0],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3.4, 11, 4.4, 13, 5.8],
         'circle-color': ['case', ['==', ['get', 'speedKph'], 0], '#EF4444', '#FFFFFF'],
-        'circle-stroke-width': ['case', ['==', ['get', 'speedKph'], 0], 3.0, 2.0],
+        'circle-stroke-width': ['case', ['==', ['get', 'speedKph'], 0], 2.5, 2.0],
         'circle-stroke-color': ['case', ['==', ['get', 'speedKph'], 0], '#991B1B', '#0F172A'],
-        'circle-opacity': [
-          'interpolate', ['linear'], ['zoom'],
-          11.0, 1.0,
-          12.8, 0.0
-        ]
+        'circle-opacity': 1.0
       }
     });
 
-    // Inner DMRC Golden Yellow Core
+    // Inner DMRC Golden Yellow Core Pupil (z < 13.5)
     map.addLayer({
       id: 'train-dot-pupil',
       type: 'circle',
       source: 'active-trains',
+      maxzoom: 13.5,
       layout: {
         'visibility': 'visible'
       },
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.4, 12, 2.0, 14, 2.8, 16, 3.8],
-        'circle-color': '#EAB308',
-        'circle-opacity': [
-          'interpolate', ['linear'], ['zoom'],
-          11.0, 1.0,
-          12.8, 0.0
-        ]
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 11, 2.0, 13, 2.8],
+        'circle-color': '#F59E0B',
+        'circle-opacity': 1.0
       }
     });
   }
@@ -1814,7 +1890,13 @@
         } else if (loc === 'centralsec') {
           map.flyTo({ center: [77.2120, 28.6150], zoom: 15.2, pitch: 50, bearing: -14, duration: 1200 });
         } else if (loc === 'all') {
-          map.flyTo({ center: [77.1600, 28.6050], zoom: 10.6, pitch: 30, bearing: -6, duration: 1400 });
+          map.flyTo({ center: [77.1400, 28.5850], zoom: 10.35, pitch: 0, bearing: 0, duration: 1200 });
+          const btn2D = document.getElementById('btn-2d-view');
+          const btn3D = document.getElementById('btn-3d-view');
+          if (btn2D && btn3D) {
+            btn2D.classList.add('active');
+            btn3D.classList.remove('active');
+          }
         }
       });
     });
