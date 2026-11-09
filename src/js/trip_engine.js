@@ -33,6 +33,7 @@ window.TripEngine = (function() {
   let trackNorthFlyoverSouth = [];
 
   let trackDataBundle = null;
+  let currentAdvisory = null;
 
   const NP_NODE_IDX = 110; // North Portal Ramp (Khyber Pass transition)
   const SP_NODE_IDX = 232; // South Portal Ramp (Saket / Qutab Minar transition)
@@ -732,6 +733,10 @@ window.TripEngine = (function() {
       }];
     }
 
+    const isAdvisoryActive = currentAdvisory && currentAdvisory.active;
+    const corridor = getStationCorridorSection(stIndex);
+    const affectedByAdvisory = isAdvisoryActive && (!currentAdvisory.affectedSections || currentAdvisory.affectedSections.length === 0 || currentAdvisory.affectedSections.includes(corridor.id));
+
     return candidateTrips.slice(0, limit).map(trip => {
       const remainingSec = Math.max(0, trip.arrTime - secOfDay);
       let text = '';
@@ -743,9 +748,17 @@ window.TripEngine = (function() {
       } else if (remainingSec <= 45) {
         text = 'Approaching Platform';
         status = 'approaching';
+      } else if (remainingSec <= 120) {
+        text = 'Due in ~1–2 min';
+        status = 'approaching';
       } else {
         const mins = Math.max(1, Math.round(remainingSec / 60));
         text = `Due in ~${mins} min`;
+        status = 'scheduled';
+      }
+
+      if (affectedByAdvisory) {
+        status = 'advisory';
       }
 
       const h = Math.floor(trip.arrTime / 3600) % 24;
@@ -759,7 +772,9 @@ window.TripEngine = (function() {
         remainingSec,
         clockTime,
         dest: trip.dest,
-        patternId: trip.patternId
+        patternId: trip.patternId,
+        advisoryActive: affectedByAdvisory,
+        advisoryMessage: affectedByAdvisory ? (currentAdvisory.title || 'Irregular Headways') : null
       };
     });
   }
@@ -769,6 +784,14 @@ window.TripEngine = (function() {
     return list[0] || { text: 'Service Closed', status: 'closed', remainingSec: 0 };
   }
 
+  function setServiceAdvisory(advisory) {
+    currentAdvisory = advisory;
+  }
+
+  function getServiceAdvisory() {
+    return currentAdvisory;
+  }
+
   return {
     loadData,
     getActiveFleet,
@@ -776,6 +799,8 @@ window.TripEngine = (function() {
     getStationNextArrival,
     getStationArrivals,
     getStationCorridorSection,
+    setServiceAdvisory,
+    getServiceAdvisory,
     getTrackData: () => trackDataBundle,
     getStations: () => STATIONS,
     getCenterline: () => CENTERLINE,

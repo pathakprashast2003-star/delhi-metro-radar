@@ -73,9 +73,60 @@
   // ═══════════════════════════════════════════════════════════
   //  1. INITIALIZATION & DATA FETCH
   // ═══════════════════════════════════════════════════════════
+  window.CLOCK_SKEW_MS = 0;
+
+  async function checkServiceAdvisories() {
+    try {
+      const res = await fetch('src/data/service_advisories.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) return;
+      const advisory = await res.json();
+      if (window.TripEngine) {
+        TripEngine.setServiceAdvisory(advisory);
+      }
+      updateAdvisoryUI(advisory);
+    } catch (e) {
+      console.warn('Advisory check failed, falling back to scheduled status', e);
+    }
+  }
+
+  function updateAdvisoryUI(advisory) {
+    const banner = document.getElementById('service-advisory-banner');
+    const bannerText = document.getElementById('advisory-banner-text');
+    const lineDot = document.getElementById('line-status-dot');
+    const lineText = document.getElementById('line-status-text');
+
+    if (advisory && advisory.active) {
+      if (banner && bannerText) {
+        bannerText.textContent = `⚠️ DMRC ADVISORY: ${advisory.title} — ${advisory.message}`;
+        banner.classList.remove('hidden');
+      }
+      if (lineDot) lineDot.textContent = '🟡';
+      if (lineText) lineText.textContent = `DMRC Advisory: ${advisory.title} · Frequency may vary`;
+    } else {
+      if (banner) banner.classList.add('hidden');
+      if (lineDot) lineDot.textContent = '🟢';
+      if (lineText) lineText.textContent = 'Normal Operations · Scheduled estimates';
+    }
+  }
+
   async function init() {
     setupMasterNavigation();
     setupControls();
+
+    // 1. Clock Skew Calibration via HTTP Date Header
+    try {
+      const headRes = await fetch('src/data/yellow_line_service.json', { method: 'HEAD' });
+      const serverDate = headRes.headers.get('date');
+      if (serverDate) {
+        const serverMs = new Date(serverDate).getTime();
+        window.CLOCK_SKEW_MS = serverMs - Date.now();
+        console.log(`[Clock Sync] Calibrated server clock offset: ${window.CLOCK_SKEW_MS}ms`);
+      } else {
+        window.CLOCK_SKEW_MS = 0;
+      }
+    } catch (e) {
+      window.CLOCK_SKEW_MS = 0;
+    }
 
     try {
       trackData = await TripEngine.loadData();
@@ -83,10 +134,21 @@
       console.error('Failed to load track topology from TripEngine', e);
     }
 
+    await checkServiceAdvisories();
+    setInterval(checkServiceAdvisories, 60000);
+
     initDioramaMap();
     startClientSimulationTicker();
     startAnimationLoop();
   }
+
+  // Page Visibility API Re-Anchoring (Anti-freeze upon tab wake)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      trainPrevStates.clear();
+      lastSimulationTick = performance.now();
+    }
+  });
 
   function preloadImage(url, id) {
     return new Promise((resolve) => {
@@ -1089,7 +1151,7 @@
       let timeStr = '';
 
       if (timeMode === 'live') {
-        const now = new Date();
+        const now = new Date(Date.now() + (window.CLOCK_SKEW_MS || 0));
         const utc = now.getTime() + now.getTimezoneOffset() * 60000;
         const ist = new Date(utc + 5.5 * 3600000);
         sec = ist.getHours() * 3600 + ist.getMinutes() * 60 + ist.getSeconds();
@@ -1703,6 +1765,7 @@
         let badgeClass = 'badge-scheduled';
         if (item.status === 'boarding') badgeClass = 'badge-boarding';
         else if (item.status === 'approaching') badgeClass = 'badge-approaching';
+        else if (item.status === 'advisory') badgeClass = 'badge-advisory';
 
         return `<div class="st-arrival-item">
           <span class="st-arr-clock">${item.clockTime}</span>
@@ -1714,6 +1777,38 @@
 
     if (p1List) p1List.innerHTML = buildArrivalsHTML(p1Arrivals);
     if (p2List) p2List.innerHTML = buildArrivalsHTML(p2Arrivals);
+
+    // ── Local Passenger Delay Report (Zero-Backend localStorage) ──
+    const delayKey = 'dmrc_reported_delay_' + stIdx;
+    const reportBtn = document.getElementById('btn-report-delay');
+    const reportMsg = document.getElementById('st-delay-report-msg');
+    const savedReport = localStorage.getItem(delayKey);
+    const nowMs = Date.now();
+    const isReported = savedReport && (nowMs - Number(savedReport) < 900000); // 15 min expiry
+
+    if (reportBtn && reportMsg) {
+      if (isReported) {
+        const minsAgo = Math.max(1, Math.round((nowMs - Number(savedReport)) / 60000));
+        reportBtn.textContent = '✓ Delay Logged (' + minsAgo + 'm ago) · Click to Clear';
+        reportBtn.classList.add('active');
+        reportMsg.textContent = '⚠️ You logged irregular frequency here. Local adjustments active.';
+        reportMsg.classList.remove('hidden');
+      } else {
+        reportBtn.textContent = '⚠️ Report Delay at this station';
+        reportBtn.classList.remove('active');
+        reportMsg.classList.add('hidden');
+      }
+
+      reportBtn.onclick = () => {
+        const currentSaved = localStorage.getItem(delayKey);
+        if (currentSaved && (Date.now() - Number(currentSaved) < 900000)) {
+          localStorage.removeItem(delayKey);
+        } else {
+          localStorage.setItem(delayKey, Date.now());
+        }
+        renderStationPanel(stIdx, sec, dayVariant);
+      };
+    }
   }
 
   window.openStationPanel = openStationPanel;

@@ -1,0 +1,9 @@
+{
+  "active": false,
+  "updatedAt": "2026-11-09T10:30:00+05:30",
+  "severity": "info",
+  "title": "Normal Operations",
+  "message": "All Yellow Line trains running as per scheduled intervals.",
+  "affectedSections": [],
+  "speedMultiplier": 1.0
+}

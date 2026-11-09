@@ -20,6 +20,14 @@
 </head>
 <body class="editorial-light">
 
+  <!-- ── 0. Real-Time Service Advisory Alert Banner ────────────── -->
+  <div id="service-advisory-banner" class="service-advisory-banner hidden">
+    <div class="advisory-content">
+      <span class="advisory-icon">⚠️</span>
+      <span class="advisory-text" id="advisory-banner-text">DMRC Advisory Active: Minor delays reported on selected corridors.</span>
+    </div>
+  </div>
+
   <!-- ── 1. Master Mode Navigation Strip (Top Center) ────────── -->
   <nav class="master-mode-strip">
     <button class="mode-tab active" data-surface="corridor" id="tab-corridor">
@@ -42,9 +50,9 @@
 
   <!-- SURFACE A: Full-Screen MapLibre Radar -->
   <div id="map" class="view-surface active"></div>
-  <div class="placeholder-disclaimer-pill">
-    <span class="disc-dot">⏱️</span>
-    <span>Scheduled times · estimates, not live tracking</span>
+  <div class="placeholder-disclaimer-pill" id="line-status-pill">
+    <span class="disc-dot" id="line-status-dot">🟢</span>
+    <span id="line-status-text">Normal Operations · Scheduled estimates</span>
   </div>
 
   <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase -->
@@ -265,6 +273,11 @@
           <!-- Populated dynamically -->
         </div>
       </div>
+    </div>
+
+    <div class="st-report-action-row">
+      <button class="st-delay-report-btn" id="btn-report-delay">⚠️ Report Delay at this station</button>
+      <span class="st-delay-report-msg hidden" id="st-delay-report-msg"></span>
     </div>
 
     <div class="st-panel-footer">
