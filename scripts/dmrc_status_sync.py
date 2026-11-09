@@ -165,3 +165,4 @@ if __name__ == "__main__":
     parser.add_argument("--force-advisory", action="store_true", help="Generate simulated maintenance advisory for testing")
     args = parser.parse_args()
     sync(dry_run=args.dry_run, verbose=args.verbose, force_advisory=args.force_advisory)
+
