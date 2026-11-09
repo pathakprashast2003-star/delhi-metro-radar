@@ -157,3 +157,4 @@ SELECT public.get_live_state('yellow');
   "alerts": []
 }
 ```
+

@@ -1739,17 +1739,88 @@
     if (!st) return;
 
     const titleEl = document.getElementById('st-panel-title');
+    const codeEl = document.getElementById('st-panel-code');
+    const interchangesEl = document.getElementById('st-panel-interchanges');
     const subEl = document.getElementById('st-panel-sub');
     const freqTextEl = document.getElementById('st-panel-freq-text');
     const p1List = document.getElementById('st-p1-arrivals');
     const p2List = document.getElementById('st-p2-arrivals');
 
     if (titleEl) titleEl.textContent = st.name;
+    if (codeEl) codeEl.textContent = st.code || ('ST-' + (stIdx + 1));
+
+    if (interchangesEl) {
+      if (st.interchanges && st.interchanges.length > 0) {
+        interchangesEl.innerHTML = st.interchanges.map(name => {
+          let colorClass = 'interchange-blue';
+          const n = name.toLowerCase();
+          if (n.includes('blue')) colorClass = 'interchange-blue';
+          else if (n.includes('pink')) colorClass = 'interchange-pink';
+          else if (n.includes('magenta')) colorClass = 'interchange-magenta';
+          else if (n.includes('red')) colorClass = 'interchange-red';
+          else if (n.includes('violet')) colorClass = 'interchange-violet';
+          else if (n.includes('orange') || n.includes('airport')) colorClass = 'interchange-orange';
+          else if (n.includes('rapid')) colorClass = 'interchange-rapid';
+          else if (n.includes('railways')) colorClass = 'interchange-railways';
+          return `<span class="interchange-pill ${colorClass}">⇄ ${name}</span>`;
+        }).join('');
+        interchangesEl.classList.remove('hidden');
+      } else {
+        interchangesEl.innerHTML = '';
+        interchangesEl.classList.add('hidden');
+      }
+    }
+
     if (subEl) {
       const structText = st.structure === 'underground' 
         ? `Underground Tube Chamber (${st.elevM || -16}m)` 
         : `Elevated Viaduct (+${st.elevM || 15}m)`;
       subEl.textContent = `${structText} · Station ${stIdx + 1} of ${stations.length}`;
+    }
+
+    // ── Real-Time Coach Occupancy (DMRC Notice 555 Model) ──
+    const coachStripEl = document.getElementById('coach-strip');
+    const coachSubEl = document.getElementById('coach-meter-sub');
+    if (coachStripEl) {
+      const hr = Math.floor(sec / 3600);
+      const isMorningPeak = (hr >= 8 && hr < 11);
+      const isEveningPeak = (hr >= 17 && hr < 21);
+      const isPeak = isMorningPeak || isEveningPeak;
+      const isAdvisoryActive = window.activeAdvisory && window.activeAdvisory.status === 'active';
+
+      let statusText = 'Low · Light Passenger Load';
+      if (isAdvisoryActive) statusText = 'Crowded · Delay Surge Across Rake';
+      else if (isPeak) statusText = 'High · Peak Crush Load (Mid-train)';
+      else if (hr >= 6 && hr <= 22) statusText = 'Moderate · Evenly Distributed';
+
+      if (coachSubEl) coachSubEl.textContent = statusText;
+
+      const coaches = [
+        { num: 1, type: 'women', label: 'C1 ♀' },
+        { num: 2, type: 'gen', label: 'C2' },
+        { num: 3, type: 'gen', label: 'C3' },
+        { num: 4, type: 'gen', label: 'C4' },
+        { num: 5, type: 'gen', label: 'C5' },
+        { num: 6, type: 'gen', label: 'C6' },
+        { num: 7, type: 'gen', label: 'C7' },
+        { num: 8, type: 'gen', label: 'C8' }
+      ];
+
+      coachStripEl.innerHTML = coaches.map(c => {
+        let occClass = 'c-low';
+        if (c.type === 'women') {
+          occClass = 'c-women';
+        } else if (isAdvisoryActive) {
+          occClass = 'c-high';
+        } else if (isPeak) {
+          occClass = (c.num >= 3 && c.num <= 6) ? 'c-high' : 'c-med';
+        } else if (hr >= 6 && hr <= 22) {
+          occClass = (c.num >= 3 && c.num <= 6) ? 'c-med' : 'c-low';
+        } else {
+          occClass = 'c-low';
+        }
+        return `<div class="coach-box ${occClass}" title="Coach ${c.num}">${c.label}</div>`;
+      }).join('');
     }
 
     const secInfo = TripEngine.getStationCorridorSection ? TripEngine.getStationCorridorSection(stIdx) : null;

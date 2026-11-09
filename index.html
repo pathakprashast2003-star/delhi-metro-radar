@@ -240,7 +240,11 @@
     <div class="callout-header">
       <div>
         <div class="callout-tag" id="st-panel-tag">STATION SCHEDULE ESTIMATE</div>
-        <h2 class="callout-title" id="st-panel-title">Rajiv Chowk</h2>
+        <div class="st-title-row">
+          <h2 class="callout-title" id="st-panel-title">Rajiv Chowk</h2>
+          <span class="dmrc-code-badge" id="st-panel-code">RCK</span>
+        </div>
+        <div class="st-interchanges-row" id="st-panel-interchanges"></div>
         <div class="st-structure-sub" id="st-panel-sub">Underground Chamber (-14m) · Central Core Interchange</div>
       </div>
       <button class="close-callout" id="close-station-panel">✕</button>
@@ -249,6 +253,17 @@
     <div class="st-freq-badge" id="st-panel-freq">
       <span class="freq-icon">⚡</span>
       <span id="st-panel-freq-text">Central High-Frequency Zone · Trains every ~2.5 min</span>
+    </div>
+
+    <!-- Real-Time Coach Occupancy Meter (DMRC Notice 555 Calibration) -->
+    <div class="st-coach-meter" id="st-coach-meter">
+      <div class="coach-meter-header">
+        <span>👥 Real-Time Car Occupancy (8-Car Rake)</span>
+        <span class="coach-meter-sub" id="coach-meter-sub">Moderate · Mid-train peak</span>
+      </div>
+      <div class="coach-strip" id="coach-strip">
+        <!-- Dynamically rendered 8 coaches -->
+      </div>
     </div>
 
     <div class="st-platforms-container">

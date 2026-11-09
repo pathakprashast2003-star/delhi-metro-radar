@@ -1533,6 +1533,51 @@ html, body {
   z-index: 30;
 }
 
+.st-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dmrc-code-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #E2E8F0;
+  color: #1E293B;
+  border: 1px solid #CBD5E1;
+}
+
+.st-interchanges-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+}
+
+.interchange-pill {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.interchange-blue { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+.interchange-pink { background: #FCE7F3; color: #BE185D; border: 1px solid #FBCFE8; }
+.interchange-magenta { background: #FAE8FF; color: #A21CAF; border: 1px solid #F5D0FE; }
+.interchange-red { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+.interchange-violet { background: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
+.interchange-orange { background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA; }
+.interchange-rapid { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+.interchange-railways { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+
 .st-structure-sub {
   font-size: 11px;
   color: #64748B;
@@ -1551,6 +1596,77 @@ html, body {
   font-size: 11px;
   font-weight: 600;
   color: #1E293B;
+}
+
+/* ── Real-Time Coach Occupancy Meter ────────────────────────── */
+.st-coach-meter {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.coach-meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.coach-meter-sub {
+  font-size: 9.5px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.coach-strip {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+}
+
+.coach-box {
+  flex: 1;
+  height: 24px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.coach-box.c-low {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+}
+
+.coach-box.c-med {
+  background: #FEF08A;
+  color: #854D0E;
+  border: 1px solid #FDE047;
+}
+
+.coach-box.c-high {
+  background: #FEE2E2;
+  color: #B91C1C;
+  border: 1px solid #FCA5A5;
+}
+
+.coach-box.c-women {
+  background: #FCE7F3;
+  color: #9D174D;
+  border: 1px solid #F472B6;
 }
 
 .st-platforms-container {
