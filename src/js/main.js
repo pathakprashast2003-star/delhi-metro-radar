@@ -190,9 +190,9 @@
       container: 'map',
       style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       center: [77.1600, 28.6050], // Centered for complete 49.3 km corridor overview
-      zoom: 10.6,
-      pitch: 30,      // Subtle architectural tilt
-      bearing: -6,    // Aligns North-South Yellow Line vertically
+      zoom: 11.2,
+      pitch: 48,      // Isometric 3D architectural tilt
+      bearing: -14,   // Isometric alignment
       minZoom: 9.0,
       maxZoom: 18.0,
       maxBounds: [
@@ -1427,7 +1427,7 @@
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    const initialSurface = urlParams.get('surface') || 'cutaway';
+    const initialSurface = urlParams.get('surface') || 'corridor';
     window.switchSurface(initialSurface);
 
     // Central Line Cutaway Station Switcher & Jump to Radar

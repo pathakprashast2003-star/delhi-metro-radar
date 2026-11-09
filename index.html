@@ -31,18 +31,18 @@
 
   <!-- ── 1. Master Mode Navigation Strip (Top Center) ────────── -->
   <nav class="master-mode-strip">
-    <button class="mode-tab active" data-surface="cutaway" id="tab-cutaway">
-      <span class="tab-icon">🏛️</span>
-      <div class="tab-text">
-        <span class="tab-title">Station 3D Diorama</span>
-        <span class="tab-sub">Interactive Architectural Cutaway</span>
-      </div>
-    </button>
-    <button class="mode-tab" data-surface="corridor" id="tab-corridor">
+    <button class="mode-tab active" data-surface="corridor" id="tab-corridor">
       <span class="tab-icon">🗺️</span>
       <div class="tab-text">
         <span class="tab-title">Corridor Radar</span>
-        <span class="tab-sub">49.3 km Route Overview</span>
+        <span class="tab-sub">3D Architectural Diorama</span>
+      </div>
+    </button>
+    <button class="mode-tab" data-surface="cutaway" id="tab-cutaway">
+      <span class="tab-icon">🏛️</span>
+      <div class="tab-text">
+        <span class="tab-title">Station Cutaways</span>
+        <span class="tab-sub">Tube & Viaduct Showcase</span>
       </div>
     </button>
   </nav>
@@ -59,8 +59,15 @@
     <div class="station-search-results hidden" id="station-search-results"></div>
   </div>
 
-  <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase (PRIMARY HERO) -->
-  <section id="cutaway-fullscreen-view" class="view-surface active">
+  <!-- SURFACE A: Full-Screen MapLibre Radar (PRIMARY MAP HERO) -->
+  <div id="map" class="view-surface active"></div>
+  <div class="placeholder-disclaimer-pill" id="line-status-pill">
+    <span class="disc-dot" id="line-status-dot">🟢</span>
+    <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
+  </div>
+
+  <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase -->
+  <section id="cutaway-fullscreen-view" class="view-surface hidden">
     <div class="cutaway-hero-container">
       <div class="cutaway-spotlight-card">
         <div class="cutaway-card-top">
@@ -202,17 +209,10 @@
     </div>
   </section>
 
-  <!-- SURFACE A: Full-Screen MapLibre Radar -->
-  <div id="map" class="view-surface hidden"></div>
-  <div class="placeholder-disclaimer-pill hidden" id="line-status-pill">
-    <span class="disc-dot" id="line-status-dot">🟢</span>
-    <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
-  </div>
-
   <!-- ── 3. Overlays & Floating HUD ──────────────────────────── -->
 
   <!-- Emons-Inspired Hero Card (Top Left) -->
-  <header class="diorama-hero-card" id="diorama-hero-card">
+  <header class="diorama-hero-card collapsed" id="diorama-hero-card">
     <div class="hero-top-row">
       <div class="brand-emblem">
         <span class="emblem-dot"></span>
@@ -223,7 +223,7 @@
           <span class="live-beacon"></span>
           <span>SCHEDULED FLEET</span>
         </div>
-        <button class="hero-collapse-btn" id="hero-collapse-btn" title="Toggle Compact HUD">—</button>
+        <button class="hero-collapse-btn" id="hero-collapse-btn" title="Toggle Compact HUD">+</button>
       </div>
     </div>
 
