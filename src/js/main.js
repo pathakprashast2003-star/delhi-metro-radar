@@ -1560,50 +1560,25 @@
   function setupMasterNavigation() {
     const tabs = document.querySelectorAll('.mode-tab');
     const mapSurface = document.getElementById('map');
-    const cutawaySurface = document.getElementById('cutaway-fullscreen-view');
     const threeSurface = document.getElementById('three-container');
-    const heroCard = document.querySelector('.diorama-hero-card');
-    const controlCluster = document.querySelector('.control-cluster');
-    const legendStrip = document.querySelector('.bottom-legend-strip');
     const timetableDock = document.querySelector('.timetable-dock');
-    const lineStatusPill = document.getElementById('line-status-pill');
 
     window.switchSurface = function (surfaceName, optArchetype) {
       tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-surface') === surfaceName));
 
       if (surfaceName === 'corridor') {
-        mapSurface.classList.remove('hidden');
-        cutawaySurface.classList.add('hidden');
+        if (mapSurface) mapSurface.classList.remove('hidden');
         if (threeSurface) threeSurface.classList.add('hidden');
-        if (heroCard) heroCard.style.display = 'flex';
-        if (controlCluster) controlCluster.style.display = 'flex';
-        if (legendStrip) legendStrip.style.display = 'flex';
         if (timetableDock) timetableDock.style.display = 'flex';
-        if (lineStatusPill) lineStatusPill.style.display = 'flex';
         if (window.Diorama3D) window.Diorama3D.stop();
         // Resize MapLibre so canvas dimensions match unhidden viewport smoothly
         requestAnimationFrame(() => {
           if (map) map.resize();
         });
-      } else if (surfaceName === 'cutaway') {
-        cutawaySurface.classList.remove('hidden');
-        mapSurface.classList.add('hidden');
-        if (threeSurface) threeSurface.classList.add('hidden');
-        if (heroCard) heroCard.style.display = 'none';
-        if (controlCluster) controlCluster.style.display = 'none';
-        if (legendStrip) legendStrip.style.display = 'none';
-        if (timetableDock) timetableDock.style.display = 'none';
-        if (lineStatusPill) lineStatusPill.style.display = 'none';
-        if (window.Diorama3D) window.Diorama3D.stop();
       } else if (surfaceName === 'threejs') {
         if (threeSurface) threeSurface.classList.remove('hidden');
-        mapSurface.classList.add('hidden');
-        cutawaySurface.classList.add('hidden');
-        if (heroCard) heroCard.style.display = 'none';
-        if (controlCluster) controlCluster.style.display = 'none';
-        if (legendStrip) legendStrip.style.display = 'none';
+        if (mapSurface) mapSurface.classList.add('hidden');
         if (timetableDock) timetableDock.style.display = 'none';
-        if (lineStatusPill) lineStatusPill.style.display = 'none';
         const stPanel = document.getElementById('station-panel');
         if (stPanel) stPanel.classList.add('hidden');
         const inspCard = document.getElementById('inspector-card');
@@ -1625,7 +1600,7 @@
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    const initialSurface = urlParams.get('surface') || 'corridor';
+    const initialSurface = urlParams.get('surface') || 'threejs';
     window.switchSurface(initialSurface);
 
     // Central Line Cutaway Station Switcher & Jump to Radar
@@ -1804,17 +1779,21 @@
     const btn3D = document.getElementById('btn-3d-view');
     const btn2D = document.getElementById('btn-2d-view');
 
-    btn3D.addEventListener('click', () => {
-      btn3D.classList.add('active');
-      btn2D.classList.remove('active');
-      map.easeTo({ pitch: 48, bearing: -14, duration: 900 });
-    });
+    if (btn3D) {
+      btn3D.addEventListener('click', () => {
+        btn3D.classList.add('active');
+        if (btn2D) btn2D.classList.remove('active');
+        map.easeTo({ pitch: 48, bearing: -14, duration: 900 });
+      });
+    }
 
-    btn2D.addEventListener('click', () => {
-      btn2D.classList.add('active');
-      btn3D.classList.remove('active');
-      map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
-    });
+    if (btn2D) {
+      btn2D.addEventListener('click', () => {
+        btn2D.classList.add('active');
+        if (btn3D) btn3D.classList.remove('active');
+        map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
+      });
+    }
 
     // Vehicle Render Mode: 3D Trains vs Radar Dots vs Rails Only
     const mode3D = document.getElementById('mode-3d');

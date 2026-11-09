@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="src/css/style.css?v=2.2.0" />
+  <link rel="stylesheet" href="src/css/style.css?v=2.3.0" />
 
   <!-- Three.js & OrbitControls for Interactive WebGL 3D Diorama Stage -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -35,25 +35,18 @@
 
   <!-- ── 1. Master Mode Navigation Strip (Top Center) ────────── -->
   <nav class="master-mode-strip">
-    <button class="mode-tab active" data-surface="corridor" id="tab-corridor">
+    <button class="mode-tab active" data-surface="threejs" id="tab-threejs">
+      <span class="tab-icon">🚇</span>
+      <div class="tab-text">
+        <span class="tab-title">3D Metro Stage</span>
+        <span class="tab-sub">Interactive 3D WebGL</span>
+      </div>
+    </button>
+    <button class="mode-tab" data-surface="corridor" id="tab-corridor">
       <span class="tab-icon">🗺️</span>
       <div class="tab-text">
         <span class="tab-title">Corridor Radar</span>
-        <span class="tab-sub">3D Architectural Diorama</span>
-      </div>
-    </button>
-    <button class="mode-tab" data-surface="cutaway" id="tab-cutaway">
-      <span class="tab-icon">🏛️</span>
-      <div class="tab-text">
-        <span class="tab-title">Station Cutaways</span>
-        <span class="tab-sub">Tube & Viaduct Showcase</span>
-      </div>
-    </button>
-    <button class="mode-tab" data-surface="threejs" id="tab-threejs">
-      <span class="tab-icon">📐</span>
-      <div class="tab-text">
-        <span class="tab-title">3D Metro Stage</span>
-        <span class="tab-sub">WebGL Train & Platform</span>
+        <span class="tab-sub">49km Fleet Map</span>
       </div>
     </button>
   </nav>
@@ -70,15 +63,11 @@
     <div class="station-search-results hidden" id="station-search-results"></div>
   </div>
 
-  <!-- SURFACE A: Full-Screen MapLibre Radar (PRIMARY MAP HERO) -->
-  <div id="map" class="view-surface active"></div>
-  <div class="placeholder-disclaimer-pill" id="line-status-pill">
-    <span class="disc-dot" id="line-status-dot">🟢</span>
-    <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
-  </div>
+  <!-- SURFACE A: Full-Screen MapLibre Radar -->
+  <div id="map" class="view-surface hidden"></div>
 
   <!-- SURFACE B: Three.js Interactive 3D WebGL Diorama Canvas -->
-  <div id="three-container" class="view-surface hidden">
+  <div id="three-container" class="view-surface active">
     <canvas id="three-canvas"></canvas>
 
     <!-- Top floating diorama station header -->
@@ -103,37 +92,27 @@
 
       <!-- Lighting atmosphere -->
       <div class="hud-group">
-        <span class="hud-group-title">LIGHTING ATMOSPHERE</span>
+        <span class="hud-group-title">LIGHTING</span>
         <div class="hud-btn-row">
-          <button class="hud-chip active" id="btn-light-day" title="Clean Studio Daylight">☀️ Studio Day</button>
-          <button class="hud-chip" id="btn-light-sunset" title="Golden Hour">🌅 Sunset</button>
+          <button class="hud-chip active" id="btn-light-day" title="Clean Studio Daylight">☀️ Day</button>
           <button class="hud-chip" id="btn-light-night" title="Midnight Studio Glow">🌙 Night Glow</button>
         </div>
       </div>
 
       <!-- Camera views -->
       <div class="hud-group">
-        <span class="hud-group-title">CAMERA ANGLE</span>
+        <span class="hud-group-title">CAMERA</span>
         <div class="hud-btn-row">
           <button class="hud-chip active" id="btn-cam-iso" title="45° Orthographic Isometric">📐 45° Orbit</button>
           <button class="hud-chip" id="btn-cam-plat" title="Platform Level Eye-View">👁️ Platform</button>
-          <button class="hud-chip" id="btn-cam-train1" title="Chase Southbound Train">🚆 Chase South</button>
-          <button class="hud-chip" id="btn-cam-train2" title="Chase Northbound Train">🚆 Chase North</button>
         </div>
       </div>
 
-      <!-- Motion & Chime -->
+      <!-- Audio -->
       <div class="hud-group">
-        <span class="hud-group-title">KINETICS & SOUND</span>
+        <span class="hud-group-title">AUDIO</span>
         <div class="hud-btn-row">
-          <button class="hud-chip active" id="btn-sim-play">⏸️ Pause</button>
           <button class="hud-chip" id="btn-play-chime">🔔 DMRC Chime</button>
-        </div>
-        <div class="hud-btn-row speed-row">
-          <span class="speed-label">SPEED:</span>
-          <button class="hud-chip-sm active" data-3dspeed="1">1×</button>
-          <button class="hud-chip-sm" data-3dspeed="2">2×</button>
-          <button class="hud-chip-sm" data-3dspeed="4">4×</button>
         </div>
       </div>
     </aside>
@@ -144,229 +123,7 @@
     </div>
   </div>
 
-  <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase -->
-  <section id="cutaway-fullscreen-view" class="view-surface hidden">
-    <div class="cutaway-hero-container">
-      <div class="cutaway-spotlight-card">
-        <div class="cutaway-card-top">
-          <div class="cutaway-branding">
-            <span class="dmrc-red-dot"></span>
-            <span class="dmrc-label">DELHI METRO · 3D ARCHITECTURAL DIORAMA</span>
-          </div>
-          <div class="service-tag-pill">
-            <span class="service-beacon"></span>
-            <span id="cutaway-status-beacon-text">[Service Status: Minor Delays]</span>
-          </div>
-        </div>
-
-        <div class="cutaway-title-row">
-          <div>
-            <h2 class="cutaway-spotlight-title" id="cutaway-main-station-title">Rajiv Chowk Intermodal</h2>
-            <p class="cutaway-spotlight-sub" id="cutaway-main-station-sub">Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform</p>
-          </div>
-          <div class="cutaway-type-badge" id="cutaway-station-type-badge">Underground Tube Cutaway</div>
-        </div>
-
-        <!-- The Central Line Style 3D Render Display -->
-        <div class="cutaway-render-stage">
-          <img src="/public/dmrc_underground_tube_diorama.png" alt="3D Station Cutaway Diorama" class="cutaway-centerpiece-img" id="cutaway-img-element" />
-          <div class="cutaway-stage-shadow"></div>
-
-          <!-- Technical Annotation Badges floating over the diorama (Nano Banana reference) -->
-          <div class="diorama-annot-badge annot-left">
-            <span class="annot-dot pulse-amber"></span>
-            <span class="annot-text" id="annot-left-text">Platform 1 · Towards Millennium</span>
-          </div>
-          <div class="diorama-annot-badge annot-right">
-            <span class="annot-dot pulse-green"></span>
-            <span class="annot-text" id="annot-right-text">Platform 2 · Towards Badli</span>
-          </div>
-          <div class="diorama-annot-badge annot-fleet">
-            <span class="annot-icon">🚇</span>
-            <span class="annot-text" id="annot-fleet-text">8-Car Wide-Body Consist</span>
-          </div>
-        </div>
-
-        <!-- Scheduled Platform Timetables -->
-        <div class="cutaway-timetables-row">
-          <div class="cutaway-tt-card">
-            <span class="tt-platform-tag">Towards Millennium City Centre</span>
-            <div class="tt-destination">➔ Southbound Terminal</div>
-            <div class="tt-countdown" id="cutaway-p1-time">Due in 1m 15s</div>
-            <div class="tt-status">Approaching Station · 8 Cars</div>
-          </div>
-          <div class="cutaway-tt-card">
-            <span class="tt-platform-tag">Towards Samaypur Badli</span>
-            <div class="tt-destination">➔ Northbound Terminal</div>
-            <div class="tt-countdown" id="cutaway-p2-time">Due in 2m 40s</div>
-            <div class="tt-status">In Transit from Patel Chowk</div>
-          </div>
-        </div>
-
-        <!-- Live 8-Car Coach Passenger Occupancy Meter (DMRC Notice 555) -->
-        <div class="cutaway-coach-occupancy-wrap">
-          <div class="coach-occupancy-header">
-            <span class="co-title">8-CAR COACH PASSENGER OCCUPANCY · LIVE TELEMETRY</span>
-            <span class="co-badge">DMRC Notice 555 Calibrated</span>
-          </div>
-          <div class="coach-cars-row">
-            <div class="diorama-coach-card ladies-car" title="Coach 1: Reserved for Women Passengers">
-              <span class="car-badge">🌸 Car 1</span>
-              <span class="car-crowd">24%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 24%; background: #EC4899;"></div></div>
-            </div>
-            <div class="diorama-coach-card" title="Coach 2: General Passenger Carriage">
-              <span class="car-badge">Car 2</span>
-              <span class="car-crowd">45%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 45%; background: #10B981;"></div></div>
-            </div>
-            <div class="diorama-coach-card" title="Coach 3: General Passenger Carriage">
-              <span class="car-badge">Car 3</span>
-              <span class="car-crowd">78%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 78%; background: #F59E0B;"></div></div>
-            </div>
-            <div class="diorama-coach-card" title="Coach 4: Central Escalator Access (Highest Load)">
-              <span class="car-badge">Car 4</span>
-              <span class="car-crowd">88%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 88%; background: #EF4444;"></div></div>
-            </div>
-            <div class="diorama-coach-card" title="Coach 5: Concourse Staircase Access">
-              <span class="car-badge">Car 5</span>
-              <span class="car-crowd">72%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 72%; background: #F59E0B;"></div></div>
-            </div>
-            <div class="diorama-coach-card" title="Coach 6: General Passenger Carriage">
-              <span class="car-badge">Car 6</span>
-              <span class="car-crowd">52%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 52%; background: #10B981;"></div></div>
-            </div>
-            <div class="diorama-coach-card" title="Coach 7: General Passenger Carriage">
-              <span class="car-badge">Car 7</span>
-              <span class="car-crowd">35%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 35%; background: #10B981;"></div></div>
-            </div>
-            <div class="diorama-coach-card accessible-car" title="Coach 8: Divyang Wheelchair Space & Assistance">
-              <span class="car-badge">♿ Car 8</span>
-              <span class="car-crowd">28%</span>
-              <div class="car-gauge"><div class="gauge-fill" style="width: 28%; background: #3B82F6;"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Station Amenities & Operational Metadata Strip -->
-        <div class="cutaway-station-meta-grid">
-          <div class="meta-card">
-            <span class="meta-label">FIRST / LAST TRAINS</span>
-            <div class="meta-val" id="meta-first-last-val">05:29 AM – 23:47 PM</div>
-            <div class="meta-sub">Standard Day Operations · 3m Headways</div>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">KEY EXIT GATES</span>
-            <div class="meta-val" id="meta-gates-val">Gate 1 & Gate 2 (♿ Divyang)</div>
-            <div class="meta-sub">Direct access to Connaught Place & Janpath</div>
-          </div>
-          <div class="meta-card">
-            <span class="meta-label">STATION HELPLINE</span>
-            <div class="meta-val"><a href="tel:01123417910" class="meta-link" id="meta-phone-link">📞 011-23417910</a></div>
-            <div class="meta-sub">Station Control Room · Direct Line</div>
-          </div>
-        </div>
-
-        <!-- Station Switcher Buttons & Jump to Radar -->
-        <div class="cutaway-bottom-row">
-          <div class="cutaway-station-switcher">
-            <span class="switcher-label">STATION ARCHETYPE:</span>
-            <button class="station-switch-btn active" data-st="rajiv">Rajiv Chowk (Tube)</button>
-            <button class="station-switch-btn" data-st="kashmere">Kashmere Gate (Hub)</button>
-            <button class="station-switch-btn" data-st="hauzkhas">Hauz Khas (Deep Tube)</button>
-            <button class="station-switch-btn" data-st="millennium">Millennium City (Elevated)</button>
-          </div>
-          <button class="cutaway-jump-radar-btn" id="btn-jump-radar-from-cutaway">🗺️ View Corridor Radar ➔</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ── 3. Overlays & Floating HUD ──────────────────────────── -->
-
-  <!-- Emons-Inspired Hero Card (Top Left) -->
-  <header class="diorama-hero-card collapsed" id="diorama-hero-card">
-    <div class="hero-top-row">
-      <div class="brand-emblem">
-        <span class="emblem-dot"></span>
-        <span class="emblem-text">DMRC RADAR</span>
-      </div>
-      <div class="hero-top-actions">
-        <div class="live-status-pill">
-          <span class="live-beacon"></span>
-          <span>SCHEDULED FLEET</span>
-        </div>
-        <button class="hero-collapse-btn" id="hero-collapse-btn" title="Toggle Compact HUD">+</button>
-      </div>
-    </div>
-
-    <h1 class="hero-main-title">Delhi Metro. Scheduled Fleet.</h1>
-    <p class="hero-deck">Corridor 02 (Yellow Line) · 49.3 km continuous dual-track loop with physical platforms.</p>
-    <div class="unofficial-disclaimer">Unofficial · Not affiliated with DMRC</div>
-
-    <div class="hero-spec-strip">
-      <div class="spec-cell">
-        <span class="spec-label">STATIONS</span>
-        <span class="spec-value">37</span>
-      </div>
-      <div class="spec-cell">
-        <span class="spec-label">ACTIVE FLEET</span>
-        <span class="spec-value highlight" id="fleet-count">16 Trains</span>
-      </div>
-      <div class="spec-cell">
-        <span class="spec-label">TRACK LAYOUT</span>
-        <span class="spec-value">Dual Parallel</span>
-      </div>
-      <div class="spec-cell">
-        <span class="spec-label">LINE SPEED</span>
-        <span class="spec-value">80 km/h</span>
-      </div>
-    </div>
-
-    <!-- Quick Location Bookmarks -->
-    <div class="quick-bookmarks">
-      <span class="quick-label">CORRIDOR HUBS:</span>
-      <button class="bookmark-chip active" data-loc="all">Corridor Overview</button>
-      <button class="bookmark-chip" data-loc="qutab">Qutab Minar</button>
-      <button class="bookmark-chip" data-loc="kashmere">Kashmere Gate</button>
-      <button class="bookmark-chip" data-loc="rajiv">Rajiv Chowk</button>
-      <button class="bookmark-chip" data-loc="centralsec">Central Sec</button>
-      <button class="bookmark-chip" data-loc="hauzkhas">Hauz Khas</button>
-      <button class="bookmark-chip" data-loc="gurgaon">Cyber City</button>
-    </div>
-  </header>
-
-  <!-- Floating Controls (Top Right) -->
-  <aside class="control-cluster">
-    <!-- Camera View Mode (3D Diorama vs 2D Plan) -->
-    <div class="segmented-pill" id="camera-mode-pill">
-      <button class="seg-btn" id="btn-3d-view">📐 3D Tilt</button>
-      <button class="seg-btn active" id="btn-2d-view">🗺️ 2D Plan</button>
-    </div>
-
-    <!-- Vehicle Render Mode: 3D Trains vs Radar Dots vs Tracks Only -->
-    <div class="segmented-pill" id="vehicle-mode-pill">
-      <button class="seg-btn active" id="mode-3d">🚆 3D Trains</button>
-      <button class="seg-btn" id="mode-dot">● Radar Dots</button>
-      <button class="seg-btn" id="mode-tracks">🛤️ Rails Only</button>
-    </div>
-
-    <!-- Speed Multiplier -->
-    <div class="speed-cluster">
-      <span class="cluster-label">SPEED:</span>
-      <div class="segmented-pill">
-        <button class="speed-btn active" data-speed="1">1×</button>
-        <button class="speed-btn" data-speed="3">3×</button>
-        <button class="speed-btn" data-speed="8">8×</button>
-        <button class="speed-btn" data-speed="16">16×</button>
-      </div>
-    </div>
-  </aside>
 
   <!-- Architectural Train Inspector Card (Bottom Right) -->
   <div id="inspector-card" class="architectural-callout-card hidden">
@@ -602,29 +359,9 @@
     </div>
   </div>
 
-  <!-- Bottom Left Dual-Track & Infrastructure Legend Bar -->
-  <footer class="bottom-legend-strip">
-    <div class="legend-badge-item">
-      <span class="swatch flyover-swatch"></span>
-      <span>Elevated Flyover (+15m Viaduct & Parapets)</span>
-    </div>
-    <div class="legend-badge-item">
-      <span class="swatch tunnel-swatch"></span>
-      <span>Subterranean Tube Tunnel (-16m to -30m Bore)</span>
-    </div>
-    <div class="legend-badge-item">
-      <span class="swatch track-rails-swatch"></span>
-      <span>Dual Steel Rails & Concrete Sleepers</span>
-    </div>
-    <div class="legend-badge-item">
-      <span class="swatch portal-swatch"></span>
-      <span>Tunnel Portals & Transition Ramps</span>
-    </div>
-  </footer>
-
-  <script src="src/js/trip_engine.js?v=2.2.0"></script>
-  <script src="src/js/live_client.js?v=2.2.0"></script>
-  <script src="src/js/diorama3d.js?v=2.2.0"></script>
-  <script src="src/js/main.js?v=2.2.0"></script>
+  <script src="src/js/trip_engine.js?v=2.3.0"></script>
+  <script src="src/js/live_client.js?v=2.3.0"></script>
+  <script src="src/js/diorama3d.js?v=2.3.0"></script>
+  <script src="src/js/main.js?v=2.3.0"></script>
 </body>
 </html>

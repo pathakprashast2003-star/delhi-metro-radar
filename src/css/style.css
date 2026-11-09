@@ -2614,6 +2614,12 @@ html, body {
   transform: translateY(-1px);
 }
 
+.maplibregl-ctrl-top-right {
+  margin-top: 64px !important;
+  margin-right: 28px !important;
+}
+
+
 
 
 
