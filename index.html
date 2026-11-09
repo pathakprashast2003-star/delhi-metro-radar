@@ -18,6 +18,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="src/css/style.css" />
+
+  <!-- Three.js & OrbitControls for Interactive WebGL 3D Diorama Stage -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body class="editorial-light">
 
@@ -45,6 +49,13 @@
         <span class="tab-sub">Tube & Viaduct Showcase</span>
       </div>
     </button>
+    <button class="mode-tab" data-surface="threejs" id="tab-threejs">
+      <span class="tab-icon">📐</span>
+      <div class="tab-text">
+        <span class="tab-title">3D Metro Stage</span>
+        <span class="tab-sub">WebGL Train & Platform</span>
+      </div>
+    </button>
   </nav>
 
   <!-- ── 2. Primary View Surfaces ────────────────────────────── -->
@@ -64,6 +75,64 @@
   <div class="placeholder-disclaimer-pill" id="line-status-pill">
     <span class="disc-dot" id="line-status-dot">🟢</span>
     <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
+  </div>
+
+  <!-- SURFACE B: Three.js Interactive 3D WebGL Diorama Canvas -->
+  <div id="three-container" class="view-surface hidden">
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Top floating diorama station header -->
+    <div class="three-header-pill">
+      <div class="diorama-badge-dot"></div>
+      <div class="diorama-header-text">
+        <span class="diorama-tag">ARCHITECTURAL 3D WEBGL STAGE</span>
+        <span class="diorama-title">3D Delhi Metro Rakes Entering Viaduct Platform</span>
+      </div>
+    </div>
+
+    <!-- Right floating 3D controls palette -->
+    <aside class="three-hud-panel">
+      <!-- Lighting atmosphere -->
+      <div class="hud-group">
+        <span class="hud-group-title">LIGHTING ATMOSPHERE</span>
+        <div class="hud-btn-row">
+          <button class="hud-chip active" id="btn-light-day" title="Clean Studio Daylight">☀️ Studio Day</button>
+          <button class="hud-chip" id="btn-light-sunset" title="Golden Hour">🌅 Sunset</button>
+          <button class="hud-chip" id="btn-light-night" title="Midnight Studio Glow">🌙 Night Glow</button>
+        </div>
+      </div>
+
+      <!-- Camera views -->
+      <div class="hud-group">
+        <span class="hud-group-title">CAMERA ANGLE</span>
+        <div class="hud-btn-row">
+          <button class="hud-chip active" id="btn-cam-iso" title="45° Orthographic Isometric">📐 45° Orbit</button>
+          <button class="hud-chip" id="btn-cam-plat" title="Platform Level Eye-View">👁️ Platform</button>
+          <button class="hud-chip" id="btn-cam-train1" title="Chase Southbound Train">🚆 Chase South</button>
+          <button class="hud-chip" id="btn-cam-train2" title="Chase Northbound Train">🚆 Chase North</button>
+        </div>
+      </div>
+
+      <!-- Motion & Chime -->
+      <div class="hud-group">
+        <span class="hud-group-title">KINETICS & SOUND</span>
+        <div class="hud-btn-row">
+          <button class="hud-chip active" id="btn-sim-play">⏸️ Pause</button>
+          <button class="hud-chip" id="btn-play-chime">🔔 DMRC Chime</button>
+        </div>
+        <div class="hud-btn-row speed-row">
+          <span class="speed-label">SPEED:</span>
+          <button class="hud-chip-sm active" data-3dspeed="1">1×</button>
+          <button class="hud-chip-sm" data-3dspeed="2">2×</button>
+          <button class="hud-chip-sm" data-3dspeed="4">4×</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bottom Instruction Bar -->
+    <div class="three-instruction-badge">
+      <span>🖱️ Click & Drag to Orbit 360° · Scroll to Zoom · Dual 3D Metro Consists Entering Platform</span>
+    </div>
   </div>
 
   <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase -->
@@ -543,6 +612,7 @@
 
   <script src="src/js/trip_engine.js"></script>
   <script src="src/js/live_client.js"></script>
+  <script src="src/js/diorama3d.js"></script>
   <script src="src/js/main.js"></script>
 </body>
 </html>

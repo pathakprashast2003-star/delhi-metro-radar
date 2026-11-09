@@ -1523,6 +1523,7 @@
     const tabs = document.querySelectorAll('.mode-tab');
     const mapSurface = document.getElementById('map');
     const cutawaySurface = document.getElementById('cutaway-fullscreen-view');
+    const threeSurface = document.getElementById('three-container');
     const heroCard = document.querySelector('.diorama-hero-card');
     const controlCluster = document.querySelector('.control-cluster');
     const legendStrip = document.querySelector('.bottom-legend-strip');
@@ -1535,19 +1536,36 @@
       if (surfaceName === 'corridor') {
         mapSurface.classList.remove('hidden');
         cutawaySurface.classList.add('hidden');
+        if (threeSurface) threeSurface.classList.add('hidden');
         if (heroCard) heroCard.style.display = 'flex';
         if (controlCluster) controlCluster.style.display = 'flex';
         if (legendStrip) legendStrip.style.display = 'flex';
         if (timetableDock) timetableDock.style.display = 'flex';
         if (lineStatusPill) lineStatusPill.style.display = 'flex';
+        if (window.Diorama3D) window.Diorama3D.stop();
       } else if (surfaceName === 'cutaway') {
         cutawaySurface.classList.remove('hidden');
         mapSurface.classList.add('hidden');
+        if (threeSurface) threeSurface.classList.add('hidden');
         if (heroCard) heroCard.style.display = 'none';
         if (controlCluster) controlCluster.style.display = 'none';
         if (legendStrip) legendStrip.style.display = 'none';
         if (timetableDock) timetableDock.style.display = 'none';
         if (lineStatusPill) lineStatusPill.style.display = 'none';
+        if (window.Diorama3D) window.Diorama3D.stop();
+      } else if (surfaceName === 'threejs') {
+        if (threeSurface) threeSurface.classList.remove('hidden');
+        mapSurface.classList.add('hidden');
+        cutawaySurface.classList.add('hidden');
+        if (heroCard) heroCard.style.display = 'none';
+        if (controlCluster) controlCluster.style.display = 'none';
+        if (legendStrip) legendStrip.style.display = 'none';
+        if (timetableDock) timetableDock.style.display = 'none';
+        if (lineStatusPill) lineStatusPill.style.display = 'none';
+        if (window.Diorama3D && threeSurface) {
+          window.Diorama3D.init(threeSurface);
+          window.Diorama3D.start();
+        }
       }
     };
 
