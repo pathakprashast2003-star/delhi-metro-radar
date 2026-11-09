@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="src/css/style.css" />
+  <link rel="stylesheet" href="src/css/style.css?v=2.2.0" />
 
   <!-- Three.js & OrbitControls for Interactive WebGL 3D Diorama Stage -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -92,6 +92,15 @@
 
     <!-- Right floating 3D controls palette -->
     <aside class="three-hud-panel">
+      <!-- Station Archetype -->
+      <div class="hud-group">
+        <span class="hud-group-title">STATION ARCHETYPE</span>
+        <div class="hud-btn-row">
+          <button class="hud-chip active" id="btn-arch-viaduct" title="Elevated Viaduct (Qutab Minar style)">🌁 Viaduct</button>
+          <button class="hud-chip" id="btn-arch-tube" title="Subterranean Tube Cutaway (Rajiv Chowk style)">🚇 Tube Cutaway</button>
+        </div>
+      </div>
+
       <!-- Lighting atmosphere -->
       <div class="hud-group">
         <span class="hud-group-title">LIGHTING ATMOSPHERE</span>
@@ -427,7 +436,10 @@
     <div class="st-diorama-preview-box" id="st-diorama-preview-box">
       <img id="st-panel-diorama-img" src="/public/dmrc_elevated_viaduct_diorama.png" alt="Station 3D Cutaway" class="st-diorama-img" />
       <div class="st-diorama-badge-overlay" id="st-diorama-badge-overlay">ELEVATED VIADUCT DIORAMA · ARCH CANOPY (+15M)</div>
-      <button class="st-follow-next-btn" id="btn-follow-next-train">📹 Follow Next Arriving Train</button>
+      <div class="st-diorama-actions-row">
+        <button class="st-view-3d-stage-btn" id="btn-view-3d-stage">📐 Open 3D Stage</button>
+        <button class="st-follow-next-btn" id="btn-follow-next-train">📹 Follow Train</button>
+      </div>
     </div>
 
     <!-- Station Navigation Tabs -->
@@ -610,9 +622,9 @@
     </div>
   </footer>
 
-  <script src="src/js/trip_engine.js"></script>
-  <script src="src/js/live_client.js"></script>
-  <script src="src/js/diorama3d.js"></script>
-  <script src="src/js/main.js"></script>
+  <script src="src/js/trip_engine.js?v=2.2.0"></script>
+  <script src="src/js/live_client.js?v=2.2.0"></script>
+  <script src="src/js/diorama3d.js?v=2.2.0"></script>
+  <script src="src/js/main.js?v=2.2.0"></script>
 </body>
 </html>

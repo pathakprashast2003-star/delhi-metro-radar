@@ -86,6 +86,10 @@ html, body {
   text-align: left;
 }
 
+.mode-tab:active {
+  transform: scale(0.97);
+}
+
 .mode-tab:hover {
   background: rgba(15, 23, 42, 0.04);
 }
@@ -281,6 +285,10 @@ html, body {
   background: rgba(15, 23, 42, 0.08);
 }
 
+.hud-chip:active {
+  transform: scale(0.96);
+}
+
 .hud-chip.active {
   background: var(--ink-heading);
   color: #FFFFFF;
@@ -310,11 +318,71 @@ html, body {
   padding: 3px 8px;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hud-chip-sm:active {
+  transform: scale(0.96);
 }
 
 .hud-chip-sm.active {
   background: var(--ink-heading);
   color: #FFFFFF;
+}
+
+/* Frosted Obsidian Slate Theme for Subterranean Tube Cutaway */
+.three-hud-panel.dark-hud {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+.three-hud-panel.dark-hud .hud-group-title {
+  color: #94A3B8;
+}
+.three-hud-panel.dark-hud .hud-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #F8FAFC;
+}
+.three-hud-panel.dark-hud .hud-chip:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.three-hud-panel.dark-hud .hud-chip.active {
+  background: #FACC15;
+  color: #0F172A;
+  border-color: #FACC15;
+  font-weight: 700;
+}
+.three-hud-panel.dark-hud .speed-label {
+  color: #94A3B8;
+}
+.three-hud-panel.dark-hud .hud-chip-sm {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #F8FAFC;
+}
+.three-hud-panel.dark-hud .hud-chip-sm:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.three-hud-panel.dark-hud .hud-chip-sm.active {
+  background: #FACC15;
+  color: #0F172A;
+  border-color: #FACC15;
+}
+.three-header-pill.dark-hud {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.three-header-pill.dark-hud .diorama-tag {
+  color: #FACC15;
+}
+.three-header-pill.dark-hud .diorama-title {
+  color: #F8FAFC;
+}
+.three-instruction-badge.dark-hud {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #94A3B8;
 }
 
 /* SURFACE C: Central Line Tube Station Cutaway Full View */
@@ -1839,10 +1907,39 @@ html, body {
   border-radius: var(--radius-full);
 }
 
-.st-follow-next-btn {
+.st-diorama-actions-row {
   position: absolute;
   bottom: 8px;
   right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+
+.st-view-3d-stage-btn {
+  background: #FACC15;
+  color: #0F172A;
+  border: 1px solid #EAB308;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.28);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.st-view-3d-stage-btn:hover {
+  background: #EAB308;
+  transform: translateY(-1px);
+}
+
+.st-view-3d-stage-btn:active {
+  transform: scale(0.96);
+}
+
+.st-follow-next-btn {
   background: #FFFFFF;
   color: var(--ink-heading);
   border: 1px solid var(--card-border);

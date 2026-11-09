@@ -1568,7 +1568,7 @@
     const timetableDock = document.querySelector('.timetable-dock');
     const lineStatusPill = document.getElementById('line-status-pill');
 
-    window.switchSurface = function (surfaceName) {
+    window.switchSurface = function (surfaceName, optArchetype) {
       tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-surface') === surfaceName));
 
       if (surfaceName === 'corridor') {
@@ -1581,6 +1581,10 @@
         if (timetableDock) timetableDock.style.display = 'flex';
         if (lineStatusPill) lineStatusPill.style.display = 'flex';
         if (window.Diorama3D) window.Diorama3D.stop();
+        // Resize MapLibre so canvas dimensions match unhidden viewport smoothly
+        requestAnimationFrame(() => {
+          if (map) map.resize();
+        });
       } else if (surfaceName === 'cutaway') {
         cutawaySurface.classList.remove('hidden');
         mapSurface.classList.add('hidden');
@@ -1600,8 +1604,15 @@
         if (legendStrip) legendStrip.style.display = 'none';
         if (timetableDock) timetableDock.style.display = 'none';
         if (lineStatusPill) lineStatusPill.style.display = 'none';
+        const stPanel = document.getElementById('station-panel');
+        if (stPanel) stPanel.classList.add('hidden');
+        const inspCard = document.getElementById('inspector-card');
+        if (inspCard) inspCard.classList.add('hidden');
         if (window.Diorama3D && threeSurface) {
           window.Diorama3D.init(threeSurface);
+          if (optArchetype) {
+            window.Diorama3D.setArchetype(optArchetype);
+          }
           window.Diorama3D.start();
         }
       }
@@ -2333,19 +2344,22 @@
     if (nbFirstEl) nbFirstEl.textContent = st.firstTrainNorth || '06:00 AM';
     if (nbLastEl) nbLastEl.textContent = st.lastTrainNorth || '11:00 PM';
 
-    // 3D Cutaway Trigger Button inside station drawer
+    // 3D Stage / Cutaway Trigger Buttons inside station drawer
+    const view3dBtn = document.getElementById('btn-view-3d-stage');
+    if (view3dBtn) {
+      view3dBtn.onclick = () => {
+        const isUnderground = st.structure === 'underground';
+        window.switchSurface('threejs', isUnderground ? 'underground' : 'elevated');
+      };
+    }
+
     const cutawayBtn = document.getElementById('btn-open-station-cutaway');
     const cutawayBlock = document.getElementById('st-cutaway-link-block');
     if (cutawayBtn && cutawayBlock) {
-      const cutawayMap = { 15: 'rajiv', 11: 'kashmere', 24: 'hauzkhas', 36: 'millennium' };
-      const cutawayKey = cutawayMap[stIdx];
+      cutawayBtn.textContent = '📐 View 3D Station Cutaway Stage →';
       cutawayBtn.onclick = () => {
-        const cutawayTab = document.getElementById('tab-cutaway');
-        if (cutawayTab) cutawayTab.click();
-        if (cutawayKey) {
-          const stBtn = document.querySelector(`.station-switch-btn[data-st="${cutawayKey}"]`);
-          if (stBtn) stBtn.click();
-        }
+        const isUnderground = st.structure === 'underground';
+        window.switchSurface('threejs', isUnderground ? 'underground' : 'elevated');
       };
     }
   }
