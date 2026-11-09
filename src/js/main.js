@@ -1566,10 +1566,13 @@
     window.switchSurface = function (surfaceName, optArchetype) {
       tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-surface') === surfaceName));
 
+      const mapPerspectivePill = document.getElementById('map-perspective-pill');
+
       if (surfaceName === 'corridor') {
         if (mapSurface) mapSurface.classList.remove('hidden');
         if (threeSurface) threeSurface.classList.add('hidden');
         if (timetableDock) timetableDock.style.display = 'flex';
+        if (mapPerspectivePill) mapPerspectivePill.classList.remove('hidden');
         if (window.Diorama3D) window.Diorama3D.stop();
         // Resize MapLibre so canvas dimensions match unhidden viewport smoothly
         requestAnimationFrame(() => {
@@ -1579,6 +1582,7 @@
         if (threeSurface) threeSurface.classList.remove('hidden');
         if (mapSurface) mapSurface.classList.add('hidden');
         if (timetableDock) timetableDock.style.display = 'none';
+        if (mapPerspectivePill) mapPerspectivePill.classList.add('hidden');
         const stPanel = document.getElementById('station-panel');
         if (stPanel) stPanel.classList.add('hidden');
         const inspCard = document.getElementById('inspector-card');
@@ -1592,6 +1596,14 @@
         }
       }
     };
+
+    const btnThreeToMap = document.getElementById('btn-three-to-map');
+    if (btnThreeToMap) {
+      btnThreeToMap.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.switchSurface('corridor');
+      });
+    }
 
     tabs.forEach(t => {
       t.addEventListener('click', () => {
@@ -1775,15 +1787,24 @@
   //  10. CAMERA PERSPECTIVES & USER INTERACTION
   // ═══════════════════════════════════════════════════════════
   function setupControls() {
-    // 3D Diorama vs 2D Plan
-    const btn3D = document.getElementById('btn-3d-view');
-    const btn2D = document.getElementById('btn-2d-view');
+    // 3D WebGL Viaducts vs 2D Flat Plan on MapLibre
+    const btn3D = document.getElementById('btn-3d-map-view') || document.getElementById('btn-3d-view');
+    const btn2D = document.getElementById('btn-2d-map-view') || document.getElementById('btn-2d-view');
 
     if (btn3D) {
       btn3D.addEventListener('click', () => {
         btn3D.classList.add('active');
         if (btn2D) btn2D.classList.remove('active');
-        map.easeTo({ pitch: 48, bearing: -14, duration: 900 });
+        applyRenderMode('3d');
+        const currZoom = map ? map.getZoom() : 10;
+        if (map) {
+          if (currZoom < 13.0) {
+            // Smoothly fly to iconic elevated viaduct (Qutab Minar) with 3D tilt
+            map.flyTo({ center: [77.1793, 28.5132], zoom: 15.2, pitch: 52, bearing: -14, duration: 1200 });
+          } else {
+            map.easeTo({ pitch: 52, bearing: -14, duration: 900 });
+          }
+        }
       });
     }
 
@@ -1791,7 +1812,25 @@
       btn2D.addEventListener('click', () => {
         btn2D.classList.add('active');
         if (btn3D) btn3D.classList.remove('active');
-        map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
+        if (map) {
+          map.flyTo({ center: [77.1400, 28.5850], zoom: 10.35, pitch: 0, bearing: 0, duration: 1000 });
+        }
+      });
+    }
+
+    // Keep 3D/2D pill synchronized when user pitches/rotates map manually
+    if (map) {
+      map.on('pitch', () => {
+        const pitch = map.getPitch();
+        if (btn3D && btn2D) {
+          if (pitch >= 25) {
+            btn3D.classList.add('active');
+            btn2D.classList.remove('active');
+          } else if (pitch < 12) {
+            btn2D.classList.add('active');
+            btn3D.classList.remove('active');
+          }
+        }
       });
     }
 

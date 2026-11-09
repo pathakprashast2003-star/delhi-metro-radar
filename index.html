@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Delhi Metro — Architectural Scheduled 3D Transit Radar & Station Cutaways." />
   <meta name="theme-color" content="#FDFBF7" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Delhi Metro — Scheduled Transit Radar</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚇</text></svg>" />
 
@@ -17,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="src/css/style.css?v=2.3.0" />
+  <link rel="stylesheet" href="src/css/style.css?v=3.5.0" />
 
   <!-- Three.js & OrbitControls for Interactive WebGL 3D Diorama Stage -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -34,22 +37,39 @@
   </div>
 
   <!-- ── 1. Master Mode Navigation Strip (Top Center) ────────── -->
-  <nav class="master-mode-strip">
-    <button class="mode-tab active" data-surface="threejs" id="tab-threejs">
-      <span class="tab-icon">🚇</span>
+  <nav class="master-mode-strip" aria-label="Main View Surfaces">
+    <button class="mode-tab active" data-surface="threejs" id="tab-threejs" title="Full Interactive 3D WebGL Stage (Three.js)">
+      <span class="tab-badge">COMPLETE 3D</span>
+      <span class="tab-icon">🌐</span>
       <div class="tab-text">
-        <span class="tab-title">3D Metro Stage</span>
-        <span class="tab-sub">Interactive 3D WebGL</span>
+        <span class="tab-title">WebGL 3D Metro Stage</span>
+        <span class="tab-sub">Interactive Subterranean & Viaduct</span>
       </div>
     </button>
-    <button class="mode-tab" data-surface="corridor" id="tab-corridor">
+    <button class="mode-tab" data-surface="corridor" id="tab-corridor" title="49km Delhi Yellow Line Map with 3D Viaduct Extrusions (MapLibre)">
+      <span class="tab-badge map-badge">49KM MAP</span>
       <span class="tab-icon">🗺️</span>
       <div class="tab-text">
-        <span class="tab-title">Corridor Radar</span>
-        <span class="tab-sub">49km Fleet Map</span>
+        <span class="tab-title">MapLibre Corridor Radar</span>
+        <span class="tab-sub">49km Fleet & 3D Viaducts</span>
       </div>
     </button>
   </nav>
+
+  <!-- ── 1B. MapLibre 3D Perspective Toggle (Visible when on MapLibre) ────────── -->
+  <div class="map-perspective-pill hidden" id="map-perspective-pill">
+    <span class="perspective-label">MAP VIEW:</span>
+    <div class="perspective-btn-group">
+      <button class="perspective-btn" id="btn-3d-map-view" title="Tilt map into 3D WebGL perspective with extruded viaducts and 3D trains">
+        <span class="btn-icon">📐</span>
+        <span class="btn-text">3D WebGL Viaducts</span>
+      </button>
+      <button class="perspective-btn active" id="btn-2d-map-view" title="Flat 2D overview of full 49km corridor">
+        <span class="btn-icon">🗺️</span>
+        <span class="btn-text">2D Flat Plan</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ── 2. Primary View Surfaces ────────────────────────────── -->
 
@@ -74,9 +94,13 @@
     <div class="three-header-pill">
       <div class="diorama-badge-dot"></div>
       <div class="diorama-header-text">
-        <span class="diorama-tag">ARCHITECTURAL 3D WEBGL STAGE</span>
+        <span class="diorama-tag">ARCHITECTURAL 3D WEBGL STAGE (COMPLETE 3D)</span>
         <span class="diorama-title">3D Delhi Metro Rakes Entering Viaduct Platform</span>
       </div>
+      <button class="three-quick-switch-btn" id="btn-three-to-map" title="Switch to 49km MapLibre Corridor Radar">
+        <span>🗺️ 49km Map Radar</span>
+        <span class="switch-arrow">➔</span>
+      </button>
     </div>
 
     <!-- Right floating 3D controls palette -->
@@ -359,9 +383,9 @@
     </div>
   </div>
 
-  <script src="src/js/trip_engine.js?v=2.3.0"></script>
-  <script src="src/js/live_client.js?v=2.3.0"></script>
-  <script src="src/js/diorama3d.js?v=2.3.0"></script>
-  <script src="src/js/main.js?v=2.3.0"></script>
+  <script src="src/js/trip_engine.js?v=3.5.0"></script>
+  <script src="src/js/live_client.js?v=3.5.0"></script>
+  <script src="src/js/diorama3d.js?v=3.5.0"></script>
+  <script src="src/js/main.js?v=3.5.0"></script>
 </body>
 </html>

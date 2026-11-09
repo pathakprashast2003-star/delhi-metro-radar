@@ -980,10 +980,10 @@ window.Diorama3D = (function () {
     const tagEl = document.querySelector('.diorama-tag');
     if (titleEl && tagEl) {
       if (isUnderground) {
-        tagEl.textContent = 'SUBTERRANEAN TUBE CUTAWAY';
+        tagEl.textContent = 'WEBGL 3D TUBE CUTAWAY · COMPLETE 3D STAGE';
         titleEl.textContent = 'Rajiv Chowk · Central Subway Chamber (-18m)';
       } else {
-        tagEl.textContent = 'ARCHITECTURAL 3D VIADUCT STAGE';
+        tagEl.textContent = 'WEBGL 3D VIADUCT · COMPLETE 3D STAGE';
         titleEl.textContent = 'Qutab Minar · Elevated Flyover (+15m)';
       }
     }
