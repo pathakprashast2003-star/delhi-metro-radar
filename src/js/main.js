@@ -243,8 +243,13 @@
     try {
       const style = map.getStyle();
       if (!style || !style.layers) return;
+      const clutterPatterns = [
+        'shield', 'boundary', 'roadname', 'housenumber', 
+        'poi_', 'place_hamlet', 'place_suburbs', 'place_villages', 
+        'place_town', 'watername', 'waterway_label'
+      ];
       style.layers.forEach(l => {
-        if (l.id.includes('shield') || l.id.includes('state-boundary')) {
+        if (clutterPatterns.some(pat => l.id.includes(pat))) {
           map.setLayoutProperty(l.id, 'visibility', 'none');
         }
       });
@@ -253,43 +258,55 @@
 
   function enhanceMapColors() {
     try {
-      // 1. Vibrant Turquoise/Azure Water (Yamuna River, lakes & canals like Image 1)
+      // 1. Soft Architectural Studio Slate-Teal Water (Calm, elegant diorama reflection)
       if (map.getLayer('water')) {
-        map.setPaintProperty('water', 'fill-color', '#0284C7');
-        map.setPaintProperty('water', 'fill-opacity', 0.95);
+        map.setPaintProperty('water', 'fill-color', '#8BA8B7');
+        map.setPaintProperty('water', 'fill-opacity', 0.82);
       }
       if (map.getLayer('waterway')) {
-        map.setPaintProperty('waterway', 'line-color', '#0EA5E9');
+        map.setPaintProperty('waterway', 'line-color', '#7B9AA9');
       }
 
-      // 2. Rich Lush Emerald Green Nature & Parks (Central Vista, Lodhi Gardens, Ridge Forest)
-      const parkColor = '#48A962';
+      // 2. Muted Studio Sage / Soft Foam Clay Nature & Parks (Architectural Model Flora)
+      const parkColor = '#DCE4D5'; // Soft warm architectural sage
       ['park_national_park', 'park_nature_reserve', 'landcover', 'landuse'].forEach(layerId => {
         if (map.getLayer(layerId)) {
           map.setPaintProperty(layerId, 'fill-color', parkColor);
-          map.setPaintProperty(layerId, 'fill-opacity', 0.85);
+          map.setPaintProperty(layerId, 'fill-opacity', 0.68);
         }
       });
 
-      // 3. Warm Golden-Amber Highway Fills
+      // 3. Architectural Chalk Sandstone Highway Fills (Muted warm sand, NOT electric orange!)
       const trunkRoads = ['road_trunk_fill_ramp', 'road_trunk_fill_noramp', 'road_mot_fill_ramp', 'road_mot_fill_noramp', 'bridge_trunk_fill', 'bridge_mot_fill'];
       trunkRoads.forEach(layerId => {
         if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#F59E0B');
+          map.setPaintProperty(layerId, 'line-color', '#E8E2D5');
+        }
+      });
+      const trunkCases = ['road_trunk_case_ramp', 'road_trunk_case_noramp', 'road_mot_case_ramp', 'road_mot_case_noramp'];
+      trunkCases.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'line-color', '#DCD5C6');
         }
       });
 
-      // 4. Soft Warm Peach Arteries
-      const primaryRoads = ['road_pri_fill_ramp', 'road_pri_fill_noramp', 'road_sec_fill_noramp', 'bridge_pri_fill', 'bridge_sec_fill'];
+      // 4. Subtle Alabaster Local Arteries & Secondary Roads
+      const primaryRoads = ['road_pri_fill_ramp', 'road_pri_fill_noramp', 'road_sec_fill_noramp', 'bridge_pri_fill', 'bridge_sec_fill', 'road_minor_fill', 'road_service_fill'];
       primaryRoads.forEach(layerId => {
         if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#FDBA74');
+          map.setPaintProperty(layerId, 'line-color', '#F5F2EB');
+        }
+      });
+      const primaryCases = ['road_pri_case_ramp', 'road_pri_case_noramp', 'road_sec_case_noramp', 'road_minor_case', 'road_service_case'];
+      primaryCases.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'line-color', '#E5E0D5');
         }
       });
 
-      // 5. Warm Alabaster/Sand Land Background
+      // 5. Warm Museum Diorama Pedestal Background (Nano Banana Alabaster)
       if (map.getLayer('background')) {
-        map.setPaintProperty('background', 'background-color', '#F6F3EA');
+        map.setPaintProperty('background', 'background-color', '#FAF8F5');
       }
     } catch (e) {}
   }
@@ -317,18 +334,18 @@
         paint: {
           'fill-extrusion-color': [
             'interpolate', ['linear'], ['zoom'],
-            12, '#FBF7F0',
-            14, '#FDF2E2',
-            16, '#FEEBC8'
+            12, '#FAF8F5',
+            14, '#F5F2EB',
+            16, '#EDE8DE'
           ],
           'fill-extrusion-height': [
             'interpolate', ['linear'], ['zoom'],
             12, 6,
-            14, 22,
-            16, 40
+            14, 20,
+            16, 36
           ],
           'fill-extrusion-base': 0,
-          'fill-extrusion-opacity': 0.90
+          'fill-extrusion-opacity': 0.82
         }
       }, firstSymbolId);
     } catch (e) {}
@@ -673,16 +690,16 @@
       }
     });
 
-    // 3. Subterranean Safety & Illuminated Bore Perimeter (Luminous cyan guide)
+    // 3. Subterranean Depth Ambient Base (Soft architectural concrete depth)
     map.addLayer({
       id: 'tunnel-interior-glow',
       type: 'line',
       source: 'tunnel-tube-center',
       paint: {
-        'line-color': '#0284C7',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 4.0, 11, 8.0, 14, 14.0, 17, 22.0],
-        'line-opacity': 0.35,
-        'line-blur': 3
+        'line-color': '#334155',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 3.0, 11, 6.0, 14, 10.0, 17, 16.0],
+        'line-opacity': 0.22,
+        'line-blur': 2
       }
     });
 
@@ -767,7 +784,7 @@
             ['==', ['get', 'id'], 'portal_north'], '🔻 NORTH PORTAL · Model Town ➔ GTB Nagar (-16m)',
             '🔺 SOUTH PORTAL · Saket ➔ Qutab Minar (+15m)'
           ],
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+          'text-font': ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 11, 9.5, 14, 11, 16, 12.5],
           'text-offset': [0, 1.8],
           'text-anchor': 'top'
@@ -885,7 +902,7 @@
         data: trackData.undergroundPlatforms
       });
 
-      // Architectural dark slate excavation chamber (clean & luminous, NOT pitch black!)
+      // Architectural dark slate excavation chamber (Clean cutaway stone - NO neon cyan!)
       map.addLayer({
         id: 'underground-chamber-casing',
         type: 'fill',
@@ -893,21 +910,21 @@
         minzoom: 12.0,
         paint: {
           'fill-color': '#1E293B',
-          'fill-outline-color': '#0284C7',
-          'fill-opacity': 0.72
+          'fill-outline-color': '#475569',
+          'fill-opacity': 0.82
         }
       });
 
-      // Luminous cyan engineering perimeter outline
+      // Subtle architectural concrete edge perimeter
       map.addLayer({
         id: 'underground-chamber-glow',
         type: 'line',
         source: 'underground-platforms',
         minzoom: 12.0,
         paint: {
-          'line-color': '#38BDF8',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.2, 15, 2.2, 17, 3.5],
-          'line-opacity': 0.85
+          'line-color': '#64748B',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.0, 15, 1.8, 17, 2.8],
+          'line-opacity': 0.65
         }
       });
     }
@@ -931,7 +948,8 @@
       });
     }
 
-    // 4. Modern Cantilevered Sky-Blue Canopy Roofs (ONLY on Elevated Stations)
+    // 4. Modern Vaulted Arch Steel Canopy Roofs (ONLY on Elevated Stations)
+    // Matches the architectural diorama canopy in dmrc_elevated_viaduct_diorama.png
     if (trackData.platformCanopies) {
       map.addSource('platform-canopies', {
         type: 'geojson',
@@ -944,10 +962,10 @@
         source: 'platform-canopies',
         minzoom: 12.5,
         paint: {
-          'fill-extrusion-color': '#0284C7', // Signature Sky-Blue Vaulted Arch Canopy
+          'fill-extrusion-color': '#334155', // Sleek architectural graphite steel canopy
           'fill-extrusion-height': 9.5,
           'fill-extrusion-base': 4.5,
-          'fill-extrusion-opacity': 0.90
+          'fill-extrusion-opacity': 0.88
         }
       });
     }
@@ -960,7 +978,7 @@
           type: 'FeatureCollection',
           features: trackData.stations.map((s, idx) => ({
             type: 'Feature',
-            geometry: { type: 'Point', coordinates: s.coords },
+            geometry: { type: 'Point', coordinates: s.coordinates || s.coords },
             properties: {
               id: s.id,
               name: s.name,
@@ -989,7 +1007,7 @@
             ' · ',
             ['get', 'elevText']
           ],
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-font': ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
           'text-size': 11,
           'text-offset': [0, 1.8],
           'text-anchor': 'top'
@@ -1015,7 +1033,7 @@
             ' · ',
             ['get', 'elevText']
           ],
-          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-font': ['Montserrat Medium', 'Open Sans Regular', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
           'text-size': 10,
           'text-offset': [0, 1.6],
           'text-anchor': 'top'
@@ -1037,7 +1055,7 @@
     el.className = 'landmark-3d-container';
     el.innerHTML = `
       <div class="landmark-model-wrap">
-        <img src="/public/rajiv_chowk_cutaway.png" alt="Rajiv Chowk 3D Landmark" class="landmark-img" />
+        <img src="/public/dmrc_underground_tube_diorama.png" alt="Rajiv Chowk 3D Landmark" class="landmark-img" />
         <div class="landmark-ground-shadow"></div>
       </div>
       <div class="landmark-badge">
@@ -1377,6 +1395,8 @@
     const heroCard = document.querySelector('.diorama-hero-card');
     const controlCluster = document.querySelector('.control-cluster');
     const legendStrip = document.querySelector('.bottom-legend-strip');
+    const timetableDock = document.querySelector('.timetable-dock');
+    const lineStatusPill = document.getElementById('line-status-pill');
 
     window.switchSurface = function (surfaceName) {
       tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-surface') === surfaceName));
@@ -1387,12 +1407,16 @@
         if (heroCard) heroCard.style.display = 'flex';
         if (controlCluster) controlCluster.style.display = 'flex';
         if (legendStrip) legendStrip.style.display = 'flex';
+        if (timetableDock) timetableDock.style.display = 'flex';
+        if (lineStatusPill) lineStatusPill.style.display = 'flex';
       } else if (surfaceName === 'cutaway') {
         cutawaySurface.classList.remove('hidden');
         mapSurface.classList.add('hidden');
         if (heroCard) heroCard.style.display = 'none';
         if (controlCluster) controlCluster.style.display = 'none';
         if (legendStrip) legendStrip.style.display = 'none';
+        if (timetableDock) timetableDock.style.display = 'none';
+        if (lineStatusPill) lineStatusPill.style.display = 'none';
       }
     };
 
@@ -1414,24 +1438,32 @@
       'rajiv': {
         title: 'Rajiv Chowk Intermodal Terminal',
         sub: 'Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform (Yellow & Blue Line)',
+        image: '/public/dmrc_underground_tube_diorama.png',
+        type: 'Underground Tube (Cutaway)',
         coords: [77.2196, 28.6329],
         zoom: 15.6
       },
       'kashmere': {
         title: 'Kashmere Gate Multimodal Hub',
         sub: 'Architectural 3D Cutaway Pedestal · Red, Yellow & Violet Line Triple Interchange Station',
+        image: '/public/dmrc_underground_tube_diorama.png',
+        type: 'Underground Multi-Level Tube',
         coords: [77.2282, 28.6675],
         zoom: 15.6
       },
       'hauzkhas': {
         title: 'Hauz Khas Deep Junction',
         sub: 'Architectural 3D Cutaway Pedestal · 29m Deep Underground Tube Station (Yellow & Magenta Line)',
+        image: '/public/dmrc_underground_tube_diorama.png',
+        type: 'Subterranean Deep Tube (-29m)',
         coords: [77.2067, 28.5443],
         zoom: 15.6
       },
       'millennium': {
         title: 'Millennium City Centre (Cyber Hub)',
-        sub: 'Architectural 3D Cutaway Pedestal · Elevated Viaduct Deck & Rapid Metro Gurugram Terminus',
+        sub: 'Architectural 3D Cutaway Pedestal · Elevated Viaduct Deck, Steel Arch Canopy & Rapid Metro Terminus',
+        image: '/public/dmrc_elevated_viaduct_diorama.png',
+        type: 'Elevated Viaduct (+15m)',
         coords: [77.0725, 28.4594],
         zoom: 15.4
       }
@@ -1445,9 +1477,24 @@
         activeCutawayKey = st;
         const meta = STATION_METADATA[st];
         if (meta) {
-          document.getElementById('cutaway-main-station-title').textContent = meta.title;
+          const titleEl = document.getElementById('cutaway-main-station-title');
+          if (titleEl) titleEl.textContent = meta.title;
           const subEl = document.querySelector('.cutaway-spotlight-sub');
           if (subEl) subEl.textContent = meta.sub;
+          const typeBadge = document.getElementById('cutaway-station-type-badge');
+          if (typeBadge) typeBadge.textContent = meta.type;
+          
+          const imgEl = document.getElementById('cutaway-img-element') || document.querySelector('.cutaway-centerpiece-img');
+          if (imgEl && meta.image && imgEl.src !== meta.image) {
+            imgEl.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+            imgEl.style.opacity = '0.3';
+            imgEl.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+              imgEl.src = meta.image;
+              imgEl.style.opacity = '1';
+              imgEl.style.transform = 'scale(1)';
+            }, 150);
+          }
         }
       });
     });
@@ -1583,6 +1630,17 @@
         }
       });
     });
+
+    // Hero Card Collapse / Expand Toggle
+    const heroCollapseBtn = document.getElementById('hero-collapse-btn');
+    const heroCardEl = document.getElementById('diorama-hero-card');
+    if (heroCollapseBtn && heroCardEl) {
+      heroCollapseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        heroCardEl.classList.toggle('collapsed');
+        heroCollapseBtn.textContent = heroCardEl.classList.contains('collapsed') ? '+' : '—';
+      });
+    }
 
     // Follow train button
     const followBtn = document.getElementById('btn-follow-train');

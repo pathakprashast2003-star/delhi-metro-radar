@@ -63,7 +63,7 @@
   <div id="map" class="view-surface active"></div>
   <div class="placeholder-disclaimer-pill" id="line-status-pill">
     <span class="disc-dot" id="line-status-dot">🟢</span>
-    <span id="line-status-text">Normal Operations · Scheduled estimates</span>
+    <span id="line-status-text">Service Status: [Normal Operations · 39 Active Trains]</span>
   </div>
 
   <!-- SURFACE C: Central Line Tube Station Cutaway Full Showcase -->
@@ -73,21 +73,40 @@
         <div class="cutaway-card-top">
           <div class="cutaway-branding">
             <span class="dmrc-red-dot"></span>
-            <span class="dmrc-label">DELHI METRO · YELLOW LINE</span>
+            <span class="dmrc-label">DELHI METRO · 3D ARCHITECTURAL DIORAMA</span>
           </div>
           <div class="service-tag-pill">
             <span class="service-beacon"></span>
-            <span>[Normal Service · Minor Delays]</span>
+            <span>[Service Status: Minor Delays]</span>
           </div>
         </div>
 
-        <h2 class="cutaway-spotlight-title" id="cutaway-main-station-title">Rajiv Chowk Intermodal</h2>
-        <p class="cutaway-spotlight-sub">Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform</p>
+        <div class="cutaway-title-row">
+          <div>
+            <h2 class="cutaway-spotlight-title" id="cutaway-main-station-title">Rajiv Chowk Intermodal</h2>
+            <p class="cutaway-spotlight-sub">Architectural 3D Cutaway Pedestal · Cutaway Tunnel Tubes & Island Platform</p>
+          </div>
+          <div class="cutaway-type-badge" id="cutaway-station-type-badge">Underground Tube Cutaway</div>
+        </div>
 
         <!-- The Central Line Style 3D Render Display -->
         <div class="cutaway-render-stage">
-          <img src="/public/rajiv_chowk_cutaway.png" alt="3D Station Cutaway Diorama" class="cutaway-centerpiece-img" />
+          <img src="/public/dmrc_underground_tube_diorama.png" alt="3D Station Cutaway Diorama" class="cutaway-centerpiece-img" id="cutaway-img-element" />
           <div class="cutaway-stage-shadow"></div>
+
+          <!-- Technical Annotation Badges floating over the diorama (Nano Banana reference) -->
+          <div class="diorama-annot-badge annot-left">
+            <span class="annot-dot pulse-amber"></span>
+            <span class="annot-text">Platform 1 · Towards Millennium</span>
+          </div>
+          <div class="diorama-annot-badge annot-right">
+            <span class="annot-dot pulse-green"></span>
+            <span class="annot-text">Platform 2 · Towards Badli</span>
+          </div>
+          <div class="diorama-annot-badge annot-fleet">
+            <span class="annot-icon">🚇</span>
+            <span class="annot-text">8-Car Consist Docked</span>
+          </div>
         </div>
 
         <!-- Scheduled Platform Timetables -->
@@ -109,11 +128,11 @@
         <!-- Station Switcher Buttons & Jump to Radar -->
         <div class="cutaway-bottom-row">
           <div class="cutaway-station-switcher">
-            <span class="switcher-label">STATION:</span>
-            <button class="station-switch-btn active" data-st="rajiv">Rajiv Chowk</button>
-            <button class="station-switch-btn" data-st="kashmere">Kashmere Gate</button>
-            <button class="station-switch-btn" data-st="hauzkhas">Hauz Khas</button>
-            <button class="station-switch-btn" data-st="millennium">Millennium City</button>
+            <span class="switcher-label">STATION ARCHETYPE:</span>
+            <button class="station-switch-btn active" data-st="rajiv">Rajiv Chowk (Tube)</button>
+            <button class="station-switch-btn" data-st="kashmere">Kashmere Gate (Hub)</button>
+            <button class="station-switch-btn" data-st="hauzkhas">Hauz Khas (Deep Tube)</button>
+            <button class="station-switch-btn" data-st="millennium">Millennium City (Elevated)</button>
           </div>
           <button class="cutaway-jump-radar-btn" id="btn-jump-radar-from-cutaway">📍 View on Radar ➔</button>
         </div>
@@ -124,15 +143,18 @@
   <!-- ── 3. Overlays & Floating HUD ──────────────────────────── -->
 
   <!-- Emons-Inspired Hero Card (Top Left) -->
-  <header class="diorama-hero-card">
+  <header class="diorama-hero-card" id="diorama-hero-card">
     <div class="hero-top-row">
       <div class="brand-emblem">
         <span class="emblem-dot"></span>
         <span class="emblem-text">DMRC RADAR</span>
       </div>
-      <div class="live-status-pill">
-        <span class="live-beacon"></span>
-        <span>SCHEDULED FLEET RUNNING</span>
+      <div class="hero-top-actions">
+        <div class="live-status-pill">
+          <span class="live-beacon"></span>
+          <span>SCHEDULED FLEET</span>
+        </div>
+        <button class="hero-collapse-btn" id="hero-collapse-btn" title="Toggle Compact HUD">—</button>
       </div>
     </div>
 
