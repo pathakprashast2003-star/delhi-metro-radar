@@ -1528,9 +1528,14 @@ html, body {
   position: fixed;
   bottom: 24px;
   left: 20px;
-  width: 370px;
+  width: 390px;
   max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
   z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .st-title-row {
@@ -1879,6 +1884,314 @@ html, body {
 .st-unofficial {
   font-size: 9.5px;
 }
+
+/* ── Station Search & Quick Picker Floating Bar ─────────────── */
+.station-search-container {
+  position: fixed;
+  top: 18px;
+  right: 20px;
+  z-index: 55;
+  width: 270px;
+}
+
+.station-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  padding: 6px 14px;
+  transition: all 0.2s ease;
+}
+
+.station-search-bar:focus-within {
+  border-color: #F59E0B;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15), 0 4px 16px rgba(15, 23, 42, 0.1);
+  width: 320px;
+}
+
+.station-search-bar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #0F172A;
+  width: 100%;
+}
+
+.station-search-bar input::placeholder {
+  color: #94A3B8;
+}
+
+.search-clear {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.search-clear:hover {
+  color: #0F172A;
+}
+
+.station-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.search-result-item:hover {
+  background: #F8FAFC;
+}
+
+.search-result-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Station Intelligence Tabs ──────────────────────────────── */
+.st-tabs-nav {
+  display: flex;
+  background: #F1F5F9;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.st-tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748B;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.st-tab-btn:hover {
+  color: #0F172A;
+}
+
+.st-tab-btn.active {
+  background: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.st-tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.st-tab-pane.hidden {
+  display: none !important;
+}
+
+/* ── Exit Gates Directory ───────────────────────────────────── */
+.st-gates-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 0;
+}
+
+.st-gates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.gate-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: border-color 0.15s ease;
+}
+
+.gate-card:hover {
+  border-color: #CBD5E1;
+  background: #FFFFFF;
+}
+
+.gate-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gate-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.gate-badge-accessible {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+}
+
+.gate-loc {
+  font-size: 10.5px;
+  color: #475569;
+  line-height: 1.35;
+}
+
+/* ── Timings & Operational Info Grid ────────────────────────── */
+.st-timings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.timing-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timing-k {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.timing-v {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.helpline-link {
+  color: #2563EB;
+  text-decoration: none;
+}
+
+.helpline-link:hover {
+  text-decoration: underline;
+}
+
+.first-last-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.first-last-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+  padding-bottom: 4px;
+}
+
+.first-last-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fl-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fl-dir {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.fl-times {
+  font-size: 10.5px;
+  color: #1E293B;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.btn-open-station-cutaway {
+  width: 100%;
+  background: #0F172A;
+  color: #F8FAFC;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn-open-station-cutaway:hover {
+  background: #1E293B;
+  transform: translateY(-1px);
+}
+
 
 
 

@@ -1,0 +1,914 @@
+{
+  "SPBI": {
+    "opening_time": "05:50:00",
+    "closing_time": "22:50:00",
+    "mobile": "7042744337",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "FOB Badli Railway Station",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Badli Railway Station",
+        "divyang": true
+      }
+    ]
+  },
+  "RISE": {
+    "opening_time": "05:53:00",
+    "closing_time": "00:09:00",
+    "mobile": "7042744336",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "Paradise Apartments",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Divyajyoti Apartments",
+        "divyang": true
+      }
+    ]
+  },
+  "BIMR": {
+    "opening_time": "05:57:00",
+    "closing_time": "00:06:00",
+    "mobile": "7042744335",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Max Hospital,Shalimar Bagh",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Max Hospital, Shalimar Bagh Delhi",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Badli Village",
+        "divyang": false
+      }
+    ]
+  },
+  "JGPI": {
+    "opening_time": "06:00:00",
+    "closing_time": "00:04:00",
+    "mobile": "8800793121",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Jahangirpuri Industrial Area",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Rajasthan Udyog Nagar",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Jahangirpuri Mahendra Park , DDA Flat & A Block",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Jahangirpuri Ram Garh , DDA Flat & A Block",
+        "divyang": false
+      }
+    ]
+  },
+  "AHNR": {
+    "opening_time": "06:02:00",
+    "closing_time": "00:02:00",
+    "mobile": "8800793122",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Sarai Pipal Thala",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Bharola Village",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Moolchand Colony",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Rajan Babu Road , Adarsh Nagar",
+        "divyang": false
+      }
+    ]
+  },
+  "AZU": {
+    "opening_time": "05:53:00",
+    "closing_time": "00:25:00",
+    "mobile": "8800793123, 84480887",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Model Town 3",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Lal Bagh, GT Karnal Road",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Azadpur Bus Terminal",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "MCD Flats",
+        "divyang": true
+      }
+    ]
+  },
+  "MDTW": {
+    "opening_time": "06:02:00",
+    "closing_time": "23:58:00",
+    "mobile": "8800793124",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Gujranwala Town",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Kirpal Bagh",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Tagore Park",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Alpana Cinema",
+        "divyang": false
+      }
+    ]
+  },
+  "GTBR": {
+    "opening_time": "06:00:00",
+    "closing_time": "23:56:00",
+    "mobile": "8800793125",
+    "gates": [
+      {
+        "gate": "Gate No. 5",
+        "location": "New Police Line",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 4",
+        "location": "Kingsway Camp Chowk",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Hudson Lane",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Batra Cinema",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Outram Lines",
+        "divyang": true
+      }
+    ]
+  },
+  "VW": {
+    "opening_time": "05:20:00",
+    "closing_time": "23:54:00",
+    "mobile": "8800793126",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Delhi University",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Delhi University",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Timarpur",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Riviera Apartments",
+        "divyang": true
+      }
+    ]
+  },
+  "VS": {
+    "opening_time": "05:22:00",
+    "closing_time": "23:52:00",
+    "mobile": "8800793127",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "MCD Office",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Police Station , Civil Lines",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "DMRC Officer's Quarters",
+        "divyang": true
+      }
+    ]
+  },
+  "CL": {
+    "opening_time": "05:25:00",
+    "closing_time": "23:50:00",
+    "mobile": "8800793128",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Punjab National Bank",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Yulu Bikes, IP College",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Sant Parmanand Hospital",
+        "divyang": false
+      }
+    ]
+  },
+  "KG": {
+    "opening_time": "05:20:00",
+    "closing_time": "23:47:00",
+    "mobile": "8800793107, 92056823",
+    "gates": [
+      {
+        "gate": "Gate No. 8",
+        "location": "Maharana Pratap Inter State Bus Terminal ,KASHMERE GATE",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 7",
+        "location": "Maharana Pratap Inter State Bus Terminal ,KASHMERE GATE",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 6",
+        "location": "Lala Hardev Sahai Marg",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 5",
+        "location": "Lala Hardev Sahai Marg",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 4",
+        "location": "Lala Hardev Sahai Marg",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Lala Hardev Sahai Marg",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Intercity Smart Bus, Flix Bus, Laxmi Holidays, R S Yadav Smart Bus Pvt. Ltd., Raj Kalpana Travels Pvt. Ltd. and Nuego Travels",
+        "divyang": true
+      }
+    ]
+  },
+  "CHK": {
+    "opening_time": "05:30:00",
+    "closing_time": "23:45:00",
+    "mobile": "8800793130",
+    "gates": [
+      {
+        "gate": "Gate No. 5",
+        "location": "Chandni Chowk Market, Khari Baoli, Sadar Bazar",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Delhi Railway Station",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "S P Mukherjee Road, Delhi Public Library",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Town Hall, Hardayal Library",
+        "divyang": false
+      }
+    ]
+  },
+  "CWBR": {
+    "opening_time": "05:32:00",
+    "closing_time": "23:43:00",
+    "mobile": "8800793131",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Hauz Qazi, Nai Sadak",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Ajmeri Gate",
+        "divyang": true
+      }
+    ]
+  },
+  "NDI": {
+    "opening_time": "05:35:00",
+    "closing_time": "23:41:00",
+    "mobile": "8800793132",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Airport line , Civic center",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Kamla Market",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "New Delhi Railway Station",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "New Delhi Railway Station",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 6 (Airport Express)",
+        "location": "Pathway connecting to New Delhi Railway Station",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 5 (Airport Express)",
+        "location": "New Delhi Railway Station Road",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 7 (Airport Express)",
+        "location": "Bhavbhuti Marg",
+        "divyang": true
+      }
+    ]
+  },
+  "RCK": {
+    "opening_time": "05:29:00",
+    "closing_time": "23:47:00",
+    "mobile": "7290013649",
+    "gates": [
+      {
+        "gate": "Gate No. 8",
+        "location": "Radial Road-3, Panchkuian Road , A Block",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 7",
+        "location": "Radial Road -2, Baba Kharak Singh Marg , A Block",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 6",
+        "location": "Radial Road-1, Janpath Road,Palika Bazar",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 5",
+        "location": "Radial Road-1, Janpath Road, F Block",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 4",
+        "location": "E Block, Barakhamba Road, Kasturba Gandhi Road",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "D Block, Carnival Cinema(Odean)",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": ", PVR Plaza",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Radial Road-3, Panchkuian Road , B Block, Minto Road",
+        "divyang": true
+      }
+    ]
+  },
+  "PTCK": {
+    "opening_time": "05:37:00",
+    "closing_time": "23:36:00",
+    "mobile": "8800793134",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Dak Bhawan, Sanchar Bhawan,NITI Bhawan",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Jantar Mantar, State Bank of India",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Jeevan Tara Building",
+        "divyang": true
+      }
+    ]
+  },
+  "CTST": {
+    "opening_time": "05:34:00",
+    "closing_time": "23:52:00",
+    "mobile": "8800793135 , 8800793",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "India Gate",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 5",
+        "location": "Rail Bhawan",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 4",
+        "location": "Rastrapati Bhawan",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Krishi Bhawan",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Red Cross Building",
+        "divyang": false
+      }
+    ]
+  },
+  "UDB": {
+    "opening_time": "05:32:00",
+    "closing_time": "23:52:00",
+    "mobile": "8800793136",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "K Kamraj Marg",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "K Kamraj Marg",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Maulana Azad Road",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Rafi Marg Adjacent To Udyog Bhawan",
+        "divyang": true
+      }
+    ]
+  },
+  "LKM": {
+    "opening_time": "05:29:00",
+    "closing_time": "23:40:00",
+    "mobile": "8800793137",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "APJ ABDUL KALAM ROAD",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "NAGALAND HOUSE",
+        "divyang": false
+      }
+    ]
+  },
+  "JB": {
+    "opening_time": "05:27:00",
+    "closing_time": "23:32:00",
+    "mobile": "8800793138",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "AAI Office, Safdarjung Airport",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Rajiv Gandhi Bhawan",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Jor Bagh Road, Lodhi Colony, Safdarjung Fire Station, Karbala Lane",
+        "divyang": true
+      }
+    ]
+  },
+  "INA": {
+    "opening_time": "05:24:00",
+    "closing_time": "23:46:00",
+    "mobile": "8800793139",
+    "gates": [
+      {
+        "gate": "Gate No. 6",
+        "location": "Towards INA Market",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 5",
+        "location": "Towards Dilli Haat",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 4",
+        "location": "Towards Laxmibai Nagar,Sanjay Lake",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Towards West Kidwai Nagar",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Towards INA Market",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Towards Dilli Haat",
+        "divyang": true
+      }
+    ]
+  },
+  "AIIMS": {
+    "opening_time": "05:22:00",
+    "closing_time": "23:46:00",
+    "mobile": "8800793140",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Ring Road,Vardhman Mahavir Medical College & Safdarjung Hospital",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Ansari Nagar West, Post Office, Vardhman Mahavir Medical College & Safdarjung Hospital",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "AIIMS Hospital, Ansari Nagar East, Yusuf Sarai",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "AIIMSHospital, Kidwai Nagar",
+        "divyang": true
+      }
+    ]
+  },
+  "HKS": {
+    "opening_time": "05:34:00",
+    "closing_time": "23:41:00",
+    "mobile": "8800793142",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Kalu Sarai",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Laxman Public School",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Outer Ring Road Towards Iit",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Shri Krishna Chaitanya Mahaprabhu marg",
+        "divyang": true
+      }
+    ]
+  },
+  "MVNR": {
+    "opening_time": "05:31:00",
+    "closing_time": "23:44:00",
+    "mobile": "8800793143",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "PVR Anupam Saket",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Select City Walk Mall,Max Hospital,Saket Court",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Mvnr Ps,Geetanjali Enclave",
+        "divyang": true
+      }
+    ]
+  },
+  "SAKT": {
+    "opening_time": "05:28:00",
+    "closing_time": "23:47:00",
+    "mobile": "8800793144",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Cisf Camp,Saket D Block",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Garden Of Five Senses",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Vidya Niketan",
+        "divyang": true
+      }
+    ]
+  },
+  "QM": {
+    "opening_time": "05:25:00",
+    "closing_time": "23:49:00",
+    "mobile": "8800793145",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "Anuvart Marg",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Anuvart Marg",
+        "divyang": true
+      }
+    ]
+  },
+  "CHTP": {
+    "opening_time": "05:22:00",
+    "closing_time": "23:52:00",
+    "mobile": "8800793146",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Mg Road",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "South West Delhi",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Mg Road",
+        "divyang": true
+      }
+    ]
+  },
+  "SLTP": {
+    "opening_time": "05:20:00",
+    "closing_time": "23:54:00",
+    "mobile": "8800793147",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "Mg Road",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Sultanpur",
+        "divyang": true
+      }
+    ]
+  },
+  "GTNI": {
+    "opening_time": "05:47:00",
+    "closing_time": "23:56:00",
+    "mobile": "8800793148",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "Ghitorni Village",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Gadaipur,DLF Farms",
+        "divyang": true
+      }
+    ]
+  },
+  "AJG": {
+    "opening_time": "05:50:00",
+    "closing_time": "00:00:00",
+    "mobile": "8800793149",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "Gurugram Mehrauli Road Indian Metrological Department",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Mehrauli Gurugram Road Aya- Nagar",
+        "divyang": false
+      }
+    ]
+  },
+  "GE": {
+    "opening_time": "05:54:00",
+    "closing_time": "00:03:00",
+    "mobile": "8800793150",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "HP Petrol Pump",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Global Business Park",
+        "divyang": true
+      }
+    ]
+  },
+  "SKRP": {
+    "opening_time": "05:50:00",
+    "closing_time": "00:05:00",
+    "mobile": "8800793151",
+    "gates": [
+      {
+        "gate": "Gate No. 6 (Rapid Metro)",
+        "location": "EMAAR Bussiness Park Side",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 5 (Rapid Metro)",
+        "location": "EMAAR Bussiness Park Side",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 4 (Rapid Metro)",
+        "location": "Sikanderpur Main Road",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3 (Rapid Metro)",
+        "location": "Sikanderpur Main Road",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2 (Rapid Metro)",
+        "location": "Sikanderpur Village Side",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "DLF City Court",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Sahara Mall,Bristal Hotel",
+        "divyang": true
+      }
+    ]
+  },
+  "MGRO": {
+    "opening_time": "05:55:00",
+    "closing_time": "00:07:00",
+    "mobile": "8800793152",
+    "gates": [
+      {
+        "gate": "Gate No. 2",
+        "location": "Mgf Metropoliton Mall",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Dt City Centre Mall",
+        "divyang": true
+      }
+    ]
+  },
+  "IFOC": {
+    "opening_time": "05:52:00",
+    "closing_time": "00:10:00",
+    "mobile": "8800793153",
+    "gates": [
+      {
+        "gate": "Gate No. 3",
+        "location": "Umkal Hospital",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Iffco Tower",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Bus Stand Towards M.G. Road",
+        "divyang": false
+      }
+    ]
+  },
+  "HCC": {
+    "opening_time": "05:50:00",
+    "closing_time": "22:50:00",
+    "mobile": "8800793154",
+    "gates": [
+      {
+        "gate": "Gate No. 4",
+        "location": "Max Hospital",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 3",
+        "location": "Unitech Buisiness Park",
+        "divyang": true
+      },
+      {
+        "gate": "Gate No. 2",
+        "location": "Fortis Hospital",
+        "divyang": false
+      },
+      {
+        "gate": "Gate No. 1",
+        "location": "Fortis Hospital",
+        "divyang": true
+      }
+    ]
+  }
+}

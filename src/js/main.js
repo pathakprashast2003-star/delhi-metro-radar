@@ -1653,6 +1653,9 @@
         timeMode = 'custom';
       });
     });
+
+    initStationTabs();
+    initStationSearch();
   }
 
   function setupInteractions() {
@@ -1903,6 +1906,155 @@
         renderStationPanel(stIdx, sec, dayVariant);
       };
     }
+
+    // ── TAB 2: Exit Gates & Landmarks Directory ──
+    const gatesCountEl = document.getElementById('st-gates-count');
+    const gatesListEl = document.getElementById('st-gates-list');
+    if (gatesCountEl) gatesCountEl.textContent = st.gates ? st.gates.length : 0;
+    if (gatesListEl) {
+      if (st.gates && st.gates.length > 0) {
+        gatesListEl.innerHTML = st.gates.map(g => `
+          <div class="gate-card">
+            <div class="gate-card-top">
+              <span class="gate-num">${g.gate || 'Exit Gate'}</span>
+              ${g.divyang ? '<span class="gate-badge-accessible">♿ Accessible</span>' : ''}
+            </div>
+            <div class="gate-loc">${g.location || 'Station concourse street exit'}</div>
+          </div>
+        `).join('');
+      } else {
+        gatesListEl.innerHTML = '<div class="gate-card"><div class="gate-loc">No street exit gate data available for this station.</div></div>';
+      }
+    }
+
+    // ── TAB 3: Operational Timings & Facilities Info ──
+    const hoursValEl = document.getElementById('st-hours-val');
+    const phoneLinkEl = document.getElementById('st-phone-link');
+    const sbFirstEl = document.getElementById('st-fl-sb-first');
+    const sbLastEl = document.getElementById('st-fl-sb-last');
+    const nbFirstEl = document.getElementById('st-fl-nb-first');
+    const nbLastEl = document.getElementById('st-fl-nb-last');
+
+    if (hoursValEl) hoursValEl.textContent = `${st.openingTime || '05:30:00'} – ${st.closingTime || '23:45:00'}`;
+    if (phoneLinkEl) {
+      const cleanPhone = st.contactPhone ? st.contactPhone.split(',')[0].trim() : '155370';
+      phoneLinkEl.textContent = '📞 ' + cleanPhone;
+      phoneLinkEl.href = 'tel:' + cleanPhone;
+    }
+    if (sbFirstEl) sbFirstEl.textContent = st.firstTrainSouth || '06:00 AM';
+    if (sbLastEl) sbLastEl.textContent = st.lastTrainSouth || '11:00 PM';
+    if (nbFirstEl) nbFirstEl.textContent = st.firstTrainNorth || '06:00 AM';
+    if (nbLastEl) nbLastEl.textContent = st.lastTrainNorth || '11:00 PM';
+
+    // 3D Cutaway Trigger Button inside station drawer
+    const cutawayBtn = document.getElementById('btn-open-station-cutaway');
+    const cutawayBlock = document.getElementById('st-cutaway-link-block');
+    if (cutawayBtn && cutawayBlock) {
+      const cutawayMap = { 15: 'rajiv', 11: 'kashmere', 24: 'hauzkhas', 36: 'millennium' };
+      const cutawayKey = cutawayMap[stIdx];
+      cutawayBtn.onclick = () => {
+        const cutawayTab = document.getElementById('tab-cutaway');
+        if (cutawayTab) cutawayTab.click();
+        if (cutawayKey) {
+          const stBtn = document.querySelector(`.station-switch-btn[data-st="${cutawayKey}"]`);
+          if (stBtn) stBtn.click();
+        }
+      };
+    }
+  }
+
+  function initStationTabs() {
+    const tabBtns = document.querySelectorAll('.st-tab-btn');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.querySelectorAll('.st-tab-pane').forEach(p => p.classList.add('hidden'));
+        const activePane = document.getElementById('pane-' + targetTab);
+        if (activePane) activePane.classList.remove('hidden');
+      });
+    });
+  }
+
+  function initStationSearch() {
+    const searchInput = document.getElementById('station-search-input');
+    const searchResults = document.getElementById('station-search-results');
+    const clearBtn = document.getElementById('station-search-clear');
+    if (!searchInput || !searchResults) return;
+
+    function filterStations(query) {
+      if (!window.TripEngine) return [];
+      const stations = TripEngine.getStations();
+      const q = query.trim().toLowerCase();
+      if (!q) return [];
+      return stations.filter(st => {
+        const matchName = st.name.toLowerCase().includes(q);
+        const matchCode = st.code && st.code.toLowerCase().includes(q);
+        const matchInterchange = st.interchanges && st.interchanges.some(i => i.toLowerCase().includes(q));
+        return matchName || matchCode || matchInterchange;
+      });
+    }
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value;
+      if (clearBtn) clearBtn.classList.toggle('hidden', !q);
+      const matches = filterStations(q);
+      if (matches.length > 0) {
+        searchResults.innerHTML = matches.slice(0, 8).map(st => `
+          <div class="search-result-item" data-st-idx="${st.index}">
+            <span class="search-result-name">${st.name}</span>
+            <div class="search-result-meta">
+              ${st.interchanges && st.interchanges.length > 0 ? `<span class="interchange-pill interchange-blue">⇄ ${st.interchanges[0]}</span>` : ''}
+              <span class="dmrc-code-badge">${st.code || 'ST'}</span>
+            </div>
+          </div>
+        `).join('');
+        searchResults.classList.remove('hidden');
+      } else if (q.trim()) {
+        searchResults.innerHTML = '<div class="search-result-item" style="cursor:default; color:#94A3B8;">No station matches found</div>';
+        searchResults.classList.remove('hidden');
+      } else {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    searchResults.addEventListener('click', (e) => {
+      const item = e.target.closest('.search-result-item');
+      if (!item) return;
+      const stIdx = parseInt(item.getAttribute('data-st-idx'), 10);
+      if (!isNaN(stIdx) && window.openStationPanel) {
+        window.openStationPanel(stIdx);
+        searchResults.classList.add('hidden');
+        searchInput.value = '';
+        if (clearBtn) clearBtn.classList.add('hidden');
+      }
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchResults.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#station-search-container')) {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    // Shortcut key: "/" to focus search
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      } else if (e.key === 'Escape') {
+        searchResults.classList.add('hidden');
+      }
+    });
   }
 
   window.openStationPanel = openStationPanel;

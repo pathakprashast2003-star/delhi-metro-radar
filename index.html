@@ -49,6 +49,16 @@
 
   <!-- ── 2. Primary View Surfaces ────────────────────────────── -->
 
+  <!-- ── Station Search & Quick-Select Floating Bar ───────────── -->
+  <div class="station-search-container" id="station-search-container">
+    <div class="station-search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="station-search-input" placeholder="Search station (e.g. Rajiv, AIIMS, RCK)..." autocomplete="off" />
+      <button id="station-search-clear" class="search-clear hidden">✕</button>
+    </div>
+    <div class="station-search-results hidden" id="station-search-results"></div>
+  </div>
+
   <!-- SURFACE A: Full-Screen MapLibre Radar -->
   <div id="map" class="view-surface active"></div>
   <div class="placeholder-disclaimer-pill" id="line-status-pill">
@@ -240,7 +250,7 @@
   <div id="station-panel" class="architectural-callout-card station-callout-card hidden">
     <div class="callout-header">
       <div>
-        <div class="callout-tag" id="st-panel-tag">STATION SCHEDULE ESTIMATE</div>
+        <div class="callout-tag" id="st-panel-tag">STATION INTELLIGENCE</div>
         <div class="st-title-row">
           <h2 class="callout-title" id="st-panel-title">Rajiv Chowk</h2>
           <span class="dmrc-code-badge" id="st-panel-code">RCK</span>
@@ -251,54 +261,106 @@
       <button class="close-callout" id="close-station-panel">✕</button>
     </div>
 
-    <div class="st-freq-badge" id="st-panel-freq">
-      <span class="freq-icon">⚡</span>
-      <span id="st-panel-freq-text">Central High-Frequency Zone · Trains every ~2.5 min</span>
+    <!-- Station Navigation Tabs -->
+    <div class="st-tabs-nav">
+      <button class="st-tab-btn active" data-tab="arrivals" id="tab-btn-arrivals">🕒 Live PIDS</button>
+      <button class="st-tab-btn" data-tab="gates" id="tab-btn-gates">🚪 Exit Gates (<span id="st-gates-count">8</span>)</button>
+      <button class="st-tab-btn" data-tab="schedule" id="tab-btn-schedule">⏱️ Timings & Info</button>
     </div>
 
-    <!-- Real-Time Coach Occupancy Meter (DMRC Notice 555 Calibration) -->
-    <div class="st-coach-meter" id="st-coach-meter">
-      <div class="coach-meter-header">
-        <span>👥 Real-Time Car Occupancy (8-Car Rake)</span>
-        <span class="coach-meter-sub" id="coach-meter-sub">Moderate · Mid-train peak</span>
+    <!-- TAB 1: Live Arrivals & Coach Occupancy -->
+    <div class="st-tab-pane active" id="pane-arrivals">
+      <div class="st-freq-badge" id="st-panel-freq">
+        <span class="freq-icon">⚡</span>
+        <span id="st-panel-freq-text">Central High-Frequency Zone · Trains every ~2.5 min</span>
       </div>
-      <div class="coach-strip" id="coach-strip">
-        <!-- Dynamically rendered 8 coaches -->
+
+      <!-- Real-Time Coach Occupancy Meter (DMRC Notice 555 Calibration) -->
+      <div class="st-coach-meter" id="st-coach-meter">
+        <div class="coach-meter-header">
+          <span>👥 Real-Time Car Occupancy (8-Car Rake)</span>
+          <span class="coach-meter-sub" id="coach-meter-sub">Moderate · Mid-train peak</span>
+        </div>
+        <div class="coach-strip" id="coach-strip">
+          <!-- Dynamically rendered 8 coaches -->
+        </div>
+      </div>
+
+      <div class="st-platforms-container">
+        <!-- Towards Millennium City Centre -->
+        <div class="st-platform-block">
+          <div class="st-plat-header">
+            <span class="st-plat-tag p1-tag">Towards Millennium City Centre</span>
+            <span class="st-plat-dest">➔ Southbound</span>
+          </div>
+          <div class="st-arrivals-list" id="st-p1-arrivals">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Towards Samaypur Badli -->
+        <div class="st-platform-block">
+          <div class="st-plat-header">
+            <span class="st-plat-tag p2-tag">Towards Samaypur Badli</span>
+            <span class="st-plat-dest">➔ Northbound</span>
+          </div>
+          <div class="st-arrivals-list" id="st-p2-arrivals">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="st-report-action-row">
+        <button class="st-delay-report-btn" id="btn-report-delay">⚠️ Report Delay at this station</button>
+        <span class="st-delay-report-msg hidden" id="st-delay-report-msg"></span>
       </div>
     </div>
 
-    <div class="st-platforms-container">
-      <!-- Towards Millennium City Centre -->
-      <div class="st-platform-block">
-        <div class="st-plat-header">
-          <span class="st-plat-tag p1-tag">Towards Millennium City Centre</span>
-          <span class="st-plat-dest">➔ Southbound</span>
-        </div>
-        <div class="st-arrivals-list" id="st-p1-arrivals">
-          <!-- Populated dynamically -->
-        </div>
+    <!-- TAB 2: Exit Gates & Landmarks Directory -->
+    <div class="st-tab-pane hidden" id="pane-gates">
+      <div class="st-gates-header">
+        <span class="gates-summary-text">Verified DMRC Gates & Surrounding Street Exits</span>
       </div>
-
-      <!-- Towards Samaypur Badli -->
-      <div class="st-platform-block">
-        <div class="st-plat-header">
-          <span class="st-plat-tag p2-tag">Towards Samaypur Badli</span>
-          <span class="st-plat-dest">➔ Northbound</span>
-        </div>
-        <div class="st-arrivals-list" id="st-p2-arrivals">
-          <!-- Populated dynamically -->
-        </div>
+      <div class="st-gates-list" id="st-gates-list">
+        <!-- Dynamically rendered gates -->
       </div>
     </div>
 
-    <div class="st-report-action-row">
-      <button class="st-delay-report-btn" id="btn-report-delay">⚠️ Report Delay at this station</button>
-      <span class="st-delay-report-msg hidden" id="st-delay-report-msg"></span>
+    <!-- TAB 3: Operational Timings & Facilities Info -->
+    <div class="st-tab-pane hidden" id="pane-schedule">
+      <div class="st-timings-grid">
+        <div class="timing-card">
+          <span class="timing-k">Station Operational Hours</span>
+          <span class="timing-v" id="st-hours-val">05:29 AM – 11:47 PM</span>
+        </div>
+        <div class="timing-card">
+          <span class="timing-k">Station Control Room</span>
+          <a class="timing-v helpline-link" id="st-phone-link" href="tel:7290013649">📞 7290013649</a>
+        </div>
+      </div>
+
+      <div class="first-last-card">
+        <div class="first-last-title">First & Last Scheduled Services</div>
+        <div class="first-last-row">
+          <div class="fl-col">
+            <span class="fl-dir">➔ Southbound (to Millennium City)</span>
+            <div class="fl-times">First: <strong id="st-fl-sb-first">06:34 AM</strong> · Last: <strong id="st-fl-sb-last">11:34 PM</strong></div>
+          </div>
+          <div class="fl-col">
+            <span class="fl-dir">➔ Northbound (to Samaypur Badli)</span>
+            <div class="fl-times">First: <strong id="st-fl-nb-first">06:52 AM</strong> · Last: <strong id="st-fl-nb-last">11:52 PM</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st-cutaway-link-block" id="st-cutaway-link-block">
+        <button class="btn-open-station-cutaway" id="btn-open-station-cutaway">🏛️ View 3D Isometric Cutaway Pedestal ➔</button>
+      </div>
     </div>
 
     <div class="st-panel-footer">
-      <span class="st-disclaimer">Scheduled times · estimates, not live tracking</span>
-      <span class="st-unofficial">Unofficial · Not affiliated with DMRC</span>
+      <span class="st-disclaimer">Official DMRC static timetable & gate directory</span>
+      <span class="st-unofficial">Unofficial · Real-time simulation</span>
     </div>
   </div>
 
