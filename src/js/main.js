@@ -222,6 +222,16 @@
       suppressMapClutter();
       enhanceMapColors();
 
+      // Directional Sunlight for 3D Architectural Extrusions (Canopies & Platforms)
+      try {
+        map.setLight({
+          anchor: 'viewport',
+          color: '#FFFFFF',
+          intensity: 0.65,
+          position: [1.5, 180, 50]
+        });
+      } catch (e) {}
+
       await Promise.all([
         preloadImage('/public/metro_train_topdown_vibrant.png', 'delhi-metro-consist'),
         preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern')
@@ -231,7 +241,7 @@
       renderViaductAndDualTracks();
       renderPhysicalPlatforms();
       renderTrainsLayers();
-      addRajivChowk3DLandmark();
+      add3DStationLandmarks();
       setupInteractions();
 
       map.on('zoom', updateMarkerScale);
@@ -867,28 +877,30 @@
         }
       });
 
-      // Platform Raised Concrete Deck (Elevated)
+      // Platform Raised Concrete Deck & Ground Concourse Piers (Elevated Stations)
+      // Solid architectural building rising 15m from the ground to support the platforms
       map.addLayer({
         id: 'platform-slab-deck-elevated',
-        type: 'fill',
+        type: 'fill-extrusion',
         source: 'platform-slabs',
         filter: ['==', ['get', 'structure'], 'elevated'],
         paint: {
-          'fill-color': '#FFFFFF',
-          'fill-outline-color': '#1E293B',
-          'fill-opacity': 0.98
+          'fill-extrusion-color': '#FFFFFF',
+          'fill-extrusion-height': 15.0,
+          'fill-extrusion-base': 0.0,
+          'fill-extrusion-opacity': 0.98
         }
       });
 
       // Subterranean Station Floor Slab (Underground)
-      // Crisp luminous passenger waiting decks so they stand out boldly inside the station chamber
+      // Crisp luminous passenger waiting decks inside the excavated chamber
       map.addLayer({
         id: 'platform-slab-deck-underground',
         type: 'fill',
         source: 'platform-slabs',
         filter: ['==', ['get', 'structure'], 'underground'],
         paint: {
-          'fill-color': '#F1F5F9', // Crisp light granite passenger concourse
+          'fill-color': '#F8FAFC',
           'fill-outline-color': '#334155',
           'fill-opacity': 0.98
         }
@@ -902,16 +914,16 @@
         data: trackData.undergroundPlatforms
       });
 
-      // Architectural dark slate excavation chamber (Clean cutaway stone - NO neon cyan!)
+      // Architectural dark slate excavation chamber (Clean cutaway stone)
       map.addLayer({
         id: 'underground-chamber-casing',
         type: 'fill',
         source: 'underground-platforms',
-        minzoom: 12.0,
+        minzoom: 11.5,
         paint: {
           'fill-color': '#1E293B',
           'fill-outline-color': '#475569',
-          'fill-opacity': 0.82
+          'fill-opacity': 0.85
         }
       });
 
@@ -920,11 +932,25 @@
         id: 'underground-chamber-glow',
         type: 'line',
         source: 'underground-platforms',
-        minzoom: 12.0,
+        minzoom: 11.5,
         paint: {
           'line-color': '#64748B',
           'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.0, 15, 1.8, 17, 2.8],
           'line-opacity': 0.65
+        }
+      });
+
+      // Surface Glass Entrance Pavilion at Street Level (+0m to +4.5m)
+      map.addLayer({
+        id: 'underground-portal-cubes',
+        type: 'fill-extrusion',
+        source: 'underground-platforms',
+        minzoom: 13.0,
+        paint: {
+          'fill-extrusion-color': '#FFFFFF',
+          'fill-extrusion-height': 4.5,
+          'fill-extrusion-base': 0.0,
+          'fill-extrusion-opacity': 0.82
         }
       });
     }
@@ -960,12 +986,25 @@
         id: 'platform-canopy-3d',
         type: 'fill-extrusion',
         source: 'platform-canopies',
-        minzoom: 12.5,
+        minzoom: 11.0,
         paint: {
-          'fill-extrusion-color': '#CBD5E1', // Translucent architectural canopy structure
-          'fill-extrusion-height': 8.0,
-          'fill-extrusion-base': 4.5,
-          'fill-extrusion-opacity': 0.60
+          'fill-extrusion-color': '#E2E8F0', // Architectural curved steel & glass structure
+          'fill-extrusion-height': 24.0,     // 9m vaulted canopy above platform
+          'fill-extrusion-base': 15.0,       // Starts at track / platform level
+          'fill-extrusion-opacity': 0.88
+        }
+      });
+
+      map.addLayer({
+        id: 'platform-canopy-ridge',
+        type: 'fill-extrusion',
+        source: 'platform-canopies',
+        minzoom: 12.8,
+        paint: {
+          'fill-extrusion-color': '#94A3B8', // Structural titanium spine
+          'fill-extrusion-height': 24.8,
+          'fill-extrusion-base': 23.8,
+          'fill-extrusion-opacity': 0.95
         }
       });
     }
@@ -1048,44 +1087,113 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  5. 3D ARCHITECTURAL LANDMARK (ZOOM PROPORTIONAL SCALE)
+  //  5. 3D ARCHITECTURAL LANDMARKS (SIGNATURE HUBS ON MAP)
   // ═══════════════════════════════════════════════════════════
-  function addRajivChowk3DLandmark() {
-    const el = document.createElement('div');
-    el.className = 'landmark-3d-container';
-    el.innerHTML = `
-      <div class="landmark-model-wrap">
-        <img src="/public/dmrc_underground_tube_diorama.png" alt="Rajiv Chowk 3D Landmark" class="landmark-img" />
-        <div class="landmark-ground-shadow"></div>
-      </div>
-      <div class="landmark-badge">
-        <span class="landmark-dot"></span>
-        <span>🏛️ Rajiv Chowk Intermodal Terminal</span>
-      </div>
-    `;
+  const SIGNATURE_LANDMARKS = [
+    {
+      id: 'qutab_minar',
+      name: 'Qutab Minar',
+      badge: '🏛️ Qutab Minar · Elevated +15m',
+      coords: [77.1793, 28.5132],
+      img: '/public/dmrc_elevated_viaduct_diorama.png',
+      index: 28
+    },
+    {
+      id: 'saket',
+      name: 'Saket Portal',
+      badge: '🚇 Saket · Subterranean Portal',
+      coords: [77.1994, 28.5204],
+      img: '/public/dmrc_underground_tube_diorama.png',
+      index: 26
+    },
+    {
+      id: 'rajiv_chowk',
+      name: 'Rajiv Chowk',
+      badge: '🏛️ Rajiv Chowk · Intermodal Tube',
+      coords: [77.2196, 28.6329],
+      img: '/public/dmrc_underground_tube_diorama.png',
+      index: 15
+    },
+    {
+      id: 'kashmere_gate',
+      name: 'Kashmere Gate',
+      badge: '🏛️ Kashmere Gate · Triple Interchange',
+      coords: [77.2282, 28.6675],
+      img: '/public/dmrc_underground_tube_diorama.png',
+      index: 11
+    },
+    {
+      id: 'hauz_khas',
+      name: 'Hauz Khas',
+      badge: '🚇 Hauz Khas · Deep Tube (-29m)',
+      coords: [77.2067, 28.5443],
+      img: '/public/dmrc_underground_tube_diorama.png',
+      index: 24
+    },
+    {
+      id: 'millennium',
+      name: 'Millennium City Centre',
+      badge: '🏛️ Millennium City Centre · Elevated Terminus',
+      coords: [77.0725, 28.4594],
+      img: '/public/dmrc_elevated_viaduct_diorama.png',
+      index: 36
+    }
+  ];
 
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      switchSurface('cutaway');
+  let landmarkMarkers = [];
+
+  function add3DStationLandmarks() {
+    // Clear any previous markers
+    landmarkMarkers.forEach(m => m.remove());
+    landmarkMarkers = [];
+
+    SIGNATURE_LANDMARKS.forEach(lm => {
+      const el = document.createElement('div');
+      el.className = 'landmark-3d-container';
+      el.setAttribute('data-st-index', lm.index);
+      el.innerHTML = `
+        <div class="landmark-model-wrap">
+          <img src="${lm.img}" alt="${lm.name}" class="landmark-img" />
+          <div class="landmark-ground-shadow"></div>
+        </div>
+        <div class="landmark-badge">
+          <span class="landmark-dot"></span>
+          <span>${lm.badge}</span>
+        </div>
+      `;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        map.flyTo({
+          center: lm.coords,
+          zoom: 15.6,
+          pitch: 52,
+          bearing: -14,
+          duration: 900
+        });
+        openStationPanel(lm.index);
+      });
+
+      const marker = new maplibregl.Marker({
+        element: el,
+        anchor: 'bottom',
+        pitchAlignment: 'viewport',
+        rotationAlignment: 'viewport'
+      })
+        .setLngLat(lm.coords)
+        .addTo(map);
+
+      landmarkMarkers.push(marker);
     });
-
-    rajivMarker = new maplibregl.Marker({
-      element: el,
-      anchor: 'bottom',
-      pitchAlignment: 'viewport',
-      rotationAlignment: 'viewport'
-    })
-      .setLngLat([77.2196, 28.6329])
-      .addTo(map);
   }
 
   function updateMarkerScale() {
     if (!map) return;
     const z = map.getZoom();
     const scale = Math.max(0.25, Math.min(1.05, Math.pow(2, z - 15.0)));
-    const el = document.querySelector('.landmark-3d-container');
-    if (el) {
-      if (z < 12.4) {
+    const markers = document.querySelectorAll('.landmark-3d-container');
+    markers.forEach(el => {
+      if (z < 11.8) {
         el.style.opacity = '0';
         el.style.pointerEvents = 'none';
         el.style.transform = 'scale(0.5)';
@@ -1096,14 +1204,14 @@
         el.style.setProperty('--marker-scale', scale.toFixed(3));
         const badge = el.querySelector('.landmark-badge');
         if (badge) {
-          badge.style.display = z >= 13.0 ? 'flex' : 'none';
+          badge.style.display = z >= 12.6 ? 'flex' : 'none';
         }
       }
-    }
+    });
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  6. TRAINS LAYERS (SLEEK MINIMALIST FLEET - BIG TRAINS REMOVED)
+  //  6. TRAINS LAYERS (VIBRANT 3D RUNNING FLEET AT 60 FPS)
   // ═══════════════════════════════════════════════════════════
   function renderTrainsLayers() {
     map.addSource('active-trains', {
@@ -1117,20 +1225,44 @@
       type: 'circle',
       source: 'active-trains',
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4.0, 14, 6.5, 16, 9.0],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4.0, 14, 8.5, 16, 14.0],
         'circle-color': '#0F172A',
         'circle-opacity': [
           'case',
           ['==', ['get', 'structure'], 'underground'], 0.0,
-          0.20
+          0.26
         ],
-        'circle-blur': 0.6,
-        'circle-translate': [0, 2]
+        'circle-blur': 0.7,
+        'circle-translate': [2, 4]
       }
     });
 
-    // ── Layer B: Sleek Precision Transit Vehicle Pip (Crisp & Non-Intrusive) ──
-    // Does NOT cover or hide the railway tracks!
+    // ── Layer B: Real 3D Delhi Metro Train Consist (Multi-Car Aerodynamic Rake) ──
+    // Glides smoothly along the dual rails, curving accurately with the tracks in 3D!
+    map.addLayer({
+      id: 'train-consist-3d',
+      type: 'symbol',
+      source: 'active-trains',
+      layout: {
+        'icon-image': 'delhi-metro-consist',
+        'icon-rotate': ['get', 'bearing'],
+        'icon-rotation-alignment': 'map',
+        'icon-pitch-alignment': 'map',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-size': [
+          'interpolate', ['linear'], ['zoom'],
+          10, 0.20,
+          11.5, 0.36,
+          13, 0.65,
+          15, 1.05,
+          17, 1.65
+        ],
+        'visibility': 'visible'
+      }
+    });
+
+    // ── Layer C: Overview Radar Dots (Visible at overview zooms, fading smoothly as 3D consist takes over) ──
     map.addLayer({
       id: 'train-dot-white-black',
       type: 'circle',
@@ -1142,7 +1274,12 @@
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3.2, 12, 4.5, 14, 6.0, 16, 8.0],
         'circle-color': ['case', ['==', ['get', 'speedKph'], 0], '#EF4444', '#FFFFFF'],
         'circle-stroke-width': ['case', ['==', ['get', 'speedKph'], 0], 3.0, 2.0],
-        'circle-stroke-color': ['case', ['==', ['get', 'speedKph'], 0], '#991B1B', '#0F172A']
+        'circle-stroke-color': ['case', ['==', ['get', 'speedKph'], 0], '#991B1B', '#0F172A'],
+        'circle-opacity': [
+          'interpolate', ['linear'], ['zoom'],
+          11.0, 1.0,
+          12.8, 0.0
+        ]
       }
     });
 
@@ -1156,18 +1293,12 @@
       },
       paint: {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.4, 12, 2.0, 14, 2.8, 16, 3.8],
-        'circle-color': '#EAB308'
-      }
-    });
-
-    // Big 3D Train Consist is HIDDEN/REMOVED by default so rails are completely visible!
-    map.addLayer({
-      id: 'train-consist-3d',
-      type: 'symbol',
-      source: 'active-trains',
-      layout: {
-        'icon-image': 'delhi-metro-consist',
-        'visibility': 'none'
+        'circle-color': '#EAB308',
+        'circle-opacity': [
+          'interpolate', ['linear'], ['zoom'],
+          11.0, 1.0,
+          12.8, 0.0
+        ]
       }
     });
   }
@@ -1618,37 +1749,58 @@
       map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
     });
 
-    // Vehicle Render Mode: Sleek Minimalist Fleet vs Pure Tracks Only
+    // Vehicle Render Mode: 3D Trains vs Radar Dots vs Rails Only
+    const mode3D = document.getElementById('mode-3d');
     const modeDot = document.getElementById('mode-dot');
     const modeTracks = document.getElementById('mode-tracks');
 
-    if (modeDot) {
-      modeDot.addEventListener('click', () => {
-        modeDot.classList.add('active');
-        if (modeTracks) modeTracks.classList.remove('active');
-        renderMode = 'dot';
-        if (map && map.getLayer('train-dot-white-black')) {
-          map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
-          map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
-          map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
-          map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
-        }
+    function applyRenderMode(mode) {
+      renderMode = mode;
+      [mode3D, modeDot, modeTracks].forEach(btn => {
+        if (btn) btn.classList.toggle('active', btn.id === `mode-${mode}`);
       });
+      if (!map) return;
+      if (mode === '3d') {
+        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'visible');
+        if (map.getLayer('train-dot-white-black')) {
+          map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
+          map.setPaintProperty('train-dot-white-black', 'circle-opacity', [
+            'interpolate', ['linear'], ['zoom'],
+            11.0, 1.0,
+            12.8, 0.0
+          ]);
+        }
+        if (map.getLayer('train-dot-pupil')) {
+          map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
+          map.setPaintProperty('train-dot-pupil', 'circle-opacity', [
+            'interpolate', ['linear'], ['zoom'],
+            11.0, 1.0,
+            12.8, 0.0
+          ]);
+        }
+        if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
+      } else if (mode === 'dot') {
+        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+        if (map.getLayer('train-dot-white-black')) {
+          map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
+          map.setPaintProperty('train-dot-white-black', 'circle-opacity', 1.0);
+        }
+        if (map.getLayer('train-dot-pupil')) {
+          map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
+          map.setPaintProperty('train-dot-pupil', 'circle-opacity', 1.0);
+        }
+        if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
+      } else if (mode === 'tracks') {
+        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+        if (map.getLayer('train-dot-white-black')) map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
+        if (map.getLayer('train-dot-pupil')) map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
+        if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'none');
+      }
     }
 
-    if (modeTracks) {
-      modeTracks.addEventListener('click', () => {
-        modeTracks.classList.add('active');
-        if (modeDot) modeDot.classList.remove('active');
-        renderMode = 'tracks';
-        if (map && map.getLayer('train-dot-white-black')) {
-          map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
-          map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
-          map.setLayoutProperty('train-drop-shadow', 'visibility', 'none');
-          map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
-        }
-      });
-    }
+    if (mode3D) mode3D.addEventListener('click', () => applyRenderMode('3d'));
+    if (modeDot) modeDot.addEventListener('click', () => applyRenderMode('dot'));
+    if (modeTracks) modeTracks.addEventListener('click', () => applyRenderMode('tracks'));
 
     // Speed Multipliers (Pure Client-Side)
     document.querySelectorAll('.speed-btn').forEach(btn => {
@@ -1669,7 +1821,9 @@
         const loc = btn.getAttribute('data-loc');
         followTrainId = null;
 
-        if (loc === 'rajiv') {
+        if (loc === 'qutab') {
+          map.flyTo({ center: [77.1793, 28.5132], zoom: 15.6, pitch: 52, bearing: -14, duration: 1100 });
+        } else if (loc === 'rajiv') {
           map.flyTo({ center: [77.2196, 28.6329], zoom: 15.2, pitch: 50, bearing: -14, duration: 1100 });
         } else if (loc === 'kashmere') {
           map.flyTo({ center: [77.2282, 28.6675], zoom: 15.2, pitch: 50, bearing: -14, duration: 1100 });
@@ -1789,6 +1943,22 @@
         openStationPanel(val);
       }
     });
+    map.on('click', 'platform-canopy-3d', (e) => {
+      const feat = e.features && e.features[0];
+      if (feat && feat.properties) {
+        openStationPanel(feat.properties.name);
+      }
+    });
+
+    map.on('dragstart', () => {
+      if (followTrainId) {
+        followTrainId = null;
+        const followBtn = document.getElementById('btn-follow-train');
+        if (followBtn) followBtn.textContent = 'Follow This Train 📹';
+        const followNextBtn = document.getElementById('btn-follow-next-train');
+        if (followNextBtn) followNextBtn.textContent = '📹 Follow Next Arriving Train';
+      }
+    });
 
     function onTrainClick(e) {
       const feat = e.features[0];
@@ -1891,6 +2061,37 @@
         ? `Underground Tube Chamber (${st.elevM || -16}m)` 
         : `Elevated Viaduct (+${st.elevM || 15}m)`;
       subEl.textContent = `${structText} · Station ${stIdx + 1} of ${stations.length}`;
+    }
+
+    // ── Architectural 3D Diorama Showcase Header ──
+    const dioramaImg = document.getElementById('st-panel-diorama-img');
+    const dioramaOverlay = document.getElementById('st-diorama-badge-overlay');
+    if (dioramaImg && dioramaOverlay) {
+      if (st.structure === 'underground') {
+        dioramaImg.src = '/public/dmrc_underground_tube_diorama.png';
+        dioramaOverlay.textContent = `SUBTERRANEAN TUBE DIORAMA · DEEP BORE (${st.elevM || -16}M)`;
+      } else {
+        dioramaImg.src = '/public/dmrc_elevated_viaduct_diorama.png';
+        dioramaOverlay.textContent = `ELEVATED VIADUCT DIORAMA · ARCH CANOPY (+${st.elevM || 15}M)`;
+      }
+    }
+
+    const followNextBtn = document.getElementById('btn-follow-next-train');
+    if (followNextBtn) {
+      followNextBtn.textContent = '📹 Follow Next Arriving Train';
+      followNextBtn.onclick = () => {
+        if (activeTrains && activeTrains.length > 0) {
+          const match = activeTrains.find(t => t.toStation === st.name || t.currentStation === st.name) || activeTrains[0];
+          if (match) {
+            followTrainId = match.id;
+            selectedTrainId = match.id;
+            updateCalloutCard(match);
+            document.getElementById('inspector-card').classList.remove('hidden');
+            followNextBtn.textContent = `Tracking ${match.id} 🟢`;
+            map.flyTo({ center: match.coords, zoom: 15.6, pitch: 52, duration: 800 });
+          }
+        }
+      };
     }
 
     // ── Real-Time Coach Occupancy (DMRC Notice 555 Model) ──

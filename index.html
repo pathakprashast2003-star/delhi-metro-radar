@@ -254,6 +254,7 @@
     <div class="quick-bookmarks">
       <span class="quick-label">CORRIDOR HUBS:</span>
       <button class="bookmark-chip active" data-loc="all">Corridor Overview</button>
+      <button class="bookmark-chip" data-loc="qutab">Qutab Minar</button>
       <button class="bookmark-chip" data-loc="kashmere">Kashmere Gate</button>
       <button class="bookmark-chip" data-loc="rajiv">Rajiv Chowk</button>
       <button class="bookmark-chip" data-loc="centralsec">Central Sec</button>
@@ -270,10 +271,11 @@
       <button class="seg-btn" id="btn-2d-view">🗺️ 2D Plan</button>
     </div>
 
-    <!-- Vehicle Render Mode: Sleek Fleet vs Tracks Only -->
+    <!-- Vehicle Render Mode: 3D Trains vs Radar Dots vs Tracks Only -->
     <div class="segmented-pill" id="vehicle-mode-pill">
-      <button class="seg-btn active" id="mode-dot">● Sleek Fleet</button>
-      <button class="seg-btn" id="mode-tracks">🛤️ Tracks Only</button>
+      <button class="seg-btn active" id="mode-3d">🚆 3D Trains</button>
+      <button class="seg-btn" id="mode-dot">● Radar Dots</button>
+      <button class="seg-btn" id="mode-tracks">🛤️ Rails Only</button>
     </div>
 
     <!-- Speed Multiplier -->
@@ -350,6 +352,13 @@
         <div class="st-structure-sub" id="st-panel-sub">Underground Chamber (-14m) · Central Core Interchange</div>
       </div>
       <button class="close-callout" id="close-station-panel">✕</button>
+    </div>
+
+    <!-- 3D Architectural Diorama Preview Box -->
+    <div class="st-diorama-preview-box" id="st-diorama-preview-box">
+      <img id="st-panel-diorama-img" src="/public/dmrc_elevated_viaduct_diorama.png" alt="Station 3D Cutaway" class="st-diorama-img" />
+      <div class="st-diorama-badge-overlay" id="st-diorama-badge-overlay">ELEVATED VIADUCT DIORAMA · ARCH CANOPY (+15M)</div>
+      <button class="st-follow-next-btn" id="btn-follow-next-train">📹 Follow Next Arriving Train</button>
     </div>
 
     <!-- Station Navigation Tabs -->
