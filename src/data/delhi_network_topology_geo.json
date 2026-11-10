@@ -1,0 +1,6864 @@
+{
+  "version": "5.0.0-geographic",
+  "metadata": {
+    "title": "Delhi NCR Metro Geographic Topology (Lat/Lon + Elevation)",
+    "origin": {
+      "name": "Connaught Place / Rajiv Chowk",
+      "lat": 28.6328,
+      "lon": 77.2195
+    },
+    "crs": "EPSG:4326",
+    "elevationUnit": "meters"
+  },
+  "lines": [
+    {
+      "id": "yellow-line",
+      "name": "Yellow Line (Line 2)",
+      "color": "#F59E0B",
+      "centerline": [
+        {
+          "coords": [
+            77.138299,
+            28.744639
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138898,
+            28.743995
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.139089,
+            28.743788
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140299,
+            28.742482
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14048,
+            28.742274
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14064,
+            28.74207
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140756,
+            28.741865
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14084,
+            28.741712
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140931,
+            28.741494
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141035,
+            28.741111
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141072,
+            28.740872
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141081,
+            28.7407
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141074,
+            28.740469
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141062,
+            28.740327
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141042,
+            28.740202
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14101,
+            28.740046
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140957,
+            28.739868
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140839,
+            28.739584
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140738,
+            28.7394
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140649,
+            28.739257
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140523,
+            28.739084
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140332,
+            28.738862
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.139864,
+            28.738344
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138743,
+            28.7371
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138561,
+            28.736853
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138484,
+            28.736735
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138376,
+            28.736544
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138265,
+            28.736296
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138181,
+            28.736039
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138141,
+            28.735855
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.13812,
+            28.735711
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138114,
+            28.735447
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138118,
+            28.735289
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.13813,
+            28.735161
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138148,
+            28.735005
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138179,
+            28.73486
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138219,
+            28.734715
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.13829,
+            28.734515
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138377,
+            28.734323
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138498,
+            28.734119
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138644,
+            28.733919
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.138777,
+            28.733752
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140483,
+            28.731936
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.140757,
+            28.731686
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141028,
+            28.731469
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141479,
+            28.731145
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.144587,
+            28.72928
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.144829,
+            28.729156
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.145117,
+            28.729041
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.145395,
+            28.728962
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14574,
+            28.728891
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14598,
+            28.728865
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.146324,
+            28.728859
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.146646,
+            28.728876
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.146938,
+            28.728923
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.147189,
+            28.728987
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.147405,
+            28.729062
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.147676,
+            28.729174
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.147933,
+            28.729311
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.148872,
+            28.729917
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.150354,
+            28.7309
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.151453,
+            28.731658
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.151897,
+            28.731931
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.152398,
+            28.732238
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.152996,
+            28.73249
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.153305,
+            28.732567
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.153588,
+            28.732615
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.153938,
+            28.732647
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.154293,
+            28.732635
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.154845,
+            28.732587
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.155387,
+            28.732463
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.156761,
+            28.732145
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.157298,
+            28.732039
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.157767,
+            28.731856
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.158145,
+            28.731655
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.158557,
+            28.731368
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.158891,
+            28.73103
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.159146,
+            28.730681
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.159637,
+            28.730011
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.161027,
+            28.728175
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.162683,
+            28.725987
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.16509,
+            28.7227
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.165829,
+            28.721814
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.166948,
+            28.720636
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.169802,
+            28.717315
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.170139,
+            28.71694
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.170447,
+            28.716598
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.170702,
+            28.71631
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.175949,
+            28.710386
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.177842,
+            28.708263
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.178236,
+            28.707985
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.17864,
+            28.707745
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.179245,
+            28.707461
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.179603,
+            28.707333
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.180383,
+            28.707069
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.181497,
+            28.706678
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.182017,
+            28.706521
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.182276,
+            28.706457
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.182496,
+            28.706412
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.182739,
+            28.706376
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.183189,
+            28.706329
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.18364,
+            28.706279
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.184302,
+            28.706216
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.184627,
+            28.706162
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.184964,
+            28.706079
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.188485,
+            28.704949
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.189181,
+            28.704728
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.189794,
+            28.704493
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.191779,
+            28.703616
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.194006,
+            28.702739
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.200241,
+            28.70044
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.20109,
+            28.700127
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.206423,
+            28.698156
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.209569,
+            28.697014
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.214748,
+            28.695099
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.218489,
+            28.693687
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.219119,
+            28.693451
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.219793,
+            28.693231
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.220047,
+            28.6931
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.220343,
+            28.692884
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.22055,
+            28.692615
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.220796,
+            28.69221
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.221015,
+            28.69176
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.221257,
+            28.690439
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.221283,
+            28.689603
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.221291,
+            28.689243
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.221359,
+            28.688812
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.221758,
+            28.686327
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.222571,
+            28.682688
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.222599,
+            28.682184
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.222624,
+            28.681915
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.22277,
+            28.681598
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.223095,
+            28.681083
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.223366,
+            28.680677
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.223734,
+            28.680096
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.223967,
+            28.679747
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.224237,
+            28.679299
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.224432,
+            28.678786
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.224746,
+            28.677795
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225056,
+            28.676857
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225286,
+            28.676187
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225461,
+            28.67568
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225516,
+            28.675461
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225599,
+            28.675129
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225799,
+            28.674199
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.225925,
+            28.673355
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.226014,
+            28.672817
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.226073,
+            28.672503
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.22628,
+            28.671965
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.227184,
+            28.669828
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.227352,
+            28.669376
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.227632,
+            28.668619
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.228217,
+            28.667526
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.229367,
+            28.665273
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.230069,
+            28.663405
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2304,
+            28.659256
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.230366,
+            28.658421
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.230239,
+            28.656482
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.230117,
+            28.656103
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.226544,
+            28.649251
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.222782,
+            28.643487
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.222771,
+            28.643471
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.219815,
+            28.634033
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.21971,
+            28.633597
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.219579,
+            28.633166
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.219424,
+            28.632742
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.219202,
+            28.632236
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.218945,
+            28.631742
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.218491,
+            28.631116
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.216118,
+            28.627839
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.215837,
+            28.627271
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.215802,
+            28.625822
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.215689,
+            28.625483
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.214059,
+            28.622954
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212946,
+            28.621462
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212767,
+            28.621122
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212653,
+            28.619781
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212411,
+            28.616919
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212313,
+            28.615878
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.211837,
+            28.609582
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.211825,
+            28.609512
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.21102,
+            28.598128
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.211127,
+            28.597355
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212699,
+            28.591277
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.21283,
+            28.589631
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212564,
+            28.586594
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212365,
+            28.583429
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.20952,
+            28.574938
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.209331,
+            28.574159
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.208105,
+            28.567929
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.208022,
+            28.567578
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.207926,
+            28.56717
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.207832,
+            28.566854
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.20761,
+            28.566027
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.207594,
+            28.563556
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.207418,
+            28.561651
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206821,
+            28.558002
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206504,
+            28.556473
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206173,
+            28.555198
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206027,
+            28.554051
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.205748,
+            28.551858
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.205969,
+            28.5491
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206031,
+            28.548558
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206697,
+            28.547422
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206832,
+            28.546588
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.20681,
+            28.546016
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.20674,
+            28.544258
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206458,
+            28.542468
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206757,
+            28.538403
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.206173,
+            28.535553
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.205408,
+            28.532841
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.204649,
+            28.530116
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.204677,
+            28.529781
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.204854,
+            28.529067
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.204987,
+            28.528459
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.20497,
+            28.528116
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.203485,
+            28.522485
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.203395,
+            28.522211
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.203276,
+            28.521938
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.203175,
+            28.52173
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.203031,
+            28.521566
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.201898,
+            28.520873
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.201591,
+            28.520687
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.200309,
+            28.519644
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.196476,
+            28.516194
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.19526,
+            28.515551
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.194033,
+            28.515076
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.193312,
+            28.514967
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.192469,
+            28.514875
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.191868,
+            28.514855
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.190587,
+            28.514917
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.190193,
+            28.514895
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.189801,
+            28.51483
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.189385,
+            28.514731
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.189081,
+            28.514628
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.18883,
+            28.514516
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.188442,
+            28.514281
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.18785,
+            28.513875
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.186472,
+            28.51293
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.184338,
+            28.511499
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.18228,
+            28.510483
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.180268,
+            28.509491
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.179895,
+            28.509325
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.179507,
+            28.509217
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.178948,
+            28.509113
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.178187,
+            28.509025
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.177689,
+            28.508975
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.177475,
+            28.508918
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.177335,
+            28.508878
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.177148,
+            28.508814
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.176968,
+            28.50873
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.176758,
+            28.508631
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.176599,
+            28.50854
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.176471,
+            28.508461
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.176302,
+            28.508336
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.176135,
+            28.508177
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.175686,
+            28.507705
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.174936,
+            28.506755
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.173422,
+            28.504879
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.173222,
+            28.504663
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.173013,
+            28.504466
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1728,
+            28.50429
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.172652,
+            28.504177
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.172485,
+            28.504059
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.172256,
+            28.503915
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.172017,
+            28.50378
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.171811,
+            28.503675
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.171626,
+            28.503591
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.171459,
+            28.503521
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.169675,
+            28.502822
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.169447,
+            28.502717
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.168779,
+            28.502385
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.168606,
+            28.502305
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.168348,
+            28.502197
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.168076,
+            28.502091
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.167108,
+            28.501732
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.166857,
+            28.501635
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.166661,
+            28.501553
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.166405,
+            28.501436
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.164311,
+            28.500428
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.163962,
+            28.500257
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.163226,
+            28.499914
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.162928,
+            28.499784
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.162425,
+            28.49958
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.16091,
+            28.498971
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.160011,
+            28.498606
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.159063,
+            28.498192
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.158627,
+            28.497999
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.158262,
+            28.497838
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.157814,
+            28.497646
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.156815,
+            28.497214
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.156011,
+            28.496864
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.150464,
+            28.494317
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.149198,
+            28.493728
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.14657,
+            28.492589
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.145225,
+            28.492047
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.142172,
+            28.490979
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.141357,
+            28.490532
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.13902,
+            28.48937
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.135253,
+            28.487621
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.133407,
+            28.486663
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.131463,
+            28.485101
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.130349,
+            28.483982
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.127544,
+            28.482022
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.126844,
+            28.481547
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.125784,
+            28.480716
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.125025,
+            28.480182
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.124427,
+            28.479739
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.123812,
+            28.479263
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.123432,
+            28.479073
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.123058,
+            28.478892
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.122663,
+            28.478787
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.122228,
+            28.478729
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.121625,
+            28.47875
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.120968,
+            28.478881
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.120353,
+            28.479139
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.119104,
+            28.479974
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.118196,
+            28.480557
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.117729,
+            28.480753
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.117023,
+            28.480919
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.115971,
+            28.481135
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.114861,
+            28.481343
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.114191,
+            28.481487
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.113587,
+            28.481565
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.113127,
+            28.481557
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.112379,
+            28.481528
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.111774,
+            28.481493
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.11124,
+            28.481507
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.110976,
+            28.481549
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.110583,
+            28.48164
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.110395,
+            28.481704
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.110208,
+            28.481771
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.109743,
+            28.482001
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.109204,
+            28.482279
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.108842,
+            28.48242
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.108523,
+            28.482502
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.108239,
+            28.482562
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.107993,
+            28.482601
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.107651,
+            28.482611
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.107341,
+            28.482594
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.107079,
+            28.482561
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.106791,
+            28.482503
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.10646,
+            28.48243
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.105723,
+            28.482265
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.105162,
+            28.482177
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.104358,
+            28.482118
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.103274,
+            28.482118
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.102272,
+            28.481998
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.101219,
+            28.481879
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.100474,
+            28.481816
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.099841,
+            28.481851
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.098558,
+            28.481994
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.097958,
+            28.482041
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.097421,
+            28.482048
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.096853,
+            28.481989
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.096002,
+            28.481887
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.095218,
+            28.481758
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.094423,
+            28.48159
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.093007,
+            28.481244
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.091599,
+            28.480971
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.090801,
+            28.480799
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.089448,
+            28.480598
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.088967,
+            28.480534
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0883,
+            28.480585
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.087757,
+            28.480641
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.086822,
+            28.480553
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.079899,
+            28.479524
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.074278,
+            28.478584
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.07395,
+            28.478513
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073686,
+            28.478421
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073392,
+            28.478303
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073104,
+            28.478139
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.072738,
+            28.477854
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.072366,
+            28.477438
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.072125,
+            28.476985
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.071986,
+            28.47653
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.071921,
+            28.475867
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.072452,
+            28.472331
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073912,
+            28.462114
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073943,
+            28.461839
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073947,
+            28.461541
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073909,
+            28.461255
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073852,
+            28.460999
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073784,
+            28.460805
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073706,
+            28.460624
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073623,
+            28.460463
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073506,
+            28.46029
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.073389,
+            28.460139
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.072686,
+            28.459331
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    },
+    {
+      "id": "blue-line",
+      "name": "Blue Line (Line 3)",
+      "color": "#0055A5",
+      "centerline": [
+        {
+          "coords": [
+            77.0195,
+            28.5522
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0378,
+            28.5702
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0583,
+            28.5925
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0678,
+            28.608
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0865,
+            28.6295
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1022,
+            28.6365
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1215,
+            28.6445
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1425,
+            28.6515
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1645,
+            28.6545
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1855,
+            28.6505
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2025,
+            28.6435
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2115,
+            28.6365
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2195,
+            28.6328
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2285,
+            28.6305
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2345,
+            28.6255
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2495,
+            28.6225
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2655,
+            28.6185
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2885,
+            28.6165
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3025,
+            28.6255
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3085,
+            28.6055
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3245,
+            28.5875
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3385,
+            28.5745
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3525,
+            28.5685
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3755,
+            28.5785
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3915,
+            28.5885
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    },
+    {
+      "id": "red-line",
+      "name": "Red Line (Line 1)",
+      "color": "#E21E26",
+      "centerline": [
+        {
+          "coords": [
+            77.1065,
+            28.7205
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1225,
+            28.7125
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1385,
+            28.7055
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1525,
+            28.6965
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1705,
+            28.6875
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1905,
+            28.6755
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2085,
+            28.6695
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2281,
+            28.6675
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2425,
+            28.6695
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2565,
+            28.6745
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2725,
+            28.6785
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2915,
+            28.6805
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3125,
+            28.6815
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3455,
+            28.6825
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3785,
+            28.6845
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    },
+    {
+      "id": "violet-line",
+      "name": "Violet Line (Line 6)",
+      "color": "#7C3AED",
+      "centerline": [
+        {
+          "coords": [
+            77.2281,
+            28.6675
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2385,
+            28.6565
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2415,
+            28.6495
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2425,
+            28.6385
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2415,
+            28.6295
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2345,
+            28.6255
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2275,
+            28.6185
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.212,
+            28.6149
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2185,
+            28.6005
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2295,
+            28.5885
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2415,
+            28.5705
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2525,
+            28.5585
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2585,
+            28.5445
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2605,
+            28.5385
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2695,
+            28.5285
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2885,
+            28.5085
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3025,
+            28.4985
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3185,
+            28.4285
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3245,
+            28.3755
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    },
+    {
+      "id": "magenta-line",
+      "name": "Magenta Line (Line 8)",
+      "color": "#C026D3",
+      "centerline": [
+        {
+          "coords": [
+            77.0865,
+            28.6295
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0985,
+            28.6125
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1085,
+            28.5945
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1185,
+            28.5825
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1265,
+            28.5685
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1385,
+            28.5585
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1585,
+            28.5525
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1725,
+            28.5485
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1855,
+            28.5455
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1955,
+            28.5445
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2067,
+            28.5442
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2185,
+            28.5435
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2345,
+            28.5415
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2485,
+            28.5405
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2605,
+            28.5385
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2755,
+            28.5485
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2985,
+            28.5585
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3155,
+            28.5545
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3325,
+            28.5625
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    },
+    {
+      "id": "pink-line",
+      "name": "Pink Line (Ring Railway)",
+      "color": "#DB2777",
+      "centerline": [
+        {
+          "coords": [
+            77.1825,
+            28.7185
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1798,
+            28.7072
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1685,
+            28.6985
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1525,
+            28.6965
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1355,
+            28.6825
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1215,
+            28.6705
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1215,
+            28.6445
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1325,
+            28.6325
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1485,
+            28.6185
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1625,
+            28.5985
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1685,
+            28.5855
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1855,
+            28.5785
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1985,
+            28.5755
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2055,
+            28.5745
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2108,
+            28.5741
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2285,
+            28.5715
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2415,
+            28.5705
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2555,
+            28.5785
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2685,
+            28.5905
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2855,
+            28.6055
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3085,
+            28.6055
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3225,
+            28.6285
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3185,
+            28.6485
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.3055,
+            28.6655
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2725,
+            28.6785
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.2685,
+            28.7055
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    },
+    {
+      "id": "airport-express",
+      "name": "Airport Express Line",
+      "color": "#EA580C",
+      "centerline": [
+        {
+          "coords": [
+            77.2223,
+            28.6429
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.2125,
+            28.6285
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.1685,
+            28.5885
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1205,
+            28.5505
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.0855,
+            28.5555
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            77.0195,
+            28.5522
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        },
+        {
+          "coords": [
+            76.9985,
+            28.5485
+          ],
+          "elevM": -14,
+          "structure": "underground"
+        }
+      ]
+    },
+    {
+      "id": "rapid-metro",
+      "name": "Rapid Metro Gurugram",
+      "color": "#059669",
+      "centerline": [
+        {
+          "coords": [
+            77.0935,
+            28.4815
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0895,
+            28.4905
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0885,
+            28.4985
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0895,
+            28.5025
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0985,
+            28.4995
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1025,
+            28.4925
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0935,
+            28.4815
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0945,
+            28.4685
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.0985,
+            28.4555
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        },
+        {
+          "coords": [
+            77.1045,
+            28.4425
+          ],
+          "elevM": 15,
+          "structure": "elevated"
+        }
+      ]
+    }
+  ],
+  "stations": [
+    {
+      "id": "aiims",
+      "name": "AIIMS",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.207832,
+        28.566854
+      ],
+      "mx": -11.368,
+      "mz": 73.2,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 0
+    },
+    {
+      "id": "adarsh_nagar",
+      "name": "Adarsh Nagar",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.170447,
+        28.716598
+      ],
+      "mx": -47.79,
+      "mz": -93.016,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 1
+    },
+    {
+      "id": "airport_terminal_3",
+      "name": "Airport Terminal 3",
+      "line": "airport-express",
+      "lineColor": "#EA580C",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.0855,
+        28.5555
+      ],
+      "mx": -130.55,
+      "mz": 85.803,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 2
+    },
+    {
+      "id": "akshardham",
+      "name": "Akshardham",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3025,
+        28.6255
+      ],
+      "mx": 80.863,
+      "mz": 8.103,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 3
+    },
+    {
+      "id": "anand_vihar_isbt",
+      "name": "Anand Vihar ISBT",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3185,
+        28.6485
+      ],
+      "mx": 96.451,
+      "mz": -17.427,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 4
+    },
+    {
+      "id": "arjan_garh",
+      "name": "Arjan Garh",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.125784,
+        28.480716
+      ],
+      "mx": -91.303,
+      "mz": 168.813,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 5
+    },
+    {
+      "id": "ashram",
+      "name": "Ashram",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2685,
+        28.5905
+      ],
+      "mx": 47.739,
+      "mz": 46.953,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 6
+    },
+    {
+      "id": "azadpur",
+      "name": "Azadpur",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.180383,
+        28.707069
+      ],
+      "mx": -38.11,
+      "mz": -82.439,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Pink",
+      "interchanges": [
+        "Yellow \u00d7 Pink"
+      ],
+      "index": 7
+    },
+    {
+      "id": "back_to_sikanderpur",
+      "name": "Back to Sikanderpur",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0935,
+        28.4815
+      ],
+      "mx": -122.756,
+      "mz": 167.943,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 8
+    },
+    {
+      "id": "badarpur_border",
+      "name": "Badarpur Border",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3025,
+        28.4985
+      ],
+      "mx": 80.863,
+      "mz": 149.073,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 9
+    },
+    {
+      "id": "barakhamba_road",
+      "name": "Barakhamba Road",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2285,
+        28.6305
+      ],
+      "mx": 8.768,
+      "mz": 2.553,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 10
+    },
+    {
+      "id": "bata_chowk",
+      "name": "Bata Chowk",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3185,
+        28.4285
+      ],
+      "mx": 96.451,
+      "mz": 226.773,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 11
+    },
+    {
+      "id": "belvedere_towers",
+      "name": "Belvedere Towers",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0885,
+        28.4985
+      ],
+      "mx": -127.628,
+      "mz": 149.073,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 12
+    },
+    {
+      "id": "bhikaji_cama_place",
+      "name": "Bhikaji Cama Place",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1985,
+        28.5755
+      ],
+      "mx": -20.459,
+      "mz": 63.603,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 13
+    },
+    {
+      "id": "botanical_garden_noida",
+      "name": "Botanical Garden Noida",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3325,
+        28.5625
+      ],
+      "mx": 110.091,
+      "mz": 78.033,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 14
+    },
+    {
+      "id": "central_secretariat",
+      "name": "Central Secretariat",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.212313,
+        28.615878
+      ],
+      "mx": -7.002,
+      "mz": 18.783,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Violet",
+      "interchanges": [
+        "Yellow \u00d7 Violet"
+      ],
+      "index": 15
+    },
+    {
+      "id": "chandni_chowk",
+      "name": "Chandni Chowk",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.230366,
+        28.658421
+      ],
+      "mx": 10.586,
+      "mz": -28.439,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 16
+    },
+    {
+      "id": "chawri_bazar",
+      "name": "Chawri Bazar",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.226544,
+        28.649251
+      ],
+      "mx": 6.863,
+      "mz": -18.261,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 17
+    },
+    {
+      "id": "chhatarpur",
+      "name": "Chhatarpur",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.174936,
+        28.506755
+      ],
+      "mx": -43.417,
+      "mz": 139.91,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 18
+    },
+    {
+      "id": "chirag_delhi",
+      "name": "Chirag Delhi",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2345,
+        28.5415
+      ],
+      "mx": 14.614,
+      "mz": 101.343,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 19
+    },
+    {
+      "id": "civil_lines",
+      "name": "Civil Lines",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.225056,
+        28.676857
+      ],
+      "mx": 5.413,
+      "mz": -48.903,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 20
+    },
+    {
+      "id": "cyber_city_loop_north",
+      "name": "Cyber City Loop North",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0895,
+        28.5025
+      ],
+      "mx": -126.653,
+      "mz": 144.633,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 21
+    },
+    {
+      "id": "dabri_mor",
+      "name": "Dabri Mor",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0985,
+        28.6125
+      ],
+      "mx": -117.885,
+      "mz": 22.533,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 22
+    },
+    {
+      "id": "dashrath_puri",
+      "name": "Dashrath Puri",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1085,
+        28.5945
+      ],
+      "mx": -108.143,
+      "mz": 42.513,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 23
+    },
+    {
+      "id": "delhi_aerocity",
+      "name": "Delhi Aerocity",
+      "line": "airport-express",
+      "lineColor": "#EA580C",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.1205,
+        28.5505
+      ],
+      "mx": -96.451,
+      "mz": 91.353,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 24
+    },
+    {
+      "id": "delhi_cantt",
+      "name": "Delhi Cantt",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1625,
+        28.5985
+      ],
+      "mx": -55.533,
+      "mz": 38.073,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 25
+    },
+    {
+      "id": "delhi_gate",
+      "name": "Delhi Gate",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2425,
+        28.6385
+      ],
+      "mx": 22.408,
+      "mz": -6.327,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 26
+    },
+    {
+      "id": "dhaula_kuan",
+      "name": "Dhaula Kuan",
+      "line": "airport-express",
+      "lineColor": "#EA580C",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1685,
+        28.5885
+      ],
+      "mx": -49.687,
+      "mz": 49.173,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 27
+    },
+    {
+      "id": "dilli_haat_ina",
+      "name": "Dilli Haat - INA",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.209331,
+        28.574159
+      ],
+      "mx": -9.907,
+      "mz": 65.092,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Pink",
+      "interchanges": [
+        "Yellow \u00d7 Pink"
+      ],
+      "index": 28
+    },
+    {
+      "id": "dilshad_garden",
+      "name": "Dilshad Garden",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3125,
+        28.6815
+      ],
+      "mx": 90.606,
+      "mz": -54.057,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 29
+    },
+    {
+      "id": "durgabai_deshmukh_south_campus",
+      "name": "Durgabai Deshmukh South Campus",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1685,
+        28.5855
+      ],
+      "mx": -49.687,
+      "mz": 52.503,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 30
+    },
+    {
+      "id": "dwarka",
+      "name": "Dwarka",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0583,
+        28.5925
+      ],
+      "mx": -157.05,
+      "mz": 44.733,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 31
+    },
+    {
+      "id": "dwarka_mor",
+      "name": "Dwarka Mor",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0678,
+        28.608
+      ],
+      "mx": -147.795,
+      "mz": 27.528,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 32
+    },
+    {
+      "id": "dwarka_sector_21",
+      "name": "Dwarka Sector 21",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0195,
+        28.5522
+      ],
+      "mx": -194.851,
+      "mz": 89.466,
+      "major": true,
+      "terminus": false,
+      "interchange": "Blue \u00d7 Airport-Express",
+      "interchanges": [
+        "Blue \u00d7 Airport-Express"
+      ],
+      "index": 33
+    },
+    {
+      "id": "dwarka_sector_8",
+      "name": "Dwarka Sector 8",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0378,
+        28.5702
+      ],
+      "mx": -177.022,
+      "mz": 69.486,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 34
+    },
+    {
+      "id": "gtb_nagar",
+      "name": "GTB Nagar",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.206423,
+        28.698156
+      ],
+      "mx": -12.74,
+      "mz": -72.545,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 35
+    },
+    {
+      "id": "ghitorni",
+      "name": "Ghitorni",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.149198,
+        28.493728
+      ],
+      "mx": -68.492,
+      "mz": 154.37,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 36
+    },
+    {
+      "id": "govind_puri",
+      "name": "Govind Puri",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2695,
+        28.5285
+      ],
+      "mx": 48.713,
+      "mz": 115.773,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 37
+    },
+    {
+      "id": "greater_kailash",
+      "name": "Greater Kailash",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2485,
+        28.5405
+      ],
+      "mx": 28.253,
+      "mz": 102.453,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 38
+    },
+    {
+      "id": "green_park",
+      "name": "Green Park",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.206821,
+        28.558002
+      ],
+      "mx": -12.353,
+      "mz": 83.026,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 39
+    },
+    {
+      "id": "guru_dronacharya",
+      "name": "Guru Dronacharya",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.102272,
+        28.481998
+      ],
+      "mx": -114.21,
+      "mz": 167.39,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 40
+    },
+    {
+      "id": "haiderpur_badli_mor",
+      "name": "Haiderpur Badli Mor",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.148872,
+        28.729917
+      ],
+      "mx": -68.81,
+      "mz": -107.8,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 41
+    },
+    {
+      "id": "hauz_khas",
+      "name": "Hauz Khas",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.20674,
+        28.544258
+      ],
+      "mx": -12.432,
+      "mz": 98.282,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Magenta",
+      "interchanges": [
+        "Yellow \u00d7 Magenta"
+      ],
+      "index": 42
+    },
+    {
+      "id": "iffco_chowk",
+      "name": "IFFCO Chowk",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.072452,
+        28.472331
+      ],
+      "mx": -143.263,
+      "mz": 178.121,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 43
+    },
+    {
+      "id": "iit_delhi",
+      "name": "IIT Delhi",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1955,
+        28.5445
+      ],
+      "mx": -23.382,
+      "mz": 98.013,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 44
+    },
+    {
+      "id": "ito",
+      "name": "ITO",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2415,
+        28.6295
+      ],
+      "mx": 21.434,
+      "mz": 3.663,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 45
+    },
+    {
+      "id": "inderlok",
+      "name": "Inderlok",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1905,
+        28.6755
+      ],
+      "mx": -28.253,
+      "mz": -47.397,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 46
+    },
+    {
+      "id": "indraprastha",
+      "name": "Indraprastha",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2655,
+        28.6185
+      ],
+      "mx": 44.816,
+      "mz": 15.873,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 47
+    },
+    {
+      "id": "jahangirpuri",
+      "name": "Jahangirpuri",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.162683,
+        28.725987
+      ],
+      "mx": -55.354,
+      "mz": -103.438,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 48
+    },
+    {
+      "id": "jama_masjid",
+      "name": "Jama Masjid",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2415,
+        28.6495
+      ],
+      "mx": 21.434,
+      "mz": -18.537,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 49
+    },
+    {
+      "id": "janakpuri_west",
+      "name": "Janakpuri West",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0865,
+        28.6295
+      ],
+      "mx": -129.576,
+      "mz": 3.663,
+      "major": true,
+      "terminus": false,
+      "interchange": "Blue \u00d7 Magenta",
+      "interchanges": [
+        "Blue \u00d7 Magenta"
+      ],
+      "index": 50
+    },
+    {
+      "id": "janpath",
+      "name": "Janpath",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2275,
+        28.6185
+      ],
+      "mx": 7.794,
+      "mz": 15.873,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 51
+    },
+    {
+      "id": "jasola_vihar",
+      "name": "Jasola Vihar",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2985,
+        28.5585
+      ],
+      "mx": 76.966,
+      "mz": 82.473,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 52
+    },
+    {
+      "id": "jawaharlal_nehru_stadium",
+      "name": "Jawaharlal Nehru Stadium",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2295,
+        28.5885
+      ],
+      "mx": 9.743,
+      "mz": 49.173,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 53
+    },
+    {
+      "id": "jhandewalan",
+      "name": "Jhandewalan",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2025,
+        28.6435
+      ],
+      "mx": -16.562,
+      "mz": -11.877,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 54
+    },
+    {
+      "id": "jor_bagh",
+      "name": "Jor Bagh",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.212564,
+        28.586594
+      ],
+      "mx": -6.757,
+      "mz": 51.289,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 55
+    },
+    {
+      "id": "kalindi_kunj",
+      "name": "Kalindi Kunj",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3155,
+        28.5545
+      ],
+      "mx": 93.529,
+      "mz": 86.913,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 56
+    },
+    {
+      "id": "kalkaji_mandir",
+      "name": "Kalkaji Mandir",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2605,
+        28.5385
+      ],
+      "mx": 39.945,
+      "mz": 104.673,
+      "major": true,
+      "terminus": false,
+      "interchange": "Violet \u00d7 Magenta",
+      "interchanges": [
+        "Violet \u00d7 Magenta"
+      ],
+      "index": 57
+    },
+    {
+      "id": "karkarduma",
+      "name": "Karkarduma",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3055,
+        28.6655
+      ],
+      "mx": 83.786,
+      "mz": -36.297,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 58
+    },
+    {
+      "id": "karol_bagh",
+      "name": "Karol Bagh",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1855,
+        28.6505
+      ],
+      "mx": -33.125,
+      "mz": -19.647,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 59
+    },
+    {
+      "id": "kashmere_gate",
+      "name": "Kashmere Gate",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.228217,
+        28.667526
+      ],
+      "mx": 8.493,
+      "mz": -38.546,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Red \u00d7 Violet",
+      "interchanges": [
+        "Yellow \u00d7 Red \u00d7 Violet"
+      ],
+      "index": 60
+    },
+    {
+      "id": "keshav_puram",
+      "name": "Keshav Puram",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1705,
+        28.6875
+      ],
+      "mx": -47.739,
+      "mz": -60.717,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 61
+    },
+    {
+      "id": "khan_market",
+      "name": "Khan Market",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2185,
+        28.6005
+      ],
+      "mx": -0.974,
+      "mz": 35.853,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 62
+    },
+    {
+      "id": "lajpat_nagar",
+      "name": "Lajpat Nagar",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2415,
+        28.5705
+      ],
+      "mx": 21.434,
+      "mz": 69.153,
+      "major": true,
+      "terminus": false,
+      "interchange": "Violet \u00d7 Pink",
+      "interchanges": [
+        "Violet \u00d7 Pink"
+      ],
+      "index": 63
+    },
+    {
+      "id": "lal_quila",
+      "name": "Lal Quila",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2385,
+        28.6565
+      ],
+      "mx": 18.511,
+      "mz": -26.307,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 64
+    },
+    {
+      "id": "lok_kalyan_marg",
+      "name": "Lok Kalyan Marg",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.211127,
+        28.597355
+      ],
+      "mx": -8.157,
+      "mz": 39.344,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 65
+    },
+    {
+      "id": "mg_road",
+      "name": "MG Road",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.079899,
+        28.479524
+      ],
+      "mx": -136.007,
+      "mz": 170.136,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 66
+    },
+    {
+      "id": "majlis_park",
+      "name": "Majlis Park",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1825,
+        28.7185
+      ],
+      "mx": -36.048,
+      "mz": -95.127,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 67
+    },
+    {
+      "id": "major_mohit_sharma_rajendra_nagar",
+      "name": "Major Mohit Sharma Rajendra Nagar",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3455,
+        28.6825
+      ],
+      "mx": 122.756,
+      "mz": -55.167,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 68
+    },
+    {
+      "id": "malviya_nagar",
+      "name": "Malviya Nagar",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.204854,
+        28.529067
+      ],
+      "mx": -14.269,
+      "mz": 115.144,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 69
+    },
+    {
+      "id": "mandi_house",
+      "name": "Mandi House",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2345,
+        28.6255
+      ],
+      "mx": 14.614,
+      "mz": 8.103,
+      "major": true,
+      "terminus": false,
+      "interchange": "Blue \u00d7 Violet",
+      "interchanges": [
+        "Blue \u00d7 Violet"
+      ],
+      "index": 70
+    },
+    {
+      "id": "mayapuri",
+      "name": "Mayapuri",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1325,
+        28.6325
+      ],
+      "mx": -84.76,
+      "mz": 0.333,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 71
+    },
+    {
+      "id": "mayur_vihar_phase_1",
+      "name": "Mayur Vihar Phase 1",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3085,
+        28.6055
+      ],
+      "mx": 86.709,
+      "mz": 30.303,
+      "major": true,
+      "terminus": false,
+      "interchange": "Blue \u00d7 Pink",
+      "interchanges": [
+        "Blue \u00d7 Pink"
+      ],
+      "index": 72
+    },
+    {
+      "id": "mayur_vihar_pocket_1",
+      "name": "Mayur Vihar Pocket 1",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3225,
+        28.6285
+      ],
+      "mx": 100.348,
+      "mz": 4.773,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 73
+    },
+    {
+      "id": "millennium_city_centre",
+      "name": "Millennium City Centre",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.072686,
+        28.459331
+      ],
+      "mx": -143.035,
+      "mz": 192.551,
+      "major": true,
+      "terminus": true,
+      "interchange": null,
+      "interchanges": [],
+      "index": 74
+    },
+    {
+      "id": "model_town",
+      "name": "Model Town",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.194006,
+        28.702739
+      ],
+      "mx": -24.838,
+      "mz": -77.632,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 75
+    },
+    {
+      "id": "mohan_estate",
+      "name": "Mohan Estate",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2885,
+        28.5085
+      ],
+      "mx": 67.224,
+      "mz": 137.973,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 76
+    },
+    {
+      "id": "moolchand",
+      "name": "Moolchand",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2525,
+        28.5585
+      ],
+      "mx": 32.15,
+      "mz": 82.473,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 77
+    },
+    {
+      "id": "moti_nagar",
+      "name": "Moti Nagar",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1425,
+        28.6515
+      ],
+      "mx": -75.018,
+      "mz": -20.757,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 78
+    },
+    {
+      "id": "moulsari_avenue",
+      "name": "Moulsari Avenue",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0985,
+        28.4995
+      ],
+      "mx": -117.885,
+      "mz": 147.963,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 79
+    },
+    {
+      "id": "munirka",
+      "name": "Munirka",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1855,
+        28.5455
+      ],
+      "mx": -33.125,
+      "mz": 96.903,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 80
+    },
+    {
+      "id": "new_delhi_metro_railway_station",
+      "name": "NEW DELHI METRO & RAILWAY STATION",
+      "line": "airport-express",
+      "lineColor": "#EA580C",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2223,
+        28.6429
+      ],
+      "mx": 2.728,
+      "mz": -11.211,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 81
+    },
+    {
+      "id": "naraina_vihar",
+      "name": "Naraina Vihar",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1485,
+        28.6185
+      ],
+      "mx": -69.172,
+      "mz": 15.873,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 82
+    },
+    {
+      "id": "nehru_place",
+      "name": "Nehru Place",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2585,
+        28.5445
+      ],
+      "mx": 37.996,
+      "mz": 98.013,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 83
+    },
+    {
+      "id": "netaji_subhash_place",
+      "name": "Netaji Subhash Place",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1525,
+        28.6965
+      ],
+      "mx": -65.275,
+      "mz": -70.707,
+      "major": true,
+      "terminus": false,
+      "interchange": "Red \u00d7 Pink",
+      "interchanges": [
+        "Red \u00d7 Pink"
+      ],
+      "index": 84
+    },
+    {
+      "id": "new_ashok_nagar",
+      "name": "New Ashok Nagar",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3245,
+        28.5875
+      ],
+      "mx": 102.297,
+      "mz": 50.283,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 85
+    },
+    {
+      "id": "new_delhi",
+      "name": "New Delhi",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.222771,
+        28.643471
+      ],
+      "mx": 3.187,
+      "mz": -11.845,
+      "major": true,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 86
+    },
+    {
+      "id": "noida_city_centre",
+      "name": "Noida City Centre",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3525,
+        28.5685
+      ],
+      "mx": 129.576,
+      "mz": 71.373,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 87
+    },
+    {
+      "id": "noida_electronic_city",
+      "name": "Noida Electronic City",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3915,
+        28.5885
+      ],
+      "mx": 167.572,
+      "mz": 49.173,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 88
+    },
+    {
+      "id": "noida_sector_15",
+      "name": "Noida Sector 15",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3385,
+        28.5745
+      ],
+      "mx": 115.937,
+      "mz": 64.713,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 89
+    },
+    {
+      "id": "noida_sector_52",
+      "name": "Noida Sector 52",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3755,
+        28.5785
+      ],
+      "mx": 151.984,
+      "mz": 60.273,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 90
+    },
+    {
+      "id": "okhla_nsic",
+      "name": "Okhla NSIC",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2755,
+        28.5485
+      ],
+      "mx": 54.558,
+      "mz": 93.573,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 91
+    },
+    {
+      "id": "palam",
+      "name": "Palam",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1185,
+        28.5825
+      ],
+      "mx": -98.4,
+      "mz": 55.833,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 92
+    },
+    {
+      "id": "panchsheel_park",
+      "name": "Panchsheel Park",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2185,
+        28.5435
+      ],
+      "mx": -0.974,
+      "mz": 99.123,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 93
+    },
+    {
+      "id": "patel_chowk",
+      "name": "Patel Chowk",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.214059,
+        28.622954
+      ],
+      "mx": -5.301,
+      "mz": 10.929,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 94
+    },
+    {
+      "id": "phase_2",
+      "name": "Phase 2",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0895,
+        28.4905
+      ],
+      "mx": -126.653,
+      "mz": 157.953,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 95
+    },
+    {
+      "id": "phase_3",
+      "name": "Phase 3",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1025,
+        28.4925
+      ],
+      "mx": -113.988,
+      "mz": 155.733,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 96
+    },
+    {
+      "id": "pitampura",
+      "name": "Pitampura",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1385,
+        28.7055
+      ],
+      "mx": -78.915,
+      "mz": -80.697,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 97
+    },
+    {
+      "id": "punjabi_bagh_west",
+      "name": "Punjabi Bagh West",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1215,
+        28.6705
+      ],
+      "mx": -95.477,
+      "mz": -41.847,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 98
+    },
+    {
+      "id": "qutab_minar",
+      "name": "Qutab Minar",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.186472,
+        28.51293
+      ],
+      "mx": -32.178,
+      "mz": 133.056,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 99
+    },
+    {
+      "id": "raja_nahar_singh_ballabhgarh",
+      "name": "Raja Nahar Singh (Ballabhgarh)",
+      "line": "violet-line",
+      "lineColor": "#7C3AED",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3245,
+        28.3755
+      ],
+      "mx": 102.297,
+      "mz": 285.603,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 100
+    },
+    {
+      "id": "rajiv_chowk",
+      "name": "Rajiv Chowk",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.219424,
+        28.632742
+      ],
+      "mx": -0.074,
+      "mz": 0.064,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Blue",
+      "interchanges": [
+        "Yellow \u00d7 Blue"
+      ],
+      "index": 101
+    },
+    {
+      "id": "rajouri_garden",
+      "name": "Rajouri Garden",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1215,
+        28.6445
+      ],
+      "mx": -95.477,
+      "mz": -12.987,
+      "major": true,
+      "terminus": false,
+      "interchange": "Blue \u00d7 Pink",
+      "interchanges": [
+        "Blue \u00d7 Pink"
+      ],
+      "index": 102
+    },
+    {
+      "id": "ramakrishna_ashram_marg",
+      "name": "Ramakrishna Ashram Marg",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2115,
+        28.6365
+      ],
+      "mx": -7.794,
+      "mz": -4.107,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 103
+    },
+    {
+      "id": "rithala",
+      "name": "Rithala",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1065,
+        28.7205
+      ],
+      "mx": -110.091,
+      "mz": -97.347,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 104
+    },
+    {
+      "id": "rohini_18_19",
+      "name": "Rohini Sector 18, 19",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.139864,
+        28.738344
+      ],
+      "mx": -77.586,
+      "mz": -117.154,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 105
+    },
+    {
+      "id": "rohini_west",
+      "name": "Rohini West",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1225,
+        28.7125
+      ],
+      "mx": -94.503,
+      "mz": -88.467,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 106
+    },
+    {
+      "id": "sadar_bazar_cantonment",
+      "name": "Sadar Bazar Cantonment",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1265,
+        28.5685
+      ],
+      "mx": -90.606,
+      "mz": 71.373,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 107
+    },
+    {
+      "id": "saket",
+      "name": "Saket",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.201898,
+        28.520873
+      ],
+      "mx": -17.149,
+      "mz": 124.239,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 108
+    },
+    {
+      "id": "samaypur_badli",
+      "name": "Samaypur Badli",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.138299,
+        28.744639
+      ],
+      "mx": -79.111,
+      "mz": -124.141,
+      "major": true,
+      "terminus": true,
+      "interchange": null,
+      "interchanges": [],
+      "index": 109
+    },
+    {
+      "id": "sarai_kale_khan_nizamuddin",
+      "name": "Sarai Kale Khan - Nizamuddin",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2855,
+        28.6055
+      ],
+      "mx": 64.301,
+      "mz": 30.303,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 110
+    },
+    {
+      "id": "sarojini_nagar",
+      "name": "Sarojini Nagar",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2055,
+        28.5745
+      ],
+      "mx": -13.64,
+      "mz": 64.713,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 111
+    },
+    {
+      "id": "sector_42_43",
+      "name": "Sector 42-43",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0945,
+        28.4685
+      ],
+      "mx": -121.782,
+      "mz": 182.373,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 112
+    },
+    {
+      "id": "sector_53_54",
+      "name": "Sector 53-54",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.0985,
+        28.4555
+      ],
+      "mx": -117.885,
+      "mz": 196.803,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 113
+    },
+    {
+      "id": "sector_55_56",
+      "name": "Sector 55-56",
+      "line": "rapid-metro",
+      "lineColor": "#059669",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1045,
+        28.4425
+      ],
+      "mx": -112.04,
+      "mz": 211.233,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 114
+    },
+    {
+      "id": "seelampur",
+      "name": "Seelampur",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2565,
+        28.6745
+      ],
+      "mx": 36.048,
+      "mz": -46.287,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 115
+    },
+    {
+      "id": "shadipur",
+      "name": "Shadipur",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1645,
+        28.6545
+      ],
+      "mx": -53.584,
+      "mz": -24.087,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 116
+    },
+    {
+      "id": "shahdara",
+      "name": "Shahdara",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2915,
+        28.6805
+      ],
+      "mx": 70.146,
+      "mz": -52.947,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 117
+    },
+    {
+      "id": "shaheed_sthal_new_bus_adda_ghaziabad",
+      "name": "Shaheed Sthal (New Bus Adda Ghaziabad)",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.3785,
+        28.6845
+      ],
+      "mx": 154.907,
+      "mz": -57.387,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 118
+    },
+    {
+      "id": "shakurpur",
+      "name": "Shakurpur",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1355,
+        28.6825
+      ],
+      "mx": -81.838,
+      "mz": -55.167,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 119
+    },
+    {
+      "id": "shalimar_bagh",
+      "name": "Shalimar Bagh",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1685,
+        28.6985
+      ],
+      "mx": -49.687,
+      "mz": -72.927,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 120
+    },
+    {
+      "id": "shankar_vihar",
+      "name": "Shankar Vihar",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1585,
+        28.5525
+      ],
+      "mx": -59.43,
+      "mz": 89.133,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 121
+    },
+    {
+      "id": "shastri_park",
+      "name": "Shastri Park",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2425,
+        28.6695
+      ],
+      "mx": 22.408,
+      "mz": -40.737,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 122
+    },
+    {
+      "id": "shiv_vihar",
+      "name": "Shiv Vihar",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2685,
+        28.7055
+      ],
+      "mx": 47.739,
+      "mz": -80.697,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 123
+    },
+    {
+      "id": "shivaji_stadium",
+      "name": "Shivaji Stadium",
+      "line": "airport-express",
+      "lineColor": "#EA580C",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.2125,
+        28.6285
+      ],
+      "mx": -6.82,
+      "mz": 4.773,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 124
+    },
+    {
+      "id": "sikanderpur",
+      "name": "Sikanderpur",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.093007,
+        28.481244
+      ],
+      "mx": -123.237,
+      "mz": 168.227,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow \u00d7 Rapid-Metro",
+      "interchanges": [
+        "Yellow \u00d7 Rapid-Metro"
+      ],
+      "index": 125
+    },
+    {
+      "id": "sir_vishweshwaraiah_moti_bagh",
+      "name": "Sir Vishweshwaraiah Moti Bagh",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1855,
+        28.5785
+      ],
+      "mx": -33.125,
+      "mz": 60.273,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 126
+    },
+    {
+      "id": "south_extension",
+      "name": "South Extension",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2285,
+        28.5715
+      ],
+      "mx": 8.768,
+      "mz": 68.043,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 127
+    },
+    {
+      "id": "sultanpur",
+      "name": "Sultanpur",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.16091,
+        28.498971
+      ],
+      "mx": -57.082,
+      "mz": 148.55,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 128
+    },
+    {
+      "id": "supreme_court_pragati_maidan",
+      "name": "Supreme Court (Pragati Maidan)",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2495,
+        28.6225
+      ],
+      "mx": 29.228,
+      "mz": 11.433,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 129
+    },
+    {
+      "id": "terminal_1_igi_airport",
+      "name": "Terminal 1 IGI Airport",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1385,
+        28.5585
+      ],
+      "mx": -78.915,
+      "mz": 82.473,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 130
+    },
+    {
+      "id": "tilak_nagar",
+      "name": "Tilak Nagar",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1022,
+        28.6365
+      ],
+      "mx": -114.28,
+      "mz": -4.107,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 131
+    },
+    {
+      "id": "tis_hazari",
+      "name": "Tis Hazari",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2085,
+        28.6695
+      ],
+      "mx": -10.717,
+      "mz": -40.737,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 132
+    },
+    {
+      "id": "udyog_bhawan",
+      "name": "Udyog Bhawan",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.211825,
+        28.609512
+      ],
+      "mx": -7.477,
+      "mz": 25.85,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 133
+    },
+    {
+      "id": "vasant_vihar",
+      "name": "Vasant Vihar",
+      "line": "magenta-line",
+      "lineColor": "#C026D3",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.1725,
+        28.5485
+      ],
+      "mx": -45.79,
+      "mz": 93.573,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 134
+    },
+    {
+      "id": "vidhan_sabha",
+      "name": "Vidhan Sabha",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.221758,
+        28.686327
+      ],
+      "mx": 2.2,
+      "mz": -59.415,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 135
+    },
+    {
+      "id": "vinobapuri",
+      "name": "Vinobapuri",
+      "line": "pink-line",
+      "lineColor": "#DB2777",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2555,
+        28.5785
+      ],
+      "mx": 35.073,
+      "mz": 60.273,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 136
+    },
+    {
+      "id": "vishwavidyalaya",
+      "name": "Vishwavidyalaya",
+      "line": "yellow-line",
+      "lineColor": "#F59E0B",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        77.214748,
+        28.695099
+      ],
+      "mx": -4.63,
+      "mz": -69.152,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 137
+    },
+    {
+      "id": "welcome",
+      "name": "Welcome",
+      "line": "red-line",
+      "lineColor": "#E21E26",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2725,
+        28.6785
+      ],
+      "mx": 51.636,
+      "mz": -50.727,
+      "major": true,
+      "terminus": false,
+      "interchange": "Red \u00d7 Pink",
+      "interchanges": [
+        "Red \u00d7 Pink"
+      ],
+      "index": 138
+    },
+    {
+      "id": "yamuna_bank",
+      "name": "Yamuna Bank",
+      "line": "blue-line",
+      "lineColor": "#0055A5",
+      "structure": "elevated",
+      "elevM": 15,
+      "coords": [
+        77.2885,
+        28.6165
+      ],
+      "mx": 67.224,
+      "mz": 18.093,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 139
+    },
+    {
+      "id": "yashobhoomi_dwarka_sector_25",
+      "name": "Yashobhoomi Dwarka Sector 25",
+      "line": "airport-express",
+      "lineColor": "#EA580C",
+      "structure": "underground",
+      "elevM": -14,
+      "coords": [
+        76.9985,
+        28.5485
+      ],
+      "mx": -215.311,
+      "mz": 93.573,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 140
+    }
+  ]
+}

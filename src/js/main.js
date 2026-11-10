@@ -244,6 +244,12 @@
       add3DStationLandmarks();
       setupInteractions();
 
+      // ── Install Three.js Custom WebGL Layer ───────────────
+      if (window.MetroWebGLLayer) {
+        window.MetroWebGLLayer.install(map);
+        console.log('[main.js] MetroWebGLLayer installed on MapLibre map');
+      }
+
       map.on('zoom', updateMarkerScale);
       updateMarkerScale();
     });
@@ -1414,9 +1420,9 @@
         }
       }
 
-      // Night Maintenance Banner
+      // Night Maintenance Banner (Dismissible Toast)
       const nightBanner = document.getElementById('night-maintenance-banner');
-      if (nightBanner) {
+      if (nightBanner && !window.isNightBannerDismissed) {
         if (schedule.phase === 'SERVICE_CLOSED') {
           nightBanner.classList.remove('hidden');
         } else {
@@ -1568,31 +1574,55 @@
 
       const mapPerspectivePill = document.getElementById('map-perspective-pill');
 
+      const archGroup = document.getElementById('hud-archetype-group');
+      const camGroup = document.getElementById('hud-camera-group');
+      const sectorGroup = document.getElementById('hud-sector-group');
+
       if (surfaceName === 'corridor') {
         if (mapSurface) mapSurface.classList.remove('hidden');
         if (threeSurface) threeSurface.classList.add('hidden');
         if (timetableDock) timetableDock.style.display = 'flex';
         if (mapPerspectivePill) mapPerspectivePill.classList.remove('hidden');
         if (window.Diorama3D) window.Diorama3D.stop();
-        // Resize MapLibre so canvas dimensions match unhidden viewport smoothly
+        if (window.DelhiMetro3D) window.DelhiMetro3D.stop();
         requestAnimationFrame(() => {
           if (map) map.resize();
         });
+      } else if (surfaceName === 'diorama') {
+        if (threeSurface) threeSurface.classList.remove('hidden');
+        if (mapSurface) mapSurface.classList.add('hidden');
+        if (timetableDock) timetableDock.style.display = 'none';
+        if (mapPerspectivePill) mapPerspectivePill.classList.add('hidden');
+        if (archGroup) archGroup.style.display = 'block';
+        if (camGroup) camGroup.style.display = 'block';
+        if (sectorGroup) sectorGroup.style.display = 'none';
+        const stPanel = document.getElementById('station-panel');
+        if (stPanel) stPanel.classList.add('hidden');
+        const inspCard = document.getElementById('inspector-card');
+        if (inspCard) inspCard.classList.add('hidden');
+        if (window.DelhiMetro3D) window.DelhiMetro3D.stop();
+        if (window.Diorama3D && threeSurface) {
+          window.Diorama3D.init(threeSurface);
+          window.Diorama3D.setArchetype(optArchetype || 'underground');
+          window.Diorama3D.start();
+        }
       } else if (surfaceName === 'threejs') {
         if (threeSurface) threeSurface.classList.remove('hidden');
         if (mapSurface) mapSurface.classList.add('hidden');
         if (timetableDock) timetableDock.style.display = 'none';
         if (mapPerspectivePill) mapPerspectivePill.classList.add('hidden');
+        if (archGroup) archGroup.style.display = 'none';
+        if (camGroup) camGroup.style.display = 'none';
+        if (sectorGroup) sectorGroup.style.display = 'block';
         const stPanel = document.getElementById('station-panel');
         if (stPanel) stPanel.classList.add('hidden');
         const inspCard = document.getElementById('inspector-card');
         if (inspCard) inspCard.classList.add('hidden');
-        if (window.Diorama3D && threeSurface) {
-          window.Diorama3D.init(threeSurface);
-          if (optArchetype) {
-            window.Diorama3D.setArchetype(optArchetype);
-          }
-          window.Diorama3D.start();
+        if (window.Diorama3D) window.Diorama3D.stop();
+        if (window.DelhiMetro3D && threeSurface) {
+          window.DelhiMetro3D.init(threeSurface);
+          window.DelhiMetro3D.setViewMode('3d');
+          window.DelhiMetro3D.start();
         }
       }
     };
@@ -1607,13 +1637,29 @@
 
     tabs.forEach(t => {
       t.addEventListener('click', () => {
-        window.switchSurface(t.getAttribute('data-surface'));
+        const surf = t.getAttribute('data-surface');
+        tabs.forEach(tab => tab.classList.toggle('active', tab === t));
+        if (surf === 'threejs') {
+          if (window.DelhiMetro3D) {
+            window.DelhiMetro3D.setViewMode('3d');
+          }
+          window.switchSurface('threejs');
+        } else if (surf === 'diorama') {
+          window.switchSurface('diorama', 'underground');
+        } else if (surf === 'corridor') {
+          window.switchSurface('corridor');
+        }
       });
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    const initialSurface = urlParams.get('surface') || 'threejs';
+    // Default to MapLibre corridor (real city map + WebGL custom layer)
+    const initialSurface = urlParams.get('surface') || 'corridor';
     window.switchSurface(initialSurface);
+    // Update tab active state to match
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.getAttribute('data-surface') === initialSurface);
+    });
 
     // Central Line Cutaway Station Switcher & Jump to Radar
     let activeCutawayKey = 'rajiv';
@@ -1831,6 +1877,16 @@
             btn3D.classList.remove('active');
           }
         }
+      });
+    }
+
+    const closeNightBtn = document.getElementById('btn-close-night-modal');
+    if (closeNightBtn) {
+      closeNightBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.isNightBannerDismissed = true;
+        const nb = document.getElementById('night-maintenance-banner');
+        if (nb) nb.classList.add('hidden');
       });
     }
 
@@ -2085,16 +2141,35 @@
   }
 
   function openStationPanel(stIndexOrName) {
-    if (!window.TripEngine) return;
-    const stations = TripEngine.getStations();
     let stIdx = -1;
-    if (typeof stIndexOrName === 'number') {
-      stIdx = stIndexOrName;
-    } else {
-      stIdx = stations.findIndex(s => s.name.toLowerCase() === String(stIndexOrName).toLowerCase() || s.id === stIndexOrName);
+    let stationObj = null;
+
+    if (window.TripEngine) {
+      const stations = TripEngine.getStations();
+      if (typeof stIndexOrName === 'number') {
+        stIdx = stIndexOrName;
+      } else {
+        stIdx = stations.findIndex(s => s.name.toLowerCase() === String(stIndexOrName).toLowerCase() || s.id === stIndexOrName);
+      }
+      if (stIdx >= 0 && stIdx < stations.length) {
+        stationObj = stations[stIdx];
+        activeStationIndex = stIdx;
+      }
     }
-    if (stIdx < 0 || stIdx >= stations.length) return;
-    activeStationIndex = stIdx;
+
+    if (!stationObj && window.DelhiMetro3D) {
+      stationObj = window.DelhiMetro3D.getStationByName(stIndexOrName);
+    }
+
+    if (!stationObj) return;
+
+    // Fly camera in 3D or MapLibre
+    if (window.DelhiMetro3D && stationObj.name) {
+      window.DelhiMetro3D.flyToStation(stationObj.name, stationObj.x, stationObj.z);
+    }
+    if (map && stationObj.coords) {
+      map.easeTo({ center: stationObj.coords, zoom: Math.max(map.getZoom(), 14.5), duration: 800 });
+    }
 
     let sec = 0;
     let dayVariant = 'weekday';
@@ -2110,13 +2185,106 @@
       dayVariant = 'weekday';
     }
 
-    renderStationPanel(activeStationIndex, sec, dayVariant);
+    if (stIdx >= 0) {
+      renderStationPanel(stIdx, sec, dayVariant);
+    } else {
+      renderNetworkStationPanel(stationObj, sec);
+    }
+
     const panel = document.getElementById('station-panel');
     if (panel) panel.classList.remove('hidden');
+  }
 
-    const st = stations[activeStationIndex];
-    if (map && st && st.coords) {
-      map.easeTo({ center: st.coords, zoom: Math.max(map.getZoom(), 14.5), duration: 800 });
+  function renderNetworkStationPanel(st, sec) {
+    const titleEl = document.getElementById('st-panel-title');
+    const codeEl = document.getElementById('st-panel-code');
+    const interchangesEl = document.getElementById('st-panel-interchanges');
+    const subEl = document.getElementById('st-panel-sub');
+    const freqTextEl = document.getElementById('st-panel-freq-text');
+    const p1List = document.getElementById('st-p1-arrivals');
+    const p2List = document.getElementById('st-p2-arrivals');
+
+    if (titleEl) titleEl.textContent = st.name;
+    if (codeEl) codeEl.textContent = (st.id || 'DMRC').toUpperCase().slice(0, 5);
+
+    if (interchangesEl) {
+      if (st.interchange) {
+        interchangesEl.innerHTML = `<span class="interchange-pill interchange-blue">⇄ ${st.interchange}</span>`;
+        interchangesEl.classList.remove('hidden');
+      } else {
+        interchangesEl.innerHTML = '';
+        interchangesEl.classList.add('hidden');
+      }
+    }
+
+    if (subEl) {
+      const struct = st.structure === 'elevated' ? 'Elevated Viaduct (+15m)' : 'Underground Subway (-14m)';
+      const lineName = st.line ? st.line.replace('-', ' ').toUpperCase() : 'METRO CORRIDOR';
+      subEl.textContent = `${struct} · ${lineName}`;
+    }
+
+    if (freqTextEl) {
+      freqTextEl.textContent = 'Standard DMRC High-Capacity Transit · Trains every 3-5 min';
+    }
+
+    function formatTime(s) {
+      const h = Math.floor(s / 3600) % 24;
+      const m = Math.floor((s % 3600) / 60);
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    if (p1List) {
+      p1List.innerHTML = `
+        <div class="st-arrival-item">
+          <span class="st-arr-clock">${formatTime(sec + 120)}</span>
+          <span class="st-arr-dest">➔ Down Line</span>
+          <span class="st-arr-badge badge-approaching">2 min</span>
+        </div>
+        <div class="st-arrival-item">
+          <span class="st-arr-clock">${formatTime(sec + 360)}</span>
+          <span class="st-arr-dest">➔ Down Line</span>
+          <span class="st-arr-badge badge-scheduled">6 min</span>
+        </div>
+      `;
+    }
+
+    if (p2List) {
+      p2List.innerHTML = `
+        <div class="st-arrival-item">
+          <span class="st-arr-clock">${formatTime(sec + 180)}</span>
+          <span class="st-arr-dest">➔ Up Line</span>
+          <span class="st-arr-badge badge-approaching">3 min</span>
+        </div>
+        <div class="st-arrival-item">
+          <span class="st-arr-clock">${formatTime(sec + 480)}</span>
+          <span class="st-arr-dest">➔ Up Line</span>
+          <span class="st-arr-badge badge-scheduled">8 min</span>
+        </div>
+      `;
+    }
+
+    const gatesCountEl = document.getElementById('st-gates-count');
+    if (gatesCountEl) gatesCountEl.textContent = '4';
+    const gatesListEl = document.getElementById('st-gates-list');
+    if (gatesListEl) {
+      gatesListEl.innerHTML = `
+        <div class="gate-card">
+          <div class="gate-header"><span class="gate-number">Gate 1</span><span class="gate-access">♿ Wheelchair Accessible</span></div>
+          <div class="gate-landmarks">Main Arterial Road & Feeder Terminal</div>
+        </div>
+        <div class="gate-card">
+          <div class="gate-header"><span class="gate-number">Gate 2</span></div>
+          <div class="gate-landmarks">Market Complex & Metro Station Concourse</div>
+        </div>
+        <div class="gate-card">
+          <div class="gate-header"><span class="gate-number">Gate 3</span></div>
+          <div class="gate-landmarks">Pedestrian Subway & Public Transit Interchange</div>
+        </div>
+        <div class="gate-card">
+          <div class="gate-header"><span class="gate-number">Gate 4</span><span class="gate-access">♿ Lift Access</span></div>
+          <div class="gate-landmarks">Auto / Taxi Stand & Kiss-and-Ride Bay</div>
+        </div>
+      `;
     }
   }
 
@@ -2404,14 +2572,28 @@
     if (!searchInput || !searchResults) return;
 
     function filterStations(query) {
-      if (!window.TripEngine) return [];
-      const stations = TripEngine.getStations();
       const q = query.trim().toLowerCase();
       if (!q) return [];
-      return stations.filter(st => {
+
+      let allStations = [];
+      // Priority: MetroWebGLLayer (geographic, all 141 stations) → DelhiMetro3D → TripEngine
+      if (window.MetroWebGLLayer && window.MetroWebGLLayer.getStations) {
+        allStations = window.MetroWebGLLayer.getStations();
+      }
+      if (!allStations || allStations.length === 0) {
+        if (window.DelhiMetro3D && window.DelhiMetro3D.getStations) {
+          allStations = window.DelhiMetro3D.getStations();
+        }
+      }
+      if (!allStations || allStations.length === 0) {
+        if (window.TripEngine) allStations = TripEngine.getStations();
+      }
+
+      return allStations.filter(st => {
         const matchName = st.name.toLowerCase().includes(q);
         const matchCode = st.code && st.code.toLowerCase().includes(q);
-        const matchInterchange = st.interchanges && st.interchanges.some(i => i.toLowerCase().includes(q));
+        const matchInterchange = (st.interchange && st.interchange.toLowerCase().includes(q)) ||
+                                 (st.interchanges && st.interchanges.some(i => i.toLowerCase().includes(q)));
         return matchName || matchCode || matchInterchange;
       });
     }
@@ -2422,11 +2604,14 @@
       const matches = filterStations(q);
       if (matches.length > 0) {
         searchResults.innerHTML = matches.slice(0, 8).map(st => `
-          <div class="search-result-item" data-st-idx="${st.index}">
-            <span class="search-result-name">${st.name}</span>
+          <div class="search-result-item" data-st-name="${st.name}" data-st-idx="${st.index !== undefined ? st.index : -1}">
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${st.lineColor ? `<span style="width:8px; height:8px; border-radius:50%; background:${st.lineColor}; display:inline-block; flex-shrink:0;"></span>` : ''}
+              <span class="search-result-name">${st.name}</span>
+            </div>
             <div class="search-result-meta">
-              ${st.interchanges && st.interchanges.length > 0 ? `<span class="interchange-pill interchange-blue">⇄ ${st.interchanges[0]}</span>` : ''}
-              <span class="dmrc-code-badge">${st.code || 'ST'}</span>
+              ${st.interchange ? `<span class="interchange-pill interchange-blue">⇄ Interchange</span>` : (st.interchanges && st.interchanges.length > 0 ? `<span class="interchange-pill interchange-blue">⇄ ${st.interchanges[0]}</span>` : '')}
+              <span class="dmrc-code-badge">${st.code || 'DMRC'}</span>
             </div>
           </div>
         `).join('');
@@ -2442,13 +2627,21 @@
     searchResults.addEventListener('click', (e) => {
       const item = e.target.closest('.search-result-item');
       if (!item) return;
+      const stName = item.getAttribute('data-st-name');
       const stIdx = parseInt(item.getAttribute('data-st-idx'), 10);
-      if (!isNaN(stIdx) && window.openStationPanel) {
-        window.openStationPanel(stIdx);
-        searchResults.classList.add('hidden');
-        searchInput.value = '';
-        if (clearBtn) clearBtn.classList.add('hidden');
+
+      // Fly in real map OR 3D plinth depending on active surface
+      if (window.MetroWebGLLayer) {
+        window.MetroWebGLLayer.flyToStation(stName);
+      } else if (window.DelhiMetro3D) {
+        window.DelhiMetro3D.flyToStation(stName);
       }
+      if (window.openStationPanel) {
+        window.openStationPanel(stIdx >= 0 ? stIdx : stName);
+      }
+      searchResults.classList.add('hidden');
+      searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
     });
 
     if (clearBtn) {

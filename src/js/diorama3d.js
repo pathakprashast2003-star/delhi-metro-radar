@@ -75,14 +75,14 @@ window.Diorama3D = (function () {
 
     // 2. Camera: True Orthographic Isometric Camera
     const aspect = container.clientWidth / container.clientHeight;
-    const d = 50;
+    const d = 36;
     camera = new THREE.OrthographicCamera(
       -d * aspect, d * aspect,
       d, -d,
       1, 1000
     );
-    camera.position.set(70, 60, 70);
-    camera.lookAt(0, 4, 0);
+    camera.position.set(62, 52, 62);
+    camera.lookAt(0, 7.5, 0);
 
     // 3. WebGL Renderer with High-DPI Soft Shadow Maps
     renderer = new THREE.WebGLRenderer({
@@ -106,7 +106,7 @@ window.Diorama3D = (function () {
       controls.minPolarAngle = Math.PI / 8;
       controls.minZoom = 0.55;
       controls.maxZoom = 2.6;
-      controls.target.set(0, 4, 0);
+      controls.target.set(0, 7.5, 0);
 
       controls.addEventListener('start', () => {
         lastUserInteraction = performance.now();
@@ -183,8 +183,8 @@ window.Diorama3D = (function () {
     const isSunset = mode === 'sunset';
     const isUnderground = currentArchetype === 'underground';
 
-    // Cinematic deep obsidian slate for underground cutaway; warm alabaster for elevated day
-    const bgCol = isUnderground ? (isNight ? 0x050811 : 0x0A0F1D) : (isNight ? 0x080E1E : (isSunset ? 0xFFF7ED : 0xFDFBF7));
+    // Warm architectural studio clay background for exhibition feel (NanoBanana style)
+    const bgCol = isNight ? (isUnderground ? 0x050811 : 0x080E1E) : (isSunset ? 0xFFF7ED : 0xEDE8E1);
 
     scene.background.set(bgCol);
     if (scene.fog) scene.fog.color.set(bgCol);
@@ -405,37 +405,46 @@ window.Diorama3D = (function () {
     group.add(canopyGroup);
   }
 
-  // ── ARCHETYPE B: SUBTERRANEAN TUBE CUTAWAY (CENTRAL LINE / NANO BANANA) ──
+  // ── ARCHETYPE B: SUBTERRANEAN TUBE CUTAWAY (NANO BANANA PRO FIDELITY) ──
   function buildUndergroundArchetype(group) {
     const cutawayBox = new THREE.Group();
 
-    // 1. Excavation Bedrock Cutaway Box (True Open Cutaway Architecture)
-    // Dark architectural shale bedrock
+    // 0. Museum Studio Shadow Catcher Plane
+    const shadowFloor = new THREE.Mesh(
+      new THREE.PlaneGeometry(350, 350),
+      new THREE.ShadowMaterial({ opacity: 0.18 })
+    );
+    shadowFloor.rotation.x = -Math.PI / 2;
+    shadowFloor.position.y = -8.05;
+    shadowFloor.receiveShadow = true;
+    cutawayBox.add(shadowFloor);
+
+    // 1. Excavation Bedrock Cutaway Box (Architectural Shale Plinth)
     const bedrockMat = new THREE.MeshStandardMaterial({
-      color: 0x1E293B, // Deep slate bedrock
-      roughness: 0.92,
-      metalness: 0.1
+      color: 0x222C38, // Rich deep slate architectural shale
+      roughness: 0.88,
+      metalness: 0.12
     });
 
     // Foundation Excavation Bedrock Plinth
-    const baseBedrock = new THREE.Mesh(new THREE.BoxGeometry(160, 8, 40), bedrockMat);
+    const baseBedrock = new THREE.Mesh(new THREE.BoxGeometry(160, 8, 42), bedrockMat);
     baseBedrock.position.set(0, -4, 0);
     baseBedrock.receiveShadow = true;
     cutawayBox.add(baseBedrock);
 
     // Back Retaining Wall with DMRC Subway Tiling
-    const backWall = new THREE.Mesh(new THREE.BoxGeometry(158, 26, 4), bedrockMat);
-    backWall.position.set(0, 11, -20);
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(158, 28, 4), bedrockMat);
+    backWall.position.set(0, 12, -20);
     backWall.receiveShadow = true;
     cutawayBox.add(backWall);
 
     // Subway Ceramic Wall Lining (White gloss tiles + Yellow accent stripe)
     const tileMat = new THREE.MeshStandardMaterial({
-      color: 0xF8FAFC, // Crisp subway white
-      roughness: 0.25,
+      color: 0xFAFAFA, // Crisp subway white
+      roughness: 0.22,
       metalness: 0.15
     });
-    const tileLining = new THREE.Mesh(new THREE.BoxGeometry(156, 17, 0.4), tileMat);
+    const tileLining = new THREE.Mesh(new THREE.BoxGeometry(156, 18, 0.4), tileMat);
     tileLining.position.set(0, 11.5, -17.8);
     tileLining.receiveShadow = true;
     cutawayBox.add(tileLining);
@@ -448,60 +457,89 @@ window.Diorama3D = (function () {
     yellowStripe.position.set(0, 14.8, -17.7);
     cutawayBox.add(yellowStripe);
 
-    // Station Name Subway Wall Sign
+    // Subway Station Name Signboard ("RAJIV CHOWK · YELLOW LINE")
     const signBoard = new THREE.Mesh(
-      new THREE.BoxGeometry(34, 3.0, 0.6),
-      new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.5 })
+      new THREE.BoxGeometry(42, 3.2, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.4 })
     );
-    signBoard.position.set(0, 17.5, -17.6);
+    signBoard.position.set(0, 17.6, -17.6);
     cutawayBox.add(signBoard);
 
-    // Upper Concourse Slab (Only covers rear concourse zone, leaving platform & tracks 100% visible)
-    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.85 });
-    const concourseSlab = new THREE.Mesh(new THREE.BoxGeometry(158, 2.5, 10), ceilingMat);
-    concourseSlab.position.set(0, 21.5, -15);
+    // Station Name Text on Wall (Canvas Texture)
+    const wallSignCanvas = document.createElement('canvas');
+    wallSignCanvas.width = 512;
+    wallSignCanvas.height = 128;
+    const wCtx = wallSignCanvas.getContext('2d');
+    wCtx.fillStyle = '#0F172A';
+    wCtx.fillRect(0, 0, 512, 128);
+    // DMRC Roundel graphic on sign
+    wCtx.fillStyle = '#DC2626';
+    wCtx.beginPath();
+    wCtx.arc(54, 64, 38, 0, Math.PI * 2);
+    wCtx.fill();
+    wCtx.fillStyle = '#2563EB';
+    wCtx.fillRect(14, 52, 80, 24);
+    // Text
+    wCtx.fillStyle = '#F8FAFC';
+    wCtx.font = 'bold 36px Inter, sans-serif';
+    wCtx.fillText('RAJIV CHOWK', 115, 62);
+    wCtx.fillStyle = '#EAB308';
+    wCtx.font = 'bold 22px Inter, sans-serif';
+    wCtx.fillText('YELLOW LINE · PLATFORM 1 & 2', 115, 96);
+
+    const wallSignTex = new THREE.CanvasTexture(wallSignCanvas);
+    const wallSignMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(41.6, 3.0, 0.1),
+      new THREE.MeshBasicMaterial({ map: wallSignTex })
+    );
+    wallSignMesh.position.set(0, 17.6, -17.25);
+    cutawayBox.add(wallSignMesh);
+
+    // Upper Concourse & Street Slab
+    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x1E293B, roughness: 0.85 });
+    const concourseSlab = new THREE.Mesh(new THREE.BoxGeometry(158, 2.5, 12), ceilingMat);
+    concourseSlab.position.set(0, 22.0, -15);
     concourseSlab.castShadow = true;
     cutawayBox.add(concourseSlab);
 
-    // Exposed Overhead Structural Excavation Struts (Steel I-beams spanning across)
-    const strutMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.6, roughness: 0.4 });
+    // Exposed Overhead Structural Excavation Struts (Steel I-beams)
+    const strutMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.65, roughness: 0.35 });
     for (let sx of [-50, -20, 20, 50]) {
-      const strut = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.4, 34), strutMat);
-      strut.position.set(sx, 21.5, -2);
+      const strut = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.6, 34), strutMat);
+      strut.position.set(sx, 22.0, -2);
       strut.castShadow = true;
       cutawayBox.add(strut);
     }
 
-    // Left and Right Excavation Cutaway Plinths (Stepped back to reveal circular tube portals)
-    const wallL = new THREE.Mesh(new THREE.BoxGeometry(6, 26, 36), bedrockMat);
-    wallL.position.set(-78, 11, -2);
+    // Left and Right Excavation Cutaway Plinths
+    const wallL = new THREE.Mesh(new THREE.BoxGeometry(6, 28, 38), bedrockMat);
+    wallL.position.set(-78, 12, -2);
     cutawayBox.add(wallL);
 
-    const wallR = new THREE.Mesh(new THREE.BoxGeometry(6, 26, 36), bedrockMat);
-    wallR.position.set(78, 11, -2);
+    const wallR = new THREE.Mesh(new THREE.BoxGeometry(6, 28, 38), bedrockMat);
+    wallR.position.set(78, 12, -2);
     cutawayBox.add(wallR);
 
-    // Low Front Cutaway Curb (clean museum pedestal framing edge)
-    const frontCurb = new THREE.Mesh(new THREE.BoxGeometry(160, 2.2, 2.5), bedrockMat);
-    frontCurb.position.set(0, 5.0, 16.5);
+    // Low Front Cutaway Curb (museum pedestal framing edge)
+    const frontCurb = new THREE.Mesh(new THREE.BoxGeometry(160, 2.4, 2.5), bedrockMat);
+    frontCurb.position.set(0, 5.0, 17.0);
     cutawayBox.add(frontCurb);
 
-    // 2. Dual Precast Circular Concrete Tube Tunnels (Left & Right Portals)
-    // Inspired directly by the Central Line Nano Banana diorama reference!
+    // 2. Circular Precast Concrete Tube Tunnels (NanoBanana Style TBM Rings)
     const tubeRingMat = new THREE.MeshStandardMaterial({
       color: 0x94A3B8, // Precast segmented concrete
-      roughness: 0.7,
-      metalness: 0.25
+      roughness: 0.68,
+      metalness: 0.22
     });
-    const tubeBoreMat = new THREE.MeshBasicMaterial({ color: 0x050811 }); // Void depth inside tunnel
+    const tubeBoreMat = new THREE.MeshBasicMaterial({ color: 0x070B14 }); // Deep tunnel void
 
     function createTubePortal(xCenter, zCenter, isLeft) {
       const portalGroup = new THREE.Group();
       portalGroup.position.set(xCenter, 8.5, zCenter);
 
-      // Outer concrete portal collar
+      // Heavy bevelled portal collar
       const collar = new THREE.Mesh(
-        new THREE.CylinderGeometry(5.8, 6.2, 5, 24),
+        new THREE.CylinderGeometry(5.9, 6.4, 5.5, 28),
         tubeRingMat
       );
       collar.rotation.z = Math.PI / 2;
@@ -512,7 +550,7 @@ window.Diorama3D = (function () {
       // Ribbed Segmented TBM Rings extending into the bedrock
       for (let r = 1; r <= 3; r++) {
         const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(5.4, 0.45, 12, 24),
+          new THREE.TorusGeometry(5.5, 0.48, 12, 28),
           tubeRingMat
         );
         ring.rotation.y = Math.PI / 2;
@@ -520,26 +558,26 @@ window.Diorama3D = (function () {
         portalGroup.add(ring);
       }
 
-      // Interior dark bore cylinder (simulating endless tunnel into darkness)
+      // Interior dark bore cylinder
       const bore = new THREE.Mesh(
-        new THREE.CylinderGeometry(5.1, 5.1, 16, 24, 1, true),
+        new THREE.CylinderGeometry(5.1, 5.1, 18, 28, 1, true),
         tubeBoreMat
       );
       bore.rotation.z = Math.PI / 2;
       bore.position.x = isLeft ? -9 : 9;
       portalGroup.add(bore);
 
-      // Interior Amber Tunnel Signal Beacon
+      // Interior Amber Signal Lantern
       const signal = new THREE.Mesh(
-        new THREE.SphereGeometry(0.35, 8, 8),
+        new THREE.SphereGeometry(0.38, 8, 8),
         new THREE.MeshBasicMaterial({ color: 0xF59E0B })
       );
-      signal.position.set(isLeft ? -1.5 : 1.5, 4.2, 0);
+      signal.position.set(isLeft ? -1.5 : 1.5, 4.3, 0);
       portalGroup.add(signal);
 
-      // Interior warm amber tunnel light
-      const tunnelLight = new THREE.PointLight(0xF59E0B, 1.8, 28, 1.2);
-      tunnelLight.position.set(isLeft ? -5 : 5, 3.5, 0);
+      // Warm amber interior tunnel glow
+      const tunnelLight = new THREE.PointLight(0xF59E0B, 2.0, 30, 1.2);
+      tunnelLight.position.set(isLeft ? -6 : 6, 3.6, 0);
       portalGroup.add(tunnelLight);
 
       return portalGroup;
@@ -553,7 +591,115 @@ window.Diorama3D = (function () {
     cutawayBox.add(createTubePortal(45, -7, false));
     cutawayBox.add(createTubePortal(45, 7, false));
 
-    // 3. Dual Inclined Escalator Trusses (Rising to Concourse)
+    // ── 2B. EXTENDED SLICED CUTAWAY TUBE (THE NANO BANANA ICONIC ELEMENT) ──
+    // A concrete tube tunnel sliced in half along Track 1 so the train is seen INSIDE!
+    const cutTubeLen = 32;
+    const cutTubeGeo = new THREE.CylinderGeometry(
+      5.6, 5.6, cutTubeLen, 28, 1, true,
+      0, Math.PI // Half cylinder cut along the top-front!
+    );
+    const cutTubeMat = new THREE.MeshStandardMaterial({
+      color: 0x94A3B8,
+      roughness: 0.72,
+      metalness: 0.20,
+      side: THREE.DoubleSide
+    });
+    const cutTube = new THREE.Mesh(cutTubeGeo, cutTubeMat);
+    cutTube.position.set(45 - cutTubeLen / 2 + 3, 8.5, -7);
+    cutTube.rotation.z = Math.PI / 2;
+    cutTube.rotation.y = -Math.PI / 2;
+    cutTube.castShadow = true;
+    cutTube.receiveShadow = true;
+    cutawayBox.add(cutTube);
+
+    // Segmented Expansion Rings along the sliced tube
+    for (let rx = 24; rx <= 42; rx += 5) {
+      const rib = new THREE.Mesh(
+        new THREE.TorusGeometry(5.75, 0.35, 8, 24, Math.PI),
+        tubeRingMat
+      );
+      rib.position.set(rx, 8.5, -7);
+      rib.rotation.y = -Math.PI / 2;
+      rib.castShadow = true;
+      cutawayBox.add(rib);
+    }
+
+    // ── 3. SURFACE STREET-LEVEL ENTRANCE KIOSK (NANO BANANA PAVILION) ──
+    const streetKioskGroup = new THREE.Group();
+    streetKioskGroup.position.set(16, 23.25, -14);
+
+    // Paved sidewalk terrace
+    const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0xE2E8F0, roughness: 0.7 });
+    const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(28, 0.8, 14), sidewalkMat);
+    sidewalk.receiveShadow = true;
+    streetKioskGroup.add(sidewalk);
+
+    // Kiosk Building Box (Subway white tiles)
+    const kioskBuilding = new THREE.Mesh(new THREE.BoxGeometry(18, 5.2, 8), tileMat);
+    kioskBuilding.position.set(0, 2.8, 0);
+    kioskBuilding.castShadow = true;
+    kioskBuilding.receiveShadow = true;
+    streetKioskGroup.add(kioskBuilding);
+
+    // Modern Navy / Blue Roof Fascia Canopy
+    const roofFascia = new THREE.Mesh(
+      new THREE.BoxGeometry(19.2, 0.9, 9.2),
+      new THREE.MeshStandardMaterial({ color: 0x1E3A8A, roughness: 0.4 })
+    );
+    roofFascia.position.set(0, 5.6, 0);
+    roofFascia.castShadow = true;
+    streetKioskGroup.add(roofFascia);
+
+    // Glass Entrance Vestibule
+    const glassMat = new THREE.MeshStandardMaterial({
+      color: 0x38BDF8,
+      roughness: 0.1,
+      metalness: 0.9,
+      transparent: true,
+      opacity: 0.45
+    });
+    const glassDoor = new THREE.Mesh(new THREE.BoxGeometry(12, 3.4, 0.3), glassMat);
+    glassDoor.position.set(0, 2.0, 4.05);
+    streetKioskGroup.add(glassDoor);
+
+    // Iconic Red/Blue Subway Roundel on Entrance Roof
+    const roundelGroup = new THREE.Group();
+    roundelGroup.position.set(0, 7.2, 4.2);
+
+    const redRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1.4, 0.32, 8, 24),
+      new THREE.MeshStandardMaterial({ color: 0xDC2626, roughness: 0.3 })
+    );
+    roundelGroup.add(redRing);
+
+    const blueBar = new THREE.Mesh(
+      new THREE.BoxGeometry(3.6, 0.65, 0.35),
+      new THREE.MeshStandardMaterial({ color: 0x1D4ED8, roughness: 0.3 })
+    );
+    roundelGroup.add(blueBar);
+
+    streetKioskGroup.add(roundelGroup);
+
+    // Minimalist Street Lamp Post
+    const lampPost = new THREE.Group();
+    lampPost.position.set(-11, 0.4, 4.5);
+    const postPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 5.5, 6), strutMat);
+    postPole.position.y = 2.75;
+    postPole.castShadow = true;
+    lampPost.add(postPole);
+
+    const postHead = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.3, 0.6), strutMat);
+    postHead.position.set(0.4, 5.4, 0);
+    lampPost.add(postHead);
+
+    const postBulb = new THREE.PointLight(0xFFFBEB, 1.2, 14);
+    postBulb.position.set(0.4, 5.2, 0);
+    lampPost.add(postBulb);
+    streetKioskGroup.add(lampPost);
+
+    cutawayBox.add(streetKioskGroup);
+
+    // ── 4. DUAL INCLINED ESCALATOR TRUSSES (RISING TO CONCOURSE) ──
     const escGroup = new THREE.Group();
     const escFrameMat = new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.8, roughness: 0.3 });
     const escHandrailMat = new THREE.MeshBasicMaterial({ color: 0x22C55E }); // Glowing green guide rail
@@ -572,7 +718,7 @@ window.Diorama3D = (function () {
     }
     cutawayBox.add(escGroup);
 
-    // 4. Underground Fluorescent Platform Downlight Strips
+    // ── 5. UNDERGROUND PLATFORM FLUORESCENT DOWNLIGHTS ──
     const lightStripMat = new THREE.MeshBasicMaterial({ color: 0xFFFBEB });
     for (let lx of [-24, 0, 24]) {
       const fixture = new THREE.Mesh(new THREE.BoxGeometry(16, 0.4, 1.2), lightStripMat);
@@ -746,49 +892,174 @@ window.Diorama3D = (function () {
     if (clockTexture) clockTexture.needsUpdate = true;
   }
 
-  // ── 5. PLATFORM COMMUTERS ───────────────────────────────────
+  // ── 5. PLATFORM COMMUTERS (NANO BANANA STYLE FIGURINES) ─────────
   function buildPlatformCommuters() {
     const commutersGroup = new THREE.Group();
-    const commuterPalette = [
-      { shirt: 0x2563EB, pants: 0x1E293B },
-      { shirt: 0xE11D48, pants: 0x334155 },
-      { shirt: 0x059669, pants: 0x0F172A },
-      { shirt: 0xD97706, pants: 0x475569 },
-      { shirt: 0xF8FAFC, pants: 0x1E293B },
-      { shirt: 0x7C3AED, pants: 0x334155 }
-    ];
-    const headGeo = new THREE.SphereGeometry(0.42, 10, 10);
-    const headMat = new THREE.MeshStandardMaterial({ color: 0xFBCFE8, roughness: 0.6 });
-    const bodyGeo = new THREE.CylinderGeometry(0.4, 0.48, 1.4, 8);
-    const legsGeo = new THREE.CylinderGeometry(0.35, 0.35, 1.2, 8);
 
-    const commuterPos = [
-      [-18, -1.2], [-10, 1.4], [-4, -1.0], [3, 1.2], [10, -1.4], [18, 1.0], [22, -1.2]
+    // Architectural figurine palettes: rich stylish wool coats, blazers, and scarves
+    const palettes = [
+      { coat: 0xC2410C, pants: 0x1E293B, skin: 0xFBCFE8, hair: 0x1F2937, scarf: 0xF59E0B }, // Terracotta trench
+      { coat: 0x1E40AF, pants: 0x334155, skin: 0xFDE68A, hair: 0x4B5563, scarf: 0x38BDF8 }, // Navy wool coat
+      { coat: 0x047857, pants: 0x0F172A, skin: 0xFBCFE8, hair: 0x111827, scarf: 0xA7F3D0 }, // Emerald coat
+      { coat: 0x854D0E, pants: 0x1E293B, skin: 0xFDE047, hair: 0x374151, scarf: 0xFDE68A }, // Camel overcoat
+      { coat: 0xBE123C, pants: 0x475569, skin: 0xFBCFE8, hair: 0x1F2937, scarf: 0xFECDD3 }, // Crimson parka
+      { coat: 0x374151, pants: 0x111827, skin: 0xFBCFE8, hair: 0x030712, scarf: 0xE2E8F0 }, // Charcoal suit
+      { coat: 0x6D28D9, pants: 0x1E293B, skin: 0xFDE68A, hair: 0x1F2937, scarf: 0xC4B5FD }, // Violet cardigan
+      { coat: 0xD97706, pants: 0x334155, skin: 0xFBCFE8, hair: 0x4B5563, scarf: 0xFDE68A }, // Amber sweater
+      { coat: 0x0284C7, pants: 0x0F172A, skin: 0xFDE68A, hair: 0x1F2937, scarf: 0xBAE6FD }, // Sky blue jacket
+      { coat: 0xF8FAFC, pants: 0x1E293B, skin: 0xFBCFE8, hair: 0x111827, scarf: 0x94A3B8 }, // Crisp white trench
     ];
-    commuterPos.forEach(([x, z], idx) => {
-      const c = new THREE.Group();
-      c.position.set(x, 7.6, z);
-      const pal = commuterPalette[idx % commuterPalette.length];
-      const shirtMat = new THREE.MeshStandardMaterial({ color: pal.shirt, roughness: 0.7 });
-      const pantsMat = new THREE.MeshStandardMaterial({ color: pal.pants, roughness: 0.8 });
 
-      const head = new THREE.Mesh(headGeo, headMat);
-      head.position.y = 2.4;
+    function createCommuterFigure(cfg) {
+      const { x, z, rotY = 0, palIdx = 0, isSitting = false, hasBag = false, hasPhone = false, isStationMaster = false } = cfg;
+      const person = new THREE.Group();
+      person.position.set(x, isSitting ? 8.0 : 7.6, z);
+      person.rotation.y = rotY;
+
+      const pal = palettes[palIdx % palettes.length];
+      const skinMat = new THREE.MeshStandardMaterial({ color: isStationMaster ? 0xFBCFE8 : pal.skin, roughness: 0.5 });
+      const coatMat = new THREE.MeshStandardMaterial({ color: isStationMaster ? 0x0F172A : pal.coat, roughness: 0.7 });
+      const pantsMat = new THREE.MeshStandardMaterial({ color: isStationMaster ? 0x0F172A : pal.pants, roughness: 0.8 });
+      const hairMat = new THREE.MeshStandardMaterial({ color: pal.hair, roughness: 0.9 });
+      const darkMat = new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.8 });
+
+      // Head
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8), skinMat);
+      head.position.y = isSitting ? 1.85 : 2.45;
       head.castShadow = true;
-      c.add(head);
+      person.add(head);
 
-      const body = new THREE.Mesh(bodyGeo, shirtMat);
-      body.position.y = 1.4;
-      body.castShadow = true;
-      c.add(body);
+      if (isStationMaster) {
+        // Station Master peaked white cap
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.42, 0.25, 8), new THREE.MeshStandardMaterial({ color: 0xFFFFFF }));
+        cap.position.y = 2.65;
+        person.add(cap);
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 0.25), darkMat);
+        visor.position.set(0, 2.58, 0.32);
+        person.add(visor);
+      } else {
+        // Hair cap / beanie
+        const hair = new THREE.Mesh(new THREE.SphereGeometry(0.40, 8, 8, 0, Math.PI * 2, 0, Math.PI / 1.7), hairMat);
+        hair.position.y = isSitting ? 1.95 : 2.55;
+        hair.castShadow = true;
+        person.add(hair);
+      }
 
-      const legs = new THREE.Mesh(legsGeo, pantsMat);
-      legs.position.y = 0.55;
-      legs.castShadow = true;
-      c.add(legs);
+      // Torso / Coat
+      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.48, 1.25, 8), coatMat);
+      torso.position.y = isSitting ? 1.05 : 1.5;
+      torso.castShadow = true;
+      person.add(torso);
 
-      commutersGroup.add(c);
+      // Scarf / Accent collar
+      const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.10, 6, 8), new THREE.MeshBasicMaterial({ color: isStationMaster ? 0xEAB308 : pal.scarf }));
+      scarf.rotation.x = Math.PI / 2;
+      scarf.position.y = isSitting ? 1.62 : 2.12;
+      person.add(scarf);
+
+      if (isSitting) {
+        // Sitting legs bent 90 degrees forward over bench
+        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.32, 0.85), pantsMat);
+        thigh.position.set(0, 0.42, 0.38);
+        thigh.castShadow = true;
+        person.add(thigh);
+
+        const shin = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.72, 0.32), pantsMat);
+        shin.position.set(0, 0.05, 0.72);
+        shin.castShadow = true;
+        person.add(shin);
+      } else {
+        // Standing legs
+        const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.1, 6), pantsMat);
+        leg1.position.set(-0.2, 0.55, 0);
+        leg1.castShadow = true;
+        person.add(leg1);
+
+        const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.1, 6), pantsMat);
+        leg2.position.set(0.2, 0.55, 0);
+        leg2.castShadow = true;
+        person.add(leg2);
+
+        // Shoes
+        const shoe1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.38), darkMat);
+        shoe1.position.set(-0.2, 0.07, 0.08);
+        person.add(shoe1);
+
+        const shoe2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.38), darkMat);
+        shoe2.position.set(0.2, 0.07, 0.08);
+        person.add(shoe2);
+      }
+
+      // Arms
+      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.9, 6), coatMat);
+      armL.position.set(-0.54, isSitting ? 1.05 : 1.45, 0);
+      armL.castShadow = true;
+      person.add(armL);
+
+      const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.9, 6), coatMat);
+      if (hasPhone) {
+        armR.position.set(0.48, isSitting ? 1.25 : 1.65, 0.28);
+        armR.rotation.x = -Math.PI / 3.2;
+        // Glowing smartphone screen
+        const phone = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.28, 0.04), new THREE.MeshBasicMaterial({ color: 0x38BDF8 }));
+        phone.position.set(0.48, isSitting ? 1.45 : 1.85, 0.48);
+        person.add(phone);
+      } else {
+        armR.position.set(0.54, isSitting ? 1.05 : 1.45, 0);
+      }
+      armR.castShadow = true;
+      person.add(armR);
+
+      // Briefcase or luggage
+      if (hasBag) {
+        const bag = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.65, 0.55), new THREE.MeshStandardMaterial({ color: 0x78350F, roughness: 0.6 }));
+        bag.position.set(0.72, 0.32, 0);
+        bag.castShadow = true;
+        person.add(bag);
+      }
+
+      return person;
+    }
+
+    // 22 Curated Commuters mirroring the bustling NanoBanana diorama
+    const commutersData = [
+      // Waiting along Track 1 (Southbound, z = -1.8, facing train)
+      { x: -22, z: -1.8, rotY: Math.PI, palIdx: 0, hasPhone: true },
+      { x: -18, z: -2.0, rotY: Math.PI * 0.95, palIdx: 1 },
+      { x: -12, z: -1.7, rotY: Math.PI * 1.05, palIdx: 2, hasBag: true },
+      { x: -5,  z: -2.1, rotY: Math.PI, palIdx: 3, hasPhone: true },
+      { x: 3,   z: -1.9, rotY: Math.PI * 0.9, palIdx: 4 },
+      { x: 9,   z: -2.2, rotY: Math.PI * 1.1, palIdx: 5, hasBag: true },
+      { x: 14,  z: -1.8, rotY: Math.PI, palIdx: 6 },
+      { x: 21,  z: -2.0, rotY: Math.PI * 0.95, palIdx: 7, hasPhone: true },
+
+      // Waiting along Track 2 (Northbound, z = 1.8, facing track 2)
+      { x: -20, z: 1.8, rotY: 0, palIdx: 8, hasBag: true },
+      { x: -14, z: 2.1, rotY: 0.15, palIdx: 9 },
+      { x: -7,  z: 1.9, rotY: -0.1, palIdx: 1, hasPhone: true },
+      { x: 2,   z: 2.0, rotY: 0, palIdx: 3 },
+      { x: 8,   z: 1.8, rotY: 0.2, palIdx: 0, hasBag: true },
+      { x: 16,  z: 2.2, rotY: -0.15, palIdx: 2 },
+      { x: 23,  z: 1.9, rotY: 0, palIdx: 4, hasPhone: true },
+
+      // Sitting relaxed on platform wooden benches (x = -16, 0, 16)
+      { x: -16.8, z: 0.1, rotY: 0, palIdx: 5, isSitting: true, hasPhone: true },
+      { x: -15.2, z: -0.1, rotY: Math.PI, palIdx: 6, isSitting: true },
+      { x: -0.8,  z: 0.1, rotY: 0, palIdx: 7, isSitting: true },
+      { x: 0.8,   z: -0.1, rotY: Math.PI, palIdx: 8, isSitting: true, hasBag: true },
+      { x: 15.8,  z: 0.1, rotY: 0, palIdx: 9, isSitting: true, hasPhone: true },
+
+      // Station Master in navy uniform on platform center
+      { x: -2, z: 0.2, rotY: Math.PI / 4, isStationMaster: true },
+
+      // Commuter walking near escalator
+      { x: -8, z: 0.0, rotY: Math.PI / 2, palIdx: 0, hasBag: true }
+    ];
+
+    commutersData.forEach(cfg => {
+      commutersGroup.add(createCommuterFigure(cfg));
     });
+
     scene.add(commutersGroup);
   }
 
@@ -1049,7 +1320,7 @@ window.Diorama3D = (function () {
         camPlat.classList.remove('active');
         cameraMode = 'iso';
         camera.position.set(70, 60, 70);
-        if (controls) controls.target.set(0, 4, 0);
+        if (controls) controls.target.set(0, 7.5, 0);
       });
       camPlat.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1197,7 +1468,7 @@ window.Diorama3D = (function () {
   function onWindowResize() {
     if (!container || !camera || !renderer) return;
     const aspect = container.clientWidth / container.clientHeight;
-    const d = 50;
+    const d = 36;
     camera.left = -d * aspect;
     camera.right = d * aspect;
     camera.top = d;
