@@ -1902,7 +1902,8 @@
       });
       if (!map) return;
       if (mode === '3d') {
-        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'visible');
+        // Hide 2D flat sprite so real 3D solid Three.js consist with headlights renders
+        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
         if (map.getLayer('train-dot-white-black')) {
           map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
           map.setPaintProperty('train-dot-white-black', 'circle-opacity', [
