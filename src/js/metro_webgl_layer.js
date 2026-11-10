@@ -216,133 +216,281 @@ window.MetroWebGLLayer = (function () {
     });
   }
 
-  /* ── 2. Real 3D Station Canopies & Platforms ──────────────── */
-  function getStationHeading(s) {
-    if (!topologyData || !topologyData.lines) return 0;
-    let closestDist = Infinity;
-    let heading = 0;
-    for (const line of topologyData.lines) {
-      if (!line.centerline || line.centerline.length < 2) continue;
-      for (let i = 0; i < line.centerline.length - 1; i++) {
-        const p1 = line.centerline[i].coords;
-        const p2 = line.centerline[i + 1].coords;
-        const midX = (p1[0] + p2[0]) / 2;
-        const midY = (p1[1] + p2[1]) / 2;
-        const dx = s.coords[0] - midX;
-        const dy = s.coords[1] - midY;
-        const dist = dx * dx + dy * dy;
-        if (dist < closestDist) {
-          closestDist = dist;
-          heading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]);
-        }
-      }
-    }
-    return heading;
-  }
-
+  /* ── 2. Real 3D Station Canopies, Platforms & Commuters ─────── */
   function build3DStations(stations) {
-    const platformMat = new THREE.MeshLambertMaterial({
-      color: 0xF8FAFC // Concrete platform deck
+    const platformMat = new THREE.MeshStandardMaterial({
+      color: 0xF8FAFC, // Precast concrete platform deck
+      roughness: 0.85,
+      metalness: 0.05
     });
 
     const yellowTactileMat = new THREE.MeshBasicMaterial({ color: 0xF59E0B });
 
     const canopyRoofMat = new THREE.MeshStandardMaterial({
-      color: 0xF1F5F9,
-      roughness: 0.35,
-      metalness: 0.25,
+      color: 0xE2E8F0, // Architectural glass / composite canopy
+      roughness: 0.25,
+      metalness: 0.20,
+      transparent: true,
+      opacity: 0.88,
       side: THREE.DoubleSide
     });
 
     const steelArchMat = new THREE.MeshLambertMaterial({
-      color: 0x334155
+      color: 0x334155 // Heavy charcoal structural steel
     });
+
+    const concretePierMat = new THREE.MeshLambertMaterial({
+      color: 0xCBD5E1 // Concrete pier columns
+    });
+
+    const commuterTones = [0xDC2626, 0x2563EB, 0x059669, 0xD97706, 0x475569];
 
     beaconPulsers = [];
 
     stations.forEach(s => {
       const isElev = (s.elevM || 0) > 0;
-      const mc = toMercator(s.coords, s.elevM);
+      // Elevated stations sit at track elevation (mc.z); underground stations place their street pavilion at ground (z=0)
+      const elev = isElev ? s.elevM : 0;
+      const mc = toMercator(s.coords, elev);
       const mScale = mc.meterUnit;
       const lineColor = parseInt((s.lineColor || '#F59E0B').replace('#', ''), 16);
       const stationHeading = getStationHeading(s);
 
       const stGroup = new THREE.Group();
       stGroup.position.set(mc.x, mc.y, mc.z);
-      stGroup.rotation.z = stationHeading; // Perfectly aligned with track heading!
+      stGroup.rotation.z = stationHeading; // Perfectly aligned with track heading
       stGroup.userData = { isStation: true, station: s };
 
       if (isElev) {
-        // ── 2A. PROPORTIONAL 3D ELEVATED STATION CANOPY ──
-        const pLen = 22 * mScale * SCALE_M;  // Proportional 22m canopy length
-        const pWid = 4.2 * mScale * SCALE_M; // 4.2m double-track width
-        const pH   = 0.8 * mScale * SCALE_M; // Concrete deck slab
+        // ── 2A. REAL 3D ELEVATED ARCHITECTURAL STATION (NanoBanana Style on Map) ──
+        const pLen = 42 * mScale * SCALE_M;  // 42m platform length
+        const pWid = 8.2 * mScale * SCALE_M; // 8.2m double-track platform width
+        const pH   = 1.1 * mScale * SCALE_M; // Platform concrete slab thickness
 
-        // Platform Concrete Deck
+        // 1. Concrete Platform Deck Slab
         const deck = new THREE.Mesh(new THREE.BoxGeometry(pLen, pWid, pH), platformMat);
         stGroup.add(deck);
 
-        // Yellow tactile safety platform edges
-        const edge1 = new THREE.Mesh(new THREE.BoxGeometry(pLen, 0.4 * mScale * SCALE_M, 0.15 * mScale * SCALE_M), yellowTactileMat);
-        edge1.position.set(0, -pWid / 2 + 0.2 * mScale * SCALE_M, pH / 2 + 0.08 * mScale * SCALE_M);
+        // Track Ballast Recess along center
+        const ballastMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+        const ballast = new THREE.Mesh(new THREE.BoxGeometry(pLen * 0.98, 3.4 * mScale * SCALE_M, 0.25 * mScale * SCALE_M), ballastMat);
+        ballast.position.set(0, 0, pH / 2 + 0.10 * mScale * SCALE_M);
+        stGroup.add(ballast);
+
+        // Twin Silver Rails through the station
+        const railMat = new THREE.MeshStandardMaterial({ color: 0xE2E8F0, metalness: 0.8, roughness: 0.2 });
+        for (let ry of [-0.8 * mScale * SCALE_M, 0.8 * mScale * SCALE_M]) {
+          const rail = new THREE.Mesh(new THREE.BoxGeometry(pLen, 0.15 * mScale * SCALE_M, 0.20 * mScale * SCALE_M), railMat);
+          rail.position.set(0, ry, pH / 2 + 0.22 * mScale * SCALE_M);
+          stGroup.add(rail);
+        }
+
+        // 2. Bright Yellow tactile safety platform edges flanking the tracks
+        const edge1 = new THREE.Mesh(new THREE.BoxGeometry(pLen, 0.65 * mScale * SCALE_M, 0.20 * mScale * SCALE_M), yellowTactileMat);
+        edge1.position.set(0, -pWid / 2 + 0.35 * mScale * SCALE_M, pH / 2 + 0.12 * mScale * SCALE_M);
         stGroup.add(edge1);
 
-        const edge2 = new THREE.Mesh(new THREE.BoxGeometry(pLen, 0.4 * mScale * SCALE_M, 0.15 * mScale * SCALE_M), yellowTactileMat);
-        edge2.position.set(0, pWid / 2 - 0.2 * mScale * SCALE_M, pH / 2 + 0.08 * mScale * SCALE_M);
+        const edge2 = new THREE.Mesh(new THREE.BoxGeometry(pLen, 0.65 * mScale * SCALE_M, 0.20 * mScale * SCALE_M), yellowTactileMat);
+        edge2.position.set(0, pWid / 2 - 0.35 * mScale * SCALE_M, pH / 2 + 0.12 * mScale * SCALE_M);
         stGroup.add(edge2);
 
-        // Arched Barrel-Vault Canopy Roof
-        const archR = 2.4 * mScale * SCALE_M;
-        const archGeo = new THREE.CylinderGeometry(archR, archR, pLen * 0.9, 16, 1, true, 0, Math.PI);
+        // 3. Arched Barrel-Vault Canopy Roof (Arched UPWARDS over the tracks)
+        const archR = 4.6 * mScale * SCALE_M;
+        const archGeo = new THREE.CylinderGeometry(archR, archR, pLen * 0.94, 24, 1, true, -Math.PI / 2, Math.PI);
         const roof = new THREE.Mesh(archGeo, canopyRoofMat);
-        roof.rotation.z = Math.PI / 2;
-        roof.position.set(0, 0, archR * 0.55);
+        roof.rotation.set(0, 0, Math.PI / 2); // Length along track, arch upwards in Z!
+        roof.position.set(0, 0, archR * 0.45);
         stGroup.add(roof);
 
-        // Steel Arch Rib Trusses
-        for (let ox of [-pLen * 0.38, -pLen * 0.19, 0, pLen * 0.19, pLen * 0.38]) {
+        // 4. Structural Steel Arch Trusses
+        for (let ox of [-pLen * 0.40, -pLen * 0.20, 0, pLen * 0.20, pLen * 0.40]) {
           const rib = new THREE.Mesh(
-            new THREE.TorusGeometry(archR * 1.02, 0.22 * mScale * SCALE_M, 6, 16, Math.PI),
+            new THREE.TorusGeometry(archR * 1.01, 0.28 * mScale * SCALE_M, 6, 16, Math.PI),
             steelArchMat
           );
-          rib.position.set(ox, 0, archR * 0.55);
-          rib.rotation.y = Math.PI / 2;
+          rib.position.set(ox, 0, archR * 0.45);
+          rib.rotation.set(Math.PI / 2, 0, 0);
           stGroup.add(rib);
         }
 
-        // Station Beacon Pulsing Ring on Roof
+        // 5. Vertical Concrete Piers Grounded Directly into the Delhi Map Street!
+        const pierH = mc.z;
+        for (let px of [-pLen * 0.28, pLen * 0.28]) {
+          // Column down to ground
+          const pCol = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.95 * mScale * SCALE_M, 1.10 * mScale * SCALE_M, pierH, 12),
+            concretePierMat
+          );
+          pCol.rotation.x = Math.PI / 2;
+          pCol.position.set(px, 0, -pierH / 2);
+          stGroup.add(pCol);
+
+          // Sturdy hammerhead pier cap under platform
+          const pCap = new THREE.Mesh(
+            new THREE.BoxGeometry(2.0 * mScale * SCALE_M, pWid * 0.98, 0.85 * mScale * SCALE_M),
+            concretePierMat
+          );
+          pCap.position.set(px, 0, -pH / 2 - 0.42 * mScale * SCALE_M);
+          stGroup.add(pCap);
+        }
+
+        // 6. Street-Level Access Staircase Ramp
+        const stairs = new THREE.Mesh(
+          new THREE.BoxGeometry(7.0 * mScale * SCALE_M, 2.6 * mScale * SCALE_M, pierH * 0.85),
+          concretePierMat
+        );
+        stairs.position.set(-pLen * 0.45, pWid * 0.65, -pierH * 0.45);
+        stairs.rotation.x = -Math.PI / 6;
+        stGroup.add(stairs);
+
+        // 7. Miniature 3D Commuters on the Platform (Diorama Life)
+        const commuterOffsets = [
+          [-pLen * 0.30, -pWid * 0.28],
+          [-pLen * 0.18, -pWid * 0.26],
+          [-pLen * 0.06, -pWid * 0.30],
+          [pLen * 0.08,  -pWid * 0.27],
+          [pLen * 0.22,  -pWid * 0.29],
+          [-pLen * 0.24,  pWid * 0.28],
+          [-pLen * 0.10,  pWid * 0.26],
+          [pLen * 0.14,   pWid * 0.30],
+          [pLen * 0.28,   pWid * 0.27]
+        ];
+        commuterOffsets.forEach(([cx, cy], cidx) => {
+          const cGroup = new THREE.Group();
+          cGroup.position.set(cx, cy, pH / 2);
+          const cMat = new THREE.MeshLambertMaterial({ color: commuterTones[cidx % commuterTones.length] });
+
+          const cBody = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.24 * mScale * SCALE_M, 0.30 * mScale * SCALE_M, 1.10 * mScale * SCALE_M, 6),
+            cMat
+          );
+          cBody.rotation.x = Math.PI / 2;
+          cBody.position.set(0, 0, 0.55 * mScale * SCALE_M);
+
+          const cHead = new THREE.Mesh(
+            new THREE.SphereGeometry(0.22 * mScale * SCALE_M, 6, 6),
+            new THREE.MeshLambertMaterial({ color: 0xFDE047 })
+          );
+          cHead.position.set(0, 0, 1.25 * mScale * SCALE_M);
+
+          cGroup.add(cBody);
+          cGroup.add(cHead);
+          stGroup.add(cGroup);
+        });
+
+        // 8. Station Name Banner Billboard on Roof
+        const bannerMat = new THREE.MeshLambertMaterial({ color: 0x1E293B });
+        const banner = new THREE.Mesh(
+          new THREE.BoxGeometry(pLen * 0.36, 0.5 * mScale * SCALE_M, 1.4 * mScale * SCALE_M),
+          bannerMat
+        );
+        banner.position.set(0, 0, archR * 1.05);
+        stGroup.add(banner);
+
+        // Station Beacon Pulsing Ring
         const haloMat = new THREE.MeshBasicMaterial({ color: lineColor, transparent: true, opacity: 0.70 });
         const halo = new THREE.Mesh(new THREE.RingGeometry(pWid * 0.55, pWid * 0.85, 24), haloMat);
-        halo.position.set(0, 0, archR * 1.25);
+        halo.position.set(0, 0, archR * 1.15);
         stGroup.add(halo);
         beaconPulsers.push(halo);
 
       } else {
-        // ── 2B. SUBTERRANEAN STATION SURFACE ENTRANCE ──
-        const pWid = 4.2 * mScale * SCALE_M;
-        const baseMat = new THREE.MeshLambertMaterial({ color: 0xFFFFFF });
-        const coreMat = new THREE.MeshLambertMaterial({ color: lineColor });
+        // ── 2B. REAL 3D SUBTERRANEAN STATION ENTRANCE (Rajiv Chowk / Kashmere Gate) ──
+        const pWid = 5.5 * mScale * SCALE_M;
 
-        const disc = new THREE.Mesh(
-          new THREE.CylinderGeometry(pWid * 0.6, pWid * 0.6, 0.4 * mScale * SCALE_M, 16),
-          baseMat
+        // 1. Concrete Street-Level Perimeter Retaining Collar
+        const collarMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+        const collar = new THREE.Mesh(
+          new THREE.BoxGeometry(16 * mScale * SCALE_M, 10 * mScale * SCALE_M, 2.2 * mScale * SCALE_M),
+          collarMat
         );
-        disc.rotation.x = Math.PI / 2;
-        stGroup.add(disc);
+        collar.position.set(0, 0, 1.1 * mScale * SCALE_M);
+        stGroup.add(collar);
 
-        const core = new THREE.Mesh(
-          new THREE.CylinderGeometry(pWid * 0.38, pWid * 0.38, 0.6 * mScale * SCALE_M, 16),
-          coreMat
+        // 2. Glass-and-Steel Street Entrance Pavilion
+        const pavilionMat = new THREE.MeshStandardMaterial({
+          color: 0xFFFFFF,
+          roughness: 0.2,
+          metalness: 0.15,
+          transparent: true,
+          opacity: 0.85
+        });
+        const pavilion = new THREE.Mesh(
+          new THREE.BoxGeometry(9 * mScale * SCALE_M, 6 * mScale * SCALE_M, 2.8 * mScale * SCALE_M),
+          pavilionMat
         );
-        core.rotation.x = Math.PI / 2;
-        stGroup.add(core);
+        pavilion.position.set(0, 0, 2.6 * mScale * SCALE_M);
+        stGroup.add(pavilion);
 
+        // 3. Descending Pedestrian Subway Stairs
+        const stairsMat = new THREE.MeshLambertMaterial({ color: 0x64748B });
+        const stairs = new THREE.Mesh(
+          new THREE.BoxGeometry(4.2 * mScale * SCALE_M, 5.0 * mScale * SCALE_M, 2.2 * mScale * SCALE_M),
+          stairsMat
+        );
+        stairs.position.set(-2.0 * mScale * SCALE_M, 0, 1.0 * mScale * SCALE_M);
+        stairs.rotation.x = Math.PI / 8;
+        stGroup.add(stairs);
+
+        // 4. Iconic DMRC Roundel Symbol on Entrance
+        const roundelMat = new THREE.MeshLambertMaterial({ color: 0xDC2626 });
+        const roundel = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.9 * mScale * SCALE_M, 0.9 * mScale * SCALE_M, 0.22 * mScale * SCALE_M, 16),
+          roundelMat
+        );
+        roundel.rotation.x = Math.PI / 2;
+        roundel.position.set(0, 0, 4.3 * mScale * SCALE_M);
+        stGroup.add(roundel);
+
+        const barMat = new THREE.MeshLambertMaterial({ color: 0x1E40AF });
+        const bar = new THREE.Mesh(
+          new THREE.BoxGeometry(2.4 * mScale * SCALE_M, 0.45 * mScale * SCALE_M, 0.25 * mScale * SCALE_M),
+          barMat
+        );
+        bar.position.set(0, 0, 4.3 * mScale * SCALE_M);
+        stGroup.add(bar);
+
+        // 5. Surface Commuters near Entrance
+        const surfaceOffsets = [
+          [-4.5 * mScale * SCALE_M, -2.5 * mScale * SCALE_M],
+          [-3.0 * mScale * SCALE_M,  2.0 * mScale * SCALE_M],
+          [ 3.5 * mScale * SCALE_M, -1.8 * mScale * SCALE_M],
+          [ 4.0 * mScale * SCALE_M,  2.2 * mScale * SCALE_M]
+        ];
+        surfaceOffsets.forEach(([sx, sy], sidx) => {
+          const cGroup = new THREE.Group();
+          cGroup.position.set(sx, sy, 2.2 * mScale * SCALE_M);
+          const cMat = new THREE.MeshLambertMaterial({ color: commuterTones[sidx % commuterTones.length] });
+
+          const cBody = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.18 * mScale * SCALE_M, 0.24 * mScale * SCALE_M, 0.85 * mScale * SCALE_M, 6),
+            cMat
+          );
+          cBody.rotation.x = Math.PI / 2;
+          cBody.position.set(0, 0, 0.42 * mScale * SCALE_M);
+
+          const cHead = new THREE.Mesh(
+            new THREE.SphereGeometry(0.16 * mScale * SCALE_M, 6, 6),
+            new THREE.MeshLambertMaterial({ color: 0xFDE047 })
+          );
+          cHead.position.set(0, 0, 0.98 * mScale * SCALE_M);
+
+          cGroup.add(cBody);
+          cGroup.add(cHead);
+          stGroup.add(cGroup);
+        });
+
+        // Pulsing Beacon Halo
         const haloMat = new THREE.MeshBasicMaterial({ color: lineColor, transparent: true, opacity: 0.60, side: THREE.DoubleSide });
         const halo = new THREE.Mesh(new THREE.RingGeometry(pWid * 0.75, pWid * 1.15, 24), haloMat);
-        halo.position.set(0, 0, 0.35 * mScale * SCALE_M);
+        halo.position.set(0, 0, 3.8 * mScale * SCALE_M);
         stGroup.add(halo);
         beaconPulsers.push(halo);
       }
+
+      stationsGroup.add(stGroup);
+    });
+  }
 
       stationsGroup.add(stGroup);
     });

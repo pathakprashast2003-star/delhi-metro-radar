@@ -1858,6 +1858,7 @@
       btn2D.addEventListener('click', () => {
         btn2D.classList.add('active');
         if (btn3D) btn3D.classList.remove('active');
+        applyRenderMode('dot');
         if (map) {
           map.flyTo({ center: [77.1400, 28.5850], zoom: 10.35, pitch: 0, bearing: 0, duration: 1000 });
         }
@@ -1901,7 +1902,23 @@
         if (btn) btn.classList.toggle('active', btn.id === `mode-${mode}`);
       });
       if (!map) return;
+      const viaduct2DLayers = [
+        'flyover-viaduct-shadow',
+        'flyover-viaduct-deck',
+        'flyover-viaduct-parapet-left',
+        'flyover-viaduct-parapet-right',
+        'flyover-viaduct-catenary-center',
+        'flyover-viaduct-track-1',
+        'flyover-viaduct-track-2',
+        'flyover-viaduct-track-ties'
+      ];
+
       if (mode === '3d') {
+        // Hide 2D flat viaduct lines so real 3D Three.js elevated viaduct and stations render without double-lines
+        viaduct2DLayers.forEach(id => {
+          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+        });
+
         // Hide 2D flat sprite so real 3D solid Three.js consist with headlights renders
         if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
         if (map.getLayer('train-dot-white-black')) {
@@ -1922,6 +1939,10 @@
         }
         if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
       } else if (mode === 'dot') {
+        // Restore 2D flat viaduct lines
+        viaduct2DLayers.forEach(id => {
+          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'visible');
+        });
         if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
         if (map.getLayer('train-dot-white-black')) {
           map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
@@ -1933,6 +1954,10 @@
         }
         if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
       } else if (mode === 'tracks') {
+        // Restore 2D flat viaduct lines
+        viaduct2DLayers.forEach(id => {
+          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'visible');
+        });
         if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
         if (map.getLayer('train-dot-white-black')) map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
         if (map.getLayer('train-dot-pupil')) map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
