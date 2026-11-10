@@ -217,6 +217,29 @@ window.MetroWebGLLayer = (function () {
   }
 
   /* ── 2. Real 3D Station Canopies, Platforms & Commuters ─────── */
+  function getStationHeading(s) {
+    if (!topologyData || !topologyData.lines) return 0;
+    let closestDist = Infinity;
+    let heading = 0;
+    for (const line of topologyData.lines) {
+      if (!line.centerline || line.centerline.length < 2) continue;
+      for (let i = 0; i < line.centerline.length - 1; i++) {
+        const p1 = line.centerline[i].coords;
+        const p2 = line.centerline[i + 1].coords;
+        const midX = (p1[0] + p2[0]) / 2;
+        const midY = (p1[1] + p2[1]) / 2;
+        const dx = s.coords[0] - midX;
+        const dy = s.coords[1] - midY;
+        const dist = dx * dx + dy * dy;
+        if (dist < closestDist) {
+          closestDist = dist;
+          heading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]);
+        }
+      }
+    }
+    return heading;
+  }
+
   function build3DStations(stations) {
     const platformMat = new THREE.MeshStandardMaterial({
       color: 0xF8FAFC, // Precast concrete platform deck
@@ -487,10 +510,6 @@ window.MetroWebGLLayer = (function () {
         stGroup.add(halo);
         beaconPulsers.push(halo);
       }
-
-      stationsGroup.add(stGroup);
-    });
-  }
 
       stationsGroup.add(stGroup);
     });
