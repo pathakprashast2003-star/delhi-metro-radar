@@ -1842,14 +1842,9 @@
         btn3D.classList.add('active');
         if (btn2D) btn2D.classList.remove('active');
         applyRenderMode('3d');
-        const currZoom = map ? map.getZoom() : 10;
         if (map) {
-          if (currZoom < 13.0) {
-            // Smoothly fly to iconic elevated viaduct (Qutab Minar) with 3D tilt
-            map.flyTo({ center: [77.1793, 28.5132], zoom: 15.2, pitch: 52, bearing: -14, duration: 1200 });
-          } else {
-            map.easeTo({ pitch: 52, bearing: -14, duration: 900 });
-          }
+          // Smoothly fly directly to iconic elevated 3D station (Qutab Minar) at crisp zoom 17.2 with 60° tilt
+          map.flyTo({ center: [77.186472, 28.51293], zoom: 17.2, pitch: 60, bearing: -25, duration: 1200 });
         }
       });
     }
@@ -1873,9 +1868,11 @@
           if (pitch >= 25) {
             btn3D.classList.add('active');
             btn2D.classList.remove('active');
+            applyRenderMode('3d');
           } else if (pitch < 12) {
             btn2D.classList.add('active');
             btn3D.classList.remove('active');
+            applyRenderMode('dot');
           }
         }
       });

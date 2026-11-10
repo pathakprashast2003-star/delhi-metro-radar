@@ -7,9 +7,9 @@
 window.MetroWebGLLayer = (function () {
   'use strict';
 
-  // Physically accurate, sleek architectural scale (fits road corridor, zero bloating)
-  const ELEV_EXAG = 1.1;   // Viaduct elevated realistic ~12m visual height
-  const SCALE_M   = 1.0;   // 1:1 true physical scale
+  // Sleek architectural scale: bold tactile presence on map without bloating
+  const ELEV_EXAG = 1.1;   // Viaduct elevated realistic ~14m visual height
+  const SCALE_M   = 1.5;   // 1.5x architectural landmark scale (crisply visible from zoom 15 to 18)
 
   /* ── State ───────────────────────────────────────────────── */
   let scene, camera, renderer;
@@ -828,7 +828,7 @@ window.MetroWebGLLayer = (function () {
   function flyToStation(name) {
     const st = getStationByName(name);
     if (!st || !map) return;
-    map.flyTo({ center: st.coords, zoom: 16, pitch: 65, bearing: 20, duration: 1000 });
+    map.flyTo({ center: st.coords, zoom: 17.2, pitch: 62, bearing: -20, duration: 1200 });
     playChime();
   }
 
