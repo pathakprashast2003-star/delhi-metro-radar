@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#e9e3d8" />
+  <title>Delhi Metro — Stations on the Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.5.2/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="src/css/two-station-map.css?v=2" />
+  <script src="https://unpkg.com/maplibre-gl@4.5.2/dist/maplibre-gl.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/",
+        "@dvt3d/maplibre-three-plugin": "https://cdn.jsdelivr.net/npm/@dvt3d/maplibre-three-plugin@1.7.1/dist/index.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main id="app">
+    <div id="map" aria-label="MapLibre map of Delhi with georeferenced Three.js metro stations, rails, viaduct and animated train"></div>
+    <header class="topbar">
+      <a class="brand" href="two-station.html"><span class="brand-dot"></span> DELHI METRO <small>MAP + WEBGL MODEL</small></a>
+      <div class="map-status"><i></i> ORIGINAL WEBGL SCENE · REAL MAP BACKDROP</div>
+    </header>
+    <section class="intro-card">
+      <p class="eyebrow">YELLOW LINE · RAJIV CHOWK → QUTAB MINAR</p>
+      <h1>Same metro.<br><em>On the real map.</em></h1>
+      <p>Two station models are anchored to their Delhi locations, with a moving train on the Yellow Line route.</p>
+      <div class="station-row"><span>Rajiv Chowk</span><b></b><span>Qutab Minar</span></div>
+      <small class="note">Station locations and route use geographic data. 3D station dimensions and track height are schematic for visibility.</small>
+    </section>
+    <aside class="tools">
+      <button id="recenter">◎ <span>Show corridor</span></button>
+      <button id="pitch">◇ <span>Map: top / 3D</span></button>
+      <button id="daynight">☾ <span>Night view</span></button>
+    </aside>
+  </main>
+  <script type="module" src="src/js/two_station_map.js"></script>
+</body>
+</html>

@@ -2,3 +2,12 @@ node_modules/
 .DS_Store
 *.log
 scratch/
+.recovery/
+__pycache__/
+*.pyc
+test_*.png
+debug_*.png
+live_*.png
+noida_turnback_closeup_verified.png
+yamuna_bank_closeup_verified.png
+

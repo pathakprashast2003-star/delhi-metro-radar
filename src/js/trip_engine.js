@@ -39,12 +39,18 @@ window.TripEngine = (function() {
   const SP_NODE_IDX = 232; // South Portal Ramp (Saket / Qutab Minar transition)
 
   async function loadData() {
-    const [cfgRes, osmRes] = await Promise.all([
-      fetch('src/data/yellow_line_service.json'),
-      fetch('src/data/yellow_line_accurate_osm.json')
+    if (!window.__yellowLineOsmPromise) {
+      window.__yellowLineOsmPromise = fetch('src/data/yellow_line_accurate_osm.json').then(r => r.json());
+    }
+    if (!window.__yellowLineServicePromise) {
+      window.__yellowLineServicePromise = fetch('src/data/yellow_line_service.json').then(r => r.json());
+    }
+    const [cfgJson, osmJson] = await Promise.all([
+      window.__yellowLineServicePromise,
+      window.__yellowLineOsmPromise
     ]);
-    serviceConfig = await cfgRes.json();
-    osmData = await osmRes.json();
+    serviceConfig = cfgJson;
+    osmData = osmJson;
 
     STATIONS = serviceConfig.stations;
     CENTERLINE = osmData.centerline;
@@ -417,7 +423,7 @@ window.TripEngine = (function() {
           isClosed: band.headway_core_sec === 0,
           phase: band.name.toUpperCase().replace(/\s+/g, '_'),
           badge: `🟢 ${band.name.toUpperCase()}`,
-          message: `${band.description} · Core: ~${Math.round(band.headway_core_sec / 60)}m · Outer: ~${Math.round(band.headway_outer_sec / 60)}m (Unverified Placeholders)`,
+          message: `${band.description} · Core ~${Math.round(band.headway_core_sec / 60)} min · Outer ~${Math.round(band.headway_outer_sec / 60)} min`,
           headway_core_sec: band.headway_core_sec,
           headway_outer_sec: band.headway_outer_sec,
           status: band.status
@@ -429,7 +435,7 @@ window.TripEngine = (function() {
       isClosed: false,
       phase: 'REGULAR_SERVICE',
       badge: '🟢 REVENUE SERVICE',
-      message: 'Regular scheduled operations (Unverified Placeholders)',
+      message: 'Regular scheduled daytime operations',
       headway_core_sec: 240,
       headway_outer_sec: 480
     };

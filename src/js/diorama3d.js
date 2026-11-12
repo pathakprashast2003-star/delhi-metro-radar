@@ -1,8 +1,19 @@
 /* ============================================================
- * DELHI METRO — Interactive Three.js 3D WebGL Diorama Engine
- * Dual-Archetype Architecture: Elevated Viaduct + Underground Tube Cutaway
- * True Orthographic Camera, Studio Clay PBR Lighting & Soft Shadows
- * Inspired by Nano Banana Pro, Seoul & Central Line Tube Dioramas
+ * DELHI METRO — Interactive Kit-of-Parts 3D Diorama Engine
+ * Powered by window.MetroKit (Materials, PlatformParts,
+ * TrackSystem, TrainFactory & StationArchetypes) +
+ * Apple-Design Critically-Damped Springs & Smooth Theme Crossfade.
+ *
+ * Modes:
+ *   • 'corridor': Connected 2-Station Corridor
+ *       Rajiv Chowk (Underground Island) ↔ Ramp ↔ Qutab Minar (Elevated Side)
+ *   • 6 Standalone DMRC Archetypes:
+ *       1. elevatedSide            (Qutab Minar)
+ *       2. elevatedIsland          (Botanical Garden)
+ *       3. undergroundIsland       (Rajiv Chowk)
+ *       4. surfaceMultiBay         (Yamuna Bank — 4-Track + Y-Branch)
+ *       5. stackedCrossInterchange (Hauz Khas — -12m × -21m Cross)
+ *       6. hybridMegaHub           (Kashmere Gate — Elev Red + Tube Yellow)
  * ============================================================ */
 
 window.Diorama3D = (function () {
@@ -18,44 +29,111 @@ window.Diorama3D = (function () {
   let isPaused = false;
   let soundEnabled = true;
 
-  // Scene Root Archetype Groups
-  let elevatedGroup = null;
-  let undergroundGroup = null;
-  let currentArchetype = 'elevated'; // 'elevated' | 'underground'
+  let rootStage = null;
+  let corridorGroup = null;
+  let rajivAnchor = null;
+  let qutabAnchor = null;
 
-  // Meshes & Materials
-  let train1Group = null; // Southbound Train on Track 1
-  let train2Group = null; // Northbound Train on Track 2
-  let windowMaterials = [];
-  let headlightMaterials = [];
-  let platformLights = [];
+  // Cached standalone archetype stages
+  const archetypeCache = new Map();
+  let activeStageKey = 'corridor'; // 'corridor' | one of 6 archetype keys
+
   let sunLight, hemiLight, ambientFill;
   let currentLightingMode = 'day';
-  let cameraMode = 'iso'; // 'iso' | 'platform'
+  let currentView = 'overview';
+  let followTrainMode = false;
 
-  // Kinematic parameters & State Machine
-  let t1Progress = 0.15;
-  let t2Progress = 0.65;
-  const TRACK_LEN = 160;
+  const CORRIDOR_HALF_LEN = 92;
+  const RAJIV_X = -48;
+  const PORTAL_X = -22;
+  const RAMP_END_X = 22;
+  const QUTAB_X = 54;
+  const TRACK_Z_SOUTH = -3.6;
+  const TRACK_Z_NORTH = 3.6;
+  const SUBWAY_Y = 0.0;
+  const VIADUCT_Y = 10.5;
+  const PLINTH_TOP_Y = -10.0;
 
-  let t1DwellTimer = 0;
-  let t2DwellTimer = 0;
-  let t1HasChimed = false;
-  let t2HasChimed = false;
+  // Corridor Fleet Kinematics
+  let train1Group = null;
+  let train2Group = null;
+  let t1X = -2.0;
+  let t2X = 46.0;
+  let t1Dwell = 0;
+  let t2Dwell = 0;
+  let t1LastChime = '';
+  let t2LastChime = '';
 
-  // Idle Turntable Auto-Dampener
+  // Active standalone archetype trains & PIDS references
+  let qutabPidsData = null;
   let lastUserInteraction = performance.now();
-
-  // Platform dynamic digital clock
-  let clockCanvas = null, clockCtx = null, clockTexture = null;
-
-  // Web Audio Context for DMRC Chime
   let audioCtx = null;
 
+  function M() { return window.MetroKit.Materials; }
+  function P() { return window.MetroKit.PlatformParts; }
+  function T() { return window.MetroKit.TrackSystem; }
+  function F() { return window.MetroKit.TrainFactory; }
+  function A() { return window.MetroKit.StationArchetypes; }
+
+  const prefersReducedMotion = () =>
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Critically damped physical spring state (damping = 1.0, response = 0.44s)
+  const springState = {
+    active: false,
+    posVel: new THREE.Vector3(),
+    lookVel: new THREE.Vector3(),
+    zoomVel: 0,
+    targetPos: new THREE.Vector3(24, 68, 128),
+    targetLook: new THREE.Vector3(4, 3, 0),
+    targetZoom: 1.0
+  };
+
+  // Smooth Theme Transition Targets (Apple Design §14)
+  const themeTargets = {
+    bg: new THREE.Color(0xEFEAE0),
+    hemiSky: new THREE.Color(0xFFFDF8),
+    hemiGround: new THREE.Color(0xC6B9A6),
+    hemiIntensity: 0.72,
+    ambientIntensity: 0.20,
+    sunColor: new THREE.Color(0xFFF4DC),
+    sunIntensity: 0.98,
+    winEmissiveIntensity: 0.14,
+    ugLightIntensity: 1.45,
+    elLightIntensity: 0.42,
+    stLightIntensity: 0.25,
+    animating: false
+  };
+
+  function getTrackY(x) {
+    if (x <= PORTAL_X) return SUBWAY_Y;
+    if (x >= RAMP_END_X) return VIADUCT_Y;
+    const t = (x - PORTAL_X) / (RAMP_END_X - PORTAL_X);
+    return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * (t * t * (3 - 2 * t));
+  }
+
+  function getTrackPitch(x) {
+    if (x <= PORTAL_X || x >= RAMP_END_X) return 0;
+    const span = RAMP_END_X - PORTAL_X;
+    const t = (x - PORTAL_X) / span;
+    return Math.atan((VIADUCT_Y - SUBWAY_Y) * (6 * t * (1 - t)) / span);
+  }
+
+  function stepCriticallyDampedScalar(val, vel, target, responseSec, dt) {
+    const omega = (2 * Math.PI) / Math.max(0.12, responseSec);
+    const x = val - target;
+    const exp = Math.exp(-omega * dt);
+    const nextVal = target + (x + (vel + omega * x) * dt) * exp;
+    const nextVel = (vel - omega * (vel + omega * x) * dt) * exp;
+    return [nextVal, nextVel];
+  }
+
+  // ── INITIALIZATION ──────────────────────────────────────────
   function init(containerEl) {
     if (!containerEl) return;
     if (isInitialized) {
-      // Already built, ensure viewport fits and start
       onWindowResize();
       return;
     }
@@ -68,1381 +146,767 @@ window.Diorama3D = (function () {
       container.prepend(canvas);
     }
 
-    // 1. Scene
+    M().resetDynamicPools();
+
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xFDFBF7); // Warm Alabaster Canvas
-    scene.fog = new THREE.FogExp2(0xFDFBF7, 0.0030);
+    scene.background = new THREE.Color(0xEFEAE0);
+    scene.fog = new THREE.FogExp2(0xEFEAE0, 0.0012);
 
-    // 2. Camera: True Orthographic Isometric Camera
-    const aspect = container.clientWidth / container.clientHeight;
-    const d = 36;
-    camera = new THREE.OrthographicCamera(
-      -d * aspect, d * aspect,
-      d, -d,
-      1, 1000
-    );
-    camera.position.set(62, 52, 62);
-    camera.lookAt(0, 7.5, 0);
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    const aspect = w / h;
+    const d = 60;
+    camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1400);
+    camera.position.set(24, 68, 128);
+    camera.lookAt(4, 3, 0);
 
-    // 3. WebGL Renderer with High-DPI Soft Shadow Maps
+    const isMobileDio = window.innerWidth <= 860 || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
     renderer = new THREE.WebGLRenderer({
       canvas: canvas,
-      antialias: true,
+      antialias: !isMobileDio,
       alpha: true,
       powerPreference: 'high-performance'
     });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileDio ? 1.5 : 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.90;
 
-    // 4. OrbitControls with Touch Shielding
-    if (window.THREE.OrbitControls) {
+    if (window.THREE && window.THREE.OrbitControls) {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
-      controls.dampingFactor = 0.08;
-      controls.maxPolarAngle = Math.PI / 2.15; // Don't flip below ground
-      controls.minPolarAngle = Math.PI / 8;
-      controls.minZoom = 0.55;
-      controls.maxZoom = 2.6;
-      controls.target.set(0, 7.5, 0);
+      controls.dampingFactor = 0.075;
+      controls.maxPolarAngle = Math.PI / 2.12;
+      controls.minPolarAngle = Math.PI / 9;
+      controls.minZoom = 0.60;
+      controls.maxZoom = 3.5;
+      controls.target.set(4, 3, 0);
 
       controls.addEventListener('start', () => {
         lastUserInteraction = performance.now();
         controls.autoRotate = false;
+        springState.active = false;
+        springState.posVel.set(0, 0, 0);
+        springState.lookVel.set(0, 0, 0);
+        springState.zoomVel = 0;
+        if (followTrainMode) {
+          followTrainMode = false;
+          const followBtn = document.getElementById('btn-follow-train-3d');
+          if (followBtn) followBtn.classList.remove('active');
+        }
       });
       controls.addEventListener('change', () => {
         lastUserInteraction = performance.now();
       });
     }
 
-    // 5. Studio Lighting
     setupLighting();
 
-    // 6. Build the Archetype Worlds
-    elevatedGroup = new THREE.Group();
-    undergroundGroup = new THREE.Group();
+    rootStage = new THREE.Group();
+    scene.add(rootStage);
 
-    buildElevatedArchetype(elevatedGroup);
-    buildUndergroundArchetype(undergroundGroup);
+    // Build shared shadow catcher beneath everything
+    const shadowFloor = new THREE.Mesh(
+      new THREE.PlaneGeometry(540, 360),
+      new THREE.ShadowMaterial({ opacity: 0.16 })
+    );
+    shadowFloor.rotation.x = -Math.PI / 2;
+    shadowFloor.position.y = -24.8;
+    shadowFloor.receiveShadow = true;
+    rootStage.add(shadowFloor);
 
-    scene.add(elevatedGroup);
-    scene.add(undergroundGroup);
+    corridorGroup = buildConnectedTwoStationCorridor();
+    rootStage.add(corridorGroup);
 
-    // Build Shared Tracks & Platforms & Trains
-    buildSharedTracks();
-    buildStationPlatform();
-    buildPlatformCommuters();
-    build3DMetroTrains();
-
-    // Set Default Archetype (Elevated)
-    setArchetype('elevated');
-
-    // 7. Bind HUD controls
+    setupStationClicking();
     bindHUDControls();
 
-    // 8. Safe Web Audio Unlock Handler (One-shot)
-    const unlockAudio = () => {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      window.removeEventListener('pointerdown', unlockAudio);
-    };
-    window.addEventListener('pointerdown', unlockAudio, { once: true });
-
+    window.addEventListener('pointerdown', () => {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+      } catch (e) {}
+    }, { once: true });
     window.addEventListener('resize', onWindowResize);
+
+    setLightingMode('day');
+    switchStage('corridor', true);
   }
 
-  // ── STUDIO LIGHTING ─────────────────────────────────────────
   function setupLighting() {
-    hemiLight = new THREE.HemisphereLight(0xFFFFFF, 0xE2E8F0, 0.85);
+    hemiLight = new THREE.HemisphereLight(0xFFFDF8, 0xC6B9A6, 0.72);
     scene.add(hemiLight);
 
-    ambientFill = new THREE.AmbientLight(0xFFFBEB, 0.35);
+    ambientFill = new THREE.AmbientLight(0xFFF7E5, 0.20);
     scene.add(ambientFill);
 
-    sunLight = new THREE.DirectionalLight(0xFFFBEB, 1.25);
-    sunLight.position.set(75, 95, 55);
+    sunLight = new THREE.DirectionalLight(0xFFF4DC, 0.98);
+    sunLight.position.set(76, 112, 74);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
-    sunLight.shadow.camera.near = 10;
-    sunLight.shadow.camera.far = 280;
-    const shadowD = 85;
-    sunLight.shadow.camera.left = -shadowD;
-    sunLight.shadow.camera.right = shadowD;
-    sunLight.shadow.camera.top = shadowD;
-    sunLight.shadow.camera.bottom = -shadowD;
-    sunLight.shadow.bias = -0.0003;
+    const dioShadowRes = (window.innerWidth <= 860 || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024)) ? 1024 : 2048;
+    sunLight.shadow.mapSize.width = dioShadowRes;
+    sunLight.shadow.mapSize.height = dioShadowRes;
+    sunLight.shadow.camera.near = 15;
+    sunLight.shadow.camera.far = 380;
+    const shadowExtent = 130;
+    sunLight.shadow.camera.left = -shadowExtent;
+    sunLight.shadow.camera.right = shadowExtent;
+    sunLight.shadow.camera.top = shadowExtent;
+    sunLight.shadow.camera.bottom = -shadowExtent;
+    sunLight.shadow.bias = -0.0004;
     scene.add(sunLight);
   }
 
-  function setLightingMode(mode) {
-    currentLightingMode = mode;
-    const isNight = mode === 'night';
-    const isSunset = mode === 'sunset';
-    const isUnderground = currentArchetype === 'underground';
+  // ── CORRIDOR BUILDER (COMPOSED PURELY FROM METROKIT!) ───────
+  function buildConnectedTwoStationCorridor() {
+    const cg = new THREE.Group();
+    const mat = M().shared();
 
-    // Warm architectural studio clay background for exhibition feel (NanoBanana style)
-    const bgCol = isNight ? (isUnderground ? 0x050811 : 0x080E1E) : (isSunset ? 0xFFF7ED : 0xEDE8E1);
+    // 1. Continuous Plinth & Delhi Arterial Urban Context
+    M().addBox(cg, 178, 6.2, 60, mat.plinth, 7, PLINTH_TOP_Y - 3.1, -1);
+    M().addBox(cg, 175, 0.8, 57, mat.plinthTrim, 7, PLINTH_TOP_Y - 6.6, -1);
+    M().addBox(cg, 118, 0.7, 56, mat.sageGround, 37, PLINTH_TOP_Y + 0.35, -1);
 
-    scene.background.set(bgCol);
-    if (scene.fog) scene.fog.color.set(bgCol);
-
-    if (isNight) {
-      hemiLight.color.set(0x1E293B);
-      hemiLight.groundColor.set(0x0F172A);
-      hemiLight.intensity = 0.25;
-      ambientFill.intensity = 0.15;
-      sunLight.color.set(0x38BDF8); // Cool moonlight
-      sunLight.intensity = 0.45;
-      sunLight.position.set(-60, 80, -40);
-
-      windowMaterials.forEach(m => {
-        m.emissive.set(0xFDE047);
-        m.emissiveIntensity = 0.90;
-      });
-      headlightMaterials.forEach(m => {
-        m.color.set(0xFEF08A);
-      });
-      platformLights.forEach(l => l.intensity = 2.4);
-
-    } else if (isSunset) {
-      hemiLight.color.set(0xFDE68A);
-      hemiLight.groundColor.set(0x78350F);
-      hemiLight.intensity = 0.75;
-      ambientFill.intensity = 0.4;
-      sunLight.color.set(0xF59E0B); // Amber golden hour
-      sunLight.intensity = 1.4;
-      sunLight.position.set(90, 45, 70);
-
-      windowMaterials.forEach(m => {
-        m.emissive.set(0xF59E0B);
-        m.emissiveIntensity = 0.35;
-      });
-      platformLights.forEach(l => l.intensity = 0.8);
-
-    } else {
-      // Day
-      if (isUnderground) {
-        hemiLight.color.set(0x94A3B8);
-        hemiLight.groundColor.set(0x0F172A);
-        hemiLight.intensity = 0.6;
-        ambientFill.intensity = 0.35;
-        sunLight.color.set(0xFFFBEB);
-        sunLight.intensity = 0.9;
-        sunLight.position.set(45, 80, 40);
-      } else {
-        hemiLight.color.set(0xFFFFFF);
-        hemiLight.groundColor.set(0xE2E8F0);
-        hemiLight.intensity = 0.85;
-        ambientFill.intensity = 0.35;
-        sunLight.color.set(0xFFFBEB);
-        sunLight.intensity = 1.25;
-        sunLight.position.set(75, 95, 55);
-      }
-
-      windowMaterials.forEach(m => {
-        m.emissive.set(0x000000);
-        m.emissiveIntensity = 0;
-      });
-      platformLights.forEach(l => l.intensity = isUnderground ? 1.8 : 0.3);
+    const roadLineMat = new THREE.MeshBasicMaterial({ color: 0xFAF8F3 });
+    M().addBox(cg, 112, 0.16, 13.0, mat.roadSandstone, 39, PLINTH_TOP_Y + 0.76, 13.5);
+    M().addBox(cg, 13.0, 0.17, 52.0, mat.roadSandstone, 38, PLINTH_TOP_Y + 0.77, -1);
+    for (let z = -22; z <= 22; z += 5.0) M().addBox(cg, 0.35, 0.18, 2.2, roadLineMat, 38, PLINTH_TOP_Y + 0.79, z, false);
+    for (let x = -12; x <= 88; x += 6.0) M().addBox(cg, 2.6, 0.18, 0.32, roadLineMat, x, PLINTH_TOP_Y + 0.79, 13.5, false);
+    for (let zx = 33; zx <= 43; zx += 1.8) {
+      M().addBox(cg, 0.75, 0.19, 2.2, roadLineMat, zx, PLINTH_TOP_Y + 0.80, 4.5, false);
+      M().addBox(cg, 0.75, 0.19, 2.2, roadLineMat, zx, PLINTH_TOP_Y + 0.80, 22.0, false);
     }
-  }
 
-  // ── ARCHETYPE A: ELEVATED VIADUCT STATION ───────────────────
-  function buildElevatedArchetype(group) {
-    // 1. Ivory architectural clay pedestal block
-    const baseGeo = new THREE.BoxGeometry(160, 8, 90);
-    const baseMat = new THREE.MeshStandardMaterial({
-      color: 0xF4EFE6, // Soft Warm Clay
-      roughness: 0.88,
-      metalness: 0.04
+    [[28, 11.2, Math.PI / 2], [41, 18.0, 0.1], [64, 15.8, -Math.PI / 2]].forEach(([ax, az, r]) => {
+      const a = new THREE.Group();
+      a.position.set(ax, PLINTH_TOP_Y + 0.88, az);
+      a.rotation.y = r;
+      M().addBox(a, 1.35, 0.65, 2.3, M().stdMat(0x16A34A), 0, 0.42, 0);
+      M().addBox(a, 1.28, 0.80, 1.85, M().stdMat(0xFACC15), 0, 1.12, -0.1);
+      cg.add(a);
     });
-    const pedestal = new THREE.Mesh(baseGeo, baseMat);
-    pedestal.position.set(0, -4, 0);
-    pedestal.receiveShadow = true;
-    group.add(pedestal);
 
-    // 2. Bevelled green clay embankment terrace flanking the tracks
-    const lawnMat = new THREE.MeshStandardMaterial({
-      color: 0xE2E8D5, // Minimalist muted sage grass
-      roughness: 0.9,
-      metalness: 0.02
+    [[14, 11, 10, 11, -21], [28, 8.5, 9, 9, -22], [78, 12.5, 11, 10, -21], [89, 9.5, 9, 9, -19]].forEach(([bx, bh, bw, bd, bz]) => {
+      M().addBox(cg, bw, bh, bd, mat.buildingFacade, bx, PLINTH_TOP_Y + 0.7 + bh / 2, bz);
     });
-    const lawnS = new THREE.Mesh(new THREE.BoxGeometry(158, 1.2, 24), lawnMat);
-    lawnS.position.set(0, 0.4, -30);
-    lawnS.receiveShadow = true;
-    group.add(lawnS);
 
-    const lawnN = new THREE.Mesh(new THREE.BoxGeometry(158, 1.2, 24), lawnMat);
-    lawnN.position.set(0, 0.4, 30);
-    lawnN.receiveShadow = true;
-    group.add(lawnN);
-
-    // 3. Ground Contact Shadow Receiver Plane
-    const groundGeo = new THREE.PlaneGeometry(400, 400);
-    const groundMat = new THREE.ShadowMaterial({ opacity: 0.16 });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -8.05;
-    ground.receiveShadow = true;
-    group.add(ground);
-
-    // 4. Low-Poly Architectural Forest Trees (Apple/Behance Clay Diorama Style)
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4A3525, roughness: 0.85 });
-    const foliageTones = [0x2D5A27, 0x386641, 0x4A7C59, 0x1F4E38, 0x345E37];
-    const treePositions = [
-      [-65, -28], [-48, -32], [-32, -26], [28, -31], [50, -27], [68, -33],
-      [-60, 31], [-42, 27], [-22, 33], [25, 29], [46, 32], [64, 28]
-    ];
-    treePositions.forEach(([x, z], idx) => {
+    [[-8, -18, 0.95], [8, -20, 1.05], [22, -16, 0.9], [66, -18, 1.0], [88, -11, 0.95],
+     [-6, 22, 1.0], [14, 22, 0.9], [26, 22, 1.05], [56, 22, 1.0], [74, 22, 0.95], [88, 22, 0.9]
+    ].forEach(([tx, tz, sc]) => {
       const tree = new THREE.Group();
-      tree.position.set(x, 1.0, z);
-      const h = 4.2 + (idx % 3) * 1.4;
-      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.55, h, 6), trunkMat);
-      trunk.position.y = h / 2;
-      trunk.castShadow = true;
-      tree.add(trunk);
-
-      const folCol = foliageTones[idx % foliageTones.length];
-      const folMat = new THREE.MeshStandardMaterial({
-        color: folCol,
-        roughness: 0.72,
-        metalness: 0.05,
-        flatShading: true
-      });
-      // Faceted Icosahedron Crown catching light across polygon faces
-      const crownGeo = (idx % 2 === 0) ? new THREE.IcosahedronGeometry(2.3, 1) : new THREE.IcosahedronGeometry(2.7, 0);
-      const crown = new THREE.Mesh(crownGeo, folMat);
-      crown.position.y = h + 2.0;
-      crown.castShadow = true;
-      crown.receiveShadow = true;
-      tree.add(crown);
-      group.add(tree);
+      tree.position.set(tx, PLINTH_TOP_Y + 0.7, tz);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22 * sc, 0.34 * sc, 2.8 * sc, 6), M().stdMat(0x5C4033));
+      trunk.position.y = 1.4 * sc; trunk.castShadow = true; tree.add(trunk);
+      const c1 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.7 * sc, 1), M().stdMat(0x4D7C4D, { flatShading: true }));
+      c1.position.y = 3.6 * sc; c1.castShadow = true; tree.add(c1);
+      cg.add(tree);
     });
 
-    // 5. Concrete Viaduct Piers with Flared Capital Caps
-    const pierMat = new THREE.MeshStandardMaterial({ color: 0xCBD5E1, roughness: 0.8 });
-    for (let px of [-55, 0, 55]) {
-      const pierGroup = new THREE.Group();
-      pierGroup.position.set(px, 0, 0);
+    P().buildStreetTotem(cg, 29, PLINTH_TOP_Y + 0.7, 21.5);
 
-      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.8, 10, 16), pierMat);
-      shaft.position.y = -5;
-      shaft.castShadow = true;
-      shaft.receiveShadow = true;
-      pierGroup.add(shaft);
+    // 2. Left Station (Rajiv Chowk Underground Island) & Right Station (Qutab Minar Elevated Side)
+    const rajivRes = A().buildUndergroundIsland(cg, { xCenter: RAJIV_X, plinthTopY: PLINTH_TOP_Y });
+    rajivAnchor = rajivRes.group;
 
-      const cap = new THREE.Mesh(new THREE.BoxGeometry(8, 1.6, 26), pierMat);
-      cap.position.y = 0.5;
-      cap.castShadow = true;
-      pierGroup.add(cap);
+    const qutabRes = A().buildElevatedSide(cg, { xCenter: QUTAB_X, yViaduct: VIADUCT_Y, plinthTopY: PLINTH_TOP_Y });
+    qutabAnchor = qutabRes.group;
+    qutabPidsData = qutabRes.pids;
 
-      group.add(pierGroup);
-    }
+    // 3. Center Tunnel Portal Headwall & Box-Girder Transition Ramp
+    const portalVoidMat = new THREE.MeshBasicMaterial({ color: 0x050912 });
+    M().addBox(cg, 3.2, 27.0, 12.0, mat.concreteLight, PORTAL_X, 3.5, -15.5);
+    M().addBox(cg, 3.2, 18.0, 2.8, mat.concreteLight, PORTAL_X, -1.0, 0);
+    M().addBox(cg, 3.2, 11.8, 9.0, mat.concreteLight, PORTAL_X, -4.1, 10.8);
+    M().addBox(cg, 3.6, 10.0, 24.5, mat.concreteLight, PORTAL_X, 11.8, -5.0);
 
-    // 6. Iconic DMRC Arched Platform Canopy & Steel Portal Trusses
-    const canopyGroup = new THREE.Group();
-    const steelMat = new THREE.MeshStandardMaterial({ color: 0x64748B, metalness: 0.7, roughness: 0.35 });
-    const glassMat = new THREE.MeshStandardMaterial({
-      color: 0xBAE6FD,
-      roughness: 0.15,
-      metalness: 0.15,
-      transparent: true,
-      opacity: 0.55
-    });
-
-    // Arched portal frames across platform spanning x = -30 to +30
-    for (let rx = -28; rx <= 28; rx += 9.3) {
-      const arch = new THREE.Mesh(
-        new THREE.TorusGeometry(12, 0.32, 8, 20, Math.PI),
-        steelMat
-      );
-      arch.position.set(rx, 8.5, 0);
+    [TRACK_Z_SOUTH, TRACK_Z_NORTH].forEach((tz) => {
+      const arch = new THREE.Mesh(new THREE.TorusGeometry(2.65, 0.38, 10, 22, Math.PI), mat.concreteWeb);
+      arch.position.set(PORTAL_X + 1.75, 2.3, tz);
       arch.rotation.y = Math.PI / 2;
       arch.castShadow = true;
-      canopyGroup.add(arch);
+      cg.add(arch);
+      const sig = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 8), mat.ledGreen);
+      sig.position.set(PORTAL_X + 2.1, 5.25, tz);
+      cg.add(sig);
+      M().addBox(cg, 0.35, 4.8, 4.8, portalVoidMat, PORTAL_X - 1.4, 2.4, tz, false);
+    });
 
-      // Vertical support columns down to platform deck
-      for (let cz of [-3.1, 3.1]) {
-        const col = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 9, 8), steelMat);
-        col.position.set(rx, 12, cz);
-        col.castShadow = true;
-        canopyGroup.add(col);
+    const stepX = (RAMP_END_X - PORTAL_X) / 22;
+    for (let i = 0; i < 22; i++) {
+      const x0 = PORTAL_X + i * stepX;
+      const x1 = x0 + stepX;
+      const xm = (x0 + x1) * 0.5;
+      const y0 = getTrackY(x0);
+      const y1 = getTrackY(x1);
+      const ym = (y0 + y1) * 0.5;
+      if (xm < 1.0) {
+        const fillH = ym - PLINTH_TOP_Y;
+        M().addBox(cg, stepX + 0.12, fillH, 11.0, mat.concreteWeb, xm, PLINTH_TOP_Y + fillH / 2, 0);
       }
+      T().buildBoxGirderSegment(cg, { x: xm, y: ym, length: Math.hypot(stepX, y1 - y0) + 0.22, width: 11.8, pitch: Math.atan2(y1 - y0, stepX) });
     }
+    [7, 21].forEach(px => T().buildDMRCViaductPier(cg, { x: px, bottomY: PLINTH_TOP_Y + 0.7, topDeckBottomY: getTrackY(px) }));
+    T().buildBoxGirderSegment(cg, { x: 26.5, y: VIADUCT_Y, length: 10.5, width: 11.8 });
+    T().buildBoxGirderSegment(cg, { x: 86.5, y: VIADUCT_Y, length: 18.0, width: 11.8 });
 
-    // Translucent barrel-vault roof canopy covering platform
-    const roofGeo = new THREE.CylinderGeometry(12.1, 12.1, 58, 24, 1, true, 0, Math.PI);
-    const roof = new THREE.Mesh(roofGeo, glassMat);
-    roof.position.set(0, 8.5, 0);
-    roof.rotation.z = Math.PI / 2;
-    roof.rotation.x = Math.PI / 2;
-    roof.castShadow = true;
-    roof.receiveShadow = true;
-    canopyGroup.add(roof);
+    // East Exhibition End-Cap & Buffer Stops
+    M().addBox(cg, 0.45, 2.4, 12.0, mat.concreteWeb, 95.3, VIADUCT_Y - 0.65, 0);
+    [TRACK_Z_SOUTH, TRACK_Z_NORTH].forEach(tz => M().addBox(cg, 0.55, 0.85, 2.2, M().stdMat(0xDC2626), 94.5, VIADUCT_Y + 0.48, tz));
 
-    // Platform Glass Balustrades with DMRC Yellow Trim
-    const balustradeMat = new THREE.MeshStandardMaterial({
-      color: 0xE2E8F0,
-      transparent: true,
-      opacity: 0.45,
-      roughness: 0.2
+    // 4. Continuous Instanced Dual Tracks & OHE
+    T().buildTracksAlongAxis(cg, {
+      xStart: -74, xEnd: 94, trackZs: [TRACK_Z_SOUTH, TRACK_Z_NORTH],
+      lineColor: M().LINE_COLORS.yellow, yFn: getTrackY, pitchFn: getTrackPitch,
+      oheStart: -20, oheXs: [-16, -3, 10, 20, 82, 91]
     });
-    const yellowRailMat = new THREE.MeshBasicMaterial({ color: 0xEAB308 });
 
-    for (let bz of [-3.15, 3.15]) {
-      const glassRailing = new THREE.Mesh(new THREE.BoxGeometry(60, 1.8, 0.15), balustradeMat);
-      glassRailing.position.set(0, 8.5, bz);
-      canopyGroup.add(glassRailing);
+    // 5. Articulated Corridor Trains
+    train1Group = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.yellow, carCount: 3, directionSign: -1 });
+    F().updateTrainOnAxis(train1Group, t1X, TRACK_Z_SOUTH, 'x', getTrackY, getTrackPitch);
+    cg.add(train1Group);
 
-      const topRail = new THREE.Mesh(new THREE.BoxGeometry(60, 0.18, 0.25), yellowRailMat);
-      topRail.position.set(0, 9.4, bz);
-      canopyGroup.add(topRail);
-    }
+    train2Group = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.yellow, carCount: 3, directionSign: 1 });
+    F().updateTrainOnAxis(train2Group, t2X, TRACK_Z_NORTH, 'x', getTrackY, getTrackPitch);
+    cg.add(train2Group);
 
-    group.add(canopyGroup);
+    return cg;
   }
 
-  // ── ARCHETYPE B: SUBTERRANEAN TUBE CUTAWAY (NANO BANANA PRO FIDELITY) ──
-  function buildUndergroundArchetype(group) {
-    const cutawayBox = new THREE.Group();
+  // ── STANDALONE ARCHETYPE STAGE BUILDER (ALL 6 KIT TYPES!) ─────
+  const STAGE_METADATA = {
+    corridor: {
+      tag: 'DELHI METRO 3D · TWO-STATION KIT CORRIDOR',
+      title: 'Rajiv Chowk (Underground Island) ↔ Qutab Minar (Elevated Side)',
+      pos: [30, 68, 134], look: [11, 3, 0], zoom: 0.96,
+      platformPos: [-8, 22, 74], platformLook: [8, 6.5, 0], platformZoom: 1.60
+    },
+    elevatedSide: {
+      tag: 'ARCHETYPE 1 · ELEVATED SIDE-PLATFORM (2 TRACKS, 2 OUTER DECKS)',
+      title: 'Qutab Minar — Blue Arch Canopy, Lift Wing & Glazed Concourse',
+      pos: [80, 48, 86], look: [54, 7.5, 1], zoom: 1.85,
+      platformPos: [20, 18.5, 34], platformLook: [54, 12.2, 0], platformZoom: 2.35
+    },
+    elevatedIsland: {
+      tag: 'ARCHETYPE 2 · ELEVATED ISLAND-PLATFORM (SPLIT TRACKS, CENTRAL DECK)',
+      title: 'Botanical Garden — Blue × Magenta Split-Track Island Viaduct',
+      pos: [34, 46, 84], look: [0, 7.5, 0], zoom: 1.75,
+      platformPos: [-32, 18.5, 28], platformLook: [4, 12.2, 0], platformZoom: 2.30
+    },
+    undergroundIsland: {
+      tag: 'ARCHETYPE 3 · UNDERGROUND CUTAWAY ISLAND (-12m TBM CHAMBER)',
+      title: 'Rajiv Chowk — TBM Collars, PSDs, Mezzanine AFC & Escalators',
+      pos: [-18, 44, 82], look: [-46, 4.5, -2], zoom: 1.75,
+      platformPos: [-74, 8.5, 30], platformLook: [-44, 2.8, 0], platformZoom: 2.30
+    },
+    surfaceMultiBay: {
+      tag: 'ARCHETYPE 4 · AT-GRADE 4-TRACK Y-BRANCH JUNCTION (SURFACE)',
+      title: 'Yamuna Bank — 4 Tracks, 2 Islands, Y-Turnout & Overhead FOB',
+      pos: [36, 54, 96], look: [2, 2.5, 2], zoom: 1.48,
+      platformPos: [40, 12.0, 44], platformLook: [0, 3.2, 4], platformZoom: 2.05
+    },
+    stackedCrossInterchange: {
+      tag: 'ARCHETYPE 5 · CROSS-STACKED UNDERGROUND (-12m × -21m ORTHOGONAL)',
+      title: 'Hauz Khas — Yellow E–W Over Magenta N–S Transfer Core',
+      pos: [52, 54, 82], look: [0, -3.5, 0], zoom: 1.42,
+      platformPos: [38, 6.0, 40], platformLook: [0, -4.5, 0], platformZoom: 1.95
+    },
+    hybridMegaHub: {
+      tag: 'ARCHETYPE 6 · HYBRID MEGA INTERCHANGE (ELEVATED + UNDERGROUND)',
+      title: 'Kashmere Gate — Red Elevated (+14m) Over Yellow Tube (-12m)',
+      pos: [38, 52, 92], look: [0, 6.0, 0], zoom: 1.55,
+      platformPos: [34, 13.5, 42], platformLook: [0, 6.5, 0], platformZoom: 2.05
+    }
+  };
 
-    // 0. Museum Studio Shadow Catcher Plane
-    const shadowFloor = new THREE.Mesh(
-      new THREE.PlaneGeometry(350, 350),
-      new THREE.ShadowMaterial({ opacity: 0.18 })
-    );
-    shadowFloor.rotation.x = -Math.PI / 2;
-    shadowFloor.position.y = -8.05;
-    shadowFloor.receiveShadow = true;
-    cutawayBox.add(shadowFloor);
+  function getOrBuildArchetypeStage(key) {
+    if (archetypeCache.has(key)) return archetypeCache.get(key);
 
-    // 1. Excavation Bedrock Cutaway Box (Architectural Shale Plinth)
-    const bedrockMat = new THREE.MeshStandardMaterial({
-      color: 0x222C38, // Rich deep slate architectural shale
-      roughness: 0.88,
-      metalness: 0.12
-    });
+    const stage = new THREE.Group();
+    const trains = [];
+    let branchCurve = null;
 
-    // Foundation Excavation Bedrock Plinth
-    const baseBedrock = new THREE.Mesh(new THREE.BoxGeometry(160, 8, 42), bedrockMat);
-    baseBedrock.position.set(0, -4, 0);
-    baseBedrock.receiveShadow = true;
-    cutawayBox.add(baseBedrock);
-
-    // Back Retaining Wall with DMRC Subway Tiling
-    const backWall = new THREE.Mesh(new THREE.BoxGeometry(158, 28, 4), bedrockMat);
-    backWall.position.set(0, 12, -20);
-    backWall.receiveShadow = true;
-    cutawayBox.add(backWall);
-
-    // Subway Ceramic Wall Lining (White gloss tiles + Yellow accent stripe)
-    const tileMat = new THREE.MeshStandardMaterial({
-      color: 0xFAFAFA, // Crisp subway white
-      roughness: 0.22,
-      metalness: 0.15
-    });
-    const tileLining = new THREE.Mesh(new THREE.BoxGeometry(156, 18, 0.4), tileMat);
-    tileLining.position.set(0, 11.5, -17.8);
-    tileLining.receiveShadow = true;
-    cutawayBox.add(tileLining);
-
-    // Iconic DMRC Yellow Wall Perimeter Line
-    const yellowStripe = new THREE.Mesh(
-      new THREE.BoxGeometry(156, 1.4, 0.5),
-      new THREE.MeshBasicMaterial({ color: 0xEAB308 })
-    );
-    yellowStripe.position.set(0, 14.8, -17.7);
-    cutawayBox.add(yellowStripe);
-
-    // Subway Station Name Signboard ("RAJIV CHOWK · YELLOW LINE")
-    const signBoard = new THREE.Mesh(
-      new THREE.BoxGeometry(42, 3.2, 0.6),
-      new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.4 })
-    );
-    signBoard.position.set(0, 17.6, -17.6);
-    cutawayBox.add(signBoard);
-
-    // Station Name Text on Wall (Canvas Texture)
-    const wallSignCanvas = document.createElement('canvas');
-    wallSignCanvas.width = 512;
-    wallSignCanvas.height = 128;
-    const wCtx = wallSignCanvas.getContext('2d');
-    wCtx.fillStyle = '#0F172A';
-    wCtx.fillRect(0, 0, 512, 128);
-    // DMRC Roundel graphic on sign
-    wCtx.fillStyle = '#DC2626';
-    wCtx.beginPath();
-    wCtx.arc(54, 64, 38, 0, Math.PI * 2);
-    wCtx.fill();
-    wCtx.fillStyle = '#2563EB';
-    wCtx.fillRect(14, 52, 80, 24);
-    // Text
-    wCtx.fillStyle = '#F8FAFC';
-    wCtx.font = 'bold 36px Inter, sans-serif';
-    wCtx.fillText('RAJIV CHOWK', 115, 62);
-    wCtx.fillStyle = '#EAB308';
-    wCtx.font = 'bold 22px Inter, sans-serif';
-    wCtx.fillText('YELLOW LINE · PLATFORM 1 & 2', 115, 96);
-
-    const wallSignTex = new THREE.CanvasTexture(wallSignCanvas);
-    const wallSignMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(41.6, 3.0, 0.1),
-      new THREE.MeshBasicMaterial({ map: wallSignTex })
-    );
-    wallSignMesh.position.set(0, 17.6, -17.25);
-    cutawayBox.add(wallSignMesh);
-
-    // Upper Concourse & Street Slab
-    const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x1E293B, roughness: 0.85 });
-    const concourseSlab = new THREE.Mesh(new THREE.BoxGeometry(158, 2.5, 12), ceilingMat);
-    concourseSlab.position.set(0, 22.0, -15);
-    concourseSlab.castShadow = true;
-    cutawayBox.add(concourseSlab);
-
-    // Exposed Overhead Structural Excavation Struts (Steel I-beams)
-    const strutMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.65, roughness: 0.35 });
-    for (let sx of [-50, -20, 20, 50]) {
-      const strut = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.6, 34), strutMat);
-      strut.position.set(sx, 22.0, -2);
-      strut.castShadow = true;
-      cutawayBox.add(strut);
+    if (key === 'elevatedSide') {
+      A().buildElevatedSide(stage, { xCenter: 54, yViaduct: 10.5, standalonePlinth: true });
+      const tr = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.yellow, carCount: 4, directionSign: 1 });
+      stage.add(tr);
+      trains.push({ group: tr, x: 38, minX: 16, maxX: 92, dir: 1, z: 3.6, y: 10.5, axis: 'x' });
+    } else if (key === 'elevatedIsland') {
+      A().buildElevatedIsland(stage, { xCenter: 0, yViaduct: 10.5 });
+      const tr1 = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.blue, carCount: 4, directionSign: -1 });
+      const tr2 = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.magenta, carCount: 4, directionSign: 1 });
+      stage.add(tr1, tr2);
+      trains.push({ group: tr1, x: 10, minX: -40, maxX: 40, dir: -1, z: -4.9, y: 10.5, axis: 'x' });
+      trains.push({ group: tr2, x: -14, minX: -40, maxX: 40, dir: 1, z: 4.9, y: 10.5, axis: 'x' });
+    } else if (key === 'undergroundIsland') {
+      A().buildUndergroundIsland(stage, { xCenter: -48, standalonePlinth: true });
+      const tr = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.yellow, carCount: 3, directionSign: 1 });
+      stage.add(tr);
+      trains.push({ group: tr, x: -50, minX: -72, maxX: -14, dir: 1, z: 3.6, y: 0, axis: 'x' });
+    } else if (key === 'surfaceMultiBay') {
+      const res = A().buildSurfaceMultiBay(stage, { xCenter: 0 });
+      branchCurve = res.branchCurve;
+      const tr1 = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.blue, carCount: 4, directionSign: -1 });
+      const tr2 = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.blue, carCount: 4, directionSign: 1 });
+      const trBranch = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.blue, carCount: 3, directionSign: 1 });
+      stage.add(tr1, tr2, trBranch);
+      trains.push({ group: tr1, x: 14, minX: -46, maxX: 46, dir: -1, z: -11.5, y: 0.18, axis: 'x' });
+      trains.push({ group: tr2, x: -16, minX: -46, maxX: 46, dir: 1, z: 4.5, y: 0.18, axis: 'x' });
+      trains.push({ group: trBranch, curve: branchCurve, dist: 16, totalLen: branchCurve.getLength(), speed: 9.0 });
+    } else if (key === 'stackedCrossInterchange') {
+      const res = A().buildStackedCrossInterchange(stage, { xCenter: 0 });
+      const trU = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.yellow, carCount: 3, directionSign: -1 });
+      const trL = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.magenta, carCount: 3, directionSign: 1 });
+      stage.add(trU, trL);
+      trains.push({ group: trU, x: 6, minX: -32, maxX: 32, dir: -1, z: -3.6, y: res.upperY, axis: 'x' });
+      trains.push({ group: trL, x: -6, minX: -32, maxX: 32, dir: 1, z: 3.6, y: res.lowerY, axis: 'z' });
+    } else if (key === 'hybridMegaHub') {
+      A().buildHybridMegaHub(stage, { xCenter: 0, yViaduct: 12.5 });
+      const trTop = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.red, carCount: 4, directionSign: -1 });
+      const trBot = F().createArticulatedTrain({ lineColor: M().LINE_COLORS.yellow, carCount: 3, directionSign: 1 });
+      stage.add(trTop, trBot);
+      trains.push({ group: trTop, x: 8, minX: -40, maxX: 40, dir: -1, z: -3.6, y: 12.5, axis: 'x' });
+      trains.push({ group: trBot, x: -8, minX: -40, maxX: 40, dir: 1, z: 3.6, y: 0.0, axis: 'x' });
     }
 
-    // Left and Right Excavation Cutaway Plinths
-    const wallL = new THREE.Mesh(new THREE.BoxGeometry(6, 28, 38), bedrockMat);
-    wallL.position.set(-78, 12, -2);
-    cutawayBox.add(wallL);
+    const entry = { group: stage, trains };
+    archetypeCache.set(key, entry);
+    return entry;
+  }
 
-    const wallR = new THREE.Mesh(new THREE.BoxGeometry(6, 28, 38), bedrockMat);
-    wallR.position.set(78, 12, -2);
-    cutawayBox.add(wallR);
+  function switchStage(stageKey, immediate = false) {
+    activeStageKey = STAGE_METADATA[stageKey] ? stageKey : 'corridor';
+    const isCorridor = activeStageKey === 'corridor';
 
-    // Low Front Cutaway Curb (museum pedestal framing edge)
-    const frontCurb = new THREE.Mesh(new THREE.BoxGeometry(160, 2.4, 2.5), bedrockMat);
-    frontCurb.position.set(0, 5.0, 17.0);
-    cutawayBox.add(frontCurb);
-
-    // 2. Circular Precast Concrete Tube Tunnels (NanoBanana Style TBM Rings)
-    const tubeRingMat = new THREE.MeshStandardMaterial({
-      color: 0x94A3B8, // Precast segmented concrete
-      roughness: 0.68,
-      metalness: 0.22
+    if (corridorGroup) corridorGroup.visible = isCorridor;
+    archetypeCache.forEach((entry, k) => {
+      entry.group.visible = (!isCorridor && k === activeStageKey);
     });
-    const tubeBoreMat = new THREE.MeshBasicMaterial({ color: 0x070B14 }); // Deep tunnel void
 
-    function createTubePortal(xCenter, zCenter, isLeft) {
-      const portalGroup = new THREE.Group();
-      portalGroup.position.set(xCenter, 8.5, zCenter);
+    if (!isCorridor) {
+      const entry = getOrBuildArchetypeStage(activeStageKey);
+      if (!entry.group.parent && rootStage) rootStage.add(entry.group);
+      entry.group.visible = true;
+    }
 
-      // Heavy bevelled portal collar
-      const collar = new THREE.Mesh(
-        new THREE.CylinderGeometry(5.9, 6.4, 5.5, 28),
-        tubeRingMat
-      );
-      collar.rotation.z = Math.PI / 2;
-      collar.castShadow = true;
-      collar.receiveShadow = true;
-      portalGroup.add(collar);
+    // Re-apply lighting intensities to newly created pools
+    setLightingMode(currentLightingMode);
 
-      // Ribbed Segmented TBM Rings extending into the bedrock
-      for (let r = 1; r <= 3; r++) {
-        const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(5.5, 0.48, 12, 28),
-          tubeRingMat
-        );
-        ring.rotation.y = Math.PI / 2;
-        ring.position.x = isLeft ? -r * 4.2 : r * 4.2;
-        portalGroup.add(ring);
+    // Update active chip styling for Kit buttons
+    document.querySelectorAll('[data-kit]').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-kit') === activeStageKey);
+    });
+
+    const meta = STAGE_METADATA[activeStageKey];
+    const tagEl = document.querySelector('.diorama-tag');
+    const titleEl = document.getElementById('diorama-stage-title');
+    if (tagEl) tagEl.textContent = meta.tag;
+    if (titleEl) titleEl.textContent = meta.title;
+
+    if (isCorridor) {
+      setCameraView('overview', immediate);
+    } else {
+      currentView = 'overview';
+      followTrainMode = false;
+      const followBtn = document.getElementById('btn-follow-train-3d');
+      if (followBtn) followBtn.classList.remove('active');
+      document.getElementById('btn-arch-both')?.classList.remove('active');
+      document.getElementById('btn-arch-tube')?.classList.remove('active');
+      document.getElementById('btn-arch-viaduct')?.classList.remove('active');
+      document.getElementById('btn-cam-iso')?.classList.add('active');
+      document.getElementById('btn-cam-platform')?.classList.remove('active');
+      applyCameraTarget(meta.pos, meta.look, meta.zoom, immediate);
+    }
+  }
+
+  // ── CAMERA SPRINGS & THEME INTERPOLATION ────────────────────
+  function applyCameraTarget(posArr, lookArr, zoomVal, immediate) {
+    if (!camera) return;
+    springState.targetPos.set(posArr[0], posArr[1], posArr[2]);
+    springState.targetLook.set(lookArr[0], lookArr[1], lookArr[2]);
+    springState.targetZoom = zoomVal;
+
+    if (immediate || prefersReducedMotion()) {
+      camera.position.copy(springState.targetPos);
+      camera.zoom = springState.targetZoom;
+      camera.updateProjectionMatrix();
+      if (controls) {
+        controls.target.copy(springState.targetLook);
+        controls.update();
       }
-
-      // Interior dark bore cylinder
-      const bore = new THREE.Mesh(
-        new THREE.CylinderGeometry(5.1, 5.1, 18, 28, 1, true),
-        tubeBoreMat
-      );
-      bore.rotation.z = Math.PI / 2;
-      bore.position.x = isLeft ? -9 : 9;
-      portalGroup.add(bore);
-
-      // Interior Amber Signal Lantern
-      const signal = new THREE.Mesh(
-        new THREE.SphereGeometry(0.38, 8, 8),
-        new THREE.MeshBasicMaterial({ color: 0xF59E0B })
-      );
-      signal.position.set(isLeft ? -1.5 : 1.5, 4.3, 0);
-      portalGroup.add(signal);
-
-      // Warm amber interior tunnel glow
-      const tunnelLight = new THREE.PointLight(0xF59E0B, 2.0, 30, 1.2);
-      tunnelLight.position.set(isLeft ? -6 : 6, 3.6, 0);
-      portalGroup.add(tunnelLight);
-
-      return portalGroup;
+      springState.posVel.set(0, 0, 0);
+      springState.lookVel.set(0, 0, 0);
+      springState.zoomVel = 0;
+      springState.active = false;
+    } else {
+      springState.active = true;
     }
-
-    // West Tunnel Portals (Track 1 Southbound & Track 2 Northbound)
-    cutawayBox.add(createTubePortal(-45, -7, true));
-    cutawayBox.add(createTubePortal(-45, 7, true));
-
-    // East Tunnel Portals (Track 1 Southbound & Track 2 Northbound)
-    cutawayBox.add(createTubePortal(45, -7, false));
-    cutawayBox.add(createTubePortal(45, 7, false));
-
-    // ── 2B. EXTENDED SLICED CUTAWAY TUBE (THE NANO BANANA ICONIC ELEMENT) ──
-    // A concrete tube tunnel sliced in half along Track 1 so the train is seen INSIDE!
-    const cutTubeLen = 32;
-    const cutTubeGeo = new THREE.CylinderGeometry(
-      5.6, 5.6, cutTubeLen, 28, 1, true,
-      0, Math.PI // Half cylinder cut along the top-front!
-    );
-    const cutTubeMat = new THREE.MeshStandardMaterial({
-      color: 0x94A3B8,
-      roughness: 0.72,
-      metalness: 0.20,
-      side: THREE.DoubleSide
-    });
-    const cutTube = new THREE.Mesh(cutTubeGeo, cutTubeMat);
-    cutTube.position.set(45 - cutTubeLen / 2 + 3, 8.5, -7);
-    cutTube.rotation.z = Math.PI / 2;
-    cutTube.rotation.y = -Math.PI / 2;
-    cutTube.castShadow = true;
-    cutTube.receiveShadow = true;
-    cutawayBox.add(cutTube);
-
-    // Segmented Expansion Rings along the sliced tube
-    for (let rx = 24; rx <= 42; rx += 5) {
-      const rib = new THREE.Mesh(
-        new THREE.TorusGeometry(5.75, 0.35, 8, 24, Math.PI),
-        tubeRingMat
-      );
-      rib.position.set(rx, 8.5, -7);
-      rib.rotation.y = -Math.PI / 2;
-      rib.castShadow = true;
-      cutawayBox.add(rib);
-    }
-
-    // ── 3. SURFACE STREET-LEVEL ENTRANCE KIOSK (NANO BANANA PAVILION) ──
-    const streetKioskGroup = new THREE.Group();
-    streetKioskGroup.position.set(16, 23.25, -14);
-
-    // Paved sidewalk terrace
-    const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0xE2E8F0, roughness: 0.7 });
-    const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(28, 0.8, 14), sidewalkMat);
-    sidewalk.receiveShadow = true;
-    streetKioskGroup.add(sidewalk);
-
-    // Kiosk Building Box (Subway white tiles)
-    const kioskBuilding = new THREE.Mesh(new THREE.BoxGeometry(18, 5.2, 8), tileMat);
-    kioskBuilding.position.set(0, 2.8, 0);
-    kioskBuilding.castShadow = true;
-    kioskBuilding.receiveShadow = true;
-    streetKioskGroup.add(kioskBuilding);
-
-    // Modern Navy / Blue Roof Fascia Canopy
-    const roofFascia = new THREE.Mesh(
-      new THREE.BoxGeometry(19.2, 0.9, 9.2),
-      new THREE.MeshStandardMaterial({ color: 0x1E3A8A, roughness: 0.4 })
-    );
-    roofFascia.position.set(0, 5.6, 0);
-    roofFascia.castShadow = true;
-    streetKioskGroup.add(roofFascia);
-
-    // Glass Entrance Vestibule
-    const glassMat = new THREE.MeshStandardMaterial({
-      color: 0x38BDF8,
-      roughness: 0.1,
-      metalness: 0.9,
-      transparent: true,
-      opacity: 0.45
-    });
-    const glassDoor = new THREE.Mesh(new THREE.BoxGeometry(12, 3.4, 0.3), glassMat);
-    glassDoor.position.set(0, 2.0, 4.05);
-    streetKioskGroup.add(glassDoor);
-
-    // Iconic Red/Blue Subway Roundel on Entrance Roof
-    const roundelGroup = new THREE.Group();
-    roundelGroup.position.set(0, 7.2, 4.2);
-
-    const redRing = new THREE.Mesh(
-      new THREE.TorusGeometry(1.4, 0.32, 8, 24),
-      new THREE.MeshStandardMaterial({ color: 0xDC2626, roughness: 0.3 })
-    );
-    roundelGroup.add(redRing);
-
-    const blueBar = new THREE.Mesh(
-      new THREE.BoxGeometry(3.6, 0.65, 0.35),
-      new THREE.MeshStandardMaterial({ color: 0x1D4ED8, roughness: 0.3 })
-    );
-    roundelGroup.add(blueBar);
-
-    streetKioskGroup.add(roundelGroup);
-
-    // Minimalist Street Lamp Post
-    const lampPost = new THREE.Group();
-    lampPost.position.set(-11, 0.4, 4.5);
-    const postPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 5.5, 6), strutMat);
-    postPole.position.y = 2.75;
-    postPole.castShadow = true;
-    lampPost.add(postPole);
-
-    const postHead = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.3, 0.6), strutMat);
-    postHead.position.set(0.4, 5.4, 0);
-    lampPost.add(postHead);
-
-    const postBulb = new THREE.PointLight(0xFFFBEB, 1.2, 14);
-    postBulb.position.set(0.4, 5.2, 0);
-    lampPost.add(postBulb);
-    streetKioskGroup.add(lampPost);
-
-    cutawayBox.add(streetKioskGroup);
-
-    // ── 4. DUAL INCLINED ESCALATOR TRUSSES (RISING TO CONCOURSE) ──
-    const escGroup = new THREE.Group();
-    const escFrameMat = new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.8, roughness: 0.3 });
-    const escHandrailMat = new THREE.MeshBasicMaterial({ color: 0x22C55E }); // Glowing green guide rail
-
-    for (let ez of [-1.5, 1.5]) {
-      const truss = new THREE.Mesh(new THREE.BoxGeometry(22, 1.2, 2.2), escFrameMat);
-      truss.position.set(-8, 12, ez);
-      truss.rotation.z = -Math.PI / 6.5; // 28-degree incline
-      truss.castShadow = true;
-      escGroup.add(truss);
-
-      const rail = new THREE.Mesh(new THREE.BoxGeometry(22, 0.25, 0.2), escHandrailMat);
-      rail.position.set(-8, 13.2, ez);
-      rail.rotation.z = -Math.PI / 6.5;
-      escGroup.add(rail);
-    }
-    cutawayBox.add(escGroup);
-
-    // ── 5. UNDERGROUND PLATFORM FLUORESCENT DOWNLIGHTS ──
-    const lightStripMat = new THREE.MeshBasicMaterial({ color: 0xFFFBEB });
-    for (let lx of [-24, 0, 24]) {
-      const fixture = new THREE.Mesh(new THREE.BoxGeometry(16, 0.4, 1.2), lightStripMat);
-      fixture.position.set(lx, 21.8, 0);
-      cutawayBox.add(fixture);
-
-      const downlight = new THREE.PointLight(0xFFFBEB, 1.8, 42);
-      downlight.position.set(lx, 20.5, 0);
-      cutawayBox.add(downlight);
-      platformLights.push(downlight);
-    }
-
-    group.add(cutawayBox);
   }
 
-  // ── 3. SHARED TRACKS & RAILS ────────────────────────────────
-  function buildSharedTracks() {
-    const viaductGroup = new THREE.Group();
-
-    // Track Deck Girder
-    const deckGeo = new THREE.BoxGeometry(TRACK_LEN, 4, 30);
-    const deckMat = new THREE.MeshStandardMaterial({
-      color: 0xE2E8F0,
-      roughness: 0.75,
-      metalness: 0.1
-    });
-    const deck = new THREE.Mesh(deckGeo, deckMat);
-    deck.position.set(0, 2, 0);
-    deck.castShadow = true;
-    deck.receiveShadow = true;
-    viaductGroup.add(deck);
-
-    // Ballast Beds (Crushed stone gravel bed beneath tracks)
-    const ballastMat = new THREE.MeshStandardMaterial({ color: 0x94A3B8, roughness: 0.95 });
-    const b1 = new THREE.Mesh(new THREE.BoxGeometry(TRACK_LEN, 1.2, 9.5), ballastMat);
-    b1.position.set(0, 4.2, -7);
-    b1.receiveShadow = true;
-    viaductGroup.add(b1);
-
-    const b2 = new THREE.Mesh(new THREE.BoxGeometry(TRACK_LEN, 1.2, 9.5), ballastMat);
-    b2.position.set(0, 4.2, 7);
-    b2.receiveShadow = true;
-    viaductGroup.add(b2);
-
-    // Wooden Sleepers along both tracks
-    const sleeperGeo = new THREE.BoxGeometry(1.6, 0.6, 8.5);
-    const sleeperMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 });
-    for (let x = -TRACK_LEN / 2 + 3; x <= TRACK_LEN / 2 - 3; x += 3.6) {
-      const s1 = new THREE.Mesh(sleeperGeo, sleeperMat);
-      s1.position.set(x, 4.9, -7);
-      s1.castShadow = true;
-      s1.receiveShadow = true;
-      viaductGroup.add(s1);
-
-      const s2 = new THREE.Mesh(sleeperGeo, sleeperMat);
-      s2.position.set(x, 4.9, 7);
-      s2.castShadow = true;
-      s2.receiveShadow = true;
-      viaductGroup.add(s2);
+  function setCameraView(viewName, immediate = false) {
+    if (!camera) return;
+    // Corridor-only presets switch back to the 2-station corridor; overview/platform preserve active stage!
+    if ((viewName === 'rajiv' || viewName === 'qutab') && activeStageKey !== 'corridor') {
+      switchStage('corridor', false);
+    }
+    currentView = viewName || 'overview';
+    if (viewName !== 'follow') {
+      followTrainMode = false;
+      document.getElementById('btn-follow-train-3d')?.classList.remove('active');
     }
 
-    // Steel Rails & DMRC Yellow Track Guideline
-    const railMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.85, roughness: 0.3 });
-    const yellowStripeMat = new THREE.MeshBasicMaterial({ color: 0xEAB308 });
+    const meta = STAGE_METADATA[activeStageKey] || STAGE_METADATA.corridor;
+    const tagEl = document.querySelector('.diorama-tag');
+    const titleEl = document.getElementById('diorama-stage-title');
 
-    function addRails(zCenter) {
-      const r1 = new THREE.Mesh(new THREE.BoxGeometry(TRACK_LEN, 0.7, 0.4), railMat);
-      r1.position.set(0, 5.5, zCenter - 2.6);
-      r1.castShadow = true;
-      viaductGroup.add(r1);
-
-      const r2 = new THREE.Mesh(new THREE.BoxGeometry(TRACK_LEN, 0.7, 0.4), railMat);
-      r2.position.set(0, 5.5, zCenter + 2.6);
-      r2.castShadow = true;
-      viaductGroup.add(r2);
-
-      const stripe = new THREE.Mesh(new THREE.BoxGeometry(TRACK_LEN, 0.05, 0.5), yellowStripeMat);
-      stripe.position.set(0, 4.9, zCenter);
-      viaductGroup.add(stripe);
-    }
-    addRails(-7); // Track 1 (Southbound)
-    addRails(7);  // Track 2 (Northbound)
-
-    scene.add(viaductGroup);
-  }
-
-  // ── 4. CENTRAL STATION PLATFORM & CLOCK ──────────────────────
-  function buildStationPlatform() {
-    const platformGroup = new THREE.Group();
-
-    const platLen = 64;
-    const platWid = 6.4;
-    const platH = 3.6;
-
-    // Platform Concrete Deck
-    const slabGeo = new THREE.BoxGeometry(platLen, platH, platWid);
-    const slabMat = new THREE.MeshStandardMaterial({
-      color: 0xFFFFFF,
-      roughness: 0.65,
-      metalness: 0.05
-    });
-    const slab = new THREE.Mesh(slabGeo, slabMat);
-    slab.position.set(0, 5.8, 0);
-    slab.castShadow = true;
-    slab.receiveShadow = true;
-    platformGroup.add(slab);
-
-    // Yellow Safety Tactile Edge Stripes
-    const tactileMat = new THREE.MeshBasicMaterial({ color: 0xF59E0B });
-    const tEdgeS = new THREE.Mesh(new THREE.BoxGeometry(platLen, 0.1, 0.5), tactileMat);
-    tEdgeS.position.set(0, 7.65, -platWid / 2 + 0.3);
-    platformGroup.add(tEdgeS);
-
-    const tEdgeN = new THREE.Mesh(new THREE.BoxGeometry(platLen, 0.1, 0.5), tactileMat);
-    tEdgeN.position.set(0, 7.65, platWid / 2 - 0.3);
-    platformGroup.add(tEdgeN);
-
-    // Platform Waiting Benches (Wooden slats with cast iron legs)
-    const benchMat = new THREE.MeshStandardMaterial({ color: 0xD97706, roughness: 0.75 });
-    for (let bx of [-16, 0, 16]) {
-      const bench = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.6, 1.4), benchMat);
-      bench.position.set(bx, 8.0, 0);
-      bench.castShadow = true;
-      platformGroup.add(bench);
-    }
-
-    // Dynamic LED Digital Passenger Info Display (PIDS)
-    buildDigitalArrivalBoard(platformGroup);
-
-    scene.add(platformGroup);
-  }
-
-  function buildDigitalArrivalBoard(parent) {
-    clockCanvas = document.createElement('canvas');
-    clockCanvas.width = 512;
-    clockCanvas.height = 128;
-    clockCtx = clockCanvas.getContext('2d');
-    updateClockCanvas();
-
-    clockTexture = new THREE.CanvasTexture(clockCanvas);
-    clockTexture.minFilter = THREE.LinearFilter;
-
-    const boardMat = new THREE.MeshBasicMaterial({ map: clockTexture });
-    const boardGeo = new THREE.BoxGeometry(9, 2.2, 0.4);
-    const board = new THREE.Mesh(boardGeo, boardMat);
-    board.position.set(0, 13.2, 0);
-    board.castShadow = true;
-    parent.add(board);
-  }
-
-  function updateClockCanvas() {
-    if (!clockCtx) return;
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    const stName = (currentArchetype === 'underground') ? 'RAJIV CHOWK' : 'QUTAB MINAR';
-
-    clockCtx.fillStyle = '#0F172A';
-    clockCtx.fillRect(0, 0, 512, 128);
-
-    clockCtx.fillStyle = '#EAB308';
-    clockCtx.font = 'bold 26px Inter, monospace';
-    clockCtx.fillText(`${stName} · ${timeStr}`, 24, 42);
-
-    clockCtx.fillStyle = '#F8FAFC';
-    clockCtx.font = '22px Inter, sans-serif';
-    clockCtx.fillText('P1: MILLENNIUM CITY  1 MIN (8-CAR)', 24, 82);
-
-    clockCtx.fillStyle = '#38BDF8';
-    clockCtx.fillText('P2: SAMAYPUR BADLI   3 MIN (8-CAR)', 24, 114);
-
-    if (clockTexture) clockTexture.needsUpdate = true;
-  }
-
-  // ── 5. PLATFORM COMMUTERS (NANO BANANA STYLE FIGURINES) ─────────
-  function buildPlatformCommuters() {
-    const commutersGroup = new THREE.Group();
-
-    // Architectural figurine palettes: rich stylish wool coats, blazers, and scarves
-    const palettes = [
-      { coat: 0xC2410C, pants: 0x1E293B, skin: 0xFBCFE8, hair: 0x1F2937, scarf: 0xF59E0B }, // Terracotta trench
-      { coat: 0x1E40AF, pants: 0x334155, skin: 0xFDE68A, hair: 0x4B5563, scarf: 0x38BDF8 }, // Navy wool coat
-      { coat: 0x047857, pants: 0x0F172A, skin: 0xFBCFE8, hair: 0x111827, scarf: 0xA7F3D0 }, // Emerald coat
-      { coat: 0x854D0E, pants: 0x1E293B, skin: 0xFDE047, hair: 0x374151, scarf: 0xFDE68A }, // Camel overcoat
-      { coat: 0xBE123C, pants: 0x475569, skin: 0xFBCFE8, hair: 0x1F2937, scarf: 0xFECDD3 }, // Crimson parka
-      { coat: 0x374151, pants: 0x111827, skin: 0xFBCFE8, hair: 0x030712, scarf: 0xE2E8F0 }, // Charcoal suit
-      { coat: 0x6D28D9, pants: 0x1E293B, skin: 0xFDE68A, hair: 0x1F2937, scarf: 0xC4B5FD }, // Violet cardigan
-      { coat: 0xD97706, pants: 0x334155, skin: 0xFBCFE8, hair: 0x4B5563, scarf: 0xFDE68A }, // Amber sweater
-      { coat: 0x0284C7, pants: 0x0F172A, skin: 0xFDE68A, hair: 0x1F2937, scarf: 0xBAE6FD }, // Sky blue jacket
-      { coat: 0xF8FAFC, pants: 0x1E293B, skin: 0xFBCFE8, hair: 0x111827, scarf: 0x94A3B8 }, // Crisp white trench
-    ];
-
-    function createCommuterFigure(cfg) {
-      const { x, z, rotY = 0, palIdx = 0, isSitting = false, hasBag = false, hasPhone = false, isStationMaster = false } = cfg;
-      const person = new THREE.Group();
-      person.position.set(x, isSitting ? 8.0 : 7.6, z);
-      person.rotation.y = rotY;
-
-      const pal = palettes[palIdx % palettes.length];
-      const skinMat = new THREE.MeshStandardMaterial({ color: isStationMaster ? 0xFBCFE8 : pal.skin, roughness: 0.5 });
-      const coatMat = new THREE.MeshStandardMaterial({ color: isStationMaster ? 0x0F172A : pal.coat, roughness: 0.7 });
-      const pantsMat = new THREE.MeshStandardMaterial({ color: isStationMaster ? 0x0F172A : pal.pants, roughness: 0.8 });
-      const hairMat = new THREE.MeshStandardMaterial({ color: pal.hair, roughness: 0.9 });
-      const darkMat = new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.8 });
-
-      // Head
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8), skinMat);
-      head.position.y = isSitting ? 1.85 : 2.45;
-      head.castShadow = true;
-      person.add(head);
-
-      if (isStationMaster) {
-        // Station Master peaked white cap
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.42, 0.25, 8), new THREE.MeshStandardMaterial({ color: 0xFFFFFF }));
-        cap.position.y = 2.65;
-        person.add(cap);
-        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 0.25), darkMat);
-        visor.position.set(0, 2.58, 0.32);
-        person.add(visor);
+    if (currentView === 'rajiv') {
+      applyCameraTarget([-22, 46, 82], [RAJIV_X + 4, 4.5, -3], 1.95, immediate);
+      if (tagEl) tagEl.textContent = 'UNDERGROUND ISLAND STATION · RAJIV CHOWK (-12M)';
+      if (titleEl) titleEl.textContent = 'Rajiv Chowk (Mezzanine, PSDs & TBM Cutaway) ↔ Qutab Minar';
+    } else if (currentView === 'qutab') {
+      applyCameraTarget([82, 46, 88], [QUTAB_X + 6, 7.5, 1], 2.05, immediate);
+      if (tagEl) tagEl.textContent = 'ELEVATED SIDE-PLATFORM VIADUCT · QUTAB MINAR (+14M)';
+      if (titleEl) titleEl.textContent = 'Qutab Minar (Blue Canopy, Glass Concourse & Piers) ↔ Rajiv Chowk';
+    } else if (currentView === 'platform') {
+      applyCameraTarget(meta.platformPos, meta.platformLook, meta.platformZoom, immediate);
+      if (activeStageKey === 'corridor') {
+        if (tagEl) tagEl.textContent = 'TRACK-LEVEL PERSPECTIVE · RAMP TRANSITION';
+        if (titleEl) titleEl.textContent = 'Rajiv Chowk Portal ➔ Box-Girder Ramp ➔ Qutab Minar';
       } else {
-        // Hair cap / beanie
-        const hair = new THREE.Mesh(new THREE.SphereGeometry(0.40, 8, 8, 0, Math.PI * 2, 0, Math.PI / 1.7), hairMat);
-        hair.position.y = isSitting ? 1.95 : 2.55;
-        hair.castShadow = true;
-        person.add(hair);
+        if (tagEl) tagEl.textContent = meta.tag + ' · PLATFORM EYE LEVEL';
+        if (titleEl) titleEl.textContent = meta.title;
       }
-
-      // Torso / Coat
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.48, 1.25, 8), coatMat);
-      torso.position.y = isSitting ? 1.05 : 1.5;
-      torso.castShadow = true;
-      person.add(torso);
-
-      // Scarf / Accent collar
-      const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.10, 6, 8), new THREE.MeshBasicMaterial({ color: isStationMaster ? 0xEAB308 : pal.scarf }));
-      scarf.rotation.x = Math.PI / 2;
-      scarf.position.y = isSitting ? 1.62 : 2.12;
-      person.add(scarf);
-
-      if (isSitting) {
-        // Sitting legs bent 90 degrees forward over bench
-        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.32, 0.85), pantsMat);
-        thigh.position.set(0, 0.42, 0.38);
-        thigh.castShadow = true;
-        person.add(thigh);
-
-        const shin = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.72, 0.32), pantsMat);
-        shin.position.set(0, 0.05, 0.72);
-        shin.castShadow = true;
-        person.add(shin);
-      } else {
-        // Standing legs
-        const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.1, 6), pantsMat);
-        leg1.position.set(-0.2, 0.55, 0);
-        leg1.castShadow = true;
-        person.add(leg1);
-
-        const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.1, 6), pantsMat);
-        leg2.position.set(0.2, 0.55, 0);
-        leg2.castShadow = true;
-        person.add(leg2);
-
-        // Shoes
-        const shoe1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.38), darkMat);
-        shoe1.position.set(-0.2, 0.07, 0.08);
-        person.add(shoe1);
-
-        const shoe2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.38), darkMat);
-        shoe2.position.set(0.2, 0.07, 0.08);
-        person.add(shoe2);
-      }
-
-      // Arms
-      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.9, 6), coatMat);
-      armL.position.set(-0.54, isSitting ? 1.05 : 1.45, 0);
-      armL.castShadow = true;
-      person.add(armL);
-
-      const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.9, 6), coatMat);
-      if (hasPhone) {
-        armR.position.set(0.48, isSitting ? 1.25 : 1.65, 0.28);
-        armR.rotation.x = -Math.PI / 3.2;
-        // Glowing smartphone screen
-        const phone = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.28, 0.04), new THREE.MeshBasicMaterial({ color: 0x38BDF8 }));
-        phone.position.set(0.48, isSitting ? 1.45 : 1.85, 0.48);
-        person.add(phone);
-      } else {
-        armR.position.set(0.54, isSitting ? 1.05 : 1.45, 0);
-      }
-      armR.castShadow = true;
-      person.add(armR);
-
-      // Briefcase or luggage
-      if (hasBag) {
-        const bag = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.65, 0.55), new THREE.MeshStandardMaterial({ color: 0x78350F, roughness: 0.6 }));
-        bag.position.set(0.72, 0.32, 0);
-        bag.castShadow = true;
-        person.add(bag);
-      }
-
-      return person;
+    } else {
+      applyCameraTarget(meta.pos, meta.look, meta.zoom, immediate);
+      if (tagEl) tagEl.textContent = meta.tag;
+      if (titleEl) titleEl.textContent = meta.title;
     }
 
-    // 22 Curated Commuters mirroring the bustling NanoBanana diorama
-    const commutersData = [
-      // Waiting along Track 1 (Southbound, z = -1.8, facing train)
-      { x: -22, z: -1.8, rotY: Math.PI, palIdx: 0, hasPhone: true },
-      { x: -18, z: -2.0, rotY: Math.PI * 0.95, palIdx: 1 },
-      { x: -12, z: -1.7, rotY: Math.PI * 1.05, palIdx: 2, hasBag: true },
-      { x: -5,  z: -2.1, rotY: Math.PI, palIdx: 3, hasPhone: true },
-      { x: 3,   z: -1.9, rotY: Math.PI * 0.9, palIdx: 4 },
-      { x: 9,   z: -2.2, rotY: Math.PI * 1.1, palIdx: 5, hasBag: true },
-      { x: 14,  z: -1.8, rotY: Math.PI, palIdx: 6 },
-      { x: 21,  z: -2.0, rotY: Math.PI * 0.95, palIdx: 7, hasPhone: true },
-
-      // Waiting along Track 2 (Northbound, z = 1.8, facing track 2)
-      { x: -20, z: 1.8, rotY: 0, palIdx: 8, hasBag: true },
-      { x: -14, z: 2.1, rotY: 0.15, palIdx: 9 },
-      { x: -7,  z: 1.9, rotY: -0.1, palIdx: 1, hasPhone: true },
-      { x: 2,   z: 2.0, rotY: 0, palIdx: 3 },
-      { x: 8,   z: 1.8, rotY: 0.2, palIdx: 0, hasBag: true },
-      { x: 16,  z: 2.2, rotY: -0.15, palIdx: 2 },
-      { x: 23,  z: 1.9, rotY: 0, palIdx: 4, hasPhone: true },
-
-      // Sitting relaxed on platform wooden benches (x = -16, 0, 16)
-      { x: -16.8, z: 0.1, rotY: 0, palIdx: 5, isSitting: true, hasPhone: true },
-      { x: -15.2, z: -0.1, rotY: Math.PI, palIdx: 6, isSitting: true },
-      { x: -0.8,  z: 0.1, rotY: 0, palIdx: 7, isSitting: true },
-      { x: 0.8,   z: -0.1, rotY: Math.PI, palIdx: 8, isSitting: true, hasBag: true },
-      { x: 15.8,  z: 0.1, rotY: 0, palIdx: 9, isSitting: true, hasPhone: true },
-
-      // Station Master in navy uniform on platform center
-      { x: -2, z: 0.2, rotY: Math.PI / 4, isStationMaster: true },
-
-      // Commuter walking near escalator
-      { x: -8, z: 0.0, rotY: Math.PI / 2, palIdx: 0, hasBag: true }
-    ];
-
-    commutersData.forEach(cfg => {
-      commutersGroup.add(createCommuterFigure(cfg));
-    });
-
-    scene.add(commutersGroup);
+    document.getElementById('btn-arch-tube')?.classList.toggle('active', activeStageKey === 'corridor' && currentView === 'rajiv');
+    document.getElementById('btn-arch-viaduct')?.classList.toggle('active', activeStageKey === 'corridor' && currentView === 'qutab');
+    document.getElementById('btn-arch-both')?.classList.toggle('active', activeStageKey === 'corridor' && currentView === 'overview');
+    document.getElementById('btn-cam-iso')?.classList.toggle('active', currentView === 'overview');
+    document.getElementById('btn-cam-platform')?.classList.toggle('active', currentView === 'platform');
   }
 
-  // ── 6. 3D DELHI METRO TRAINS ────────────────────────────────
-  function createTrainMesh(colorLivery) {
-    const train = new THREE.Group();
-    const carLen = 14;
-    const carWid = 4.2;
-    const carH = 4.0;
+  function setArchetype(type) {
+    if (type === 'underground') setCameraView('rajiv');
+    else if (type === 'elevated') setCameraView('qutab');
+    else setCameraView('overview');
+  }
 
-    const bodyMat = new THREE.MeshStandardMaterial({
-      color: 0xF8FAFC,
-      metalness: 0.65,
-      roughness: 0.28
-    });
-    const stripeMat = new THREE.MeshBasicMaterial({ color: colorLivery });
-    const winMat = new THREE.MeshStandardMaterial({
-      color: 0x0F172A,
-      metalness: 0.85,
-      roughness: 0.15,
-      emissive: 0x000000,
-      emissiveIntensity: 0
-    });
-    windowMaterials.push(winMat);
+  function setLightingMode(mode) {
+    currentLightingMode = mode === 'night' ? 'night' : 'day';
+    const isNight = currentLightingMode === 'night';
 
-    const headlightMat = new THREE.MeshBasicMaterial({ color: 0xFEF08A });
-    headlightMaterials.push(headlightMat);
-    const taillightMat = new THREE.MeshBasicMaterial({ color: 0xEF4444 });
-
-    const carOffsets = [-15.5, 0, 15.5];
-    carOffsets.forEach((ox, idx) => {
-      const carGroup = new THREE.Group();
-      carGroup.position.x = ox;
-
-      const body = new THREE.Mesh(new THREE.BoxGeometry(carLen, carH, carWid), bodyMat);
-      body.castShadow = true;
-      body.receiveShadow = true;
-      carGroup.add(body);
-
-      // Yellow Flank Stripes
-      const s1 = new THREE.Mesh(new THREE.BoxGeometry(carLen, 0.5, 0.05), stripeMat);
-      s1.position.set(0, -0.4, carWid / 2 + 0.02);
-      carGroup.add(s1);
-
-      const s2 = new THREE.Mesh(new THREE.BoxGeometry(carLen, 0.5, 0.05), stripeMat);
-      s2.position.set(0, -0.4, -carWid / 2 - 0.02);
-      carGroup.add(s2);
-
-      // Windows
-      for (let wx = -4.5; wx <= 4.5; wx += 2.8) {
-        const wLeft = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 0.05), winMat);
-        wLeft.position.set(wx, 0.4, carWid / 2 + 0.03);
-        carGroup.add(wLeft);
-
-        const wRight = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 0.05), winMat);
-        wRight.position.set(wx, 0.4, -carWid / 2 - 0.03);
-        carGroup.add(wRight);
-      }
-
-      // Roof HVAC
-      const hvac = new THREE.Mesh(new THREE.BoxGeometry(7, 0.6, 2.2), new THREE.MeshStandardMaterial({ color: 0xCBD5E1 }));
-      hvac.position.set(0, carH / 2 + 0.3, 0);
-      carGroup.add(hvac);
-
-      // Lead Windshield & Headlights with dynamic illumination
-      if (idx === 0) {
-        // Aerodynamic beveled cab wedge
-        const cabGeo = new THREE.BoxGeometry(2.2, carH - 0.2, carWid - 0.2);
-        const cab = new THREE.Mesh(cabGeo, bodyMat);
-        cab.position.set(-carLen / 2 - 1.0, 0, 0);
-        cab.castShadow = true;
-        carGroup.add(cab);
-
-        // Slanted dark driver windscreen
-        const windshield = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.9, carWid - 0.7), winMat);
-        windshield.position.set(-carLen / 2 - 2.1, 0.45, 0);
-        windshield.rotation.z = -0.15; // Slanted rake aerodynamic angle
-        carGroup.add(windshield);
-
-        const hl1 = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8), headlightMat);
-        hl1.position.set(-carLen / 2 - 2.12, -0.65, -1.2);
-        carGroup.add(hl1);
-
-        const hl2 = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8), headlightMat);
-        hl2.position.set(-carLen / 2 - 2.12, -0.65, 1.2);
-        carGroup.add(hl2);
-
-        // Dynamic forward headlight casting real light ahead along tracks & inside tunnel!
-        const dynamicHeadlight = new THREE.PointLight(0xFEF08A, 1.6, 32, 1.3);
-        dynamicHeadlight.position.set(-carLen / 2 - 3.0, 0.2, 0);
-        carGroup.add(dynamicHeadlight);
-      }
-
-      // Rear Tail Lights
-      if (idx === 2) {
-        const tl1 = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), taillightMat);
-        tl1.position.set(carLen / 2 + 0.08, -0.65, -1.2);
-        carGroup.add(tl1);
-
-        const tl2 = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), taillightMat);
-        tl2.position.set(carLen / 2 + 0.08, -0.65, 1.2);
-        carGroup.add(tl2);
-      }
-
-      train.add(carGroup);
-    });
-
-    // Flexible Accordion Gangways
-    const gangwayMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.9 });
-    for (let gx of [-7.7, 7.7]) {
-      const g = new THREE.Mesh(new THREE.BoxGeometry(1.6, carH - 0.6, carWid - 0.6), gangwayMat);
-      g.position.set(gx, 0, 0);
-      train.add(g);
+    if (isNight) {
+      themeTargets.bg.setHex(0x080E1B);
+      themeTargets.hemiSky.setHex(0x1E293B);
+      themeTargets.hemiGround.setHex(0x0B1120);
+      themeTargets.hemiIntensity = 0.44;
+      themeTargets.ambientIntensity = 0.22;
+      themeTargets.sunColor.setHex(0x7DD3FC);
+      themeTargets.sunIntensity = 0.56;
+      if (sunLight) sunLight.position.set(-70, 90, 50);
+      themeTargets.winEmissiveIntensity = 0.95;
+      themeTargets.ugLightIntensity = 2.4;
+      themeTargets.elLightIntensity = 1.9;
+      themeTargets.stLightIntensity = 1.8;
+      M().windowMaterials.forEach(m => m.emissive.setHex(0xFDE047));
+      M().headlightMaterials.forEach(m => m.color.setHex(0xFEF9C3));
+    } else {
+      themeTargets.bg.setHex(0xEFEAE0);
+      themeTargets.hemiSky.setHex(0xFFFDF8);
+      themeTargets.hemiGround.setHex(0xC6B9A6);
+      themeTargets.hemiIntensity = 0.72;
+      themeTargets.ambientIntensity = 0.20;
+      themeTargets.sunColor.setHex(0xFFF4DC);
+      themeTargets.sunIntensity = 0.98;
+      if (sunLight) sunLight.position.set(76, 112, 74);
+      themeTargets.winEmissiveIntensity = 0.14;
+      themeTargets.ugLightIntensity = 1.45;
+      themeTargets.elLightIntensity = 0.42;
+      themeTargets.stLightIntensity = 0.25;
+      M().windowMaterials.forEach(m => m.emissive.setHex(0xF59E0B));
+      M().headlightMaterials.forEach(m => m.color.setHex(0xFEF08A));
     }
+    themeTargets.animating = true;
 
-    return train;
+    document.getElementById('btn-light-day')?.classList.toggle('active', !isNight);
+    document.getElementById('btn-light-night')?.classList.toggle('active', isNight);
+    [
+      document.querySelector('.three-hud-panel'),
+      document.querySelector('.three-header-pill'),
+      document.querySelector('.three-instruction-badge'),
+      document.querySelector('.master-mode-strip'),
+      document.querySelector('.station-search-container')
+    ].forEach(el => { if (el) el.classList.toggle('dark-hud', isNight); });
   }
 
-  function build3DMetroTrains() {
-    train1Group = createTrainMesh(0xEAB308); // Yellow Line
-    train1Group.position.set(0, 7.8, -7);
-    scene.add(train1Group);
+  function applyThemeTransition(dt) {
+    if (!themeTargets.animating || !scene) return;
+    const rate = prefersReducedMotion() ? 1.0 : Math.min(1.0, 1 - Math.exp(-9.0 * dt));
 
-    train2Group = createTrainMesh(0xEAB308);
-    train2Group.rotation.y = Math.PI; // Heading northbound
-    train2Group.position.set(0, 7.8, 7);
-    scene.add(train2Group);
+    scene.background.lerp(themeTargets.bg, rate);
+    if (scene.fog) scene.fog.color.lerp(themeTargets.bg, rate);
+    if (hemiLight) {
+      hemiLight.color.lerp(themeTargets.hemiSky, rate);
+      hemiLight.groundColor.lerp(themeTargets.hemiGround, rate);
+      hemiLight.intensity += (themeTargets.hemiIntensity - hemiLight.intensity) * rate;
+    }
+    if (ambientFill) ambientFill.intensity += (themeTargets.ambientIntensity - ambientFill.intensity) * rate;
+    if (sunLight) {
+      sunLight.color.lerp(themeTargets.sunColor, rate);
+      sunLight.intensity += (themeTargets.sunIntensity - sunLight.intensity) * rate;
+    }
+    M().windowMaterials.forEach(m => { m.emissiveIntensity += (themeTargets.winEmissiveIntensity - m.emissiveIntensity) * rate; });
+    M().undergroundLights.forEach(l => { l.intensity += (themeTargets.ugLightIntensity - l.intensity) * rate; });
+    M().elevatedLights.forEach(l => { l.intensity += (themeTargets.elLightIntensity - l.intensity) * rate; });
+    M().streetLampLights.forEach(l => { l.intensity += (themeTargets.stLightIntensity - l.intensity) * rate; });
+
+    if (rate >= 0.999 || Math.abs(hemiLight.intensity - themeTargets.hemiIntensity) < 0.002) {
+      scene.background.copy(themeTargets.bg);
+      if (scene.fog) scene.fog.color.copy(themeTargets.bg);
+      themeTargets.animating = false;
+    }
   }
 
-  // ── 7. AUDIO CHIME ──────────────────────────────────────────
   function playDMRCChime() {
     if (!soundEnabled) return;
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
-
-      const notes = [
-        { freq: 698.46, start: 0, dur: 0.16 },    // F5
-        { freq: 880.00, start: 0.18, dur: 0.16 }, // A5
-        { freq: 1046.50, start: 0.36, dur: 0.40 } // C6
-      ];
-      notes.forEach(n => {
+      [{ freq: 698.46, start: 0, dur: 0.16 }, { freq: 880.00, start: 0.18, dur: 0.16 }, { freq: 1046.50, start: 0.36, dur: 0.38 }].forEach(n => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(n.freq, audioCtx.currentTime + n.start);
-
         gain.gain.setValueAtTime(0.001, audioCtx.currentTime + n.start);
-        gain.gain.exponentialRampToValueAtTime(0.22, audioCtx.currentTime + n.start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + n.start + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + n.start + n.dur);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
+        osc.connect(gain); gain.connect(audioCtx.destination);
         osc.start(audioCtx.currentTime + n.start);
-        osc.stop(audioCtx.currentTime + n.start + n.dur + 0.05);
+        osc.stop(audioCtx.currentTime + n.start + n.dur + 0.04);
       });
-    } catch (e) {
-      console.warn('Web Audio not allowed or failed:', e);
-    }
+    } catch (e) {}
   }
 
-  // ── 8. ARCHETYPE SWITCHER ───────────────────────────────────
-  function setArchetype(type) {
-    currentArchetype = type;
-    const isUnderground = type === 'underground';
+  function setupStationClicking() {
+    if (!renderer || !renderer.domElement) return;
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let downX = 0, downY = 0;
 
-    if (elevatedGroup) elevatedGroup.visible = !isUnderground;
-    if (undergroundGroup) undergroundGroup.visible = isUnderground;
-
-    // Keep HUD archetype buttons in sync
-    const btnArchetypeElev = document.getElementById('btn-arch-viaduct');
-    const btnArchetypeTube = document.getElementById('btn-arch-tube');
-    if (btnArchetypeElev && btnArchetypeTube) {
-      btnArchetypeElev.classList.toggle('active', !isUnderground);
-      btnArchetypeTube.classList.toggle('active', isUnderground);
-    }
-
-    // Adapt HUD panels to frosted obsidian slate in underground cutaway
-    const hudPanel = document.querySelector('.three-hud-panel');
-    const headerPill = document.querySelector('.three-header-pill');
-    const instructionBadge = document.querySelector('.three-instruction-badge');
-    [hudPanel, headerPill, instructionBadge].forEach(el => {
-      if (el) el.classList.toggle('dark-hud', isUnderground);
-    });
-
-    // Update Title Badge
-    const titleEl = document.querySelector('.diorama-title');
-    const tagEl = document.querySelector('.diorama-tag');
-    if (titleEl && tagEl) {
-      if (isUnderground) {
-        tagEl.textContent = 'WEBGL 3D TUBE CUTAWAY · COMPLETE 3D STAGE';
-        titleEl.textContent = 'Rajiv Chowk · Central Subway Chamber (-18m)';
-      } else {
-        tagEl.textContent = 'WEBGL 3D VIADUCT · COMPLETE 3D STAGE';
-        titleEl.textContent = 'Qutab Minar · Elevated Flyover (+15m)';
+    renderer.domElement.addEventListener('pointerdown', (e) => { downX = e.clientX; downY = e.clientY; });
+    renderer.domElement.addEventListener('pointerup', (e) => {
+      if (!isRunning || activeStageKey !== 'corridor') return;
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects([rajivAnchor, qutabAnchor].filter(Boolean), true);
+      if (hits.length > 0) {
+        let obj = hits[0].object;
+        while (obj) {
+          if (obj === rajivAnchor) { setCameraView('rajiv'); return; }
+          if (obj === qutabAnchor) { setCameraView('qutab'); return; }
+          obj = obj.parent;
+        }
       }
-    }
-
-    // Refresh lighting background
-    setLightingMode(currentLightingMode);
-    updateClockCanvas();
+    });
   }
 
-  // ── 9. BIND GOLDEN 3-SEGMENT HUD CONTROLS ───────────────────
   function bindHUDControls() {
-    // 1. Structure Archetype (Viaduct vs Tube)
-    const btnArchetypeElev = document.getElementById('btn-arch-viaduct');
-    const btnArchetypeTube = document.getElementById('btn-arch-tube');
-    if (btnArchetypeElev && btnArchetypeTube) {
-      btnArchetypeElev.addEventListener('click', (e) => {
+    document.getElementById('btn-arch-both')?.addEventListener('click', (e) => { e.stopPropagation(); setCameraView('overview'); });
+    document.getElementById('btn-arch-tube')?.addEventListener('click', (e) => { e.stopPropagation(); setCameraView('rajiv'); });
+    document.getElementById('btn-arch-viaduct')?.addEventListener('click', (e) => { e.stopPropagation(); setCameraView('qutab'); });
+    document.getElementById('btn-cam-iso')?.addEventListener('click', (e) => { e.stopPropagation(); setCameraView('overview'); });
+    document.getElementById('btn-cam-platform')?.addEventListener('click', (e) => { e.stopPropagation(); setCameraView('platform'); });
+    document.getElementById('btn-light-day')?.addEventListener('click', (e) => { e.stopPropagation(); if (isRunning) setLightingMode('day'); });
+    document.getElementById('btn-light-night')?.addEventListener('click', (e) => { e.stopPropagation(); if (isRunning) setLightingMode('night'); });
+    document.getElementById('btn-play-chime')?.addEventListener('click', (e) => { e.stopPropagation(); if (isRunning) playDMRCChime(); });
+
+    const followBtn = document.getElementById('btn-follow-train-3d');
+    if (followBtn) {
+      followBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        btnArchetypeElev.classList.add('active');
-        btnArchetypeTube.classList.remove('active');
-        setArchetype('elevated');
-      });
-      btnArchetypeTube.addEventListener('click', (e) => {
-        e.stopPropagation();
-        btnArchetypeTube.classList.add('active');
-        btnArchetypeElev.classList.remove('active');
-        setArchetype('underground');
+        if (!isRunning) return;
+        followTrainMode = !followTrainMode;
+        followBtn.classList.toggle('active', followTrainMode);
+        if (followTrainMode) {
+          springState.targetZoom = activeStageKey === 'corridor' ? 1.9 : 2.15;
+          springState.active = true;
+        } else {
+          setCameraView('overview');
+        }
       });
     }
 
-    // 2. Atmosphere Lighting (Day / Sunset / Night)
-    const dayBtn = document.getElementById('btn-light-day');
-    const sunsetBtn = document.getElementById('btn-light-sunset');
-    const nightBtn = document.getElementById('btn-light-night');
-    if (dayBtn && sunsetBtn && nightBtn) {
-      const lights = [dayBtn, sunsetBtn, nightBtn];
-      dayBtn.addEventListener('click', (e) => {
+    const pauseBtn = document.getElementById('btn-sim-toggle');
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        lights.forEach(b => b.classList.remove('active'));
-        dayBtn.classList.add('active');
-        setLightingMode('day');
-      });
-      sunsetBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        lights.forEach(b => b.classList.remove('active'));
-        sunsetBtn.classList.add('active');
-        setLightingMode('sunset');
-      });
-      nightBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        lights.forEach(b => b.classList.remove('active'));
-        nightBtn.classList.add('active');
-        setLightingMode('night');
-      });
-    }
-
-    // 3. Camera Modes (45° Diorama vs Platform Commuter)
-    const camIso = document.getElementById('btn-cam-iso');
-    const camPlat = document.getElementById('btn-cam-plat');
-    if (camIso && camPlat) {
-      camIso.addEventListener('click', (e) => {
-        e.stopPropagation();
-        camIso.classList.add('active');
-        camPlat.classList.remove('active');
-        cameraMode = 'iso';
-        camera.position.set(70, 60, 70);
-        if (controls) controls.target.set(0, 7.5, 0);
-      });
-      camPlat.addEventListener('click', (e) => {
-        e.stopPropagation();
-        camPlat.classList.add('active');
-        camIso.classList.remove('active');
-        cameraMode = 'platform';
-        camera.position.set(-18, 9, 0);
-        if (controls) controls.target.set(30, 8, -7);
-      });
-    }
-
-    // 4. Sound & Chime Trigger
-    const chimeBtn = document.getElementById('btn-play-chime');
-    if (chimeBtn) {
-      chimeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        playDMRCChime();
-      });
-    }
-
-    const soundBtn = document.getElementById('btn-sound-toggle');
-    if (soundBtn) {
-      soundBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        soundEnabled = !soundEnabled;
-        soundBtn.textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
-        soundBtn.classList.toggle('active', soundEnabled);
-        if (soundEnabled) playDMRCChime();
-      });
-    }
-
-    // 5. Kinetics Play / Pause & Speed
-    const playBtn = document.getElementById('btn-sim-play');
-    if (playBtn) {
-      playBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+        if (!isRunning) return;
         isPaused = !isPaused;
-        playBtn.textContent = isPaused ? '▶️ Run' : '⏸️ Pause';
-        playBtn.classList.toggle('active', !isPaused);
+        pauseBtn.textContent = isPaused ? '▶ Resume' : '⏸ Pause';
+        pauseBtn.classList.toggle('active', !isPaused);
       });
     }
 
-    const speedChips = document.querySelectorAll('[data-3dspeed]');
-    speedChips.forEach(chip => {
-      chip.addEventListener('click', (e) => {
+    document.querySelectorAll('[data-kit]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        speedChips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        simSpeed = parseFloat(chip.getAttribute('data-3dspeed')) || 1.0;
+        if (!isRunning) return;
+        switchStage(btn.getAttribute('data-kit'));
       });
     });
   }
 
-  // ── 10. KINEMATIC 60 FPS ANIMATION LOOP ─────────────────────
+  // ── KINEMATIC 60 FPS SPRING LOOP ────────────────────────────
   let lastClockTick = 0;
+  let lastFrameMs = performance.now();
+
+  function stepCorridorTrain(xVal, dir, dwellTimer, lastChime, stepScale) {
+    const distRajiv = Math.abs(xVal - RAJIV_X);
+    const distQutab = Math.abs(xVal - QUTAB_X);
+    const nearStation = distRajiv < 1.4 ? 'rajiv' : (distQutab < 1.4 ? 'qutab' : '');
+
+    if (nearStation && dwellTimer < 1.8) {
+      if (lastChime !== nearStation) { playDMRCChime(); lastChime = nearStation; }
+      dwellTimer += stepScale;
+      xVal += dir * 0.72 * stepScale * simSpeed;
+    } else {
+      if (distRajiv > 8.0 && distQutab > 8.0) lastChime = '';
+      dwellTimer = 0;
+      const braking = (distRajiv < 12.0 || distQutab < 12.0) ? 0.48 : 1.0;
+      xVal += dir * 14.4 * stepScale * simSpeed * braking;
+    }
+
+    if (dir === -1 && xVal < -CORRIDOR_HALF_LEN) xVal = CORRIDOR_HALF_LEN + 12;
+    if (dir === 1 && xVal > CORRIDOR_HALF_LEN + 12) xVal = -CORRIDOR_HALF_LEN;
+
+    return { xVal, dwellTimer, lastChime };
+  }
 
   function animate() {
     if (!isRunning) return;
 
+    const nowMs = performance.now();
+    const dt = Math.min(0.08, Math.max(0.001, (nowMs - lastFrameMs) / 1000));
+    lastFrameMs = nowMs;
+
     if (!isPaused) {
-      // Train 1 Kinematics (Southbound on Track 1, moving right to left: X decreases)
-      const x1 = (0.5 - t1Progress) * TRACK_LEN;
-      const distFromPlatform1 = Math.abs(x1);
+      if (activeStageKey === 'corridor') {
+        const s1 = stepCorridorTrain(t1X, -1, t1Dwell, t1LastChime, dt);
+        t1X = s1.xVal; t1Dwell = s1.dwellTimer; t1LastChime = s1.lastChime;
+        F().updateTrainOnAxis(train1Group, t1X, TRACK_Z_SOUTH, 'x', getTrackY, getTrackPitch);
 
-      if (distFromPlatform1 < 2.0 && t1DwellTimer < 140) {
-        // Dwell at station platform
-        if (!t1HasChimed) {
-          playDMRCChime();
-          t1HasChimed = true;
-        }
-        t1DwellTimer++;
-        // Very slow drift during boarding
-        t1Progress += 0.00008 * simSpeed;
+        const s2 = stepCorridorTrain(t2X, 1, t2Dwell, t2LastChime, dt);
+        t2X = s2.xVal; t2Dwell = s2.dwellTimer; t2LastChime = s2.lastChime;
+        F().updateTrainOnAxis(train2Group, t2X, TRACK_Z_NORTH, 'x', getTrackY, getTrackPitch);
       } else {
-        if (distFromPlatform1 >= 10.0) t1HasChimed = false;
-        t1DwellTimer = 0;
-
-        let speedFactor1 = 1.0;
-        if (distFromPlatform1 < 16.0) speedFactor1 = 0.45; // Smooth braking
-        t1Progress += 0.0014 * simSpeed * speedFactor1;
-      }
-      if (t1Progress > 1.0) t1Progress = 0;
-      if (train1Group) train1Group.position.x = (0.5 - t1Progress) * TRACK_LEN;
-
-      // Train 2 Kinematics (Northbound on Track 2, moving left to right: X increases)
-      const x2 = (-0.5 + t2Progress) * TRACK_LEN;
-      const distFromPlatform2 = Math.abs(x2);
-
-      if (distFromPlatform2 < 2.0 && t2DwellTimer < 140) {
-        if (!t2HasChimed) {
-          playDMRCChime();
-          t2HasChimed = true;
+        const entry = archetypeCache.get(activeStageKey);
+        if (entry) {
+          entry.trains.forEach((tr) => {
+            if (tr.curve) {
+              tr.dist += tr.speed * simSpeed * dt;
+              if (tr.dist > tr.totalLen - 10) tr.dist = 10;
+              F().updateTrainOnCurve(tr.group, tr.curve, tr.dist, tr.totalLen);
+            } else {
+              tr.x += tr.dir * 12.5 * simSpeed * dt;
+              if (tr.dir === -1 && tr.x < tr.minX) tr.x = tr.maxX;
+              if (tr.dir === 1 && tr.x > tr.maxX) tr.x = tr.minX;
+              F().updateTrainOnAxis(tr.group, tr.x, tr.z, tr.axis, () => tr.y, () => 0);
+            }
+          });
         }
-        t2DwellTimer++;
-        t2Progress += 0.00008 * simSpeed;
-      } else {
-        if (distFromPlatform2 >= 10.0) t2HasChimed = false;
-        t2DwellTimer = 0;
-
-        let speedFactor2 = 1.0;
-        if (distFromPlatform2 < 16.0) speedFactor2 = 0.45;
-        t2Progress += 0.0012 * simSpeed * speedFactor2;
       }
-      if (t2Progress > 1.0) t2Progress = 0;
-      if (train2Group) train2Group.position.x = (-0.5 + t2Progress) * TRACK_LEN;
     }
 
-    // Idle Auto-Orbit Turntable (activates after 4s idle in ISO camera)
-    if (controls && cameraMode === 'iso') {
-      if (performance.now() - lastUserInteraction > 4000) {
+    if (followTrainMode) {
+      if (activeStageKey === 'corridor') {
+        const focusY = getTrackY(t1X) + 2.5;
+        springState.targetLook.set(t1X, focusY, TRACK_Z_SOUTH);
+        springState.targetPos.set(t1X + 26, focusY + 42, 74);
+        springState.active = true;
+      } else {
+        const entry = archetypeCache.get(activeStageKey);
+        const tr = entry && entry.trains[0];
+        if (tr && tr.group) {
+          const tx = tr.axis === 'z' ? 0 : tr.x;
+          const tz = tr.axis === 'z' ? tr.x : (tr.z || 0);
+          const ty = (tr.y || 0) + 2.5;
+          springState.targetLook.set(tx, ty, tz);
+          springState.targetPos.set(tx + 24, ty + 38, tz + 68);
+          springState.active = true;
+        }
+      }
+    }
+
+    if (springState.active && camera && controls) {
+      const resp = 0.44;
+      const [px, pvx] = stepCriticallyDampedScalar(camera.position.x, springState.posVel.x, springState.targetPos.x, resp, dt);
+      const [py, pvy] = stepCriticallyDampedScalar(camera.position.y, springState.posVel.y, springState.targetPos.y, resp, dt);
+      const [pz, pvz] = stepCriticallyDampedScalar(camera.position.z, springState.posVel.z, springState.targetPos.z, resp, dt);
+      camera.position.set(px, py, pz);
+      springState.posVel.set(pvx, pvy, pvz);
+
+      const [lx, lvx] = stepCriticallyDampedScalar(controls.target.x, springState.lookVel.x, springState.targetLook.x, resp, dt);
+      const [ly, lvy] = stepCriticallyDampedScalar(controls.target.y, springState.lookVel.y, springState.targetLook.y, resp, dt);
+      const [lz, lvz] = stepCriticallyDampedScalar(controls.target.z, springState.lookVel.z, springState.targetLook.z, resp, dt);
+      controls.target.set(lx, ly, lz);
+      springState.lookVel.set(lvx, lvy, lvz);
+
+      const [nz, nzv] = stepCriticallyDampedScalar(camera.zoom, springState.zoomVel, springState.targetZoom, resp, dt);
+      camera.zoom = nz;
+      springState.zoomVel = nzv;
+      camera.updateProjectionMatrix();
+
+      if (
+        !followTrainMode &&
+        camera.position.distanceTo(springState.targetPos) < 0.15 &&
+        controls.target.distanceTo(springState.targetLook) < 0.15 &&
+        Math.abs(camera.zoom - springState.targetZoom) < 0.008 &&
+        springState.posVel.length() < 0.05
+      ) {
+        camera.position.copy(springState.targetPos);
+        controls.target.copy(springState.targetLook);
+        camera.zoom = springState.targetZoom;
+        camera.updateProjectionMatrix();
+        springState.posVel.set(0, 0, 0);
+        springState.lookVel.set(0, 0, 0);
+        springState.zoomVel = 0;
+        springState.active = false;
+      }
+    }
+
+    applyThemeTransition(dt);
+
+    if (controls && currentView === 'overview' && activeStageKey === 'corridor' && !springState.active && !followTrainMode && !prefersReducedMotion()) {
+      if (nowMs - lastUserInteraction > 6000) {
         controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.4;
+        controls.autoRotateSpeed = 0.25;
       } else {
         controls.autoRotate = false;
       }
+    } else if (controls) {
+      controls.autoRotate = false;
     }
 
-    // Dynamic Clock update
-    const nowMs = performance.now();
-    if (nowMs - lastClockTick > 1000) {
+    if (nowMs - lastClockTick > 1000 && qutabPidsData && activeStageKey === 'corridor') {
       lastClockTick = nowMs;
-      updateClockCanvas();
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      M().drawPIDSToContext(
+        qutabPidsData.ctx,
+        `QUTAB MINAR ↔ RAJIV CHOWK · ${timeStr}`,
+        'P1: VIA RAMP ➔ RAJIV CHOWK (01 MIN)',
+        'P2: MILLENNIUM CITY CENTRE (LIVE)'
+      );
+      qutabPidsData.texture.needsUpdate = true;
     }
 
     if (controls) controls.update();
@@ -1454,11 +918,17 @@ window.Diorama3D = (function () {
   function start() {
     if (isRunning) return;
     isRunning = true;
+    if (canvas) canvas.style.display = 'block';
+    setLightingMode(currentLightingMode);
+    lastFrameMs = performance.now();
     animId = requestAnimationFrame(animate);
   }
 
   function stop() {
     isRunning = false;
+    if (canvas) canvas.style.display = 'none';
+    document.querySelector('.master-mode-strip')?.classList.remove('dark-hud');
+    document.querySelector('.station-search-container')?.classList.remove('dark-hud');
     if (animId) {
       cancelAnimationFrame(animId);
       animId = null;
@@ -1467,14 +937,16 @@ window.Diorama3D = (function () {
 
   function onWindowResize() {
     if (!container || !camera || !renderer) return;
-    const aspect = container.clientWidth / container.clientHeight;
-    const d = 36;
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    const aspect = w / h;
+    const d = 60;
     camera.left = -d * aspect;
     camera.right = d * aspect;
     camera.top = d;
     camera.bottom = -d;
     camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(w, h);
   }
 
   return {
@@ -1482,7 +954,9 @@ window.Diorama3D = (function () {
     start,
     stop,
     setLightingMode,
+    setCameraView,
     setArchetype,
+    switchStage,
     playDMRCChime
   };
 })();

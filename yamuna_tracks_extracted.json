@@ -1,0 +1,78 @@
+[
+  {
+    "layer": "bridge_transit_rail",
+    "props": {
+      "subclass": "subway",
+      "brunnel": "bridge",
+      "class": "transit",
+      "layer": 2,
+      "service": "siding"
+    },
+    "geom": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          77.27367997169495,
+          28.62769456520165
+        ],
+        [
+          77.27306842803955,
+          28.62671516643958
+        ]
+      ]
+    }
+  },
+  {
+    "layer": "tunnel_transit_rail",
+    "props": {
+      "subclass": "subway",
+      "brunnel": "tunnel",
+      "class": "transit",
+      "layer": -1,
+      "service": "yard"
+    },
+    "geom": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          77.27202773094177,
+          28.62492114789255
+        ],
+        [
+          77.27180242538452,
+          28.624878769131016
+        ],
+        [
+          77.27155566215515,
+          28.624817555334147
+        ]
+      ]
+    }
+  },
+  {
+    "layer": "tunnel_transit_rail",
+    "props": {
+      "subclass": "subway",
+      "brunnel": "tunnel",
+      "class": "transit",
+      "layer": -1
+    },
+    "geom": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          77.27142691612244,
+          28.624713962673482
+        ],
+        [
+          77.27170586585999,
+          28.624798720312526
+        ],
+        [
+          77.27189898490906,
+          28.624845807860197
+        ]
+      ]
+    }
+  }
+]

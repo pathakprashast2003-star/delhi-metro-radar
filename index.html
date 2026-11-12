@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,44 +10,67 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Delhi Metro — Scheduled Transit Radar</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚇</text></svg>" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚇</text></svg>" />
 
-  <!-- MapLibre GL JS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.2/dist/maplibre-gl.css" />
-  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.2/dist/maplibre-gl.js"></script>
+  <!-- Network Preconnect for Map Tiles & Overture 3D Buildings -->
+  <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+  <link rel="preconnect" href="https://overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com" crossorigin />
 
-  <!-- Swiss / Editorial Typography -->
+  <!-- Preload Map Style + Local Transit & Corridor Geometry JSON -->
+  <link rel="preload" as="fetch" href="https://tiles.openfreemap.org/styles/liberty" crossorigin />
+  <link rel="preload" as="fetch" href="src/data/yellow_line_accurate_osm.json" crossorigin />
+  <link rel="preload" as="fetch" href="src/data/yellow_line_service.json" crossorigin />
+  <link rel="preload" as="fetch" href="src/data/delhi_network_topology_geo.json" crossorigin />
+
+  <!-- MapLibre GL JS + PMTiles (non-blocking deferred load preserving execution order) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.2.0/dist/maplibre-gl.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
+  <script defer src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+
+  <!-- PMTiles / Basemap TLS Preconnect -->
+  <link rel="preconnect" href="https://overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com" crossorigin />
+  <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+
+  <!-- Typography (System SF stack primary; Google Fonts non-blocking fallback) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'" />
 
-  <link rel="stylesheet" href="src/css/style.css?v=4.1.0" />
+  <link rel="stylesheet" href="src/css/style.css?v=24.0.0" />
 
-  <!-- Three.js & OrbitControls for Interactive WebGL 3D Diorama Stage -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Three.js, OrbitControls & RoomEnvironment IBL -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
 </head>
+
 <body class="editorial-light">
 
   <!-- ── 0. Real-Time Service Advisory Alert Banner ────────────── -->
   <div id="service-advisory-banner" class="service-advisory-banner hidden">
     <div class="advisory-content">
       <span class="advisory-icon">⚠️</span>
-      <span class="advisory-text" id="advisory-banner-text">DMRC Advisory Active: Minor delays reported on selected corridors.</span>
+      <span class="advisory-text" id="advisory-banner-text">DMRC Advisory Active: Minor delays reported on selected
+        corridors.</span>
     </div>
   </div>
 
   <!-- ── 1. Master Mode Navigation Strip (Top Center) ────────── -->
   <nav class="master-mode-strip" aria-label="Main View Surfaces">
-    <button class="mode-tab active" data-surface="diorama" id="tab-diorama" title="Interactive NanoBanana-style 3D Station Cutaway with Live Trains, Tunnels & Commuters">
-      <span class="tab-badge stage-badge">3D DIORAMA</span>
+    <button class="mode-tab" data-surface="diorama" id="tab-diorama"
+      title="Interactive Two-Station 3D Line: Rajiv Chowk Underground Island Station ↔ Qutab Minar Elevated Side-Platform Viaduct">
+      <span class="tab-badge stage-badge">3D LINE</span>
       <span class="tab-icon">🚇</span>
       <div class="tab-text">
-        <span class="tab-title">Station Cutaway</span>
-        <span class="tab-sub">NanoBanana 3D Stage</span>
+        <span class="tab-title">2-Station 3D Line</span>
+        <span class="tab-sub">Rajiv Tube ↔ Qutab Flyover</span>
       </div>
     </button>
-    <button class="mode-tab" data-surface="corridor" id="tab-corridor" title="Real Delhi map + live WebGL 3D metro infrastructure on one canvas">
+    <button class="mode-tab active" data-surface="corridor" id="tab-corridor"
+      title="Real Delhi map + live WebGL 3D metro infrastructure on one canvas">
       <span class="tab-badge map-badge">MAP + 3D</span>
       <span class="tab-icon">🗺️</span>
       <div class="tab-text">
@@ -54,28 +78,80 @@
         <span class="tab-sub">Real tiles + WebGL trains</span>
       </div>
     </button>
-    <button class="mode-tab" data-surface="threejs" id="tab-threejs" title="Pure 3D Architectural Exhibition Plinth of Delhi (Offline)">
+    <button class="mode-tab" data-surface="threejs" id="tab-threejs"
+      title="Pure 3D Architectural Exhibition Plinth of Delhi (Offline)">
       <span class="tab-badge">3D CITY</span>
       <span class="tab-icon">🌐</span>
       <div class="tab-text">
-        <span class="tab-title">3D Plinth</span>
-        <span class="tab-sub">Architectural Exhibition</span>
+        <span class="tab-title">3D Delhi Map</span>
+        <span class="tab-sub">Yellow Line · 37 Stations</span>
       </div>
     </button>
   </nav>
 
   <!-- ── 1B. MapLibre 3D Perspective Toggle (Visible when on MapLibre) ────────── -->
-  <div class="map-perspective-pill hidden" id="map-perspective-pill">
-    <span class="perspective-label">MAP VIEW:</span>
+  <div class="map-perspective-pill" id="map-perspective-pill">
+    <span class="perspective-label">VIEW</span>
     <div class="perspective-btn-group">
-      <button class="perspective-btn" id="btn-3d-map-view" title="Tilt map into 3D WebGL perspective with extruded viaducts and 3D trains">
+      <button class="perspective-btn active" id="btn-3d-map-view"
+        title="Tilt map into 3D WebGL perspective with 3D trains and elevated viaducts">
         <span class="btn-icon">📐</span>
-        <span class="btn-text">3D WebGL Viaducts</span>
+        <span class="btn-text">3D Fleet &amp; Map</span>
       </button>
-      <button class="perspective-btn active" id="btn-2d-map-view" title="Flat 2D overview of full 49km corridor">
+      <button class="perspective-btn" id="btn-2d-map-view" title="Flat 2D overview of full 49km corridor">
         <span class="btn-icon">🗺️</span>
-        <span class="btn-text">2D Flat Plan</span>
+        <span class="btn-text">2D</span>
       </button>
+    </div>
+    <span class="pill-divider" aria-hidden="true"></span>
+    <div class="perspective-btn-group">
+      <button class="perspective-btn active" id="btn-drag-orbit" title="Left-Drag orbits 360° & tilts camera angle">
+        <span class="btn-icon">🧭</span>
+        <span class="btn-text">360° Orbit</span>
+      </button>
+      <button class="perspective-btn" id="btn-drag-pan" title="Left-Drag pans across Delhi">
+        <span class="btn-icon">✋</span>
+        <span class="btn-text">Pan</span>
+      </button>
+      <button class="perspective-btn" id="btn-360-orbit" title="Auto-spin 360° turntable around station">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">Spin</span>
+      </button>
+    </div>
+    <span class="pill-divider" aria-hidden="true"></span>
+    <div class="perspective-btn-group">
+      <button class="perspective-btn rails-btn active" id="btn-rails-visible"
+        title="Show 3D subway tracks & Delhi railway lines (click to hide underground tracks under street)">
+        <span class="btn-icon">🛤️</span>
+        <span class="btn-text">Rails</span>
+      </button>
+      <button class="perspective-btn xray-btn" id="btn-xray-underground"
+        title="Toggle translucent X-Ray buildings & glowing subterranean metro tunnels">
+        <span class="btn-icon">🔦</span>
+        <span class="btn-text">X-Ray</span>
+      </button>
+    </div>
+    <span class="pill-divider" aria-hidden="true"></span>
+    <div class="perspective-btn-group" id="line-filter-group">
+      <button class="perspective-btn active" id="btn-line-all" title="Show all lines (Yellow & Blue)">All Lines</button>
+      <button class="perspective-btn" id="btn-line-yellow"
+        title="Focus Yellow Line (Samaypur Badli – Millennium City Centre)">🟡 Yellow</button>
+      <button class="perspective-btn" id="btn-line-blue"
+        title="Focus Blue Line (Dwarka Sec 21 – Noida Electronic City)">🔵 Blue</button>
+    </div>
+    <span class="pill-divider" aria-hidden="true"></span>
+    <div class="corridor-bookmarks">
+      <button class="bookmark-chip" data-loc="all">All Delhi</button>
+      <button class="bookmark-chip active" data-loc="samaypur">Samaypur</button>
+      <button class="bookmark-chip" data-loc="kashmere">Kashmere</button>
+      <button class="bookmark-chip" data-loc="rajiv">Rajiv</button>
+      <button class="bookmark-chip" data-loc="greenpark">Green Park</button>
+      <button class="bookmark-chip" data-loc="hauzkhas">Hauz Khas</button>
+      <button class="bookmark-chip" data-loc="qutab">Qutab</button>
+      <button class="bookmark-chip" data-loc="gurgaon">Gurugram</button>
+      <button class="bookmark-chip" data-loc="dwarka">Dwarka</button>
+      <button class="bookmark-chip" data-loc="akshardham">Akshardham</button>
+      <button class="bookmark-chip" data-loc="noida">Noida</button>
     </div>
   </div>
 
@@ -85,36 +161,88 @@
   <div class="station-search-container" id="station-search-container">
     <div class="station-search-bar">
       <span class="search-icon">🔍</span>
-      <input type="text" id="station-search-input" placeholder="Search station (e.g. Rajiv, AIIMS, RCK)..." autocomplete="off" />
+      <input type="text" id="station-search-input" placeholder="Search stations, Jantar Mantar…" autocomplete="off" />
       <button id="station-search-clear" class="search-clear hidden">✕</button>
     </div>
     <div class="station-search-results hidden" id="station-search-results"></div>
   </div>
 
+  <!-- ── Station Prev / Next & 100m Track Walk Pill ───────── -->
+  <div class="station-stepper-pill" id="station-stepper-pill"
+    aria-label="Move between stations or walk 100m along track">
+    <button class="station-step-btn" id="btn-prev-station" type="button" aria-label="Previous Station"
+      title="Previous Station ([)">◀</button>
+    <button class="station-step-current" id="btn-station-step-info" type="button"
+      title="Choose station (click to open dropdown menu)" aria-haspopup="listbox" aria-expanded="false">
+      <span class="station-step-line-tag line-yellow" id="station-step-line-tag">YL</span>
+      <span class="station-step-count" id="station-step-count">1/37</span>
+      <span class="station-step-name" id="station-step-name">Samaypur Badli</span>
+      <span class="station-step-offset hidden" id="station-step-offset">+0m</span>
+      <span class="station-step-chevron" aria-hidden="true">▾</span>
+    </button>
+    <button class="station-step-btn" id="btn-next-station" type="button" aria-label="Next Station"
+      title="Next Station (])">▶</button>
+    <span class="pill-divider stepper-divider" aria-hidden="true"></span>
+    <button class="station-step-btn walk-btn" id="btn-step-back-100" type="button"
+      title="Move 100m back along track">−100m</button>
+    <button class="station-step-btn walk-btn walk-ahead-btn" id="btn-step-ahead-100" type="button"
+      title="Move 100m ahead along track">+100m</button>
+  </div>
+
+  <!-- ── Floating Station Dropdown Selector (Apple-Grade / Anti-Slop) ───────── -->
+  <div class="station-stepper-dropdown hidden" id="station-stepper-dropdown" role="dialog"
+    aria-label="Choose Metro Station">
+    <div class="stepper-dropdown-header">
+      <div class="stepper-search-wrap">
+        <span class="stepper-search-icon">🔍</span>
+        <input type="text" class="stepper-search-input" id="stepper-station-search"
+          placeholder="Jump to station (e.g. Noida, Yamuna, Rajiv)..." autocomplete="off" spellcheck="false" />
+        <button class="stepper-search-clear hidden" id="btn-stepper-search-clear" type="button"
+          aria-label="Clear search">✕</button>
+      </div>
+      <div class="stepper-line-tabs">
+        <button class="stepper-tab-btn active" data-tab="active" id="tab-stepper-active-line">Active Line</button>
+        <button class="stepper-tab-btn" data-tab="all" id="tab-stepper-all-lines">All Lines (94)</button>
+        <button class="stepper-tab-btn" data-tab="yellow" id="tab-stepper-yellow">🟡 Yellow (37)</button>
+        <button class="stepper-tab-btn" data-tab="blue" id="tab-stepper-blue">🔵 Blue (57)</button>
+      </div>
+    </div>
+    <div class="stepper-dropdown-list" id="stepper-dropdown-list" role="listbox">
+      <!-- Populated dynamically with full station metadata -->
+    </div>
+  </div>
+
   <!-- SURFACE A: Full-Screen MapLibre Radar -->
-  <div id="map" class="view-surface hidden"></div>
+  <div id="map" class="view-surface"></div>
 
   <!-- SURFACE B: Three.js Interactive 3D WebGL Diorama Canvas -->
-  <div id="three-container" class="view-surface active">
+  <div id="three-container" class="view-surface hidden">
     <canvas id="three-canvas"></canvas>
 
     <!-- Top floating diorama station header -->
     <div class="three-header-pill">
       <div class="diorama-badge-dot"></div>
       <div class="diorama-header-text">
-        <span class="diorama-tag">DELHI METRO 3D · LIVING ARCHITECTURAL EXHIBITION</span>
-        <span class="diorama-title" id="diorama-stage-title">Full Capital Network · Yamuna River · Central Ridge</span>
+        <span class="diorama-tag">DELHI METRO 3D · TWO-STATION LIVING DIORAMA LINE</span>
+        <span class="diorama-title" id="diorama-stage-title">Rajiv Chowk (Subway Cutaway -12m) ↔ Qutab Minar (Elevated
+          Viaduct +14m)</span>
       </div>
     </div>
 
     <!-- Right floating 3D controls palette -->
     <aside class="three-hud-panel">
-      <!-- Station Archetype (for 3D Station Diorama) -->
+      <!-- Corridor Focus (for 2-Station 3D Line) -->
       <div class="hud-group" id="hud-archetype-group">
-        <span class="hud-group-title">STATION ARCHETYPE</span>
+        <span class="hud-group-title">CORRIDOR FOCUS</span>
+        <div class="hud-btn-row" style="margin-bottom: 4px;">
+          <button class="hud-chip active" id="btn-arch-both"
+            title="Full 2-Station Corridor Overview (Rajiv Chowk ↔ Qutab Minar)">🌐 Both Stations</button>
+        </div>
         <div class="hud-btn-row">
-          <button class="hud-chip active" id="btn-arch-tube" title="Subterranean Tube Cutaway (NanoBanana / Rajiv Chowk)">🚇 Rajiv Tube</button>
-          <button class="hud-chip" id="btn-arch-viaduct" title="Elevated Viaduct (Qutab Minar)">🌁 Qutab Flyover</button>
+          <button class="hud-chip" id="btn-arch-tube" title="Rajiv Chowk Underground Island Platform (-12m)">🚇 Rajiv
+            Tube</button>
+          <button class="hud-chip" id="btn-arch-viaduct" title="Qutab Minar Elevated Side-Platform Viaduct (+14m)">🌁
+            Qutab Flyover</button>
         </div>
       </div>
 
@@ -127,20 +255,62 @@
         </div>
       </div>
 
-      <!-- Focus Sectors (for 3D City Plinth) -->
-      <div class="hud-group" id="hud-sector-group" style="display: none;">
-        <span class="hud-group-title">FOCUS SECTOR</span>
+      <!-- 6 Distinct DMRC Structural Archetypes (MetroKit) -->
+      <div class="hud-group" id="hud-kit-group">
+        <span class="hud-group-title">6 STATION ARCHETYPES</span>
         <div class="hud-btn-row">
-          <button class="hud-chip hud-sector-chip active" data-sector="all" title="Full Delhi NCR Exhibition Overview">🌐 All Delhi</button>
-          <button class="hud-chip hud-sector-chip" data-sector="qutab" title="Qutab Minar Elevated Viaduct">🌁 Qutab</button>
+          <button class="hud-chip" data-kit="elevatedSide" title="1. Elevated Side-Platform (Qutab Minar)">1 · Elev
+            Side</button>
+          <button class="hud-chip" data-kit="elevatedIsland" title="2. Elevated Island-Platform (Botanical Garden)">2 ·
+            Elev Island</button>
+        </div>
+        <div class="hud-btn-row">
+          <button class="hud-chip" data-kit="undergroundIsland" title="3. Underground Cutaway Island (Rajiv Chowk)">3 ·
+            Tube Island</button>
+          <button class="hud-chip" data-kit="surfaceMultiBay" title="4. At-Grade 4-Track Y-Branch Hub (Yamuna Bank)">4 ·
+            Yamuna 4-Tk</button>
+        </div>
+        <div class="hud-btn-row">
+          <button class="hud-chip" data-kit="stackedCrossInterchange"
+            title="5. Cross-Stacked Underground -12m × -21m (Hauz Khas)">5 · Hauz Cross</button>
+          <button class="hud-chip" data-kit="hybridMegaHub"
+            title="6. Hybrid Elevated + Underground Hub (Kashmere Gate)">6 · Kashmere Hub</button>
+        </div>
+      </div>
+
+      <!-- Focus Sectors & Yellow Line Overlay (for 3D City Plinth) -->
+      <div class="hud-group" id="hud-sector-group" style="display: none;">
+        <span class="hud-group-title">DELHI & YELLOW LINE SECTORS</span>
+        <div class="hud-btn-row">
+          <button class="hud-chip hud-sector-chip active" data-sector="all"
+            title="Full Delhi NCR & 47.6km Yellow Line Overview">🌐 All Delhi</button>
+          <button class="hud-chip hud-sector-chip" data-sector="north_badli"
+            title="North Elevated Viaduct · Samaypur Badli to Model Town Portal">🟢 North Badli</button>
         </div>
         <div class="hud-btn-row" style="margin-top: 4px;">
-          <button class="hud-chip hud-sector-chip" data-sector="rajiv" title="Rajiv Chowk Central Subway">🚇 Rajiv</button>
-          <button class="hud-chip hud-sector-chip" data-sector="kashmere" title="Kashmere Gate Hub">🏛️ Kashmere</button>
+          <button class="hud-chip hud-sector-chip" data-sector="kashmere"
+            title="Kashmere Gate Hybrid Hub (Red Overpass × Yellow Tube) & Red Fort">🏛️ Kashmere</button>
+          <button class="hud-chip hud-sector-chip" data-sector="rajiv"
+            title="Connaught Place · Rajiv Chowk, New Delhi & Chandni Chowk">🚇 Rajiv Core</button>
         </div>
         <div class="hud-btn-row" style="margin-top: 4px;">
-          <button class="hud-chip hud-sector-chip" data-sector="india_gate" title="India Gate & Central Vista">🎖️ India Gate</button>
-          <button class="hud-chip hud-sector-chip" data-sector="aerocity" title="IGI Airport T3 & Aerocity">✈️ Airport T3</button>
+          <button class="hud-chip hud-sector-chip" data-sector="hauz"
+            title="South Subway · Dilli Haat INA, AIIMS & Hauz Khas Magenta Cross">💗 Hauz Khas</button>
+          <button class="hud-chip hud-sector-chip" data-sector="qutab"
+            title="South Elevated Viaduct · Qutab Portal to Millennium City Gurugram">🏙️ Qutab–GGN</button>
+        </div>
+        <span class="hud-group-title" style="margin-top: 8px;">MAP VIEW & CONTEXT</span>
+        <div class="hud-btn-row">
+          <button class="hud-chip active" id="btn-plinth-3d" data-plinth-view="3d"
+            title="45° Architectural 3D Perspective">📐 3D Map</button>
+          <button class="hud-chip" id="btn-plinth-2d" data-plinth-view="2d" title="Orthogonal Top-Down Plan View">🗺️
+            Top Plan</button>
+        </div>
+        <div class="hud-btn-row" style="margin-top: 4px;">
+          <button class="hud-chip" id="btn-overlay-interchanges"
+            title="Show Yellow Line + 7 muted crossing interchange lines">🕸️ +7 Interchanges</button>
+          <button class="hud-chip active" id="btn-overlay-yellow"
+            title="Highlight Yellow Line corridor & 37 stations only">🟡 Yellow Only</button>
         </div>
       </div>
 
@@ -153,10 +323,14 @@
         </div>
       </div>
 
-      <!-- Audio -->
+      <!-- Audio & Kinetics -->
       <div class="hud-group">
         <span class="hud-group-title">AUDIO & KINETICS</span>
         <div class="hud-btn-row">
+          <button class="hud-chip" id="btn-follow-train-3d" title="Follow live train across ramp">📹 Follow</button>
+          <button class="hud-chip active" id="btn-sim-toggle" title="Pause or resume trains">⏸ Pause</button>
+        </div>
+        <div class="hud-btn-row" style="margin-top: 4px;">
           <button class="hud-chip" id="btn-play-chime">🔔 DMRC Chime</button>
         </div>
       </div>
@@ -164,7 +338,7 @@
 
     <!-- Bottom Instruction Bar -->
     <div class="three-instruction-badge">
-      <span>🖱️ Click & Drag to Orbit 360° · Scroll to Zoom · Click any Sector to Swoop Camera into 3D Station</span>
+      <span>Drag to Orbit 360° · Scroll to Zoom · Click Any Station to Focus</span>
     </div>
   </div>
 
@@ -193,7 +367,9 @@
             <span class="dwell-total" id="ins-dwell-total">/ 50s total</span>
           </div>
           <span class="dwell-reason" id="ins-dwell-reason">Interchange Crowd Clearance</span>
-          <div class="dwell-progress-bar"><div class="dwell-fill" id="ins-dwell-fill" style="width: 45%;"></div></div>
+          <div class="dwell-progress-bar">
+            <div class="dwell-fill" id="ins-dwell-fill" style="width: 45%;"></div>
+          </div>
         </div>
       </div>
       <div class="spec-row">
@@ -219,6 +395,30 @@
     </div>
   </div>
 
+  <!-- Delhi Heritage Monument Spotlight Card (Bottom Left) -->
+  <div id="monument-spotlight-card" class="architectural-callout-card monument-spotlight-card hidden" role="dialog"
+    aria-label="Monument Spotlight">
+    <div class="callout-header monument-spotlight-head">
+      <div>
+        <div class="callout-tag">DELHI HERITAGE LANDMARK</div>
+        <h2 class="callout-title" id="monument-title">Red Fort (Lal Qila)</h2>
+      </div>
+      <div class="monument-header-actions">
+        <span class="monument-era-badge" id="monument-era">Mughal · 1648</span>
+        <button class="close-callout" id="close-monument-spotlight" title="Close Monument Spotlight">✕</button>
+      </div>
+    </div>
+    <div class="monument-spotlight-body">
+      <img id="monument-spotlight-img" class="monument-spotlight-img" src="public/monuments/red_fort.jpg"
+        alt="Red Fort (Lal Qila)" />
+      <div class="monument-spotlight-info">
+        <p class="monument-spotlight-desc" id="monument-spotlight-desc">Emperor Shah Jahan’s UNESCO red sandstone
+          fortress and ramparts beside Chandni Chowk.</p>
+        <button class="monument-fly-station-btn" id="btn-monument-fly-station">🚇 Fly to Chandni Chowk ➔</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Architectural Station Inspector Card (Bottom Left / Modal) -->
   <div id="station-panel" class="architectural-callout-card station-callout-card hidden">
     <div class="callout-header">
@@ -231,13 +431,19 @@
         <div class="st-interchanges-row" id="st-panel-interchanges"></div>
         <div class="st-structure-sub" id="st-panel-sub">Underground Chamber (-14m) · Central Core Interchange</div>
       </div>
-      <button class="close-callout" id="close-station-panel">✕</button>
+      <div class="st-header-actions">
+        <button class="st-step-mini-btn" id="btn-panel-prev-station" type="button" title="Previous Station">◀</button>
+        <button class="st-step-mini-btn" id="btn-panel-next-station" type="button" title="Next Station">▶</button>
+        <button class="close-callout" id="close-station-panel">✕</button>
+      </div>
     </div>
 
     <!-- 3D Architectural Diorama Preview Box -->
     <div class="st-diorama-preview-box" id="st-diorama-preview-box">
-      <img id="st-panel-diorama-img" src="/public/dmrc_elevated_viaduct_diorama.png" alt="Station 3D Cutaway" class="st-diorama-img" />
-      <div class="st-diorama-badge-overlay" id="st-diorama-badge-overlay">ELEVATED VIADUCT DIORAMA · ARCH CANOPY (+15M)</div>
+      <img id="st-panel-diorama-img" src="/public/dmrc_elevated_viaduct_diorama.png" alt="Station 3D Cutaway"
+        class="st-diorama-img" />
+      <div class="st-diorama-badge-overlay" id="st-diorama-badge-overlay">ELEVATED VIADUCT DIORAMA · ARCH CANOPY (+15M)
+      </div>
       <div class="st-diorama-actions-row">
         <button class="st-view-3d-stage-btn" id="btn-view-3d-stage">📐 Open 3D Stage</button>
         <button class="st-follow-next-btn" id="btn-follow-next-train">📹 Follow Train</button>
@@ -247,7 +453,8 @@
     <!-- Station Navigation Tabs -->
     <div class="st-tabs-nav">
       <button class="st-tab-btn active" data-tab="arrivals" id="tab-btn-arrivals">🕒 Live PIDS</button>
-      <button class="st-tab-btn" data-tab="gates" id="tab-btn-gates">🚪 Exit Gates (<span id="st-gates-count">8</span>)</button>
+      <button class="st-tab-btn" data-tab="gates" id="tab-btn-gates">🚪 Exit Gates (<span
+          id="st-gates-count">8</span>)</button>
       <button class="st-tab-btn" data-tab="schedule" id="tab-btn-schedule">⏱️ Timings & Info</button>
     </div>
 
@@ -261,7 +468,7 @@
       <!-- Real-Time Coach Occupancy Meter (DMRC Notice 555 Calibration) -->
       <div class="st-coach-meter" id="st-coach-meter">
         <div class="coach-meter-header">
-          <span>👥 Real-Time Car Occupancy (8-Car Rake)</span>
+          <span>👥 8-Car Coach Occupancy</span>
           <span class="coach-meter-sub" id="coach-meter-sub">Moderate · Mid-train peak</span>
         </div>
         <div class="coach-strip" id="coach-strip">
@@ -327,17 +534,20 @@
         <div class="first-last-row">
           <div class="fl-col">
             <span class="fl-dir">➔ Southbound (to Millennium City)</span>
-            <div class="fl-times">First: <strong id="st-fl-sb-first">06:34 AM</strong> · Last: <strong id="st-fl-sb-last">11:34 PM</strong></div>
+            <div class="fl-times">First: <strong id="st-fl-sb-first">06:34 AM</strong> · Last: <strong
+                id="st-fl-sb-last">11:34 PM</strong></div>
           </div>
           <div class="fl-col">
             <span class="fl-dir">➔ Northbound (to Samaypur Badli)</span>
-            <div class="fl-times">First: <strong id="st-fl-nb-first">06:52 AM</strong> · Last: <strong id="st-fl-nb-last">11:52 PM</strong></div>
+            <div class="fl-times">First: <strong id="st-fl-nb-first">06:52 AM</strong> · Last: <strong
+                id="st-fl-nb-last">11:52 PM</strong></div>
           </div>
         </div>
       </div>
 
       <div class="st-cutaway-link-block" id="st-cutaway-link-block">
-        <button class="btn-open-station-cutaway" id="btn-open-station-cutaway">🏛️ View 3D Isometric Cutaway Pedestal ➔</button>
+        <button class="btn-open-station-cutaway" id="btn-open-station-cutaway">🏛️ View 3D Isometric Cutaway Pedestal
+          ➔</button>
       </div>
     </div>
 
@@ -354,24 +564,28 @@
       <div class="clock-badge">
         <span class="live-pulse-dot" id="clock-pulse"></span>
         <span class="clock-digits" id="live-clock-text">09:25:30 IST</span>
-        <button class="time-mode-btn" id="btn-toggle-time-mode" title="Toggle Current IST vs Timeline Scrub">⏱️ Current IST</button>
+        <button class="time-mode-btn" id="btn-toggle-time-mode" title="Toggle Current IST vs Timeline Scrub">⏱️ Current
+          IST</button>
       </div>
 
       <!-- Schedule Phase Badge -->
       <div class="schedule-phase-pill" id="schedule-phase-pill">
-        <span class="phase-icon" id="phase-icon">🏢</span>
+        <span class="phase-icon" id="phase-icon">🟢</span>
         <div class="phase-texts">
-          <span class="phase-title" id="phase-title">MORNING PEAK RUSH</span>
-          <span class="phase-detail" id="phase-detail">16 Trains Active · High Interchange Crowds</span>
+          <span class="phase-title" id="phase-title">SCHEDULED OPERATIONS</span>
+          <span class="phase-detail" id="phase-detail">Syncing Yellow Line timetable…</span>
         </div>
       </div>
 
       <!-- Quick 24h Jump Presets -->
       <div class="quick-timeline-presets">
-        <button class="time-preset-chip" data-time="19800" title="05:30 AM First Metro Startup">🌅 05:30 First Metro</button>
-        <button class="time-preset-chip active" data-time="33300" title="09:15 AM Peak Commuter Rush">🏢 09:15 Peak</button>
-        <button class="time-preset-chip" data-time="82800" title="23:00 PM Last Metro Terminal Departures">🌙 23:00 Last Metro</button>
-        <button class="time-preset-chip" data-time="7200" title="02:00 AM Night Track Maintenance (No Metros Running)">🛑 02:00 Night Tracks</button>
+        <button class="time-preset-chip" data-time="19800" title="05:30 AM First Metro Startup">🌅 05:30 First</button>
+        <button class="time-preset-chip" data-time="33300" title="09:15 AM Peak Commuter Rush">🏢 09:15 Peak</button>
+        <button class="time-preset-chip" data-time="65400" title="18:10 PM Sunset Golden Hour">🌇 18:10 Dusk</button>
+        <button class="time-preset-chip" data-time="82800" title="23:00 PM Last Metro Terminal Departures">🌙 23:00
+          Last</button>
+        <button class="time-preset-chip" data-time="7200"
+          title="02:00 AM Night Track Maintenance (No Metros Running)">🛑 02:00 Night</button>
       </div>
     </div>
 
@@ -395,7 +609,8 @@
       <div class="night-text">
         <div class="night-badge">DMRC NIGHT NON-REVENUE (00:15 – 05:30)</div>
         <h3 class="night-title" style="font-size: 13px;">Tracks De-Energized for Maintenance</h3>
-        <p class="night-desc" style="font-size: 10px; line-height: 1.3;">Ultrasonic flaw detection & catenary maintenance underway. 0 active revenue trains.</p>
+        <p class="night-desc" style="font-size: 10px; line-height: 1.3;">Ultrasonic flaw detection & catenary
+          maintenance underway. 0 active revenue trains.</p>
         <div class="night-stats" style="font-size: 10px; margin-top: 4px;">
           <span>🌅 First Revenue Train: 05:30 AM</span>
         </div>
@@ -404,11 +619,18 @@
     </div>
   </div>
 
-  <script src="src/js/trip_engine.js?v=4.0.0"></script>
-  <script src="src/js/live_client.js?v=4.0.0"></script>
-  <script src="src/js/diorama3d.js?v=4.0.0"></script>
-  <script src="src/js/delhi_metro_3d.js?v=4.1.0"></script>
-  <script src="src/js/metro_webgl_layer.js?v=7.5.0"></script>
-  <script src="src/js/main.js?v=7.5.0"></script>
+  <script defer src="src/js/trip_engine.js?v=20.1.0"></script>
+  <script defer src="src/js/live_client.js?v=20.1.0"></script>
+  <script defer src="src/js/metro_kit/materials_and_signs.js?v=20.1.0"></script>
+  <script defer src="src/js/metro_kit/platform_parts.js?v=20.1.0"></script>
+  <script defer src="src/js/metro_kit/track_and_train.js?v=24.0.0"></script>
+  <script defer src="src/js/metro_kit/station_archetypes.js?v=20.1.0"></script>
+  <script defer src="src/js/metro_kit/city_station_nodes.js?v=20.1.0"></script>
+  <script defer src="src/js/diorama3d.js?v=20.4.0"></script>
+  <script defer src="src/js/delhi_metro_3d.js?v=20.4.0"></script>
+  <script defer src="src/js/plugins/ao_shadow_layer.js?v=20.4.0"></script>
+  <script defer src="src/js/metro_webgl_layer.js?v=24.0.0"></script>
+  <script defer src="src/js/main.js?v=24.0.0"></script>
 </body>
+
 </html>

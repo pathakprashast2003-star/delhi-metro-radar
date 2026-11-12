@@ -1,0 +1,183 @@
+{
+  "meta": {
+    "lineId": "orange",
+    "lineName": "Airport Express Line",
+    "lineColor": "#F97316",
+    "operationalSpeedKmh": 120,
+    "totalLengthKm": 23.71,
+    "stationsCount": 7,
+    "headwayPeakMinutes": 10,
+    "headwayRegularMinutes": 15,
+    "firstTrain": "04:45",
+    "lastTrain": "23:40"
+  },
+  "stations": [
+    {
+      "id": "yashobhoomi_dwarka_sector_25",
+      "name": "Yashobhoomi Dwarka Sector 25",
+      "coords": [
+        77.045329,
+        28.550852
+      ],
+      "trackNodeIndex": 0,
+      "elevM": -14,
+      "structure": "underground",
+      "major": true,
+      "terminus": true,
+      "interchanges": [],
+      "interchange": null,
+      "distanceMeters": 0.0,
+      "index": 0,
+      "code": "Y25",
+      "hindi": "\u092f\u0936\u094b\u092d\u0942\u092e\u093f \u0926\u094d\u0935\u093e\u0930\u0915\u093e \u0938\u0947\u0915\u094d\u091f\u0930 25",
+      "isTerminal": true,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 120
+    },
+    {
+      "id": "dwarka_sector__21",
+      "name": "Dwarka Sector - 21",
+      "coords": [
+        77.05856,
+        28.551922
+      ],
+      "trackNodeIndex": 15,
+      "elevM": -14,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Blue Line"
+      ],
+      "interchange": "Blue Line",
+      "distanceMeters": 1644.7,
+      "index": 1,
+      "code": "DS2",
+      "hindi": "\u0926\u094d\u0935\u093e\u0930\u0915\u093e \u0938\u0947\u0915\u094d\u091f\u0930 - 21",
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 60
+    },
+    {
+      "id": "igi_airport",
+      "name": "IGI Airport",
+      "coords": [
+        77.086724,
+        28.55649
+      ],
+      "trackNodeIndex": 43,
+      "elevM": -18,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "IGI Terminal 3 Domestic & International Flights"
+      ],
+      "interchange": "Airport Flights",
+      "distanceMeters": 4717.9,
+      "index": 2,
+      "code": "APT",
+      "hindi": "\u0906\u0908.\u091c\u0940.\u0906\u0908. \u090f\u092f\u0930\u092a\u094b\u0930\u094d\u091f (\u091f\u0930\u094d\u092e\u093f\u0928\u0932 3)",
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 90
+    },
+    {
+      "id": "delhi_aerocity",
+      "name": "Delhi Aerocity",
+      "coords": [
+        77.120809,
+        28.5488
+      ],
+      "trackNodeIndex": 74,
+      "elevM": -14,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Aerocity Hospitality Hub"
+      ],
+      "interchange": "Aerocity",
+      "distanceMeters": 8122.3,
+      "index": 3,
+      "code": "AER",
+      "hindi": "\u0926\u093f\u0932\u094d\u0932\u0940 \u090f\u0930\u094b\u0938\u093f\u091f\u0940",
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 45
+    },
+    {
+      "id": "dhaula_kuan",
+      "name": "Dhaula Kuan",
+      "coords": [
+        77.161684,
+        28.591914
+      ],
+      "trackNodeIndex": 137,
+      "elevM": 18,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Pink Line (Durgabai Deshmukh South Campus)"
+      ],
+      "interchange": "Pink Line",
+      "distanceMeters": 15035.6,
+      "index": 4,
+      "code": "DHK",
+      "hindi": "\u0927\u094c\u0932\u093e \u0915\u0941\u0906\u0901",
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 45
+    },
+    {
+      "id": "shivaji_stadium",
+      "name": "Shivaji Stadium",
+      "coords": [
+        77.211311,
+        28.628914
+      ],
+      "trackNodeIndex": 198,
+      "elevM": -16,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Connaught Place Outer Circle"
+      ],
+      "interchange": "Connaught Place",
+      "distanceMeters": 21731.7,
+      "index": 5,
+      "code": "SVS",
+      "hindi": "\u0936\u093f\u0935\u093e\u091c\u0940 \u0938\u094d\u091f\u0947\u0921\u093f\u092f\u092e",
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 45
+    },
+    {
+      "id": "new_delhi",
+      "name": "New Delhi",
+      "coords": [
+        77.223095,
+        28.64249
+      ],
+      "trackNodeIndex": 216,
+      "elevM": -18,
+      "structure": "underground",
+      "major": true,
+      "terminus": true,
+      "interchanges": [
+        "Yellow Line",
+        "Northern Railway (NDLS)"
+      ],
+      "interchange": "Yellow Line \u00b7 Indian Railways",
+      "distanceMeters": 23706.8,
+      "index": 6,
+      "code": "NDL",
+      "hindi": "\u0928\u0908 \u0926\u093f\u0932\u094d\u0932\u0940",
+      "isTerminal": true,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 120
+    }
+  ]
+}

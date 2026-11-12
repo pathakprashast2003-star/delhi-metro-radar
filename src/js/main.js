@@ -17,7 +17,7 @@
   let packetInterval = 100; // ms
   let selectedTrainId = null;
   let followTrainId = null;
-  let renderMode = 'dot'; // Default to sleek, non-intrusive transit vehicle dot (big trains removed)
+  let renderMode = '3d';
   let currentCutawayStation = 'rajiv_chowk';
   let activeStationIndex = null;
   let rajivMarker = null;
@@ -109,37 +109,113 @@
     }
   }
 
-  async function init() {
-    setupMasterNavigation();
-    setupControls();
+  function applyRenderMode(mode) {
+    renderMode = mode;
+    ['3d', 'dot', 'tracks'].forEach(m => {
+      const btn = document.getElementById(`mode-${m}`);
+      if (btn) btn.classList.toggle('active', m === mode);
+    });
+    if (!map) return;
 
-    // 1. Clock Skew Calibration via HTTP Date Header
-    try {
-      const headRes = await fetch('src/data/yellow_line_service.json', { method: 'HEAD' });
-      const serverDate = headRes.headers.get('date');
-      if (serverDate) {
-        const serverMs = new Date(serverDate).getTime();
-        window.CLOCK_SKEW_MS = serverMs - Date.now();
-        console.log(`[Clock Sync] Calibrated server clock offset: ${window.CLOCK_SKEW_MS}ms`);
-      } else {
-        window.CLOCK_SKEW_MS = 0;
+    const hasThreeLayer = !!(window.MetroWebGLLayer || map.getLayer('metro-webgl-3d-layer'));
+
+    // True 3D MetroKit WebGL layer handles viaducts, tunnels & stations above MapLibre
+    if (!hasThreeLayer) {
+      const allViaductLayers = [
+        'flyover-ground-shadow',
+        'flyover-parapet-curb',
+        'flyover-deck-slab',
+        'flyover-center-divider',
+        'flyover-viaduct-track-1',
+        'flyover-viaduct-track-2',
+        'flyover-viaduct-track-ties',
+        'tunnel-tube-outer-casing',
+        'tunnel-tube-bed'
+      ];
+      allViaductLayers.forEach(id => {
+        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'visible');
+      });
+    }
+
+    if (hasThreeLayer) {
+      ['train-consist-3d', 'train-dot-white-black', 'train-dot-pupil', 'train-drop-shadow'].forEach(id => {
+        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+      });
+      return;
+    }
+
+    if (mode === '3d') {
+      if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+      if (map.getLayer('train-dot-white-black')) {
+        map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
+        map.setPaintProperty('train-dot-white-black', 'circle-opacity', [
+          'interpolate', ['linear'], ['zoom'],
+          11.0, 1.0,
+          12.5, 0.0
+        ]);
       }
-    } catch (e) {
-      window.CLOCK_SKEW_MS = 0;
+      if (map.getLayer('train-dot-pupil')) {
+        map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
+        map.setPaintProperty('train-dot-pupil', 'circle-opacity', [
+          'interpolate', ['linear'], ['zoom'],
+          11.0, 1.0,
+          12.5, 0.0
+        ]);
+      }
+      if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'none');
+    } else if (mode === 'dot') {
+      if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+      if (map.getLayer('train-dot-white-black')) {
+        map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
+        map.setPaintProperty('train-dot-white-black', 'circle-opacity', 1.0);
+      }
+      if (map.getLayer('train-dot-pupil')) {
+        map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
+        map.setPaintProperty('train-dot-pupil', 'circle-opacity', 1.0);
+      }
+      if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
+    } else if (mode === 'tracks') {
+      if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
+      if (map.getLayer('train-dot-white-black')) map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
+      if (map.getLayer('train-dot-pupil')) map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
+      if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'none');
     }
+  }
 
-    try {
-      trackData = await TripEngine.loadData();
-    } catch (e) {
-      console.error('Failed to load track topology from TripEngine', e);
-    }
+  function init() {
+    setupMasterNavigation();
 
-    await checkServiceAdvisories();
+    // 1. Pre-warm shared topology JSON promise; calibrate server clock skew after first paint
+    window.__delhiTopoPromise = window.__delhiTopoPromise ||
+      fetch('src/data/delhi_network_topology_geo.json').then((r) => r.json()).catch(() => null);
+
+    setTimeout(() => {
+      fetch('./', { method: 'HEAD' })
+        .then((headRes) => {
+          const serverDate = headRes.headers.get('date');
+          if (serverDate) {
+            window.CLOCK_SKEW_MS = new Date(serverDate).getTime() - Date.now();
+          }
+        })
+        .catch(() => { window.CLOCK_SKEW_MS = 0; });
+    }, 3000);
+
+    const trackPromise = TripEngine.loadData()
+      .then((td) => {
+        trackData = td;
+        return td;
+      })
+      .catch((e) => {
+        console.error('Failed to load track topology from TripEngine', e);
+        return null;
+      });
+
+    checkServiceAdvisories();
     setInterval(checkServiceAdvisories, 60000);
 
     if (window.LiveClient) {
       try {
-        await LiveClient.init();
+        Promise.resolve(LiveClient.init()).catch((e) => console.warn('[LiveClient] Init warning:', e));
         LiveClient.onStateUpdate((state) => {
           if (state && state.alerts && state.alerts.length > 0) {
             updateAdvisoryUI({
@@ -154,7 +230,11 @@
       }
     }
 
-    initDioramaMap();
+    initDioramaMap(trackPromise);
+    setupControls();
+    trackPromise.then(() => {
+      if (typeof window.syncStationStepper === 'function') window.syncStationStepper(0);
+    });
     startClientSimulationTicker();
     startAnimationLoop();
   }
@@ -184,17 +264,37 @@
     });
   }
 
-  function initDioramaMap() {
-    // Vibrant, colorful architectural MapLibre foundation
+  const isMobileViewport = () => (typeof window !== 'undefined') && (
+    window.innerWidth <= 860 ||
+    (navigator.maxTouchPoints > 0 && Math.min(window.innerWidth, window.screen ? window.screen.width : window.innerWidth) <= 1024)
+  );
+
+  function initDioramaMap(trackPromise) {
+    const mobileView = isMobileViewport();
+    if (window.maplibregl && typeof window.maplibregl.setWorkerCount === 'function') {
+      const cores = Number(navigator.hardwareConcurrency) || 4;
+      const targetWorkers = mobileView ? Math.min(2, Math.max(1, cores >> 1)) : Math.min(4, Math.max(2, cores >> 1));
+      try { window.maplibregl.setWorkerCount(targetWorkers); } catch (_) { }
+    }
+    // Rich OpenFreeMap Liberty OSM 3D urban vector style (detailed parks, campuses, walkways & 3D buildings)
     map = new maplibregl.Map({
       container: 'map',
-      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-      center: [77.1400, 28.5850], // Centered for complete 49.3 km corridor overview from Samaypur Badli to Millennium City
-      zoom: 10.35,
-      pitch: 0,       // Clean 2D plan on overview load (no squashed foreshortening)
-      bearing: 0,
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+      center: [77.1383, 28.7446], // Yellow Line Station #1: Samaypur Badli Terminus
+      zoom: 18.35,
+      pitch: 54,
+      bearing: -24,
       minZoom: 9.0,
-      maxZoom: 18.0,
+      maxZoom: 20.5,
+      maxPitch: 74,
+      pixelRatio: Math.min(window.devicePixelRatio || 1, mobileView ? 1.75 : 2),
+      maxTileCacheSize: mobileView ? 64 : 160,
+      maxTileCacheZoomLevels: mobileView ? 5 : 8,
+      dragRotate: true,
+      pitchWithRotate: true,
+      touchPitch: true,
+      touchZoomRotate: true,
+      canvasContextAttributes: { antialias: !mobileView },
       maxBounds: [
         [76.50, 28.10], // Southwest NCR
         [77.70, 29.10]  // Northeast NCR
@@ -204,11 +304,20 @@
     window.map = map;
     window.mapInstance = map;
 
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), 'top-right');
     map.addControl(new maplibregl.AttributionControl({
-      compact: false,
+      compact: mobileView,
       customAttribution: 'Unofficial · Not affiliated with DMRC | © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
     }), 'bottom-left');
+    if (mobileView) {
+      const collapseMobileAttrib = () => {
+        const attribEl = map.getContainer && map.getContainer().querySelector('.maplibregl-ctrl-attrib');
+        if (attribEl) attribEl.classList.remove('maplibregl-compact-show');
+      };
+      setTimeout(collapseMobileAttrib, 0);
+      map.once('load', collapseMobileAttrib);
+      map.on('style.load', () => setTimeout(collapseMobileAttrib, 50));
+    }
 
     map.on('styleimagemissing', (e) => {
       if (e.id === 'delhi-metro-consist') {
@@ -218,40 +327,63 @@
       }
     });
 
-    map.on('load', async () => {
+    let styleLoaded = false;
+    let dataReady = !!trackData;
+    let geoRendered = false;
+
+    function tryRenderGeoJson() {
+      if (geoRendered || !styleLoaded || !dataReady || !trackData) return;
+      geoRendered = true;
+      const hasThreeLayer = !!window.MetroWebGLLayer;
+      if (!hasThreeLayer) add3DBuildings();
+      renderViaductAndDualTracks(!hasThreeLayer);
+      renderPhysicalPlatforms(!hasThreeLayer);
+      if (!hasThreeLayer) renderTrainsLayers();
+      add3DStationLandmarks();
+      setupInteractions();
+      applyRenderMode(renderMode);
+      if (window.MetroWebGLLayer && window.MetroWebGLLayer.getDebugInfo().isReady) {
+        window.MetroWebGLLayer.configureMapLibreVisualHarmony();
+      }
+    }
+
+    if (trackPromise && typeof trackPromise.then === 'function') {
+      trackPromise.then((td) => {
+        if (td) trackData = td;
+        dataReady = !!trackData;
+        tryRenderGeoJson();
+      });
+    }
+
+    map.on('style.load', () => {
+      styleLoaded = true;
       suppressMapClutter();
       enhanceMapColors();
 
-      // Directional Sunlight for 3D Architectural Extrusions (Canopies & Platforms)
+      // Directional Warm Daylight for 3D Extrusions & Landmarks
       try {
         map.setLight({
-          anchor: 'viewport',
-          color: '#FFFFFF',
-          intensity: 0.65,
-          position: [1.5, 180, 50]
+          anchor: 'map',
+          color: '#FFFDF8',
+          intensity: 0.40,
+          position: [1.15, 138, 30]
         });
-      } catch (e) {}
+      } catch (e) { }
 
-      await Promise.all([
-        preloadImage('/public/metro_train_topdown_vibrant.png', 'delhi-metro-consist'),
-        preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern')
-      ]);
-
-      add3DBuildings();
-      renderViaductAndDualTracks();
-      renderPhysicalPlatforms();
-      renderTrainsLayers();
-      add3DStationLandmarks();
-      setupInteractions();
-
-      // ── Install Three.js Custom WebGL Layer ───────────────
-      if (window.MetroWebGLLayer) {
-        window.MetroWebGLLayer.install(map);
-        console.log('[main.js] MetroWebGLLayer installed on MapLibre map');
+      // Skip legacy 2D train sprite preloads when WebGL 3D layer renders the live fleet
+      if (!window.MetroWebGLLayer) {
+        preloadImage('/public/metro_train_topdown_vibrant.png', 'delhi-metro-consist');
+        preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern');
       }
 
       map.on('zoom', updateMarkerScale);
       updateMarkerScale();
+      tryRenderGeoJson();
+
+      if (window.MetroWebGLLayer) {
+        window.MetroWebGLLayer.install(map);
+        console.log('[main.js] MetroWebGLLayer installed on MapLibre style.load');
+      }
     });
   }
 
@@ -259,78 +391,36 @@
     try {
       const style = map.getStyle();
       if (!style || !style.layers) return;
-      const clutterPatterns = [
-        'shield', 'boundary', 'roadname', 'housenumber', 
-        'poi_', 'place_hamlet', 'place_suburbs', 'place_villages', 
-        'place_town', 'watername', 'waterway_label'
-      ];
-      style.layers.forEach(l => {
-        if (clutterPatterns.some(pat => l.id.includes(pat))) {
+      // Hide only dense micro-clutter & US highway shields; preserve rich OpenFreeMap parks, landmarks & street names
+      const clutterIds = new Set([
+        'poi_r20', 'road_one_way_arrow', 'road_one_way_arrow_opposite',
+        'highway-shield-us-interstate', 'road_shield_us', 'housenumber'
+      ]);
+      style.layers.forEach((l) => {
+        if (clutterIds.has(l.id)) {
           map.setLayoutProperty(l.id, 'visibility', 'none');
         }
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 
   function enhanceMapColors() {
     try {
-      // 1. Soft Architectural Studio Slate-Teal Water (Calm, elegant diorama reflection)
-      if (map.getLayer('water')) {
-        map.setPaintProperty('water', 'fill-color', '#8BA8B7');
-        map.setPaintProperty('water', 'fill-opacity', 0.82);
-      }
-      if (map.getLayer('waterway')) {
-        map.setPaintProperty('waterway', 'line-color', '#7B9AA9');
-      }
-
-      // 2. Muted Studio Sage / Soft Foam Clay Nature & Parks (Architectural Model Flora)
-      const parkColor = '#DCE4D5'; // Soft warm architectural sage
-      ['park_national_park', 'park_nature_reserve', 'landcover', 'landuse'].forEach(layerId => {
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'fill-color', parkColor);
-          map.setPaintProperty(layerId, 'fill-opacity', 0.68);
-        }
-      });
-
-      // 3. Architectural Chalk Sandstone Highway Fills (Muted warm sand, NOT electric orange!)
-      const trunkRoads = ['road_trunk_fill_ramp', 'road_trunk_fill_noramp', 'road_mot_fill_ramp', 'road_mot_fill_noramp', 'bridge_trunk_fill', 'bridge_mot_fill'];
-      trunkRoads.forEach(layerId => {
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#E8E2D5');
-        }
-      });
-      const trunkCases = ['road_trunk_case_ramp', 'road_trunk_case_noramp', 'road_mot_case_ramp', 'road_mot_case_noramp'];
-      trunkCases.forEach(layerId => {
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#DCD5C6');
-        }
-      });
-
-      // 4. Subtle Alabaster Local Arteries & Secondary Roads
-      const primaryRoads = ['road_pri_fill_ramp', 'road_pri_fill_noramp', 'road_sec_fill_noramp', 'bridge_pri_fill', 'bridge_sec_fill', 'road_minor_fill', 'road_service_fill'];
-      primaryRoads.forEach(layerId => {
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#F5F2EB');
-        }
-      });
-      const primaryCases = ['road_pri_case_ramp', 'road_pri_case_noramp', 'road_sec_case_noramp', 'road_minor_case', 'road_service_case'];
-      primaryCases.forEach(layerId => {
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#E5E0D5');
-        }
-      });
-
-      // 5. Warm Museum Diorama Pedestal Background (Nano Banana Alabaster)
       if (map.getLayer('background')) {
-        map.setPaintProperty('background', 'background-color', '#FAF8F5');
+        map.setPaintProperty('background', 'background-color', '#F2EDE2');
       }
-    } catch (e) {}
+      if (map.getLayer('water')) {
+        map.setPaintProperty('water', 'fill-color', '#79C2EC');
+        map.setPaintProperty('water', 'fill-opacity', 0.88);
+      }
+    } catch (e) { }
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  2. 3D WHITE-CLAY BUILDINGS EXTRUSION
+  //  2. LEGACY PROTOMAPS 3D EXTRUSION FALLBACK (SKIPPED ON LIBERTY)
   // ═══════════════════════════════════════════════════════════
   function add3DBuildings() {
+    if (!map.getSource('protomaps')) return;
     try {
       const layers = map.getStyle().layers;
       let firstSymbolId;
@@ -364,13 +454,13 @@
           'fill-extrusion-opacity': 0.82
         }
       }, firstSymbolId);
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // ═══════════════════════════════════════════════════════════
   //  3. INFRASTRUCTURE: ELEVATED FLYOVERS, SUBTERRANEAN TUNNELS & PORTALS
   // ═══════════════════════════════════════════════════════════
-  function renderViaductAndDualTracks() {
+  function renderViaductAndDualTracks(includeLegacy3D = true) {
     if (!trackData) return;
 
     // ── 0. UNIFIED OVERVIEW CORRIDOR RIBBON (z < 13.5) ────────
@@ -458,6 +548,8 @@
       }
     });
 
+    if (!includeLegacy3D) return;
+
     // ── A. GEOJSON SOURCES FOR CLOSE-UP 3D (z >= 13.5) ────────
     // 1. Flyover Viaduct Centers (North & South Elevated Sections)
     map.addSource('flyover-viaduct-center', {
@@ -539,19 +631,19 @@
 
       const plinthOffset = isDown
         ? ['interpolate', ['linear'], ['zoom'], 13.5, -3.2, 15, -2.0, 16, 0.0]
-        : ['interpolate', ['linear'], ['zoom'], 13.5,  3.2, 15,  2.0, 16, 0.0];
+        : ['interpolate', ['linear'], ['zoom'], 13.5, 3.2, 15, 2.0, 16, 0.0];
 
       const leftRailOffset = isDown
         ? ['interpolate', ['linear'], ['zoom'], 13.5, -4.8, 15, -2.6, 17, -4.5]
-        : ['interpolate', ['linear'], ['zoom'], 13.5,  2.4, 15, -2.6, 17, -4.5];
+        : ['interpolate', ['linear'], ['zoom'], 13.5, 2.4, 15, -2.6, 17, -4.5];
 
       const rightRailOffset = isDown
-        ? ['interpolate', ['linear'], ['zoom'], 13.5, -2.4, 15,  2.6, 17,  4.5]
-        : ['interpolate', ['linear'], ['zoom'], 13.5,  4.8, 15,  2.6, 17,  4.5];
+        ? ['interpolate', ['linear'], ['zoom'], 13.5, -2.4, 15, 2.6, 17, 4.5]
+        : ['interpolate', ['linear'], ['zoom'], 13.5, 4.8, 15, 2.6, 17, 4.5];
 
       const thirdOffset = isDown
         ? ['interpolate', ['linear'], ['zoom'], 14, -0.4, 16, 5.8, 17, 8.2]
-        : ['interpolate', ['linear'], ['zoom'], 14,  7.6, 16, 5.8, 17, 8.2];
+        : ['interpolate', ['linear'], ['zoom'], 14, 7.6, 16, 5.8, 17, 8.2];
 
       // 1. Detailed Ballastless Concrete Trackbed Plinth (z >= 13.5)
       map.addLayer({
@@ -848,7 +940,7 @@
             ['==', ['get', 'id'], 'portal_north'], '🔻 NORTH PORTAL · Model Town ➔ GTB Nagar (-16m)',
             '🔺 SOUTH PORTAL · Saket ➔ Qutab Minar (+15m)'
           ],
-          'text-font': ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
+          'text-font': ['Noto Sans Bold'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 14, 11, 16, 12.5],
           'text-offset': [0, 1.8],
           'text-anchor': 'top'
@@ -911,11 +1003,11 @@
   // ═══════════════════════════════════════════════════════════
   //  4. RENDER PHYSICAL PLATFORMS, CANOPIES & UNDERGROUND CHAMBERS
   // ═══════════════════════════════════════════════════════════
-  function renderPhysicalPlatforms() {
+  function renderPhysicalPlatforms(includeLegacy3D = true) {
     if (!trackData) return;
 
-    // 1. Platform Slabs (Reveals at z >= 13.5 close-up views)
-    if (trackData.platformSlabs) {
+    // 1. Platform Slabs (Reveals at z >= 13.5 close-up views; skipped when WebGL 3D layer active)
+    if (includeLegacy3D && trackData.platformSlabs) {
       map.addSource('platform-slabs', {
         type: 'geojson',
         data: trackData.platformSlabs
@@ -935,18 +1027,17 @@
         }
       });
 
-      // Platform Raised Concrete Deck & Ground Concourse Piers (Elevated Stations, z >= 13.5)
+      // Clean 2.5D Platform Footprint (Elevated Stations, z >= 13.5)
       map.addLayer({
         id: 'platform-slab-deck-elevated',
-        type: 'fill-extrusion',
+        type: 'fill',
         source: 'platform-slabs',
         filter: ['==', ['get', 'structure'], 'elevated'],
         minzoom: 13.5,
         paint: {
-          'fill-extrusion-color': '#FFFFFF',
-          'fill-extrusion-height': 15.0,
-          'fill-extrusion-base': 0.0,
-          'fill-extrusion-opacity': 0.98
+          'fill-color': '#F8FAFC',
+          'fill-outline-color': '#CBD5E1',
+          'fill-opacity': 0.92
         }
       });
 
@@ -966,7 +1057,7 @@
     }
 
     // 2. Subterranean Station Chamber Cutaway Boxes (Underground Stations, z >= 13.5)
-    if (trackData.undergroundPlatforms) {
+    if (includeLegacy3D && trackData.undergroundPlatforms) {
       map.addSource('underground-platforms', {
         type: 'geojson',
         data: trackData.undergroundPlatforms
@@ -998,23 +1089,22 @@
         }
       });
 
-      // Surface Glass Entrance Pavilion at Street Level (+0m to +4.5m)
+      // Surface Glass Entrance Footprint at Street Level
       map.addLayer({
         id: 'underground-portal-cubes',
-        type: 'fill-extrusion',
+        type: 'fill',
         source: 'underground-platforms',
         minzoom: 13.8,
         paint: {
-          'fill-extrusion-color': '#FFFFFF',
-          'fill-extrusion-height': 4.5,
-          'fill-extrusion-base': 0.0,
-          'fill-extrusion-opacity': 0.82
+          'fill-color': '#FFFFFF',
+          'fill-outline-color': '#64748B',
+          'fill-opacity': 0.85
         }
       });
     }
 
     // 3. Tactile Hazard Platform Edges (z >= 14.0)
-    if (trackData.tactileEdges) {
+    if (includeLegacy3D && trackData.tactileEdges) {
       map.addSource('platform-tactile-edges', {
         type: 'geojson',
         data: trackData.tactileEdges
@@ -1027,42 +1117,8 @@
         minzoom: 14.0,
         paint: {
           'line-color': '#F59E0B',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 14, 4.5, 16, 7],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 14, 3.5, 16, 5],
           'line-dasharray': [1, 0.4]
-        }
-      });
-    }
-
-    // 4. Modern Vaulted Arch Steel Canopy Roofs (ONLY on Elevated Stations, z >= 14.0)
-    if (trackData.platformCanopies) {
-      map.addSource('platform-canopies', {
-        type: 'geojson',
-        data: trackData.platformCanopies
-      });
-
-      map.addLayer({
-        id: 'platform-canopy-3d',
-        type: 'fill-extrusion',
-        source: 'platform-canopies',
-        minzoom: 14.0,
-        paint: {
-          'fill-extrusion-color': '#E2E8F0',
-          'fill-extrusion-height': 24.0,
-          'fill-extrusion-base': 15.0,
-          'fill-extrusion-opacity': 0.88
-        }
-      });
-
-      map.addLayer({
-        id: 'platform-canopy-ridge',
-        type: 'fill-extrusion',
-        source: 'platform-canopies',
-        minzoom: 14.0,
-        paint: {
-          'fill-extrusion-color': '#94A3B8',
-          'fill-extrusion-height': 24.8,
-          'fill-extrusion-base': 23.8,
-          'fill-extrusion-opacity': 0.95
         }
       });
     }
@@ -1140,7 +1196,7 @@
         minzoom: 10.2,
         layout: {
           'text-field': ['get', 'name'],
-          'text-font': ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
+          'text-font': ['Noto Sans Bold'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 10, 10.5, 12, 11.5, 14, 13.0],
           'text-offset': [0, 1.4],
           'text-anchor': 'top'
@@ -1161,7 +1217,7 @@
         minzoom: 12.8,
         layout: {
           'text-field': ['get', 'name'],
-          'text-font': ['Montserrat Medium', 'Open Sans Regular', 'Noto Sans Regular', 'Noto Sans CJK JP Regular'],
+          'text-font': ['Noto Sans Regular'],
           'text-size': 10,
           'text-offset': [0, 1.3],
           'text-anchor': 'top'
@@ -1396,7 +1452,7 @@
       const modeBtn = document.getElementById('btn-toggle-time-mode');
       if (modeBtn) {
         modeBtn.textContent = timeMode === 'live' ? '⏱️ Current IST' : '⏱️ Custom Scrub';
-        modeBtn.style.background = timeMode === 'live' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.4)';
+        modeBtn.classList.toggle('custom-scrub', timeMode === 'custom');
       }
 
       if (schedule.phase) {
@@ -1474,9 +1530,13 @@
       if (activeStationIndex !== null) {
         renderStationPanel(activeStationIndex, sec, dayVariant);
       }
+      if (window.MetroWebGLLayer && window.MetroWebGLLayer.setTimeOfDay) {
+        window.MetroWebGLLayer.setTimeOfDay(sec);
+      }
     }
 
     lastSimulationTick = performance.now();
+    tick();
     setInterval(tick, 100); // 10 Hz simulation step
   }
 
@@ -1484,74 +1544,92 @@
   //  8. 60 FPS INTERPOLATION LOOP (Silky-Smooth Movement & Rotation)
   // ═══════════════════════════════════════════════════════════
   function startAnimationLoop() {
-    function animate() {
-      if (map && map.getSource('active-trains') && trainTargetStates.size > 0) {
-        const now = performance.now();
-        const features = [];
+    const mapEl = document.getElementById('map');
+    let lastDotPush = 0;
 
-        trainTargetStates.forEach((target, id) => {
-          const prev = trainPrevStates.get(id) || target;
-          const elapsed = now - target.time;
-          const factor = Math.min(1.0, Math.max(0.0, elapsed / packetInterval));
+    function animate(now) {
+      if (document.hidden || (mapEl && mapEl.classList.contains('hidden'))) {
+        requestAnimationFrame(animate);
+        return;
+      }
 
-          let curLng = prev.coords[0] + (target.coords[0] - prev.coords[0]) * factor;
-          let curLat = prev.coords[1] + (target.coords[1] - prev.coords[1]) * factor;
+      if (map && trainTargetStates.size > 0) {
+        const hasThreeLayer = !!(window.MetroWebGLLayer || map.getLayer('metro-webgl-3d-layer'));
+        const needsGeoJson = !hasThreeLayer && map.getSource('active-trains') && (now - lastDotPush >= 40);
 
-          const prevB = prev.bearing !== undefined ? prev.bearing : target.bearing;
-          let dAngle = (target.bearing - prevB) % 360;
-          if (dAngle > 180) dAngle -= 360;
-          if (dAngle < -180) dAngle += 360;
-          const curBearing = Math.round((prevB + dAngle * factor + 360) % 360);
-
-          // Dynamic screen-pixel normal offset at overview zooms (< 14.5)
-          // Ensures train dots sit perfectly centered on their visually offset tracks!
-          const currentZoom = map.getZoom();
-          if (currentZoom < 14.5) {
-            const visualOffsetPx = Math.max(0, (14.5 - currentZoom) * 0.92);
-            if (visualOffsetPx > 0) {
-              const metersPerPixel = 156543.03392 * Math.cos(curLat * Math.PI / 180) / Math.pow(2, currentZoom);
-              const offsetDegLng = (visualOffsetPx * metersPerPixel) / (111320 * Math.cos(curLat * Math.PI / 180));
-              const offsetDegLat = (visualOffsetPx * metersPerPixel) / 111320;
-
-              const rad = (curBearing || 0) * Math.PI / 180;
-              curLng += -Math.cos(rad) * offsetDegLng;
-              curLat += Math.sin(rad) * offsetDegLat;
-            }
-          }
-
-          features.push({
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [curLng, curLat] },
-            properties: {
-              id: id,
-              bearing: curBearing,
-              track: target.data.track,
-              directionLabel: target.data.directionLabel,
-              fromStation: target.data.fromStation,
-              toStation: target.data.toStation,
-              speedKph: target.data.speedKph,
-              state: target.data.state,
-              stateLabel: target.data.stateLabel,
-              dwellRemaining: target.data.dwellRemaining,
-              dwellTotal: target.data.dwellTotal,
-              isExtendedDwell: target.data.isExtendedDwell,
-              dwellReason: target.data.dwellReason,
-              currentStation: target.data.currentStation,
-              structure: target.data.structure || 'elevated',
-              elevM: target.data.elevM || 15,
-              elevLabel: target.data.elevLabel || 'Elevated Viaduct (+15m)'
-            }
-          });
-
-          if (followTrainId === id) {
+        if (followTrainId) {
+          const target = trainTargetStates.get(followTrainId);
+          if (target) {
+            const prev = trainPrevStates.get(followTrainId) || target;
+            const factor = Math.min(1.0, Math.max(0.0, (now - target.time) / packetInterval));
+            const curLng = prev.coords[0] + (target.coords[0] - prev.coords[0]) * factor;
+            const curLat = prev.coords[1] + (target.coords[1] - prev.coords[1]) * factor;
             map.setCenter([curLng, curLat]);
           }
-        });
+        }
 
-        map.getSource('active-trains').setData({
-          type: 'FeatureCollection',
-          features: features
-        });
+        if (needsGeoJson) {
+          lastDotPush = now;
+          const features = [];
+          const currentZoom = map.getZoom();
+
+          trainTargetStates.forEach((target, id) => {
+            const prev = trainPrevStates.get(id) || target;
+            const elapsed = now - target.time;
+            const factor = Math.min(1.0, Math.max(0.0, elapsed / packetInterval));
+
+            let curLng = prev.coords[0] + (target.coords[0] - prev.coords[0]) * factor;
+            let curLat = prev.coords[1] + (target.coords[1] - prev.coords[1]) * factor;
+
+            const prevB = prev.bearing !== undefined ? prev.bearing : target.bearing;
+            let dAngle = (target.bearing - prevB) % 360;
+            if (dAngle > 180) dAngle -= 360;
+            if (dAngle < -180) dAngle += 360;
+            const curBearing = Math.round((prevB + dAngle * factor + 360) % 360);
+
+            if (currentZoom < 14.5) {
+              const visualOffsetPx = Math.max(0, (14.5 - currentZoom) * 0.92);
+              if (visualOffsetPx > 0) {
+                const metersPerPixel = 156543.03392 * Math.cos(curLat * Math.PI / 180) / Math.pow(2, currentZoom);
+                const offsetDegLng = (visualOffsetPx * metersPerPixel) / (111320 * Math.cos(curLat * Math.PI / 180));
+                const offsetDegLat = (visualOffsetPx * metersPerPixel) / 111320;
+
+                const rad = (curBearing || 0) * Math.PI / 180;
+                curLng += -Math.cos(rad) * offsetDegLng;
+                curLat += Math.sin(rad) * offsetDegLat;
+              }
+            }
+
+            features.push({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [curLng, curLat] },
+              properties: {
+                id: id,
+                bearing: curBearing,
+                track: target.data.track,
+                directionLabel: target.data.directionLabel,
+                fromStation: target.data.fromStation,
+                toStation: target.data.toStation,
+                speedKph: target.data.speedKph,
+                state: target.data.state,
+                stateLabel: target.data.stateLabel,
+                dwellRemaining: target.data.dwellRemaining,
+                dwellTotal: target.data.dwellTotal,
+                isExtendedDwell: target.data.isExtendedDwell,
+                dwellReason: target.data.dwellReason,
+                currentStation: target.data.currentStation,
+                structure: target.data.structure || 'elevated',
+                elevM: target.data.elevM || 15,
+                elevLabel: target.data.elevLabel || 'Elevated Viaduct (+15m)'
+              }
+            });
+          });
+
+          map.getSource('active-trains').setData({
+            type: 'FeatureCollection',
+            features: features
+          });
+        }
       }
 
       requestAnimationFrame(animate);
@@ -1573,9 +1651,11 @@
       tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-surface') === surfaceName));
 
       const mapPerspectivePill = document.getElementById('map-perspective-pill');
+      const stationStepperPill = document.getElementById('station-stepper-pill');
 
       const archGroup = document.getElementById('hud-archetype-group');
       const camGroup = document.getElementById('hud-camera-group');
+      const kitGroup = document.getElementById('hud-kit-group');
       const sectorGroup = document.getElementById('hud-sector-group');
 
       if (surfaceName === 'corridor') {
@@ -1583,18 +1663,25 @@
         if (threeSurface) threeSurface.classList.add('hidden');
         if (timetableDock) timetableDock.style.display = 'flex';
         if (mapPerspectivePill) mapPerspectivePill.classList.remove('hidden');
+        if (stationStepperPill) stationStepperPill.classList.remove('hidden');
         if (window.Diorama3D) window.Diorama3D.stop();
         if (window.DelhiMetro3D) window.DelhiMetro3D.stop();
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.syncHudTheme) window.MetroWebGLLayer.syncHudTheme();
         requestAnimationFrame(() => {
           if (map) map.resize();
         });
       } else if (surfaceName === 'diorama') {
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.hideTooltip) window.MetroWebGLLayer.hideTooltip();
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.closeMonumentSpotlight) window.MetroWebGLLayer.closeMonumentSpotlight();
         if (threeSurface) threeSurface.classList.remove('hidden');
         if (mapSurface) mapSurface.classList.add('hidden');
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.syncMonumentMarkersVisibility) window.MetroWebGLLayer.syncMonumentMarkersVisibility();
         if (timetableDock) timetableDock.style.display = 'none';
         if (mapPerspectivePill) mapPerspectivePill.classList.add('hidden');
+        if (stationStepperPill) stationStepperPill.classList.add('hidden');
         if (archGroup) archGroup.style.display = 'block';
         if (camGroup) camGroup.style.display = 'block';
+        if (kitGroup) kitGroup.style.display = 'block';
         if (sectorGroup) sectorGroup.style.display = 'none';
         const stPanel = document.getElementById('station-panel');
         if (stPanel) stPanel.classList.add('hidden');
@@ -1603,16 +1690,27 @@
         if (window.DelhiMetro3D) window.DelhiMetro3D.stop();
         if (window.Diorama3D && threeSurface) {
           window.Diorama3D.init(threeSurface);
-          window.Diorama3D.setArchetype(optArchetype || 'underground');
+          if (optArchetype === 'elevated') {
+            window.Diorama3D.setCameraView('qutab');
+          } else if (optArchetype === 'underground') {
+            window.Diorama3D.setCameraView('rajiv');
+          } else {
+            window.Diorama3D.setCameraView('overview');
+          }
           window.Diorama3D.start();
         }
       } else if (surfaceName === 'threejs') {
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.hideTooltip) window.MetroWebGLLayer.hideTooltip();
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.closeMonumentSpotlight) window.MetroWebGLLayer.closeMonumentSpotlight();
         if (threeSurface) threeSurface.classList.remove('hidden');
         if (mapSurface) mapSurface.classList.add('hidden');
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.syncMonumentMarkersVisibility) window.MetroWebGLLayer.syncMonumentMarkersVisibility();
         if (timetableDock) timetableDock.style.display = 'none';
         if (mapPerspectivePill) mapPerspectivePill.classList.add('hidden');
+        if (stationStepperPill) stationStepperPill.classList.add('hidden');
         if (archGroup) archGroup.style.display = 'none';
         if (camGroup) camGroup.style.display = 'none';
+        if (kitGroup) kitGroup.style.display = 'none';
         if (sectorGroup) sectorGroup.style.display = 'block';
         const stPanel = document.getElementById('station-panel');
         if (stPanel) stPanel.classList.add('hidden');
@@ -1640,12 +1738,12 @@
         const surf = t.getAttribute('data-surface');
         tabs.forEach(tab => tab.classList.toggle('active', tab === t));
         if (surf === 'threejs') {
+          window.switchSurface('threejs');
           if (window.DelhiMetro3D) {
             window.DelhiMetro3D.setViewMode('3d');
           }
-          window.switchSurface('threejs');
         } else if (surf === 'diorama') {
-          window.switchSurface('diorama', 'underground');
+          window.switchSurface('diorama');
         } else if (surf === 'corridor') {
           window.switchSurface('corridor');
         }
@@ -1653,7 +1751,7 @@
     });
 
     const urlParams = new URLSearchParams(window.location.search);
-    // Default to MapLibre corridor (real city map + WebGL custom layer)
+    // Default to Real Delhi Street Map + True 3D MetroKit Yellow Line (with 2-Station & Plinth modes 1 click away)
     const initialSurface = urlParams.get('surface') || 'corridor';
     window.switchSurface(initialSurface);
     // Update tab active state to match
@@ -1736,7 +1834,7 @@
           if (subEl) subEl.textContent = meta.sub;
           const typeBadge = document.getElementById('cutaway-station-type-badge');
           if (typeBadge) typeBadge.textContent = meta.type;
-          
+
           const flEl = document.getElementById('meta-first-last-val');
           if (flEl && meta.firstLast) flEl.textContent = meta.firstLast;
           const gatesEl = document.getElementById('meta-gates-val');
@@ -1843,8 +1941,8 @@
         if (btn2D) btn2D.classList.remove('active');
         applyRenderMode('3d');
         if (map) {
-          // Smoothly fly directly to iconic elevated 3D station (Qutab Minar) at crisp zoom 17.2 with 60° tilt
-          map.flyTo({ center: [77.186472, 28.51293], zoom: 17.2, pitch: 60, bearing: -25, duration: 1200 });
+          // Smoothly fly to first station (Samaypur Badli elevated terminus)
+          map.flyTo({ center: [77.1383, 28.7446], zoom: 18.35, pitch: 54, bearing: -24, duration: 1100 });
         }
       });
     }
@@ -1893,75 +1991,6 @@
     const modeDot = document.getElementById('mode-dot');
     const modeTracks = document.getElementById('mode-tracks');
 
-    function applyRenderMode(mode) {
-      renderMode = mode;
-      [mode3D, modeDot, modeTracks].forEach(btn => {
-        if (btn) btn.classList.toggle('active', btn.id === `mode-${mode}`);
-      });
-      if (!map) return;
-      const viaduct2DLayers = [
-        'flyover-viaduct-shadow',
-        'flyover-viaduct-deck',
-        'flyover-viaduct-parapet-left',
-        'flyover-viaduct-parapet-right',
-        'flyover-viaduct-catenary-center',
-        'flyover-viaduct-track-1',
-        'flyover-viaduct-track-2',
-        'flyover-viaduct-track-ties'
-      ];
-
-      if (mode === '3d') {
-        // Hide 2D flat viaduct lines so real 3D Three.js elevated viaduct and stations render without double-lines
-        viaduct2DLayers.forEach(id => {
-          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
-        });
-
-        // Hide 2D flat sprite so real 3D solid Three.js consist with headlights renders
-        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
-        if (map.getLayer('train-dot-white-black')) {
-          map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
-          map.setPaintProperty('train-dot-white-black', 'circle-opacity', [
-            'interpolate', ['linear'], ['zoom'],
-            11.0, 1.0,
-            12.8, 0.0
-          ]);
-        }
-        if (map.getLayer('train-dot-pupil')) {
-          map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
-          map.setPaintProperty('train-dot-pupil', 'circle-opacity', [
-            'interpolate', ['linear'], ['zoom'],
-            11.0, 1.0,
-            12.8, 0.0
-          ]);
-        }
-        if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
-      } else if (mode === 'dot') {
-        // Restore 2D flat viaduct lines
-        viaduct2DLayers.forEach(id => {
-          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'visible');
-        });
-        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
-        if (map.getLayer('train-dot-white-black')) {
-          map.setLayoutProperty('train-dot-white-black', 'visibility', 'visible');
-          map.setPaintProperty('train-dot-white-black', 'circle-opacity', 1.0);
-        }
-        if (map.getLayer('train-dot-pupil')) {
-          map.setLayoutProperty('train-dot-pupil', 'visibility', 'visible');
-          map.setPaintProperty('train-dot-pupil', 'circle-opacity', 1.0);
-        }
-        if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'visible');
-      } else if (mode === 'tracks') {
-        // Restore 2D flat viaduct lines
-        viaduct2DLayers.forEach(id => {
-          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'visible');
-        });
-        if (map.getLayer('train-consist-3d')) map.setLayoutProperty('train-consist-3d', 'visibility', 'none');
-        if (map.getLayer('train-dot-white-black')) map.setLayoutProperty('train-dot-white-black', 'visibility', 'none');
-        if (map.getLayer('train-dot-pupil')) map.setLayoutProperty('train-dot-pupil', 'visibility', 'none');
-        if (map.getLayer('train-drop-shadow')) map.setLayoutProperty('train-drop-shadow', 'visibility', 'none');
-      }
-    }
-
     if (mode3D) mode3D.addEventListener('click', () => applyRenderMode('3d'));
     if (modeDot) modeDot.addEventListener('click', () => applyRenderMode('dot'));
     if (modeTracks) modeTracks.addEventListener('click', () => applyRenderMode('tracks'));
@@ -1977,6 +2006,356 @@
       });
     });
 
+    const BOOKMARK_VIEWS = {
+      samaypur: { center: [77.1383, 28.7446], zoom: 18.35, pitch: 54, bearing: -24, duration: 1100 },
+      qutab: { center: [77.1865, 28.5129], zoom: 18.4, pitch: 54, bearing: -22, duration: 1100 },
+      greenpark: { center: [77.2068, 28.5580], zoom: 18.5, pitch: 54, bearing: -22, duration: 1100 },
+      rajiv: { center: [77.2194, 28.6327], zoom: 18.45, pitch: 54, bearing: -20, duration: 1100 },
+      kashmere: { center: [77.2282, 28.6675], zoom: 18.4, pitch: 54, bearing: -24, duration: 1100 },
+      hauzkhas: { center: [77.2067, 28.5443], zoom: 18.45, pitch: 54, bearing: -20, duration: 1100 },
+      gurgaon: { center: [77.0725, 28.4594], zoom: 18.35, pitch: 54, bearing: -18, duration: 1100 },
+      centralsec: { center: [77.2123, 28.6159], zoom: 18.45, pitch: 54, bearing: -18, duration: 1200 },
+      dwarka: { center: [77.0583, 28.5523], zoom: 18.4, pitch: 54, bearing: -22, duration: 1100 },
+      akshardham: { center: [77.2782, 28.6152], zoom: 16.3, pitch: 58, bearing: -42, duration: 1100 },
+      noida: { center: [77.3732, 28.6258], zoom: 18.4, pitch: 54, bearing: -20, duration: 1100 }
+    };
+
+    const BOOKMARK_STATION_NAMES = {
+      samaypur: 'Samaypur Badli',
+      kashmere: 'Kashmere Gate',
+      rajiv: 'Rajiv Chowk',
+      greenpark: 'Green Park',
+      hauzkhas: 'Hauz Khas',
+      qutab: 'Qutab Minar',
+      gurgaon: 'Millennium City Centre',
+      centralsec: 'Central Secretariat',
+      dwarka: 'Dwarka Sector 21',
+      akshardham: 'Akshardham',
+      noida: 'Noida Electronic City'
+    };
+
+    let currentStepperIndex = 0;
+
+    function getOrderedYellowStations() {
+      if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveStations === 'function') {
+        const list = window.MetroWebGLLayer.getActiveStations();
+        if (list && list.length) return list;
+      }
+      if (window.TripEngine && typeof window.TripEngine.getStations === 'function') {
+        const list = window.TripEngine.getStations();
+        if (list && list.length) return list;
+      }
+      if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getStations === 'function') {
+        return window.MetroWebGLLayer.getStations() || [];
+      }
+      return [];
+    }
+
+    function syncStationStepper(indexOrName) {
+      const stations = getOrderedYellowStations();
+      if (!stations.length) return -1;
+      let idx = -1;
+      if (typeof indexOrName === 'number' && Number.isFinite(indexOrName)) {
+        idx = Math.max(0, Math.min(stations.length - 1, Math.round(indexOrName)));
+      } else if (indexOrName) {
+        const norm = String(indexOrName || '').toLowerCase().replace(/\s+gurugram\b/, '').trim();
+        idx = stations.findIndex((s) => String(s.name || '').toLowerCase().replace(/\s+gurugram\b/, '').trim() === norm);
+      } else {
+        idx = Math.max(0, Math.min(stations.length - 1, currentStepperIndex));
+      }
+      if (idx < 0) idx = 0;
+      currentStepperIndex = idx;
+      const st = stations[idx];
+      const countEl = document.getElementById('station-step-count');
+      const nameEl = document.getElementById('station-step-name');
+      const lineTag = document.getElementById('station-step-line-tag');
+      const isVaishali = st && (st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali'));
+      const isBlue = st && (st.lineId === 'blue' || isVaishali || (window.MetroWebGLLayer && window.MetroWebGLLayer.getActiveLine() === 'blue'));
+      if (lineTag) {
+        lineTag.textContent = isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL');
+        lineTag.className = `station-step-line-tag ${isBlue ? 'line-blue' : 'line-yellow'}`;
+      }
+      if (countEl) countEl.textContent = `${idx + 1}/${stations.length}`;
+      if (nameEl && st) nameEl.textContent = st.name;
+
+      const isFirst = idx <= 0;
+      const isLast = idx >= stations.length - 1;
+      ['btn-prev-station', 'btn-panel-prev-station'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = isFirst;
+      });
+      ['btn-next-station', 'btn-panel-next-station'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = isLast;
+      });
+      updateTrackOffsetUI(0);
+      return idx;
+    }
+    window.syncStationStepper = syncStationStepper;
+
+    function updateTrackOffsetUI(offsetM) {
+      const pill = document.getElementById('station-stepper-pill');
+      const offsetEl = document.getElementById('station-step-offset');
+      const n = Math.round(Number(offsetM) || 0);
+      if (offsetEl) {
+        if (n === 0) {
+          offsetEl.classList.add('hidden');
+          offsetEl.textContent = '+0m';
+        } else {
+          offsetEl.classList.remove('hidden');
+          offsetEl.textContent = n > 0 ? `+${n}m` : `${n}m`;
+        }
+      }
+      if (pill) pill.classList.toggle('has-offset', n !== 0);
+    }
+
+    function walkAlongTrack(deltaM) {
+      if (!window.MetroWebGLLayer || typeof window.MetroWebGLLayer.stepAlongTrack !== 'function') return;
+      followTrainId = null;
+      const res = window.MetroWebGLLayer.stepAlongTrack(deltaM);
+      if (res && typeof res.offsetM === 'number') {
+        updateTrackOffsetUI(res.offsetM);
+      }
+    }
+
+    function stepStation(delta, forceOpenPanel) {
+      const stations = getOrderedYellowStations();
+      if (!stations.length) return;
+      const nextIdx = Math.max(0, Math.min(stations.length - 1, currentStepperIndex + delta));
+      const st = stations[nextIdx];
+      if (!st) return;
+
+      followTrainId = null;
+      syncStationStepper(nextIdx);
+      if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.closeMonumentSpotlight === 'function') {
+        window.MetroWebGLLayer.closeMonumentSpotlight();
+      }
+
+      const isThreePlinth = document.getElementById('tab-threejs')?.classList.contains('active');
+      if (isThreePlinth && window.DelhiMetro3D) {
+        window.DelhiMetro3D.flyToStation(st.name);
+      } else if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+        window.MetroWebGLLayer.flyToStation(st.name);
+      }
+
+      const panel = document.getElementById('station-panel');
+      const isPanelOpen = panel && !panel.classList.contains('hidden');
+      if (forceOpenPanel || isPanelOpen) {
+        openStationPanel(nextIdx, true);
+      }
+    }
+
+    // Initialize stepper label to first station (Samaypur Badli)
+    syncStationStepper(0);
+
+    document.getElementById('btn-prev-station')?.addEventListener('click', () => stepStation(-1, false));
+    document.getElementById('btn-next-station')?.addEventListener('click', () => stepStation(1, false));
+    document.getElementById('btn-step-back-100')?.addEventListener('click', () => walkAlongTrack(-100));
+    document.getElementById('btn-step-ahead-100')?.addEventListener('click', () => walkAlongTrack(100));
+    document.getElementById('btn-panel-prev-station')?.addEventListener('click', () => stepStation(-1, true));
+    document.getElementById('btn-panel-next-station')?.addEventListener('click', () => stepStation(1, true));
+    // ── Station Stepper Dropdown Menu Controller ────────────────────────
+    const dropdownEl = document.getElementById('station-stepper-dropdown');
+    const searchInput = document.getElementById('stepper-station-search');
+    const searchClearBtn = document.getElementById('btn-stepper-search-clear');
+    const dropdownList = document.getElementById('stepper-dropdown-list');
+    let currentDropdownTab = 'active'; // 'active' | 'all' | 'yellow' | 'blue'
+
+    function closeStepperDropdown() {
+      if (!dropdownEl || dropdownEl.classList.contains('hidden')) return;
+      dropdownEl.classList.add('hidden');
+      document.getElementById('btn-station-step-info')?.setAttribute('aria-expanded', 'false');
+    }
+
+    function openStepperDropdown() {
+      if (!dropdownEl) return;
+      dropdownEl.classList.remove('hidden');
+      document.getElementById('btn-station-step-info')?.setAttribute('aria-expanded', 'true');
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      if (searchClearBtn) searchClearBtn.classList.add('hidden');
+      renderDropdownStations();
+    }
+
+    function toggleStepperDropdown() {
+      if (dropdownEl && !dropdownEl.classList.contains('hidden')) {
+        closeStepperDropdown();
+      } else {
+        openStepperDropdown();
+      }
+    }
+
+    function getStationsForDropdownTab(tab) {
+      const activeLine = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveLine === 'function')
+        ? window.MetroWebGLLayer.getActiveLine()
+        : 'yellow';
+      const allStations = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getStations === 'function')
+        ? window.MetroWebGLLayer.getStations()
+        : (window.TripEngine ? TripEngine.getStations() : []);
+
+      if (tab === 'yellow') {
+        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali'));
+      }
+      if (tab === 'blue') {
+        return allStations.filter(s => s.lineId === 'blue' || s.lineId === 'blue-vaishali' || s.isBlue);
+      }
+      if (tab === 'all') {
+        return allStations;
+      }
+      // 'active'
+      if (activeLine === 'blue') {
+        return allStations.filter(s => s.lineId === 'blue' || s.lineId === 'blue-vaishali' || s.isBlue);
+      }
+      if (activeLine === 'yellow') {
+        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali'));
+      }
+      return allStations;
+    }
+
+    function renderDropdownStations() {
+      if (!dropdownList) return;
+      const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      const rawStations = getStationsForDropdownTab(currentDropdownTab);
+      const filtered = q
+        ? rawStations.filter(s => {
+          const name = String(s.name || '').toLowerCase();
+          const hindi = String(s.hindi || '').toLowerCase();
+          const inter = String(s.interchange || '').toLowerCase();
+          const inters = Array.isArray(s.interchanges) ? s.interchanges.join(' ').toLowerCase() : '';
+          return name.includes(q) || hindi.includes(q) || inter.includes(q) || inters.includes(q);
+        })
+        : rawStations;
+
+      if (!filtered.length) {
+        dropdownList.innerHTML = `
+          <div style="padding: 24px 12px; text-align: center; color: rgba(248,250,252,0.50); font-size: 11px;">
+            No stations match "<strong>${q}</strong>"
+          </div>
+        `;
+        return;
+      }
+
+      const activeStations = getOrderedYellowStations();
+      const curSt = activeStations[currentStepperIndex];
+      const curNameNorm = curSt ? String(curSt.name || '').toLowerCase().replace(/[-–—]/g, ' ').trim() : '';
+
+      dropdownList.innerHTML = filtered.map((st, idx) => {
+        const isVaishali = Boolean(st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali'));
+        const isB = Boolean(st.isBlue || st.lineId === 'blue' || isVaishali);
+        const lineTag = isVaishali ? 'BV' : (isB ? 'BL' : 'YL');
+        const lineClass = isB ? 'line-blue' : 'line-yellow';
+        const stNameNorm = String(st.name || '').toLowerCase().replace(/[-–—]/g, ' ').trim();
+        const isActive = curNameNorm && stNameNorm === curNameNorm;
+        const seqText = isVaishali ? `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/8` : `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/${isB ? 50 : 37}`;
+
+        let structBadge = '';
+        if (st.structure === 'at-grade') {
+          structBadge = '<span class="stepper-badge stepper-badge-fork">At-Grade 0m</span>';
+        } else if (st.structure === 'elevated') {
+          structBadge = '<span class="stepper-badge stepper-badge-structure">Elevated +15m</span>';
+        } else {
+          structBadge = `<span class="stepper-badge stepper-badge-structure">Tube ${st.elevM || -18}m</span>`;
+        }
+
+        let termBadge = st.terminus ? '<span class="stepper-badge stepper-badge-terminus">TERMINUS</span>' : '';
+        let intBadge = '';
+        if (st.name === 'Yamuna Bank') {
+          intBadge = '<span class="stepper-badge stepper-badge-fork">NOIDA × VAISHALI FORK</span>';
+        } else if (st.interchange || (st.interchanges && st.interchanges.length)) {
+          const intText = st.interchange || st.interchanges[0];
+          intBadge = `<span class="stepper-badge stepper-badge-interchange">${intText}</span>`;
+        }
+
+        return `
+          <button class="stepper-item ${isActive ? 'active' : ''}" type="button" data-name="${st.name}" data-line="${isB ? 'blue' : 'yellow'}" role="option" aria-selected="${isActive}">
+            <span class="stepper-item-num ${lineClass}">${lineTag}</span>
+            <div class="stepper-item-info">
+              <div class="stepper-item-top">
+                <span class="stepper-item-name">${st.name}</span>
+                ${st.hindi ? `<span class="stepper-item-hindi">${st.hindi}</span>` : ''}
+              </div>
+              <div class="stepper-item-sub">
+                <span style="font-family: var(--font-mono); font-size: 8.5px; opacity: 0.60;">${seqText}</span>
+                ${structBadge}
+                ${termBadge}
+                ${intBadge}
+              </div>
+            </div>
+            ${isActive ? '<span class="stepper-item-active-dot"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      const activeEl = dropdownList.querySelector('.stepper-item.active');
+      if (activeEl && !q) {
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    document.getElementById('btn-station-step-info')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleStepperDropdown();
+    });
+
+    searchInput?.addEventListener('input', () => {
+      if (searchClearBtn) searchClearBtn.classList.toggle('hidden', !searchInput.value);
+      renderDropdownStations();
+    });
+
+    searchClearBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      if (searchClearBtn) searchClearBtn.classList.add('hidden');
+      renderDropdownStations();
+      searchInput?.focus();
+    });
+
+    document.querySelectorAll('.stepper-tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.stepper-tab-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        currentDropdownTab = e.currentTarget.getAttribute('data-tab') || 'active';
+        renderDropdownStations();
+      });
+    });
+
+    dropdownList?.addEventListener('click', (e) => {
+      const item = e.target.closest('.stepper-item');
+      if (!item) return;
+      const stName = item.getAttribute('data-name');
+      const stLine = item.getAttribute('data-line');
+      if (!stName) return;
+
+      closeStepperDropdown();
+
+      const activeLine = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveLine === 'function')
+        ? window.MetroWebGLLayer.getActiveLine()
+        : 'all';
+      if (activeLine !== 'all' && activeLine !== stLine) {
+        const btnId = stLine === 'blue' ? 'btn-line-blue' : 'btn-line-yellow';
+        document.getElementById(btnId)?.click();
+      }
+
+      syncStationStepper(stName);
+      if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+        window.MetroWebGLLayer.flyToStation(stName);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!dropdownEl || dropdownEl.classList.contains('hidden')) return;
+      if (!dropdownEl.contains(e.target) && !document.getElementById('station-stepper-pill')?.contains(e.target)) {
+        closeStepperDropdown();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && dropdownEl && !dropdownEl.classList.contains('hidden')) {
+        closeStepperDropdown();
+      }
+    });
+
     // Quick Bookmarks
     document.querySelectorAll('.bookmark-chip').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1984,29 +2363,346 @@
         btn.classList.add('active');
         const loc = btn.getAttribute('data-loc');
         followTrainId = null;
+        if (BOOKMARK_STATION_NAMES[loc]) {
+          syncStationStepper(BOOKMARK_STATION_NAMES[loc]);
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.anchorTrackToStation === 'function') {
+            window.MetroWebGLLayer.anchorTrackToStation(BOOKMARK_STATION_NAMES[loc]);
+          }
+        }
 
-        if (loc === 'qutab') {
-          map.flyTo({ center: [77.1793, 28.5132], zoom: 15.6, pitch: 52, bearing: -14, duration: 1100 });
-        } else if (loc === 'rajiv') {
-          map.flyTo({ center: [77.2196, 28.6329], zoom: 15.2, pitch: 50, bearing: -14, duration: 1100 });
-        } else if (loc === 'kashmere') {
-          map.flyTo({ center: [77.2282, 28.6675], zoom: 15.2, pitch: 50, bearing: -14, duration: 1100 });
-        } else if (loc === 'hauzkhas') {
-          map.flyTo({ center: [77.2067, 28.5443], zoom: 15.2, pitch: 50, bearing: -14, duration: 1100 });
-        } else if (loc === 'gurgaon') {
-          map.flyTo({ center: [77.0725, 28.4594], zoom: 15.0, pitch: 50, bearing: -14, duration: 1100 });
-        } else if (loc === 'centralsec') {
-          map.flyTo({ center: [77.2120, 28.6150], zoom: 15.2, pitch: 50, bearing: -14, duration: 1200 });
+        const targetView = BOOKMARK_VIEWS[loc];
+        if (targetView) {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.prewarmOvertureAtLngLat === 'function') {
+            window.MetroWebGLLayer.prewarmOvertureAtLngLat(targetView.center[0], targetView.center[1], true);
+          }
+          map.flyTo(targetView);
         } else if (loc === 'all') {
-          map.flyTo({ center: [77.1400, 28.5850], zoom: 10.35, pitch: 0, bearing: 0, duration: 1200 });
-          const btn2D = document.getElementById('btn-2d-view');
-          const btn3D = document.getElementById('btn-3d-view');
+          if (typeof stop360Orbit === 'function') stop360Orbit();
+          map.flyTo({ center: [77.1550, 28.5980], zoom: 9.85, pitch: 0, bearing: 0, duration: 1200 });
+          const btn2D = document.getElementById('btn-2d-map-view') || document.getElementById('btn-2d-view');
+          const btn3D = document.getElementById('btn-3d-map-view') || document.getElementById('btn-3d-view');
           if (btn2D && btn3D) {
             btn2D.classList.add('active');
             btn3D.classList.remove('active');
           }
+          return;
+        }
+        const btn2D = document.getElementById('btn-2d-map-view') || document.getElementById('btn-2d-view');
+        const btn3D = document.getElementById('btn-3d-map-view') || document.getElementById('btn-3d-view');
+        if (btn2D && btn3D) {
+          btn3D.classList.add('active');
+          btn2D.classList.remove('active');
         }
       });
+    });
+
+    // Full 360° Interactive Orbit + Pan Mode + Turntable Spin + Rails/X-Ray toggles on MapLibre
+    const btnDragOrbit = document.getElementById('btn-drag-orbit');
+    const btnDragPan = document.getElementById('btn-drag-pan');
+    const btn360Spin = document.getElementById('btn-360-orbit');
+    const btnRailsVisible = document.getElementById('btn-rails-visible');
+    const btnXrayUnderground = document.getElementById('btn-xray-underground');
+
+    if (btnRailsVisible) {
+      btnRailsVisible.addEventListener('click', () => {
+        if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.setSubwayRailsVisible === 'function') {
+          const next = !(window.MetroWebGLLayer.isSubwayRailsVisible && window.MetroWebGLLayer.isSubwayRailsVisible());
+          window.MetroWebGLLayer.setSubwayRailsVisible(next);
+          btnRailsVisible.classList.toggle('active', next);
+        }
+      });
+    }
+
+    if (btnXrayUnderground) {
+      btnXrayUnderground.addEventListener('click', () => {
+        if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.setUndergroundXRay === 'function') {
+          const next = !(window.MetroWebGLLayer.isUndergroundXRay && window.MetroWebGLLayer.isUndergroundXRay());
+          window.MetroWebGLLayer.setUndergroundXRay(next);
+          btnXrayUnderground.classList.toggle('active', next);
+        }
+      });
+    }
+
+    ['btn-line-all', 'btn-line-yellow', 'btn-line-blue'].forEach((id) => {
+      document.getElementById(id)?.addEventListener('click', (e) => {
+        ['btn-line-all', 'btn-line-yellow', 'btn-line-blue'].forEach((bId) => {
+          document.getElementById(bId)?.classList.remove('active');
+        });
+        e.currentTarget.classList.add('active');
+        const lineId = id === 'btn-line-blue' ? 'blue' : (id === 'btn-line-yellow' ? 'yellow' : 'all');
+        if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.setLineFilter === 'function') {
+          window.MetroWebGLLayer.setLineFilter(lineId);
+        }
+        syncStationStepper(0);
+        if (lineId === 'blue') {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+            window.MetroWebGLLayer.flyToStation('Dwarka Sector - 21');
+          }
+        } else if (lineId === 'yellow') {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+            window.MetroWebGLLayer.flyToStation('Samaypur Badli');
+          }
+        } else {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+            window.MetroWebGLLayer.flyToStation('Rajiv Chowk');
+          }
+        }
+      });
+    });
+
+    let leftDragMode = 'orbit'; // Default in 3D Fleet & Map: Left-Drag rotates 360° & tilts 8°–82°!
+    let autoSpinActive = false;
+    let spinRaf = null;
+    let spinLast = 0;
+
+    // Smooth unified Orbit / Pan pointer controller with velocity-handoff momentum (§2, §5, §6 Apple Design)
+    let dragKind = null; // 'orbit' | 'pan'
+    let lastPtrX = 0;
+    let lastPtrY = 0;
+    let lastMoveTs = 0;
+    let orbitVelB = 0;
+    let orbitVelP = 0;
+    let momentumRaf = null;
+    const reducedMotionMQ = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function stopOrbitMomentum() {
+      orbitVelB = 0;
+      orbitVelP = 0;
+      if (momentumRaf) {
+        cancelAnimationFrame(momentumRaf);
+        momentumRaf = null;
+      }
+    }
+
+    function startOrbitMomentum() {
+      if (reducedMotionMQ && reducedMotionMQ.matches) {
+        stopOrbitMomentum();
+        return;
+      }
+      if (Math.abs(orbitVelB) < 6 && Math.abs(orbitVelP) < 4) {
+        stopOrbitMomentum();
+        return;
+      }
+      let prevTs = performance.now();
+      function glide(now) {
+        if (!map || dragKind || autoSpinActive) {
+          stopOrbitMomentum();
+          return;
+        }
+        const dt = Math.min(0.05, Math.max(0.001, (now - prevTs) / 1000));
+        prevTs = now;
+        const decay = Math.exp(-dt * 8.2);
+        orbitVelB *= decay;
+        orbitVelP *= decay;
+        if (Math.abs(orbitVelB) < 2.0 && Math.abs(orbitVelP) < 1.5) {
+          stopOrbitMomentum();
+          return;
+        }
+        map.jumpTo({
+          bearing: map.getBearing() + orbitVelB * dt,
+          pitch: Math.max(8, Math.min(74, map.getPitch() - orbitVelP * dt))
+        });
+        momentumRaf = requestAnimationFrame(glide);
+      }
+      if (!momentumRaf) momentumRaf = requestAnimationFrame(glide);
+    }
+
+    function syncCameraDragMode(mode) {
+      leftDragMode = mode;
+      stopOrbitMomentum();
+      if (btnDragOrbit) btnDragOrbit.classList.toggle('active', mode === 'orbit');
+      if (btnDragPan) btnDragPan.classList.toggle('active', mode === 'pan');
+      if (!map) return;
+
+      if (mode === 'orbit') {
+        if (map.dragPan) map.dragPan.disable();
+        if (map.dragRotate) map.dragRotate.disable();
+        map.getCanvas().style.cursor = 'grab';
+      } else {
+        if (map.dragPan) map.dragPan.enable();
+        if (map.dragRotate) map.dragRotate.enable();
+        map.getCanvas().style.cursor = '';
+      }
+    }
+
+    function stop360Orbit() {
+      autoSpinActive = false;
+      if (spinRaf) {
+        cancelAnimationFrame(spinRaf);
+        spinRaf = null;
+      }
+      if (btn360Spin) btn360Spin.classList.remove('active');
+    }
+
+    function start360Orbit() {
+      if (!map) return;
+      stopOrbitMomentum();
+      autoSpinActive = true;
+      if (btn360Spin) btn360Spin.classList.add('active');
+      syncCameraDragMode('orbit');
+      if (btn3D && btn2D) {
+        btn3D.classList.add('active');
+        btn2D.classList.remove('active');
+      }
+      if (map.getPitch() < 45) {
+        map.easeTo({ pitch: 60, duration: 500 });
+      }
+      spinLast = performance.now();
+
+      function spinTick(now) {
+        if (!autoSpinActive || !map) return;
+        const dt = Math.min(0.05, Math.max(0.001, (now - spinLast) / 1000));
+        spinLast = now;
+        map.setBearing((map.getBearing() + dt * 15) % 360);
+        spinRaf = requestAnimationFrame(spinTick);
+      }
+      if (!spinRaf) spinRaf = requestAnimationFrame(spinTick);
+    }
+
+    if (btnDragOrbit) {
+      btnDragOrbit.addEventListener('click', () => {
+        syncCameraDragMode('orbit');
+        if (map && map.getPitch() < 25) map.easeTo({ pitch: 54, duration: 500 });
+      });
+    }
+    if (btnDragPan) {
+      btnDragPan.addEventListener('click', () => {
+        stop360Orbit();
+        syncCameraDragMode('pan');
+      });
+    }
+    if (btn360Spin) {
+      btn360Spin.addEventListener('click', () => {
+        if (autoSpinActive) stop360Orbit();
+        else start360Orbit();
+      });
+    }
+    if (btn3D) {
+      btn3D.addEventListener('click', () => {
+        syncCameraDragMode('orbit');
+      });
+    }
+    if (btn2D) {
+      btn2D.addEventListener('click', () => {
+        stop360Orbit();
+        syncCameraDragMode('pan');
+      });
+    }
+
+    // Apply default Left-Drag 360° Orbit immediately & sync on style.load
+    if (map) {
+      syncCameraDragMode('orbit');
+      map.on('style.load', () => syncCameraDragMode(leftDragMode));
+      map.on('wheel', stopOrbitMomentum);
+    }
+
+    const mapContainerEl = document.getElementById('map');
+    if (mapContainerEl) {
+      const activeTouchIds = new Set();
+      let activeDragPtrId = null;
+
+      mapContainerEl.addEventListener('contextmenu', (e) => {
+        if (leftDragMode === 'orbit') e.preventDefault();
+      });
+      mapContainerEl.addEventListener('pointerdown', (e) => {
+        if (!map) return;
+        if (e.pointerType === 'touch') {
+          activeTouchIds.add(e.pointerId);
+          // Immediately yield multi-finger pinch/pan/tilt gestures to MapLibre native touchZoomRotate/touchPitch
+          if (activeTouchIds.size > 1) {
+            if (activeDragPtrId !== null) {
+              try { mapContainerEl.releasePointerCapture(activeDragPtrId); } catch (_) { }
+              activeDragPtrId = null;
+            }
+            dragKind = null;
+            stopOrbitMomentum();
+            return;
+          }
+        }
+        if (autoSpinActive) stop360Orbit();
+        stopOrbitMomentum();
+
+        if (leftDragMode === 'orbit') {
+          if (e.button === 0 && !e.shiftKey) {
+            dragKind = 'orbit';
+          } else if (e.button === 2 || e.button === 1 || (e.button === 0 && e.shiftKey)) {
+            dragKind = 'pan';
+          }
+          if (dragKind) {
+            activeDragPtrId = e.pointerId;
+            lastPtrX = e.clientX;
+            lastPtrY = e.clientY;
+            lastMoveTs = performance.now();
+            orbitVelB = 0;
+            orbitVelP = 0;
+            try { mapContainerEl.setPointerCapture(e.pointerId); } catch (_) { }
+            map.getCanvas().style.cursor = 'grabbing';
+          }
+        }
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch' && activeTouchIds.size > 1) {
+          dragKind = null;
+          return;
+        }
+        if (!dragKind || !map || (activeDragPtrId !== null && e.pointerId !== activeDragPtrId)) return;
+        const now = performance.now();
+        const dt = Math.max(0.004, (now - lastMoveTs) / 1000);
+        const dx = e.clientX - lastPtrX;
+        const dy = e.clientY - lastPtrY;
+        lastPtrX = e.clientX;
+        lastPtrY = e.clientY;
+        lastMoveTs = now;
+        if (dragKind === 'orbit') {
+          const dB = dx * 0.45;
+          const dP = dy * 0.36;
+          orbitVelB = Math.max(-420, Math.min(420, orbitVelB * 0.62 + (dB / dt) * 0.38));
+          orbitVelP = Math.max(-260, Math.min(260, orbitVelP * 0.62 + (dP / dt) * 0.38));
+          const nextBearing = map.getBearing() + dB;
+          const nextPitch = Math.max(8, Math.min(74, map.getPitch() - dP));
+          map.jumpTo({ bearing: nextBearing, pitch: nextPitch });
+        } else if (dragKind === 'pan') {
+          map.panBy([-dx, -dy], { animate: false });
+        }
+      });
+
+      const endDrag = (e) => {
+        if (e && e.pointerType === 'touch') {
+          activeTouchIds.delete(e.pointerId);
+        }
+        if (!dragKind) return;
+        if (e && activeDragPtrId !== null && e.pointerId !== activeDragPtrId) return;
+        const wasOrbit = dragKind === 'orbit';
+        dragKind = null;
+        activeDragPtrId = null;
+        if (e && e.pointerId !== undefined) {
+          try { mapContainerEl.releasePointerCapture(e.pointerId); } catch (_) { }
+        }
+        if (map) map.getCanvas().style.cursor = leftDragMode === 'orbit' ? 'grab' : '';
+        if (wasOrbit && activeTouchIds.size === 0 && (performance.now() - lastMoveTs < 85)) {
+          startOrbitMomentum();
+        } else {
+          stopOrbitMomentum();
+        }
+      };
+      window.addEventListener('pointerup', endDrag);
+      window.addEventListener('pointercancel', endDrag);
+    }
+
+    // Keyboard Q/E/Arrows 360° camera rotation & pitch when MapLibre tab is active
+    window.addEventListener('keydown', (e) => {
+      if (!map || !document.getElementById('tab-corridor')?.classList.contains('active')) return;
+      if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'q' || e.key === 'Q' || e.key === 'ArrowLeft') {
+        map.easeTo({ bearing: map.getBearing() - 18, duration: 160 });
+      } else if (e.key === 'e' || e.key === 'E' || e.key === 'ArrowRight') {
+        map.easeTo({ bearing: map.getBearing() + 18, duration: 160 });
+      } else if (e.key === 'ArrowUp') {
+        map.easeTo({ pitch: Math.min(74, map.getPitch() + 8), duration: 160 });
+      } else if (e.key === 'ArrowDown') {
+        map.easeTo({ pitch: Math.max(8, map.getPitch() - 8), duration: 160 });
+      }
     });
 
     // Hero Card Collapse / Expand Toggle
@@ -2044,6 +2740,9 @@
       closeStationBtn.addEventListener('click', () => {
         document.getElementById('station-panel').classList.add('hidden');
         activeStationIndex = null;
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.setSelectedStation) {
+          window.MetroWebGLLayer.setSelectedStation(null);
+        }
       });
     }
 
@@ -2060,6 +2759,9 @@
         const ampm = h >= 12 ? 'PM' : 'AM';
         const h12 = h % 12 || 12;
         if (timelineLabel) timelineLabel.textContent = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.setTimeOfDay) {
+          window.MetroWebGLLayer.setTimeOfDay(sec);
+        }
       });
 
       timelineSlider.addEventListener('change', () => {
@@ -2068,6 +2770,9 @@
         customTimeSeconds = sec;
         timeMode = 'custom';
         document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.setTimeOfDay) {
+          window.MetroWebGLLayer.setTimeOfDay(sec, true);
+        }
       });
     }
 
@@ -2076,10 +2781,22 @@
     if (toggleTimeModeBtn) {
       toggleTimeModeBtn.addEventListener('click', () => {
         timeMode = (timeMode === 'live') ? 'custom' : 'live';
+        if (timeMode === 'live') {
+          document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
+          const now = new Date(Date.now() + (window.CLOCK_SKEW_MS || 0));
+          const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+          const ist = new Date(utc + 5.5 * 3600000);
+          const liveSec = ist.getHours() * 3600 + ist.getMinutes() * 60 + ist.getSeconds();
+          if (window.MetroWebGLLayer && window.MetroWebGLLayer.setTimeOfDay) {
+            window.MetroWebGLLayer.setTimeOfDay(liveSec, true);
+          }
+        } else if (window.MetroWebGLLayer && window.MetroWebGLLayer.setTimeOfDay) {
+          window.MetroWebGLLayer.setTimeOfDay(customTimeSeconds, true);
+        }
       });
     }
 
-    // Quick 24h Timeline Preset Buttons (05:30 First, 09:15 Peak, 23:00 Last, 02:00 Maintenance)
+    // Quick 24h Timeline Preset Buttons (05:30 First, 09:15 Peak, 18:10 Dusk, 23:00 Last, 02:00 Maintenance)
     document.querySelectorAll('.time-preset-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         document.querySelectorAll('.time-preset-chip').forEach(c => c.classList.remove('active'));
@@ -2087,6 +2804,9 @@
         const sec = parseInt(chip.getAttribute('data-time'), 10);
         customTimeSeconds = sec;
         timeMode = 'custom';
+        if (window.MetroWebGLLayer && window.MetroWebGLLayer.setTimeOfDay) {
+          window.MetroWebGLLayer.setTimeOfDay(sec, true);
+        }
       });
     });
 
@@ -2095,32 +2815,39 @@
   }
 
   function setupInteractions() {
-    map.on('click', 'train-consist-3d', onTrainClick);
-    map.on('click', 'train-dot-white-black', onTrainClick);
+    ['train-consist-3d', 'train-dot-white-black'].forEach(layerId => {
+      if (map.getLayer(layerId)) {
+        map.on('click', layerId, onTrainClick);
+        map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+      }
+    });
 
-    // Click station platform to open Station Schedule Panel
-    map.on('click', 'platform-slab-deck-elevated', (e) => {
-      const feat = e.features && e.features[0];
-      if (feat && feat.properties) {
-        const val = (feat.properties.index !== undefined && feat.properties.index !== null) ? parseInt(feat.properties.index, 10) : feat.properties.name;
-        openStationPanel(val);
+    // Click station platform to open Station Schedule Panel (legacy GeoJSON fallback layers)
+    ['platform-slab-deck-elevated', 'platform-slab-deck-underground'].forEach(layerId => {
+      if (map.getLayer(layerId)) {
+        map.on('click', layerId, (e) => {
+          const feat = e.features && e.features[0];
+          if (feat && feat.properties) {
+            const val = (feat.properties.index !== undefined && feat.properties.index !== null) ? parseInt(feat.properties.index, 10) : feat.properties.name;
+            openStationPanel(val);
+          }
+        });
+        map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
       }
     });
-    map.on('click', 'platform-slab-deck-underground', (e) => {
-      const feat = e.features && e.features[0];
-      if (feat && feat.properties) {
-        const val = (feat.properties.index !== undefined && feat.properties.index !== null) ? parseInt(feat.properties.index, 10) : feat.properties.name;
-        openStationPanel(val);
-      }
-    });
-    map.on('click', 'platform-canopy-3d', (e) => {
-      const feat = e.features && e.features[0];
-      if (feat && feat.properties) {
-        openStationPanel(feat.properties.name);
-      }
-    });
+    if (map.getLayer('platform-canopy-3d')) {
+      map.on('click', 'platform-canopy-3d', (e) => {
+        const feat = e.features && e.features[0];
+        if (feat && feat.properties) {
+          openStationPanel(feat.properties.name);
+        }
+      });
+    }
 
     ['station-labels-major', 'station-labels-local'].forEach(layerId => {
+      if (!map.getLayer(layerId)) return;
       map.on('click', layerId, (e) => {
         const feat = e.features && e.features[0];
         if (feat && feat.properties) {
@@ -2152,31 +2879,39 @@
         if (followBtn) followBtn.textContent = 'Follow This Train 📹';
       }
     }
-
-    map.on('mouseenter', 'train-consist-3d', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'train-consist-3d', () => { map.getCanvas().style.cursor = ''; });
-    map.on('mouseenter', 'train-dot-white-black', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'train-dot-white-black', () => { map.getCanvas().style.cursor = ''; });
-    map.on('mouseenter', 'platform-slab-deck-elevated', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'platform-slab-deck-elevated', () => { map.getCanvas().style.cursor = ''; });
-    map.on('mouseenter', 'platform-slab-deck-underground', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'platform-slab-deck-underground', () => { map.getCanvas().style.cursor = ''; });
   }
 
-  function openStationPanel(stIndexOrName) {
+  function openStationPanel(stIndexOrName, skipFly = false) {
     let stIdx = -1;
     let stationObj = null;
+    const normStation = (s) => String(s || '').toLowerCase().replace(/[-–—]/g, ' ').replace(/\s+gurugram\b/, '').replace(/\s+/g, ' ').trim();
 
-    if (window.TripEngine) {
-      const stations = TripEngine.getStations();
-      if (typeof stIndexOrName === 'number') {
+    const activeList = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveStations === 'function')
+      ? window.MetroWebGLLayer.getActiveStations()
+      : [];
+    const allList = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getStations === 'function')
+      ? window.MetroWebGLLayer.getStations()
+      : (window.TripEngine ? TripEngine.getStations() : []);
+
+    if (typeof stIndexOrName === 'number') {
+      if (activeList[stIndexOrName]) {
+        stationObj = activeList[stIndexOrName];
         stIdx = stIndexOrName;
-      } else {
-        stIdx = stations.findIndex(s => s.name.toLowerCase() === String(stIndexOrName).toLowerCase() || s.id === stIndexOrName);
+      } else if (allList[stIndexOrName]) {
+        stationObj = allList[stIndexOrName];
+        stIdx = stIndexOrName;
       }
-      if (stIdx >= 0 && stIdx < stations.length) {
-        stationObj = stations[stIdx];
-        activeStationIndex = stIdx;
+    } else if (stIndexOrName) {
+      const q = normStation(stIndexOrName);
+      stIdx = activeList.findIndex((s) => normStation(s.name) === q || s.id === stIndexOrName);
+      if (stIdx >= 0) {
+        stationObj = activeList[stIdx];
+      } else {
+        const globalIdx = allList.findIndex((s) => normStation(s.name) === q || s.id === stIndexOrName);
+        if (globalIdx >= 0) {
+          stationObj = allList[globalIdx];
+          stIdx = globalIdx;
+        }
       }
     }
 
@@ -2185,13 +2920,26 @@
     }
 
     if (!stationObj) return;
+    activeStationIndex = stIdx;
 
-    // Fly camera in 3D or MapLibre
-    if (window.DelhiMetro3D && stationObj.name) {
-      window.DelhiMetro3D.flyToStation(stationObj.name, stationObj.x, stationObj.z);
+    if (window.MetroWebGLLayer && window.MetroWebGLLayer.closeMonumentSpotlight) {
+      window.MetroWebGLLayer.closeMonumentSpotlight();
     }
-    if (map && stationObj.coords) {
-      map.easeTo({ center: stationObj.coords, zoom: Math.max(map.getZoom(), 14.5), duration: 800 });
+    if (window.MetroWebGLLayer && window.MetroWebGLLayer.setSelectedStation && stationObj.name) {
+      window.MetroWebGLLayer.setSelectedStation(stationObj.name);
+    }
+    if (typeof window.syncStationStepper === 'function') {
+      window.syncStationStepper(stIdx >= 0 ? stIdx : stationObj.name);
+    }
+
+    // Fly camera in 3D or MapLibre unless caller already triggered flyToStation
+    if (!skipFly) {
+      if (window.DelhiMetro3D && stationObj.name) {
+        window.DelhiMetro3D.flyToStation(stationObj.name, stationObj.x, stationObj.z);
+      }
+      if (map && stationObj.coords) {
+        map.easeTo({ center: stationObj.coords, zoom: Math.max(map.getZoom(), 14.5), duration: 800 });
+      }
     }
 
     let sec = 0;
@@ -2312,9 +3060,10 @@
   }
 
   function renderStationPanel(stIdx, sec, dayVariant) {
-    if (!window.TripEngine) return;
-    const stations = TripEngine.getStations();
-    const st = stations[stIdx];
+    const activeList = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveStations === 'function')
+      ? window.MetroWebGLLayer.getActiveStations()
+      : (window.TripEngine ? TripEngine.getStations() : []);
+    const st = activeList[stIdx] || (window.TripEngine ? TripEngine.getStations()[stIdx] : null);
     if (!st) return;
 
     const titleEl = document.getElementById('st-panel-title');
@@ -2351,8 +3100,8 @@
     }
 
     if (subEl) {
-      const structText = st.structure === 'underground' 
-        ? `Underground Tube Chamber (${st.elevM || -16}m)` 
+      const structText = st.structure === 'underground'
+        ? `Underground Tube Chamber (${st.elevM || -16}m)`
         : `Elevated Viaduct (+${st.elevM || 15}m)`;
       subEl.textContent = `${structText} · Station ${stIdx + 1} of ${stations.length}`;
     }
@@ -2374,6 +3123,11 @@
     if (followNextBtn) {
       followNextBtn.textContent = '📹 Follow Next Arriving Train';
       followNextBtn.onclick = () => {
+        if (document.getElementById('tab-threejs')?.classList.contains('active') && window.DelhiMetro3D) {
+          document.getElementById('btn-follow-train-3d')?.click();
+          followNextBtn.textContent = 'Tracking Live 3D Train 🟢';
+          return;
+        }
         if (activeTrains && activeTrains.length > 0) {
           const match = activeTrains.find(t => t.toStation === st.name || t.currentStation === st.name) || activeTrains[0];
           if (match) {
@@ -2382,6 +3136,9 @@
             updateCalloutCard(match);
             document.getElementById('inspector-card').classList.remove('hidden');
             followNextBtn.textContent = `Tracking ${match.id} 🟢`;
+            if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.prewarmOvertureAtLngLat === 'function' && match.coords) {
+              window.MetroWebGLLayer.prewarmOvertureAtLngLat(match.coords[0], match.coords[1], true);
+            }
             map.flyTo({ center: match.coords, zoom: 15.6, pitch: 52, duration: 800 });
           }
         }
@@ -2439,15 +3196,15 @@
 
     if (freqTextEl) {
       if (isCore) {
-        freqTextEl.textContent = 'Central High-Frequency Zone · Trains every ~2.5 min (150s evenly spaced)';
+        freqTextEl.textContent = 'Central High-Frequency Zone · Trains every ~2.5 min (150s headway)';
       } else if (isNorthOuter) {
-        freqTextEl.textContent = 'North Outer Sector (Samaypur Badli–Vishwavidyalaya) · Trains every ~5.0 min (unverified)';
+        freqTextEl.textContent = 'North Outer Sector (Samaypur Badli–Vishwavidyalaya) · Trains every ~5.0 min';
       } else {
         const shuttleActive = secInfo && secInfo.enable_south_shuttle;
         if (shuttleActive) {
-          freqTextEl.textContent = 'South Outer Sector (Qutab–Gurugram Shuttle Active) · Trains every ~2.5 min (unverified)';
+          freqTextEl.textContent = 'South Outer Sector (Qutab–Gurugram Shuttle) · Trains every ~2.5 min';
         } else {
-          freqTextEl.textContent = 'South Outer Sector (Qutab Minar–Millennium City) · Trains every ~5.0 min (unverified)';
+          freqTextEl.textContent = 'South Outer Sector (Qutab Minar–Millennium City) · Trains every ~5.0 min';
         }
       }
     }
@@ -2553,23 +3310,25 @@
     if (nbFirstEl) nbFirstEl.textContent = st.firstTrainNorth || '06:00 AM';
     if (nbLastEl) nbLastEl.textContent = st.lastTrainNorth || '11:00 PM';
 
-    // 3D Stage / Cutaway Trigger Buttons inside station drawer
+    // 3D Stage / Cutaway Trigger Buttons inside station drawer -> opens matching MetroKit archetype
+    const openMatchingArchetype = () => {
+      const rawArch = window.MetroKit && window.MetroKit.CityNodes
+        ? window.MetroKit.CityNodes.resolveArchetype(st)
+        : (st.structure === 'underground' ? 'undergroundIsland' : 'elevatedSide');
+      const arch = rawArch === 'undergroundSide' ? 'undergroundIsland' : rawArch;
+      window.switchSurface('diorama');
+      if (window.Diorama3D && window.Diorama3D.switchStage) {
+        window.Diorama3D.switchStage(arch);
+      }
+    };
     const view3dBtn = document.getElementById('btn-view-3d-stage');
-    if (view3dBtn) {
-      view3dBtn.onclick = () => {
-        const isUnderground = st.structure === 'underground';
-        window.switchSurface('threejs', isUnderground ? 'underground' : 'elevated');
-      };
-    }
+    if (view3dBtn) view3dBtn.onclick = openMatchingArchetype;
 
     const cutawayBtn = document.getElementById('btn-open-station-cutaway');
     const cutawayBlock = document.getElementById('st-cutaway-link-block');
     if (cutawayBtn && cutawayBlock) {
       cutawayBtn.textContent = '📐 View 3D Station Cutaway Stage →';
-      cutawayBtn.onclick = () => {
-        const isUnderground = st.structure === 'underground';
-        window.switchSurface('threejs', isUnderground ? 'underground' : 'elevated');
-      };
+      cutawayBtn.onclick = openMatchingArchetype;
     }
   }
 
@@ -2599,8 +3358,11 @@
       if (!q) return [];
 
       let allStations = [];
-      // Priority: MetroWebGLLayer (geographic, all 141 stations) → DelhiMetro3D → TripEngine
-      if (window.MetroWebGLLayer && window.MetroWebGLLayer.getStations) {
+      const isThreePlinth = document.getElementById('tab-threejs')?.classList.contains('active');
+      if (isThreePlinth && window.DelhiMetro3D && window.DelhiMetro3D.getStations) {
+        allStations = window.DelhiMetro3D.getStations();
+      }
+      if ((!allStations || allStations.length === 0) && window.MetroWebGLLayer && window.MetroWebGLLayer.getStations) {
         allStations = window.MetroWebGLLayer.getStations();
       }
       if (!allStations || allStations.length === 0) {
@@ -2616,7 +3378,7 @@
         const matchName = st.name.toLowerCase().includes(q);
         const matchCode = st.code && st.code.toLowerCase().includes(q);
         const matchInterchange = (st.interchange && st.interchange.toLowerCase().includes(q)) ||
-                                 (st.interchanges && st.interchanges.some(i => i.toLowerCase().includes(q)));
+          (st.interchanges && st.interchanges.some(i => i.toLowerCase().includes(q)));
         return matchName || matchCode || matchInterchange;
       });
     }
@@ -2624,12 +3386,65 @@
     searchInput.addEventListener('input', () => {
       const q = searchInput.value;
       if (clearBtn) clearBtn.classList.toggle('hidden', !q);
+      const qLower = q.trim().toLowerCase();
       const matches = filterStations(q);
-      if (matches.length > 0) {
-        searchResults.innerHTML = matches.slice(0, 8).map(st => `
+      const monuments = (qLower && window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getMonuments === 'function')
+        ? window.MetroWebGLLayer.getMonuments().filter((m) =>
+          m.name.toLowerCase().includes(qLower) ||
+          (m.era && m.era.toLowerCase().includes(qLower))
+        )
+        : [];
+      const railHubs = (qLower && window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getRailwayHubs === 'function')
+        ? window.MetroWebGLLayer.getRailwayHubs().filter((rh) =>
+          rh.name.toLowerCase().includes(qLower) ||
+          rh.code.toLowerCase().includes(qLower) ||
+          (Array.isArray(rh.aliases) && rh.aliases.some((a) => a.toLowerCase().includes(qLower))) ||
+          'indian railways'.includes(qLower)
+        ).sort((a, b) => {
+          const aExact = a.code.toLowerCase() === qLower || a.name.toLowerCase().startsWith(qLower) ? 0 : 1;
+          const bExact = b.code.toLowerCase() === qLower || b.name.toLowerCase().startsWith(qLower) ? 0 : 1;
+          return aExact - bExact;
+        }).slice(0, 8)
+        : [];
+      const stationStartsFirst = matches.some((st) => st.name.toLowerCase().startsWith(qLower));
+
+      const railHtml = railHubs.map((rh) => `
+          <div class="search-result-item" data-rail-hub-id="${rh.id}">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#1D4ED8; display:inline-block; flex-shrink:0;"></span>
+              <span class="search-result-name">🚉 ${rh.name}</span>
+            </div>
+            <div class="search-result-meta">
+              <span class="interchange-pill interchange-railways">${rh.platformsLabel}</span>
+              <span class="dmrc-code-badge">${rh.code}</span>
+            </div>
+          </div>
+        `).join('');
+
+      const landmarkHtml = monuments.slice(0, 4).map((m) => {
+        const nearList = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getNearestStationsForLngLat === 'function')
+          ? window.MetroWebGLLayer.getNearestStationsForLngLat(m.coords, 2)
+          : [];
+        const nearStr = nearList.length
+          ? nearList.map((n) => `${n.station.name} (${n.distanceM >= 1000 ? `${(n.distanceM / 1000).toFixed(1)}km` : `${n.distanceM}m`})`).join(' · ')
+          : m.station;
+        return `
+          <div class="search-result-item" data-monument-id="${m.id}">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${m.img}" alt="" style="width:22px; height:22px; border-radius:6px; object-fit:cover; flex-shrink:0;" />
+              <span class="search-result-name">🏛️ ${m.name}</span>
+            </div>
+            <div class="search-result-meta">
+              <span class="interchange-pill interchange-blue">🚇 ${nearStr}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const stationHtml = matches.slice(0, 8).map(st => `
           <div class="search-result-item" data-st-name="${st.name}" data-st-idx="${st.index !== undefined ? st.index : -1}">
             <div style="display:flex; align-items:center; gap:8px;">
-              ${st.lineColor ? `<span style="width:8px; height:8px; border-radius:50%; background:${st.lineColor}; display:inline-block; flex-shrink:0;"></span>` : ''}
+              <span style="width:8px; height:8px; border-radius:50%; background:${st.lineColor || (st.lineId === 'blue' ? '#2563EB' : '#EAB308')}; display:inline-block; flex-shrink:0;"></span>
               <span class="search-result-name">${st.name}</span>
             </div>
             <div class="search-result-meta">
@@ -2638,9 +3453,12 @@
             </div>
           </div>
         `).join('');
+
+      if (landmarkHtml || railHtml || stationHtml) {
+        searchResults.innerHTML = stationStartsFirst ? (stationHtml + railHtml + landmarkHtml) : (landmarkHtml + railHtml + stationHtml);
         searchResults.classList.remove('hidden');
-      } else if (q.trim()) {
-        searchResults.innerHTML = '<div class="search-result-item" style="cursor:default; color:#94A3B8;">No station matches found</div>';
+      } else if (qLower) {
+        searchResults.innerHTML = '<div class="search-result-item" style="cursor:default; color:#94A3B8;">No station or landmark matches found</div>';
         searchResults.classList.remove('hidden');
       } else {
         searchResults.classList.add('hidden');
@@ -2650,17 +3468,41 @@
     searchResults.addEventListener('click', (e) => {
       const item = e.target.closest('.search-result-item');
       if (!item) return;
+      const railId = item.getAttribute('data-rail-hub-id');
+      if (railId && window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToRailwayHub === 'function') {
+        const tabCorridor = document.getElementById('tab-corridor');
+        if (tabCorridor && !tabCorridor.classList.contains('active')) tabCorridor.click();
+        window.MetroWebGLLayer.flyToRailwayHub(railId);
+        searchResults.classList.add('hidden');
+        searchInput.value = '';
+        if (clearBtn) clearBtn.classList.add('hidden');
+        return;
+      }
+      const monId = item.getAttribute('data-monument-id');
+      if (monId && window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToMonument === 'function') {
+        const tabCorridor = document.getElementById('tab-corridor');
+        if (tabCorridor && !tabCorridor.classList.contains('active')) tabCorridor.click();
+        window.MetroWebGLLayer.flyToMonument(monId);
+        searchResults.classList.add('hidden');
+        searchInput.value = '';
+        if (clearBtn) clearBtn.classList.add('hidden');
+        return;
+      }
+      if (!item.hasAttribute('data-st-name')) return;
       const stName = item.getAttribute('data-st-name');
       const stIdx = parseInt(item.getAttribute('data-st-idx'), 10);
 
-      // Fly in real map OR 3D plinth depending on active surface
-      if (window.MetroWebGLLayer) {
+      // Fly in active surface: 3D Delhi Map (threejs) vs MapLibre street map
+      const isThreePlinth = document.getElementById('tab-threejs')?.classList.contains('active');
+      if (isThreePlinth && window.DelhiMetro3D) {
+        window.DelhiMetro3D.flyToStation(stName);
+      } else if (window.MetroWebGLLayer) {
         window.MetroWebGLLayer.flyToStation(stName);
       } else if (window.DelhiMetro3D) {
         window.DelhiMetro3D.flyToStation(stName);
       }
       if (window.openStationPanel) {
-        window.openStationPanel(stIdx >= 0 ? stIdx : stName);
+        window.openStationPanel(stName, true);
       }
       searchResults.classList.add('hidden');
       searchInput.value = '';
@@ -2681,11 +3523,17 @@
       }
     });
 
-    // Shortcut key: "/" to focus search
+    // Shortcut keys: "/" to focus search, "[" / "]" to step previous/next station
     document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== searchInput) {
+      const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+      const inField = tag === 'input' || tag === 'textarea' || tag === 'select';
+      if (e.key === '/' && !inField) {
         e.preventDefault();
         searchInput.focus();
+      } else if (e.key === '[' && !inField) {
+        document.getElementById('btn-prev-station')?.click();
+      } else if (e.key === ']' && !inField) {
+        document.getElementById('btn-next-station')?.click();
       } else if (e.key === 'Escape') {
         searchResults.classList.add('hidden');
       }

@@ -1,0 +1,2878 @@
+{
+  "meta": {
+    "version": 2,
+    "hubCount": 19,
+    "source": "OpenStreetMap live ways (osm_hubs_cache.json) + DMRC corridor geometry",
+    "note": "Genuine DMRC dual/tri interchange station geometry from real OSM tracks across Yellow, Blue, and Vaishali lines."
+  },
+  "hubs": {
+    "Haiderpur Badli Mor": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.148872,
+        28.729917
+      ],
+      "primaryTangent": [
+        0.80737,
+        0.59004
+      ],
+      "archetype": "el_cross_over",
+      "flattenLowerCanopy": true,
+      "arms": [
+        {
+          "line": "Magenta Line",
+          "color": "#D946EF",
+          "tier": "elevated_upper",
+          "deckY": 27.8,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.148888,
+            28.729899
+          ],
+          "tangent": [
+            0.79937,
+            0.60084
+          ],
+          "trackPolyline": [
+            [
+              77.147761,
+              28.729193
+            ],
+            [
+              77.147867,
+              28.729249
+            ],
+            [
+              77.147972,
+              28.729305
+            ],
+            [
+              77.148078,
+              28.729361
+            ],
+            [
+              77.148223,
+              28.729458
+            ],
+            [
+              77.148369,
+              28.729554
+            ],
+            [
+              77.148514,
+              28.729651
+            ],
+            [
+              77.14866,
+              28.729747
+            ],
+            [
+              77.148805,
+              28.729844
+            ],
+            [
+              77.148888,
+              28.729899
+            ],
+            [
+              77.149025,
+              28.72999
+            ],
+            [
+              77.149161,
+              28.73008
+            ],
+            [
+              77.149298,
+              28.730171
+            ],
+            [
+              77.149434,
+              28.730261
+            ],
+            [
+              77.149571,
+              28.730352
+            ],
+            [
+              77.149707,
+              28.730442
+            ],
+            [
+              77.149844,
+              28.730533
+            ],
+            [
+              77.149919,
+              28.730583
+            ],
+            [
+              77.149994,
+              28.730633
+            ]
+          ],
+          "offsetMeters": 2.5
+        }
+      ],
+      "links": [
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.149145,
+            28.729925
+          ],
+          "fromY": 0.0,
+          "toY": 27.8,
+          "color": "#D946EF"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.148888,
+            28.729899
+          ],
+          "tangent": [
+            0.79937,
+            0.60084
+          ],
+          "length": 114,
+          "width": 28
+        }
+      ]
+    },
+    "Azadpur": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.180383,
+        28.707069
+      ],
+      "primaryTangent": [
+        0.93379,
+        -0.35782
+      ],
+      "archetype": "el_to_ug_skywalk",
+      "flattenLowerCanopy": false,
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.181926,
+            28.705802
+          ],
+          "tangent": [
+            0.69838,
+            0.71573
+          ],
+          "trackPolyline": [
+            [
+              77.180958,
+              28.70493
+            ],
+            [
+              77.181079,
+              28.705039
+            ],
+            [
+              77.1812,
+              28.705148
+            ],
+            [
+              77.181321,
+              28.705257
+            ],
+            [
+              77.181442,
+              28.705366
+            ],
+            [
+              77.181563,
+              28.705475
+            ],
+            [
+              77.181684,
+              28.705584
+            ],
+            [
+              77.181805,
+              28.705693
+            ],
+            [
+              77.181926,
+              28.705802
+            ],
+            [
+              77.181944,
+              28.705818
+            ],
+            [
+              77.182062,
+              28.705926
+            ],
+            [
+              77.18218,
+              28.706033
+            ],
+            [
+              77.182298,
+              28.706141
+            ],
+            [
+              77.182416,
+              28.706249
+            ],
+            [
+              77.182534,
+              28.706356
+            ],
+            [
+              77.182652,
+              28.706464
+            ],
+            [
+              77.18277,
+              28.706571
+            ],
+            [
+              77.182888,
+              28.706679
+            ]
+          ],
+          "offsetMeters": 205.7
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.180383,
+            28.707069
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.181926,
+            28.705802
+          ],
+          "toY": 4.2,
+          "width": 6.4,
+          "color": "#EC4899"
+        },
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.181926,
+            28.705802
+          ],
+          "fromY": 0.28,
+          "toY": 11.5,
+          "color": "#EC4899"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.181926,
+            28.705802
+          ],
+          "tangent": [
+            0.69838,
+            0.71573
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Kashmere Gate": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.228217,
+        28.667526
+      ],
+      "primaryTangent": [
+        0.42753,
+        -0.904
+      ],
+      "archetype": "tri_hub_mixed",
+      "arms": [
+        {
+          "line": "Red Line",
+          "color": "#EF4444",
+          "tier": "elevated",
+          "deckY": 17.5,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.228216,
+            28.667417
+          ],
+          "tangent": [
+            -0.99937,
+            -0.03553
+          ],
+          "trackPolyline": [
+            [
+              77.229588,
+              28.667558
+            ],
+            [
+              77.229494,
+              28.667542
+            ],
+            [
+              77.229399,
+              28.667527
+            ],
+            [
+              77.229223,
+              28.667506
+            ],
+            [
+              77.229048,
+              28.667486
+            ],
+            [
+              77.228872,
+              28.667465
+            ],
+            [
+              77.228716,
+              28.667453
+            ],
+            [
+              77.228561,
+              28.667441
+            ],
+            [
+              77.228406,
+              28.667429
+            ],
+            [
+              77.22825,
+              28.667417
+            ],
+            [
+              77.228216,
+              28.667417
+            ],
+            [
+              77.228037,
+              28.667418
+            ],
+            [
+              77.227857,
+              28.667418
+            ],
+            [
+              77.227678,
+              28.667419
+            ],
+            [
+              77.227499,
+              28.66742
+            ],
+            [
+              77.227319,
+              28.66742
+            ],
+            [
+              77.22714,
+              28.667421
+            ],
+            [
+              77.226988,
+              28.667435
+            ],
+            [
+              77.226836,
+              28.66745
+            ]
+          ],
+          "offsetMeters": 12.0
+        },
+        {
+          "line": "Violet Line",
+          "color": "#7C3AED",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 82,
+          "platformWidth": 18.8,
+          "isTerminus": true,
+          "terminusEnd": "start",
+          "center": [
+            77.228082,
+            28.668584
+          ],
+          "tangent": [
+            0.53747,
+            -0.84328
+          ],
+          "trackPolyline": [
+            [
+              77.227791,
+              28.669002
+            ],
+            [
+              77.22787,
+              28.668888
+            ],
+            [
+              77.227948,
+              28.668774
+            ],
+            [
+              77.228027,
+              28.66866
+            ],
+            [
+              77.228066,
+              28.668606
+            ],
+            [
+              77.228082,
+              28.668584
+            ],
+            [
+              77.228177,
+              28.668456
+            ],
+            [
+              77.228271,
+              28.668329
+            ],
+            [
+              77.228366,
+              28.668201
+            ],
+            [
+              77.22846,
+              28.668073
+            ],
+            [
+              77.228555,
+              28.667945
+            ],
+            [
+              77.22865,
+              28.667817
+            ],
+            [
+              77.228744,
+              28.66769
+            ],
+            [
+              77.228839,
+              28.667562
+            ]
+          ],
+          "offsetMeters": 117.7
+        }
+      ],
+      "links": [
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.228166,
+            28.667325
+          ],
+          "fromY": 0.28,
+          "toY": 17.5,
+          "color": "#EF4444"
+        },
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.228217,
+            28.667526
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.228082,
+            28.668584
+          ],
+          "toY": 0.28,
+          "width": 7.6,
+          "color": "#7C3AED"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.228216,
+            28.667417
+          ],
+          "tangent": [
+            -0.99937,
+            -0.03553
+          ],
+          "length": 114,
+          "width": 28
+        },
+        {
+          "center": [
+            77.228082,
+            28.668584
+          ],
+          "tangent": [
+            0.53747,
+            -0.84328
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "New Delhi": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.222771,
+        28.643471
+      ],
+      "primaryTangent": [
+        -0.51928,
+        -0.85461
+      ],
+      "archetype": "ug_subsurface_link",
+      "arms": [
+        {
+          "line": "Airport Express",
+          "color": "#F59E0B",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 86,
+          "platformWidth": 19.6,
+          "isTerminus": true,
+          "terminusEnd": "end",
+          "center": [
+            77.222805,
+            28.642051
+          ],
+          "tangent": [
+            0.50376,
+            0.86384
+          ],
+          "trackPolyline": [
+            [
+              77.222108,
+              28.640996
+            ],
+            [
+              77.222195,
+              28.641128
+            ],
+            [
+              77.222282,
+              28.64126
+            ],
+            [
+              77.222369,
+              28.641392
+            ],
+            [
+              77.222456,
+              28.641523
+            ],
+            [
+              77.222544,
+              28.641655
+            ],
+            [
+              77.222631,
+              28.641787
+            ],
+            [
+              77.222718,
+              28.641919
+            ],
+            [
+              77.222805,
+              28.642051
+            ],
+            [
+              77.222877,
+              28.642161
+            ],
+            [
+              77.22295,
+              28.64227
+            ],
+            [
+              77.223022,
+              28.64238
+            ],
+            [
+              77.223095,
+              28.64249
+            ]
+          ],
+          "offsetMeters": 157.0
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.222771,
+            28.643471
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.222805,
+            28.642051
+          ],
+          "toY": 0.28,
+          "width": 8.0,
+          "color": "#F59E0B"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.222805,
+            28.642051
+          ],
+          "tangent": [
+            0.50376,
+            0.86384
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Central Secretariat": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.212313,
+        28.615878
+      ],
+      "primaryTangent": [
+        -0.08294,
+        -0.99655
+      ],
+      "archetype": "ug_parallel_plaza",
+      "arms": [
+        {
+          "line": "Violet Line",
+          "color": "#7C3AED",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 86,
+          "platformWidth": 18.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.212529,
+            28.615864
+          ],
+          "tangent": [
+            0.07521,
+            0.99717
+          ],
+          "trackPolyline": [
+            [
+              77.212633,
+              28.614653
+            ],
+            [
+              77.212585,
+              28.614785
+            ],
+            [
+              77.212563,
+              28.614945
+            ],
+            [
+              77.21254,
+              28.615105
+            ],
+            [
+              77.212518,
+              28.615265
+            ],
+            [
+              77.212521,
+              28.615415
+            ],
+            [
+              77.212523,
+              28.615564
+            ],
+            [
+              77.212526,
+              28.615714
+            ],
+            [
+              77.212529,
+              28.615864
+            ],
+            [
+              77.212548,
+              28.615988
+            ],
+            [
+              77.212567,
+              28.616112
+            ],
+            [
+              77.212586,
+              28.616237
+            ],
+            [
+              77.212605,
+              28.616361
+            ],
+            [
+              77.212679,
+              28.616475
+            ],
+            [
+              77.212754,
+              28.61659
+            ],
+            [
+              77.212828,
+              28.616705
+            ],
+            [
+              77.212902,
+              28.616819
+            ],
+            [
+              77.212946,
+              28.616907
+            ],
+            [
+              77.212991,
+              28.616994
+            ]
+          ],
+          "offsetMeters": 21.2
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.212313,
+            28.615878
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.212529,
+            28.615864
+          ],
+          "toY": 0.28,
+          "width": 9.2,
+          "color": "#7C3AED"
+        },
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.212205,
+            28.615741
+          ],
+          "fromY": 0.28,
+          "toY": 10.2,
+          "color": "#7C3AED"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.212529,
+            28.615864
+          ],
+          "tangent": [
+            0.07521,
+            0.99717
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Dilli Haat - INA": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.209331,
+        28.574159
+      ],
+      "primaryTangent": [
+        -0.2098,
+        -0.97775
+      ],
+      "archetype": "ug_subsurface_link",
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.207583,
+            28.573627
+          ],
+          "tangent": [
+            0.98929,
+            -0.14599
+          ],
+          "trackPolyline": [
+            [
+              77.206224,
+              28.573842
+            ],
+            [
+              77.206383,
+              28.573819
+            ],
+            [
+              77.206541,
+              28.573796
+            ],
+            [
+              77.2067,
+              28.573773
+            ],
+            [
+              77.206876,
+              28.573744
+            ],
+            [
+              77.207052,
+              28.573715
+            ],
+            [
+              77.207227,
+              28.573685
+            ],
+            [
+              77.207403,
+              28.573656
+            ],
+            [
+              77.207579,
+              28.573627
+            ],
+            [
+              77.207751,
+              28.57361
+            ],
+            [
+              77.207923,
+              28.573594
+            ],
+            [
+              77.208095,
+              28.573577
+            ],
+            [
+              77.208268,
+              28.57356
+            ],
+            [
+              77.20844,
+              28.573544
+            ],
+            [
+              77.208612,
+              28.573527
+            ],
+            [
+              77.208784,
+              28.573511
+            ],
+            [
+              77.208956,
+              28.573494
+            ]
+          ],
+          "offsetMeters": 180.7
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.209331,
+            28.574159
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.207583,
+            28.573627
+          ],
+          "toY": 0.28,
+          "width": 7.8,
+          "color": "#EC4899"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.207583,
+            28.573627
+          ],
+          "tangent": [
+            0.98929,
+            -0.14599
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Hauz Khas": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.20674,
+        28.544258
+      ],
+      "primaryTangent": [
+        -0.0352,
+        -0.99938
+      ],
+      "archetype": "ug_subsurface_link",
+      "arms": [
+        {
+          "line": "Magenta Line",
+          "color": "#D946EF",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.205041,
+            28.543348
+          ],
+          "tangent": [
+            0.98838,
+            -0.15199
+          ],
+          "trackPolyline": [
+            [
+              77.203681,
+              28.543543
+            ],
+            [
+              77.2038,
+              28.543509
+            ],
+            [
+              77.20392,
+              28.543476
+            ],
+            [
+              77.204077,
+              28.543458
+            ],
+            [
+              77.204234,
+              28.54344
+            ],
+            [
+              77.204391,
+              28.543422
+            ],
+            [
+              77.204548,
+              28.543405
+            ],
+            [
+              77.204705,
+              28.543387
+            ],
+            [
+              77.204862,
+              28.543369
+            ],
+            [
+              77.205019,
+              28.543351
+            ],
+            [
+              77.205041,
+              28.543348
+            ],
+            [
+              77.205209,
+              28.543322
+            ],
+            [
+              77.205376,
+              28.543296
+            ],
+            [
+              77.205544,
+              28.54327
+            ],
+            [
+              77.205711,
+              28.543244
+            ],
+            [
+              77.205879,
+              28.543218
+            ],
+            [
+              77.206046,
+              28.543192
+            ],
+            [
+              77.206214,
+              28.543166
+            ],
+            [
+              77.206309,
+              28.543161
+            ],
+            [
+              77.206403,
+              28.543156
+            ]
+          ],
+          "offsetMeters": 194.2
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.20674,
+            28.544258
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.205041,
+            28.543348
+          ],
+          "toY": 0.28,
+          "width": 8.0,
+          "color": "#D946EF"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.205041,
+            28.543348
+          ],
+          "tangent": [
+            0.98838,
+            -0.15199
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Sikanderpur": {
+      "primaryLine": "Yellow Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.093007,
+        28.481244
+      ],
+      "primaryTangent": [
+        -0.96395,
+        -0.26609
+      ],
+      "archetype": "el_twin_skywalk",
+      "arms": [
+        {
+          "line": "Rapid Metro",
+          "color": "#06B6D4",
+          "tier": "elevated",
+          "deckY": 17.5,
+          "platformType": "side",
+          "stationLen": 76,
+          "platformWidth": 17.2,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.094454,
+            28.480993
+          ],
+          "tangent": [
+            0.23767,
+            0.97135
+          ],
+          "trackPolyline": [
+            [
+              77.094134,
+              28.479852
+            ],
+            [
+              77.094177,
+              28.480002
+            ],
+            [
+              77.09422,
+              28.480153
+            ],
+            [
+              77.094262,
+              28.480303
+            ],
+            [
+              77.094305,
+              28.480453
+            ],
+            [
+              77.094342,
+              28.480588
+            ],
+            [
+              77.09438,
+              28.480723
+            ],
+            [
+              77.094417,
+              28.480858
+            ],
+            [
+              77.094454,
+              28.480993
+            ],
+            [
+              77.094496,
+              28.481146
+            ],
+            [
+              77.094538,
+              28.481299
+            ],
+            [
+              77.09458,
+              28.481452
+            ],
+            [
+              77.094623,
+              28.481604
+            ],
+            [
+              77.094665,
+              28.481757
+            ],
+            [
+              77.094707,
+              28.48191
+            ],
+            [
+              77.094749,
+              28.482063
+            ],
+            [
+              77.09477,
+              28.482135
+            ]
+          ],
+          "offsetMeters": 144.3
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.093007,
+            28.481244
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.094454,
+            28.480993
+          ],
+          "toY": 11.8,
+          "width": 6.4,
+          "color": "#06B6D4"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.094454,
+            28.480993
+          ],
+          "tangent": [
+            0.23767,
+            0.97135
+          ],
+          "length": 104,
+          "width": 26
+        }
+      ]
+    },
+    "Dwarka Sector - 21": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.05856,
+        28.551922
+      ],
+      "primaryTangent": [
+        0.42823,
+        0.90367
+      ],
+      "archetype": "ug_parallel_plaza",
+      "arms": [
+        {
+          "line": "Airport Express",
+          "color": "#F59E0B",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 86,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.058664,
+            28.551856
+          ],
+          "tangent": [
+            0.58693,
+            0.80964
+          ],
+          "trackPolyline": [
+            [
+              77.057855,
+              28.550866
+            ],
+            [
+              77.057954,
+              28.550987
+            ],
+            [
+              77.058053,
+              28.551109
+            ],
+            [
+              77.058153,
+              28.55123
+            ],
+            [
+              77.058252,
+              28.551352
+            ],
+            [
+              77.058351,
+              28.551474
+            ],
+            [
+              77.058451,
+              28.551595
+            ],
+            [
+              77.05855,
+              28.551717
+            ],
+            [
+              77.058649,
+              28.551838
+            ],
+            [
+              77.058664,
+              28.551856
+            ],
+            [
+              77.058765,
+              28.55198
+            ],
+            [
+              77.058866,
+              28.552104
+            ],
+            [
+              77.058967,
+              28.552227
+            ],
+            [
+              77.059068,
+              28.552351
+            ],
+            [
+              77.059169,
+              28.552475
+            ],
+            [
+              77.05927,
+              28.552598
+            ],
+            [
+              77.059371,
+              28.552722
+            ],
+            [
+              77.059472,
+              28.552846
+            ]
+          ],
+          "offsetMeters": 12.5
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.05856,
+            28.551922
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.058664,
+            28.551856
+          ],
+          "toY": 0.28,
+          "width": 9.2,
+          "color": "#F59E0B"
+        },
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.058664,
+            28.551856
+          ],
+          "fromY": 0.28,
+          "toY": 11.5,
+          "color": "#F59E0B"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.058664,
+            28.551856
+          ],
+          "tangent": [
+            0.58693,
+            0.80964
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Dwarka": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.022724,
+        28.614946
+      ],
+      "primaryTangent": [
+        0.27664,
+        0.96097
+      ],
+      "archetype": "el_twin_skywalk",
+      "arms": [
+        {
+          "line": "Grey Line",
+          "color": "#9CA3AF",
+          "tier": "elevated",
+          "deckY": 17.5,
+          "platformType": "side",
+          "stationLen": 80,
+          "platformWidth": 18.2,
+          "isTerminus": true,
+          "terminusEnd": "end",
+          "center": [
+            77.022365,
+            28.615891
+          ],
+          "tangent": [
+            -0.05234,
+            -0.99863
+          ],
+          "trackPolyline": [
+            [
+              77.022365,
+              28.617112
+            ],
+            [
+              77.022373,
+              28.61696
+            ],
+            [
+              77.022381,
+              28.616809
+            ],
+            [
+              77.022381,
+              28.616659
+            ],
+            [
+              77.022381,
+              28.616509
+            ],
+            [
+              77.022381,
+              28.61636
+            ],
+            [
+              77.022381,
+              28.61621
+            ],
+            [
+              77.022374,
+              28.616062
+            ],
+            [
+              77.022366,
+              28.615913
+            ],
+            [
+              77.022365,
+              28.615891
+            ],
+            [
+              77.022357,
+              28.615778
+            ],
+            [
+              77.02235,
+              28.615665
+            ],
+            [
+              77.022342,
+              28.615552
+            ],
+            [
+              77.02233,
+              28.615437
+            ],
+            [
+              77.022319,
+              28.615321
+            ],
+            [
+              77.0223,
+              28.61517
+            ],
+            [
+              77.02228,
+              28.615018
+            ],
+            [
+              77.022256,
+              28.614893
+            ],
+            [
+              77.022232,
+              28.614768
+            ],
+            [
+              77.022208,
+              28.614643
+            ]
+          ],
+          "offsetMeters": 110.2
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.022724,
+            28.614946
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.022365,
+            28.615891
+          ],
+          "toY": 11.8,
+          "width": 7.6,
+          "color": "#9CA3AF"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.022365,
+            28.615891
+          ],
+          "tangent": [
+            -0.05234,
+            -0.99863
+          ],
+          "length": 108,
+          "width": 28
+        }
+      ]
+    },
+    "Janak Puri West": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.078071,
+        28.629613
+      ],
+      "primaryTangent": [
+        0.91574,
+        0.40178
+      ],
+      "archetype": "el_to_ug_cross",
+      "arms": [
+        {
+          "line": "Magenta Line",
+          "color": "#D946EF",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.077928,
+            28.628939
+          ],
+          "tangent": [
+            -0.40132,
+            0.91594
+          ],
+          "trackPolyline": [
+            [
+              77.07848,
+              28.627819
+            ],
+            [
+              77.078411,
+              28.627959
+            ],
+            [
+              77.078342,
+              28.628099
+            ],
+            [
+              77.078273,
+              28.628239
+            ],
+            [
+              77.078204,
+              28.628379
+            ],
+            [
+              77.078135,
+              28.628519
+            ],
+            [
+              77.078066,
+              28.628659
+            ],
+            [
+              77.077997,
+              28.628799
+            ],
+            [
+              77.077928,
+              28.628939
+            ],
+            [
+              77.077923,
+              28.62895
+            ],
+            [
+              77.077868,
+              28.62906
+            ],
+            [
+              77.077814,
+              28.629169
+            ],
+            [
+              77.077766,
+              28.629325
+            ],
+            [
+              77.077717,
+              28.629481
+            ],
+            [
+              77.077669,
+              28.629637
+            ],
+            [
+              77.077621,
+              28.629793
+            ],
+            [
+              77.077572,
+              28.629949
+            ],
+            [
+              77.077524,
+              28.630105
+            ]
+          ],
+          "offsetMeters": 75.8
+        }
+      ],
+      "links": [
+        {
+          "kind": "escalator_bridge",
+          "fromLngLat": [
+            77.078071,
+            28.629613
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.077928,
+            28.628939
+          ],
+          "toY": 4.2,
+          "width": 7.2,
+          "color": "#D946EF"
+        },
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.077985,
+            28.629139
+          ],
+          "fromY": 0.28,
+          "toY": 11.8,
+          "color": "#D946EF"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.077928,
+            28.628939
+          ],
+          "tangent": [
+            -0.40132,
+            0.91594
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Rajouri Garden": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.122704,
+        28.649086
+      ],
+      "primaryTangent": [
+        0.89779,
+        0.44043
+      ],
+      "archetype": "el_twin_skywalk",
+      "flattenLowerCanopy": false,
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "elevated_upper",
+          "deckY": 21.5,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.124224,
+            28.651176
+          ],
+          "tangent": [
+            0.40636,
+            -0.91371
+          ],
+          "trackPolyline": [
+            [
+              77.123814,
+              28.652334
+            ],
+            [
+              77.123846,
+              28.652187
+            ],
+            [
+              77.123877,
+              28.65204
+            ],
+            [
+              77.123909,
+              28.651894
+            ],
+            [
+              77.123941,
+              28.651747
+            ],
+            [
+              77.124012,
+              28.651604
+            ],
+            [
+              77.124083,
+              28.651461
+            ],
+            [
+              77.124153,
+              28.651319
+            ],
+            [
+              77.124224,
+              28.651176
+            ],
+            [
+              77.124295,
+              28.651037
+            ],
+            [
+              77.124366,
+              28.650897
+            ],
+            [
+              77.124437,
+              28.650758
+            ],
+            [
+              77.124507,
+              28.650619
+            ],
+            [
+              77.124578,
+              28.65048
+            ],
+            [
+              77.124649,
+              28.65034
+            ],
+            [
+              77.12472,
+              28.650201
+            ],
+            [
+              77.124791,
+              28.650062
+            ]
+          ],
+          "offsetMeters": 274.6
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.122704,
+            28.649086
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.124224,
+            28.651176
+          ],
+          "toY": 15.8,
+          "width": 6.4,
+          "color": "#EC4899"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.124224,
+            28.651176
+          ],
+          "tangent": [
+            0.40636,
+            -0.91371
+          ],
+          "length": 112,
+          "width": 28
+        }
+      ]
+    },
+    "Kirti Nagar": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.150676,
+        28.655763
+      ],
+      "primaryTangent": [
+        0.82288,
+        -0.56822
+      ],
+      "archetype": "el_twin_skywalk",
+      "arms": [
+        {
+          "line": "Green Line",
+          "color": "#10B981",
+          "tier": "elevated",
+          "deckY": 17.5,
+          "platformType": "side",
+          "stationLen": 80,
+          "platformWidth": 18.4,
+          "isTerminus": true,
+          "terminusEnd": "start",
+          "center": [
+            77.151336,
+            28.654555
+          ],
+          "tangent": [
+            0.57051,
+            0.82129
+          ],
+          "trackPolyline": [
+            [
+              77.149774,
+              28.652595
+            ],
+            [
+              77.149878,
+              28.652726
+            ],
+            [
+              77.149982,
+              28.652856
+            ],
+            [
+              77.150086,
+              28.652987
+            ],
+            [
+              77.150191,
+              28.653118
+            ],
+            [
+              77.150295,
+              28.653248
+            ],
+            [
+              77.150399,
+              28.653379
+            ],
+            [
+              77.150503,
+              28.65351
+            ],
+            [
+              77.150607,
+              28.65364
+            ],
+            [
+              77.150711,
+              28.653771
+            ],
+            [
+              77.150815,
+              28.653902
+            ],
+            [
+              77.150919,
+              28.654032
+            ],
+            [
+              77.151024,
+              28.654163
+            ],
+            [
+              77.151128,
+              28.654294
+            ],
+            [
+              77.151232,
+              28.654424
+            ],
+            [
+              77.151336,
+              28.654555
+            ],
+            [
+              77.151433,
+              28.654681
+            ],
+            [
+              77.151531,
+              28.654807
+            ],
+            [
+              77.151628,
+              28.654933
+            ],
+            [
+              77.151725,
+              28.65506
+            ],
+            [
+              77.151823,
+              28.655186
+            ],
+            [
+              77.15192,
+              28.655312
+            ],
+            [
+              77.152018,
+              28.655438
+            ],
+            [
+              77.152115,
+              28.655564
+            ]
+          ],
+          "offsetMeters": 148.3
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.150676,
+            28.655763
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.151336,
+            28.654555
+          ],
+          "toY": 11.8,
+          "width": 6.2,
+          "color": "#10B981"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.151336,
+            28.654555
+          ],
+          "tangent": [
+            0.57051,
+            0.82129
+          ],
+          "length": 108,
+          "width": 28
+        }
+      ]
+    },
+    "Mandi House": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "underground",
+      "primaryCenter": [
+        77.234196,
+        28.625597
+      ],
+      "primaryTangent": [
+        0.99772,
+        -0.06743
+      ],
+      "archetype": "ug_parallel_plaza",
+      "arms": [
+        {
+          "line": "Violet Line",
+          "color": "#7C3AED",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 84,
+          "platformWidth": 18.2,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.234195,
+            28.625543
+          ],
+          "tangent": [
+            0.99775,
+            -0.06709
+          ],
+          "trackPolyline": [
+            [
+              77.232817,
+              28.625633
+            ],
+            [
+              77.232989,
+              28.625622
+            ],
+            [
+              77.233161,
+              28.625611
+            ],
+            [
+              77.233334,
+              28.625599
+            ],
+            [
+              77.233506,
+              28.625588
+            ],
+            [
+              77.233678,
+              28.625577
+            ],
+            [
+              77.233851,
+              28.625566
+            ],
+            [
+              77.234023,
+              28.625554
+            ],
+            [
+              77.234195,
+              28.625543
+            ],
+            [
+              77.234367,
+              28.625534
+            ],
+            [
+              77.23454,
+              28.625525
+            ],
+            [
+              77.234712,
+              28.625516
+            ],
+            [
+              77.234884,
+              28.625507
+            ],
+            [
+              77.235057,
+              28.625499
+            ],
+            [
+              77.235229,
+              28.62549
+            ],
+            [
+              77.235402,
+              28.625481
+            ],
+            [
+              77.235574,
+              28.625472
+            ]
+          ],
+          "offsetMeters": 6.0
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "fromLngLat": [
+            77.234196,
+            28.625597
+          ],
+          "fromY": 0.28,
+          "toLngLat": [
+            77.234195,
+            28.625543
+          ],
+          "toY": 0.28,
+          "width": 8.6,
+          "color": "#7C3AED"
+        },
+        {
+          "kind": "lift_tower",
+          "posLngLat": [
+            77.23437,
+            28.62541
+          ],
+          "fromY": 0.28,
+          "toY": 10.2,
+          "color": "#7C3AED"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.234195,
+            28.625543
+          ],
+          "tangent": [
+            0.99775,
+            -0.06709
+          ],
+          "length": 265.0,
+          "width": 28
+        }
+      ]
+    },
+    "Mayur Vihar-I": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.289515,
+        28.604054
+      ],
+      "primaryTangent": [
+        0.39981,
+        -0.9166
+      ],
+      "archetype": "el_twin_skywalk",
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "elevated_upper",
+          "deckY": 24.5,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.290946,
+            28.603615
+          ],
+          "tangent": [
+            0.91272,
+            0.40858
+          ],
+          "trackPolyline": [
+            [
+              77.289692,
+              28.603103
+            ],
+            [
+              77.289827,
+              28.603155
+            ],
+            [
+              77.289953,
+              28.603207
+            ],
+            [
+              77.290084,
+              28.603257
+            ],
+            [
+              77.290213,
+              28.603311
+            ],
+            [
+              77.290342,
+              28.603365
+            ],
+            [
+              77.290481,
+              28.603423
+            ],
+            [
+              77.290619,
+              28.603482
+            ],
+            [
+              77.290655,
+              28.603497
+            ],
+            [
+              77.290801,
+              28.603556
+            ],
+            [
+              77.290946,
+              28.603615
+            ],
+            [
+              77.290952,
+              28.603617
+            ],
+            [
+              77.291117,
+              28.603681
+            ],
+            [
+              77.291282,
+              28.603745
+            ],
+            [
+              77.291448,
+              28.603809
+            ],
+            [
+              77.291613,
+              28.603873
+            ],
+            [
+              77.291778,
+              28.603937
+            ],
+            [
+              77.291924,
+              28.603989
+            ],
+            [
+              77.292071,
+              28.604041
+            ],
+            [
+              77.292217,
+              28.604093
+            ]
+          ],
+          "offsetMeters": 148.0
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.289515,
+            28.604054
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.290946,
+            28.603615
+          ],
+          "toY": 18.8,
+          "width": 6.4,
+          "color": "#EC4899"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.290946,
+            28.603615
+          ],
+          "tangent": [
+            0.91272,
+            0.40858
+          ],
+          "length": 112,
+          "width": 28
+        }
+      ]
+    },
+    "Botanical Garden": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.334379,
+        28.563925
+      ],
+      "primaryTangent": [
+        0.68475,
+        -0.72878
+      ],
+      "archetype": "el_parallel_concourse",
+      "arms": [
+        {
+          "line": "Magenta Line",
+          "color": "#D946EF",
+          "tier": "elevated",
+          "deckY": 17.5,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.2,
+          "isTerminus": true,
+          "terminusEnd": "end",
+          "center": [
+            77.333861,
+            28.563922
+          ],
+          "tangent": [
+            -0.58897,
+            0.80816
+          ],
+          "trackPolyline": [
+            [
+              77.334619,
+              28.562901
+            ],
+            [
+              77.334541,
+              28.563009
+            ],
+            [
+              77.334464,
+              28.563117
+            ],
+            [
+              77.334386,
+              28.563225
+            ],
+            [
+              77.33431,
+              28.56333
+            ],
+            [
+              77.33422,
+              28.563448
+            ],
+            [
+              77.334131,
+              28.563566
+            ],
+            [
+              77.334041,
+              28.563684
+            ],
+            [
+              77.333952,
+              28.563802
+            ],
+            [
+              77.333862,
+              28.56392
+            ],
+            [
+              77.333752,
+              28.564044
+            ],
+            [
+              77.333641,
+              28.564167
+            ],
+            [
+              77.333531,
+              28.564291
+            ],
+            [
+              77.33342,
+              28.564414
+            ],
+            [
+              77.33331,
+              28.564538
+            ],
+            [
+              77.333209,
+              28.564638
+            ],
+            [
+              77.333108,
+              28.564739
+            ],
+            [
+              77.333007,
+              28.564839
+            ],
+            [
+              77.332894,
+              28.564954
+            ],
+            [
+              77.332782,
+              28.565069
+            ]
+          ],
+          "offsetMeters": 50.6
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.334379,
+            28.563925
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.333861,
+            28.563922
+          ],
+          "toY": 11.8,
+          "width": 12.0,
+          "color": "#D946EF"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.333861,
+            28.563922
+          ],
+          "tangent": [
+            -0.58897,
+            0.80816
+          ],
+          "length": 112,
+          "width": 28
+        }
+      ]
+    },
+    "Noida Sec-52": {
+      "primaryLine": "Blue Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.373037,
+        28.586855
+      ],
+      "primaryTangent": [
+        0.86547,
+        0.50097
+      ],
+      "archetype": "el_twin_skywalk",
+      "arms": [
+        {
+          "line": "Noida Aqua Line",
+          "color": "#06B6D4",
+          "tier": "elevated",
+          "deckY": 17.5,
+          "platformType": "side",
+          "stationLen": 82,
+          "platformWidth": 18.8,
+          "isTerminus": true,
+          "terminusEnd": "start",
+          "center": [
+            77.375279,
+            28.585724
+          ],
+          "tangent": [
+            0.26504,
+            -0.96424
+          ],
+          "trackPolyline": [
+            [
+              77.374919,
+              28.586996
+            ],
+            [
+              77.374942,
+              28.58687
+            ],
+            [
+              77.374968,
+              28.586768
+            ],
+            [
+              77.374995,
+              28.586665
+            ],
+            [
+              77.375042,
+              28.586508
+            ],
+            [
+              77.37509,
+              28.586352
+            ],
+            [
+              77.375137,
+              28.586195
+            ],
+            [
+              77.375184,
+              28.586038
+            ],
+            [
+              77.375232,
+              28.585882
+            ],
+            [
+              77.375279,
+              28.585725
+            ],
+            [
+              77.375326,
+              28.585578
+            ],
+            [
+              77.375373,
+              28.585431
+            ],
+            [
+              77.375419,
+              28.585285
+            ],
+            [
+              77.375466,
+              28.585138
+            ],
+            [
+              77.375513,
+              28.584991
+            ],
+            [
+              77.375555,
+              28.584858
+            ],
+            [
+              77.375597,
+              28.584724
+            ],
+            [
+              77.375639,
+              28.584591
+            ],
+            [
+              77.375653,
+              28.584548
+            ]
+          ],
+          "offsetMeters": 252.3
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.373037,
+            28.586855
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.375279,
+            28.585724
+          ],
+          "toY": 11.8,
+          "width": 6.4,
+          "color": "#06B6D4"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.375279,
+            28.585724
+          ],
+          "tangent": [
+            0.26504,
+            -0.96424
+          ],
+          "length": 108,
+          "width": 28
+        }
+      ]
+    },
+    "Karkarduma": {
+      "primaryLine": "Vaishali Branch",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.305453,
+        28.648396
+      ],
+      "primaryTangent": [
+        0.97823,
+        0.20754
+      ],
+      "archetype": "el_twin_skywalk",
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "elevated_upper",
+          "deckY": 24.5,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.30604,
+            28.649328
+          ],
+          "tangent": [
+            -0.5171,
+            0.85592
+          ],
+          "trackPolyline": [
+            [
+              77.306803,
+              28.648313
+            ],
+            [
+              77.306722,
+              28.6484
+            ],
+            [
+              77.30664,
+              28.648487
+            ],
+            [
+              77.306559,
+              28.648574
+            ],
+            [
+              77.306505,
+              28.648655
+            ],
+            [
+              77.306432,
+              28.648766
+            ],
+            [
+              77.306358,
+              28.648876
+            ],
+            [
+              77.306265,
+              28.649007
+            ],
+            [
+              77.306173,
+              28.649138
+            ],
+            [
+              77.30608,
+              28.649269
+            ],
+            [
+              77.30604,
+              28.649328
+            ],
+            [
+              77.30596,
+              28.649448
+            ],
+            [
+              77.30588,
+              28.649568
+            ],
+            [
+              77.3058,
+              28.649688
+            ],
+            [
+              77.305761,
+              28.649745
+            ],
+            [
+              77.305694,
+              28.649843
+            ],
+            [
+              77.305626,
+              28.64994
+            ],
+            [
+              77.305559,
+              28.650038
+            ],
+            [
+              77.305484,
+              28.650131
+            ],
+            [
+              77.305408,
+              28.650223
+            ],
+            [
+              77.305333,
+              28.650316
+            ],
+            [
+              77.305297,
+              28.650356
+            ]
+          ],
+          "offsetMeters": 117.9
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.305453,
+            28.648396
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.30604,
+            28.649328
+          ],
+          "toY": 18.8,
+          "width": 6.2,
+          "color": "#EC4899"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.30604,
+            28.649328
+          ],
+          "tangent": [
+            -0.5171,
+            0.85592
+          ],
+          "length": 112,
+          "width": 28
+        }
+      ]
+    },
+    "Anand Vihar ISBT": {
+      "primaryLine": "Vaishali Branch",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.315547,
+        28.647072
+      ],
+      "primaryTangent": [
+        0.86624,
+        -0.49962
+      ],
+      "archetype": "el_parallel_concourse",
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "elevated_upper",
+          "deckY": 21.5,
+          "platformType": "side",
+          "stationLen": 84,
+          "platformWidth": 19.6,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.315519,
+            28.646594
+          ],
+          "tangent": [
+            -0.88913,
+            0.45765
+          ],
+          "trackPolyline": [
+            [
+              77.316657,
+              28.645916
+            ],
+            [
+              77.31662,
+              28.645954
+            ],
+            [
+              77.316529,
+              28.646036
+            ],
+            [
+              77.316432,
+              28.646112
+            ],
+            [
+              77.316329,
+              28.646183
+            ],
+            [
+              77.316222,
+              28.646248
+            ],
+            [
+              77.316081,
+              28.646321
+            ],
+            [
+              77.315939,
+              28.646394
+            ],
+            [
+              77.315798,
+              28.646467
+            ],
+            [
+              77.315658,
+              28.646531
+            ],
+            [
+              77.315519,
+              28.646594
+            ],
+            [
+              77.315375,
+              28.646659
+            ],
+            [
+              77.31524,
+              28.64672
+            ],
+            [
+              77.315106,
+              28.646782
+            ],
+            [
+              77.314971,
+              28.646843
+            ],
+            [
+              77.314834,
+              28.646904
+            ],
+            [
+              77.314698,
+              28.646965
+            ],
+            [
+              77.314561,
+              28.647026
+            ],
+            [
+              77.314425,
+              28.647087
+            ],
+            [
+              77.314288,
+              28.647148
+            ]
+          ],
+          "offsetMeters": 52.9
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "fromLngLat": [
+            77.315547,
+            28.647072
+          ],
+          "fromY": 11.8,
+          "toLngLat": [
+            77.315519,
+            28.646594
+          ],
+          "toY": 15.8,
+          "width": 10.5,
+          "color": "#EC4899"
+        }
+      ],
+      "clearanceBoxes": [
+        {
+          "center": [
+            77.315519,
+            28.646594
+          ],
+          "tangent": [
+            -0.88913,
+            0.45765
+          ],
+          "length": 112,
+          "width": 28
+        }
+      ]
+    }
+  }
+}

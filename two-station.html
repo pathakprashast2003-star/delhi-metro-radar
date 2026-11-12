@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#e9e3d8" />
+  <title>Delhi Metro — Connected Stations</title>
+  <script>if(new URLSearchParams(location.search).get('overlay')==='1')document.documentElement.classList.add('overlay-mode');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/css/two-station.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <main id="app">
+    <canvas id="metro-scene" aria-label="Interactive 3D model of two connected Delhi Metro stations"></canvas>
+
+    <header class="topbar">
+      <div class="brand"><span class="brand-dot"></span><span>DELHI METRO</span><small>CONNECTED STATIONS</small></div>
+      <a class="map-switch" href="two-station-map.html">VIEW ON REAL MAP ↗</a>
+      <div class="live-status"><span class="pulse"></span> PREDICTED SERVICE <em>·</em> UPDATED NOW</div>
+    </header>
+
+    <section class="intro-card">
+      <p class="eyebrow">YELLOW LINE · ELEVATED CORRIDOR</p>
+      <h1>Two stations.<br><i>One living viaduct.</i></h1>
+      <p class="intro-copy">An interactive architectural model of Qutab Minar and Chhattarpur, linked by a moving six-car metro.</p>
+      <div class="station-pills">
+        <button class="station-pill active" data-focus="left"><span></span>Qutab Minar</button>
+        <div class="route-line"><b></b></div>
+        <button class="station-pill" data-focus="right"><span></span>Chhattarpur</button>
+      </div>
+    </section>
+
+    <aside class="control-panel" aria-label="Scene controls">
+      <button class="control active" data-mode="day">☀ <span>Daylight</span></button>
+      <button class="control" data-mode="night">☾ <span>Night service</span></button>
+      <button class="control" id="follow-train">◎ <span>Follow train</span></button>
+      <button class="control" id="toggle-detail">◇ <span>Data saver</span></button>
+    </aside>
+
+    <section class="arrival-card">
+      <div class="arrival-head"><span>UPCOMING SERVICE</span><span class="arrival-live">LIVE MODEL</span></div>
+      <div class="arrival-row"><span class="line-chip">Y</span><div><b>Millennium City Centre</b><small>Qutab Minar → Chhattarpur</small></div><strong id="eta">02:14</strong></div>
+      <div class="arrival-progress"><i id="progress"></i></div>
+      <p>Train Y-203 · predicted from schedule</p>
+    </section>
+
+    <footer class="hint"><span>DRAG</span> orbit · <span>SCROLL / PINCH</span> zoom · select a station to focus</footer>
+  </main>
+  <script src="src/js/two_station_scene.js"></script>
+</body>
+</html>

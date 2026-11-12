@@ -1,0 +1,1082 @@
+{
+  "meta": {
+    "line": "blue-line",
+    "lineName": "Blue Line (Line 3)",
+    "color": "#2563EB",
+    "stationCount": 50,
+    "totalRouteMeters": 55326.3
+  },
+  "stations": [
+    {
+      "id": "dwarka_sector__21",
+      "name": "Dwarka Sector - 21",
+      "coords": [
+        77.05856,
+        28.551922
+      ],
+      "trackNodeIndex": 0,
+      "elevM": -14,
+      "structure": "underground",
+      "major": true,
+      "terminus": true,
+      "interchanges": [
+        "Airport Express"
+      ],
+      "interchange": "Airport Express",
+      "index": 0,
+      "distanceMeters": 0.0,
+      "isTerminal": true,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 120,
+      "code": "DS2"
+    },
+    {
+      "id": "dwarka_sector__8",
+      "name": "Dwarka Sector - 8",
+      "coords": [
+        77.067015,
+        28.565613
+      ],
+      "trackNodeIndex": 17,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 1,
+      "distanceMeters": 1745.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS8"
+    },
+    {
+      "id": "dwarka_sector__9",
+      "name": "Dwarka Sector - 9",
+      "coords": [
+        77.065309,
+        28.574263
+      ],
+      "trackNodeIndex": 27,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 2,
+      "distanceMeters": 2734.8,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS9"
+    },
+    {
+      "id": "dwarka_sector__10",
+      "name": "Dwarka Sector - 10",
+      "coords": [
+        77.05719,
+        28.581108
+      ],
+      "trackNodeIndex": 38,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 3,
+      "distanceMeters": 3873.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS1"
+    },
+    {
+      "id": "dwarka_sector__11",
+      "name": "Dwarka Sector - 11",
+      "coords": [
+        77.049255,
+        28.58642
+      ],
+      "trackNodeIndex": 47,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 4,
+      "distanceMeters": 4772.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS1"
+    },
+    {
+      "id": "dwarka_sector__12",
+      "name": "Dwarka Sector - 12",
+      "coords": [
+        77.040558,
+        28.592234
+      ],
+      "trackNodeIndex": 58,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 5,
+      "distanceMeters": 5871.5,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS1"
+    },
+    {
+      "id": "dwarka_sector__13",
+      "name": "Dwarka Sector - 13",
+      "coords": [
+        77.033043,
+        28.59705
+      ],
+      "trackNodeIndex": 67,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 6,
+      "distanceMeters": 6770.5,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS1"
+    },
+    {
+      "id": "dwarka_sector__14",
+      "name": "Dwarka Sector - 14",
+      "coords": [
+        77.02594,
+        28.602232
+      ],
+      "trackNodeIndex": 76,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 7,
+      "distanceMeters": 7669.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DS1"
+    },
+    {
+      "id": "dwarka",
+      "name": "Dwarka",
+      "coords": [
+        77.022763,
+        28.614936
+      ],
+      "trackNodeIndex": 92,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 8,
+      "distanceMeters": 9264.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "D"
+    },
+    {
+      "id": "dwarka_mor",
+      "name": "Dwarka Mor",
+      "coords": [
+        77.033188,
+        28.619366
+      ],
+      "trackNodeIndex": 105,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 9,
+      "distanceMeters": 10561.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "DM"
+    },
+    {
+      "id": "nawada",
+      "name": "Nawada",
+      "coords": [
+        77.044991,
+        28.620222
+      ],
+      "trackNodeIndex": 117,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 10,
+      "distanceMeters": 11761.1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "N"
+    },
+    {
+      "id": "uttam_nagar_west",
+      "name": "Uttam Nagar West",
+      "coords": [
+        77.055664,
+        28.621672
+      ],
+      "trackNodeIndex": 127,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 11,
+      "distanceMeters": 12761.0,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "UNW"
+    },
+    {
+      "id": "uttam_nagar_east",
+      "name": "Uttam Nagar East",
+      "coords": [
+        77.063126,
+        28.624643
+      ],
+      "trackNodeIndex": 135,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 12,
+      "distanceMeters": 13560.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "UNE"
+    },
+    {
+      "id": "janak_puri_west",
+      "name": "Janak Puri West",
+      "coords": [
+        77.078085,
+        28.629584
+      ],
+      "trackNodeIndex": 151,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Magenta Line"
+      ],
+      "interchange": "Magenta Line",
+      "index": 13,
+      "distanceMeters": 15159.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": true,
+      "dwellSeconds": 35,
+      "code": "JPW"
+    },
+    {
+      "id": "janak_puri_east",
+      "name": "Janak Puri East",
+      "coords": [
+        77.086578,
+        28.633121
+      ],
+      "trackNodeIndex": 160,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 14,
+      "distanceMeters": 16059.1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "JPE"
+    },
+    {
+      "id": "tilak_nagar",
+      "name": "Tilak Nagar",
+      "coords": [
+        77.096336,
+        28.636568
+      ],
+      "trackNodeIndex": 170,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 15,
+      "distanceMeters": 17058.2,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "TN"
+    },
+    {
+      "id": "subash_nagar",
+      "name": "Subash Nagar",
+      "coords": [
+        77.10273,
+        28.640381
+      ],
+      "trackNodeIndex": 178,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 16,
+      "distanceMeters": 17857.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "SN"
+    },
+    {
+      "id": "tagore_garden",
+      "name": "Tagore Garden",
+      "coords": [
+        77.112747,
+        28.643795
+      ],
+      "trackNodeIndex": 188,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 17,
+      "distanceMeters": 18856.8,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "TG"
+    },
+    {
+      "id": "rajouri_garden",
+      "name": "Rajouri Garden",
+      "coords": [
+        77.12272,
+        28.649056
+      ],
+      "trackNodeIndex": 200,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Pink Line"
+      ],
+      "interchange": "Pink Line",
+      "index": 18,
+      "distanceMeters": 20055.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "RG"
+    },
+    {
+      "id": "ramesh_nagar",
+      "name": "Ramesh Nagar",
+      "coords": [
+        77.131462,
+        28.652809
+      ],
+      "trackNodeIndex": 209,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 19,
+      "distanceMeters": 20954.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "RN"
+    },
+    {
+      "id": "moti_nagar",
+      "name": "Moti Nagar",
+      "coords": [
+        77.140783,
+        28.656953
+      ],
+      "trackNodeIndex": 219,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 20,
+      "distanceMeters": 21998.9,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "MN"
+    },
+    {
+      "id": "kirti_nagar",
+      "name": "Kirti Nagar",
+      "coords": [
+        77.15065,
+        28.655729
+      ],
+      "trackNodeIndex": 227,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Green Line",
+        "Indian Railways"
+      ],
+      "interchange": "Green Line \u00b7 Indian Railways",
+      "index": 21,
+      "distanceMeters": 22833.0,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "KN"
+    },
+    {
+      "id": "shadipur",
+      "name": "Shadipur",
+      "coords": [
+        77.156459,
+        28.652687
+      ],
+      "trackNodeIndex": 236,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 22,
+      "distanceMeters": 23773.3,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "S"
+    },
+    {
+      "id": "patel_nagar",
+      "name": "Patel Nagar",
+      "coords": [
+        77.167991,
+        28.645813
+      ],
+      "trackNodeIndex": 249,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 23,
+      "distanceMeters": 25132.2,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "PN"
+    },
+    {
+      "id": "rajendra_place",
+      "name": "Rajendra Place",
+      "coords": [
+        77.17814,
+        28.64241
+      ],
+      "trackNodeIndex": 260,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 24,
+      "distanceMeters": 26240.9,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "RP"
+    },
+    {
+      "id": "karol_bagh",
+      "name": "Karol Bagh",
+      "coords": [
+        77.188416,
+        28.643925
+      ],
+      "trackNodeIndex": 270,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 25,
+      "distanceMeters": 27240.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "KB"
+    },
+    {
+      "id": "jhandewalan",
+      "name": "Jhandewalan",
+      "coords": [
+        77.199791,
+        28.644312
+      ],
+      "trackNodeIndex": 282,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 26,
+      "distanceMeters": 28438.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "J"
+    },
+    {
+      "id": "rk_ashram_marg",
+      "name": "RK Ashram Marg",
+      "coords": [
+        77.206291,
+        28.639217
+      ],
+      "trackNodeIndex": 290,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 27,
+      "distanceMeters": 29237.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "RAM"
+    },
+    {
+      "id": "rajiv_chowk",
+      "name": "Rajiv Chowk",
+      "coords": [
+        77.219574,
+        28.632896
+      ],
+      "trackNodeIndex": 305,
+      "elevM": -20,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Yellow Line"
+      ],
+      "interchange": "Yellow Line",
+      "index": 28,
+      "distanceMeters": 30736.2,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "RC"
+    },
+    {
+      "id": "barakhamba",
+      "name": "Barakhamba",
+      "coords": [
+        77.224876,
+        28.629662
+      ],
+      "trackNodeIndex": 311,
+      "elevM": -16,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 29,
+      "distanceMeters": 31335.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "B"
+    },
+    {
+      "id": "mandi_house",
+      "name": "Mandi House",
+      "coords": [
+        77.234197,
+        28.625612
+      ],
+      "trackNodeIndex": 322,
+      "elevM": -16,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Violet Line"
+      ],
+      "interchange": "Violet Line",
+      "index": 30,
+      "distanceMeters": 32433.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "MH"
+    },
+    {
+      "id": "supreme_court",
+      "name": "Supreme Court",
+      "coords": [
+        77.2425,
+        28.623438
+      ],
+      "trackNodeIndex": 330,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 31,
+      "distanceMeters": 33232.3,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "SC"
+    },
+    {
+      "id": "indraprastha",
+      "name": "Indraprastha",
+      "coords": [
+        77.250076,
+        28.620272
+      ],
+      "trackNodeIndex": 339,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 32,
+      "distanceMeters": 34130.8,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "I"
+    },
+    {
+      "id": "yamuna_bank",
+      "name": "Yamuna Bank",
+      "coords": [
+        77.267937,
+        28.623178
+      ],
+      "trackNodeIndex": 357,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Blue Line (Vaishali Branch)"
+      ],
+      "interchange": "Blue Line (Vaishali Branch)",
+      "index": 33,
+      "distanceMeters": 35930.0,
+      "isTerminal": false,
+      "isShortTurnTerminal": true,
+      "dwellSeconds": 35,
+      "code": "YB"
+    },
+    {
+      "id": "akshardham",
+      "name": "Akshardham",
+      "coords": [
+        77.279816,
+        28.618364
+      ],
+      "trackNodeIndex": 372,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 34,
+      "distanceMeters": 37426.1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "A"
+    },
+    {
+      "id": "mayur_vihar_i",
+      "name": "Mayur Vihar-I",
+      "coords": [
+        77.28954,
+        28.604064
+      ],
+      "trackNodeIndex": 390,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Pink Line"
+      ],
+      "interchange": "Pink Line",
+      "index": 35,
+      "distanceMeters": 39221.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "MV"
+    },
+    {
+      "id": "mayur_vihar_ext",
+      "name": "Mayur Vihar Ext",
+      "coords": [
+        77.294495,
+        28.594124
+      ],
+      "trackNodeIndex": 403,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 36,
+      "distanceMeters": 40518.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "MVE"
+    },
+    {
+      "id": "new_ashok_nagar",
+      "name": "New Ashok Nagar",
+      "coords": [
+        77.30146,
+        28.58847
+      ],
+      "trackNodeIndex": 412,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 37,
+      "distanceMeters": 41415.8,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NAN"
+    },
+    {
+      "id": "noida_sec_15",
+      "name": "Noida Sec -15",
+      "coords": [
+        77.311584,
+        28.585018
+      ],
+      "trackNodeIndex": 425,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 38,
+      "distanceMeters": 42713.2,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "noida_sec_16",
+      "name": "Noida Sec -16",
+      "coords": [
+        77.318115,
+        28.577921
+      ],
+      "trackNodeIndex": 435,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 39,
+      "distanceMeters": 43711.4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "noida_sec_18",
+      "name": "Noida Sec -18",
+      "coords": [
+        77.326088,
+        28.570843
+      ],
+      "trackNodeIndex": 446,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 40,
+      "distanceMeters": 44809.7,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "botanical_garden",
+      "name": "Botanical Garden",
+      "coords": [
+        77.3344,
+        28.563943
+      ],
+      "trackNodeIndex": 457,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Magenta Line"
+      ],
+      "interchange": "Magenta Line",
+      "index": 41,
+      "distanceMeters": 45908.1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "BG"
+    },
+    {
+      "id": "golf_course",
+      "name": "Golf Course",
+      "coords": [
+        77.345726,
+        28.566917
+      ],
+      "trackNodeIndex": 471,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 42,
+      "distanceMeters": 47304.7,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "GC"
+    },
+    {
+      "id": "noida_city_centre",
+      "name": "Noida City Centre",
+      "coords": [
+        77.356117,
+        28.574593
+      ],
+      "trackNodeIndex": 484,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 43,
+      "distanceMeters": 48603.1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "NCC"
+    },
+    {
+      "id": "noida_sec_34",
+      "name": "Noida Sec-34",
+      "coords": [
+        77.363518,
+        28.580229
+      ],
+      "trackNodeIndex": 494,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 44,
+      "distanceMeters": 49601.9,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "noida_sec_52",
+      "name": "Noida Sec-52",
+      "coords": [
+        77.373024,
+        28.586874
+      ],
+      "trackNodeIndex": 505,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Noida Aqua Line"
+      ],
+      "interchange": "Noida Aqua Line",
+      "index": 45,
+      "distanceMeters": 50700.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 35,
+      "code": "NS"
+    },
+    {
+      "id": "noida_sec_61",
+      "name": "Noida Sec-61",
+      "coords": [
+        77.372368,
+        28.597677
+      ],
+      "trackNodeIndex": 519,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 46,
+      "distanceMeters": 52094.7,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "noida_sec_59",
+      "name": "Noida Sec-59",
+      "coords": [
+        77.372955,
+        28.609089
+      ],
+      "trackNodeIndex": 532,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 47,
+      "distanceMeters": 53391.1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "noida_sec_62",
+      "name": "Noida Sec-62",
+      "coords": [
+        77.373611,
+        28.616991
+      ],
+      "trackNodeIndex": 541,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "index": 48,
+      "distanceMeters": 54288.6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 22,
+      "code": "NS"
+    },
+    {
+      "id": "noida_electronic_city",
+      "name": "Noida Electronic City",
+      "coords": [
+        77.375229,
+        28.628685
+      ],
+      "trackNodeIndex": 553,
+      "elevM": 15,
+      "structure": "elevated",
+      "major": true,
+      "terminus": true,
+      "interchanges": [],
+      "interchange": null,
+      "index": 49,
+      "distanceMeters": 55484.1,
+      "isTerminal": true,
+      "isShortTurnTerminal": false,
+      "dwellSeconds": 120,
+      "code": "NEC"
+    }
+  ]
+}

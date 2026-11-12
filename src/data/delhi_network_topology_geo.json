@@ -4155,7 +4155,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -18,
       "coords": [
         77.207832,
         28.566854
@@ -4288,7 +4288,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 17,
       "coords": [
         77.180383,
         28.707069
@@ -4442,7 +4442,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -18,
       "coords": [
         77.212313,
         28.615878
@@ -4463,7 +4463,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -20,
       "coords": [
         77.230366,
         28.658421
@@ -4482,7 +4482,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -30,
       "coords": [
         77.226544,
         28.649251
@@ -4501,7 +4501,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 16,
       "coords": [
         77.174936,
         28.506755
@@ -4539,7 +4539,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.225056,
         28.676857
@@ -4691,7 +4691,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -18,
       "coords": [
         77.209331,
         28.574159
@@ -4828,7 +4828,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.206423,
         28.698156
@@ -4904,7 +4904,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.206821,
         28.558002
@@ -4923,7 +4923,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 16,
       "coords": [
         77.102272,
         28.481998
@@ -4942,17 +4942,19 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 16,
       "coords": [
         77.148872,
         28.729917
       ],
       "mx": -68.81,
       "mz": -107.8,
-      "major": false,
+      "major": true,
       "terminus": false,
-      "interchange": null,
-      "interchanges": [],
+      "interchange": "Yellow \u00d7 Magenta",
+      "interchanges": [
+        "Yellow \u00d7 Magenta"
+      ],
       "index": 41
     },
     {
@@ -4961,7 +4963,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -28,
       "coords": [
         77.20674,
         28.544258
@@ -5212,7 +5214,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.212564,
         28.586594
@@ -5309,7 +5311,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -22,
       "coords": [
         77.228217,
         28.667526
@@ -5408,7 +5410,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.211127,
         28.597355
@@ -5484,7 +5486,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.204854,
         28.529067
@@ -5583,7 +5585,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 16,
       "coords": [
         77.072686,
         28.459331
@@ -5602,7 +5604,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 14,
       "coords": [
         77.194006,
         28.702739
@@ -5813,7 +5815,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -22,
       "coords": [
         77.222771,
         28.643471
@@ -5822,8 +5824,11 @@
       "mz": -11.845,
       "major": true,
       "terminus": false,
-      "interchange": null,
-      "interchanges": [],
+      "interchange": "Yellow \u00d7 Airport Express",
+      "interchanges": [
+        "Yellow \u00d7 Airport Express",
+        "Indian Railways (NDLS)"
+      ],
       "index": 86
     },
     {
@@ -5965,7 +5970,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -18,
       "coords": [
         77.214059,
         28.622954
@@ -6098,7 +6103,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -20,
       "coords": [
         77.219424,
         28.632742
@@ -6235,7 +6240,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.201898,
         28.520873
@@ -6558,7 +6563,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "elevated",
-      "elevM": 15,
+      "elevM": 18,
       "coords": [
         77.093007,
         28.481244
@@ -6712,7 +6717,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -16,
       "coords": [
         77.211825,
         28.609512
@@ -6750,7 +6755,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -18,
       "coords": [
         77.221758,
         28.686327
@@ -6788,7 +6793,7 @@
       "line": "yellow-line",
       "lineColor": "#F59E0B",
       "structure": "underground",
-      "elevM": -14,
+      "elevM": -18,
       "coords": [
         77.214748,
         28.695099

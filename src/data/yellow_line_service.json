@@ -104,13 +104,13 @@
       "distanceMeters": 2613,
       "structure": "elevated",
       "elevM": 16,
-      "major": false,
+      "major": true,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 22,
       "dwellStatus": "calibrated_standard_local",
       "code": "BIMR",
-      "interchanges": [],
+      "interchanges": ["Magenta Line"],
       "gates": [
         {
           "gate": "Gate No. 3",
