@@ -1704,6 +1704,25 @@ window.MetroWebGLLayer = (function () {
       true,
       cSamples
     );
+    // Bridge the 10m coarse-sample gap around Rajiv Chowk so the cutaway trench & glass vault meet the outer berm portal headwalls cleanly at ±71.8m
+    if (!isBlue && rajivStInCorridor && typeof c.sampleAtDist === 'function') {
+      const rcDist = rajivStInCorridor.dist;
+      const anchorDist = 71.8;
+      for (let i = 0; i < buriedShellSpans.length; i++) {
+        const sp = buriedShellSpans[i];
+        if (!sp || !sp.length) continue;
+        const tailDist = sp[sp.length - 1].dist;
+        const headDist = sp[0].dist;
+        if (tailDist < rcDist && rcDist - tailDist <= 96) {
+          const edge = c.sampleAtDist(rcDist - anchorDist);
+          if (edge) sp.push(edge);
+        }
+        if (headDist > rcDist && headDist - rcDist <= 96) {
+          const edge = c.sampleAtDist(rcDist + anchorDist);
+          if (edge) sp.unshift(edge);
+        }
+      }
+    }
 
     buriedTrackSpans.forEach((span) => {
       if (span.length < 2) return;
@@ -4751,6 +4770,7 @@ window.MetroWebGLLayer = (function () {
     ]);
 
     // Twin Monumental Arched Concrete TBM Tunnel Portals flush inside North/South trench ends (x = ±52m)
+    // plus matching Outer Berm Portal Headwalls at x = ±72.2m connecting seamlessly into the Yellow cutaway trench
     [-52.0, 52.0].forEach((xP) => {
       const sgn = Math.sign(xP);
       // Concrete headwall spanning 23m trench width inside CP podium perimeter (zero outward protrusion)
@@ -4772,6 +4792,38 @@ window.MetroWebGLLayer = (function () {
         bore.scale.set(1.16, 2.38, 0.95);
         bore.frustumCulled = false;
         root.add(bore);
+      });
+
+      // Outer Connaught Place Park Berm Portal Chamber (x = ±61.4m..±72.4m) bridging the inner tunnel cleanly to the outer trench
+      addBox(root, 10.6, 4.10, 14.6, m.concreteWeb, sgn * 66.5, 2.15, 0);
+      addBox(root, 3.8, 5.55, 14.8, m.concreteLight, sgn * 70.6, 2.95, 0);
+      addBox(root, 4.3, 0.48, 15.4, m.sandstoneBuff, sgn * 70.6, 5.90, 0);
+      addBox(detail, 4.35, 0.22, 15.45, m.yellowAccent, sgn * 70.6, 5.52, 0);
+      [-7.25, 7.25].forEach((wz) => {
+        // Wingwalls sealing the 14.5m cutaway coping edge smoothly into the outer portal headwall
+        addBox(root, 3.6, 1.65, 0.72, m.concreteLight, sgn * 73.1, 0.95, wz);
+      });
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        const outerArch = new THREE.Mesh(g.tbmArch, m.concreteLight);
+        outerArch.rotation.z = Math.PI / 2;
+        outerArch.position.set(sgn * 71.9, SUBWAY_Y + 2.0, tz);
+        outerArch.scale.set(1.20, 1.45, 1.0);
+        outerArch.frustumCulled = false;
+        root.add(outerArch);
+
+        const outerBore = new THREE.Mesh(g.tbmBore, m.slateDark);
+        outerBore.rotation.z = Math.PI / 2;
+        outerBore.position.set(sgn * 72.1, SUBWAY_Y + 2.0, tz);
+        outerBore.scale.set(1.14, 1.48, 0.95);
+        outerBore.frustumCulled = false;
+        root.add(outerBore);
+
+        const outerRib = new THREE.Mesh(g.tbmRib, m.concreteLight);
+        outerRib.rotation.y = Math.PI / 2;
+        outerRib.position.set(sgn * 72.5, SUBWAY_Y + 2.0, tz);
+        outerRib.scale.set(0.95, 1.15, 1.0);
+        outerRib.frustumCulled = false;
+        root.add(outerRib);
       });
     });
 
