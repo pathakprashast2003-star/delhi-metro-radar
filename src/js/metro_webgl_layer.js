@@ -3999,6 +3999,54 @@ window.MetroWebGLLayer = (function () {
     return vg;
   }
 
+  /**
+   * Arched TBM Tunnel Portals for Underground Cutaway Stations
+   * Matches the Rajiv Chowk gold standard (Reference Image-2):
+   * Curved concrete portal headwall + sandstone coping + orange accent frieze +
+   * twin semi-circular TBM portal arches with dark subterranean bores & torus ring ribs.
+   */
+  function addStationTbmPortals(target, xPositions, yBase, m, g, accentMat, trackOffsets = [-TRACK_HALF_SEP, TRACK_HALF_SEP]) {
+    const portalGroup = new THREE.Group();
+    xPositions.forEach((xP) => {
+      const sgn = Math.sign(xP) || 1;
+      // 1. Concrete portal headwall spanning chamber width
+      addBox(portalGroup, 3.8, 6.2, 23.2, m.concreteLight, xP, yBase + 3.1, 0);
+      addBox(portalGroup, 4.4, 0.50, 23.6, m.sandstoneBuff, xP, yBase + 6.35, 0);
+      addBox(portalGroup, 4.4, 0.25, 23.8, accentMat || m.tactileOrange, xP, yBase + 5.95, 0);
+
+      // 2. Concrete wingwalls sealing cutaway coping smoothly into outer cutaway trench
+      [-11.6, 11.6].forEach((wz) => {
+        addBox(portalGroup, 3.6, 2.8, 0.85, m.concreteLight, xP + sgn * 0.2, yBase + 1.4, wz);
+      });
+
+      // 3. Arched TBM Portals (Matching Rajiv Chowk & Image-2 Reference)
+      trackOffsets.forEach((tz) => {
+        const arch = new THREE.Mesh(g.tbmArch, m.concreteLight);
+        arch.rotation.z = Math.PI / 2;
+        arch.position.set(xP - sgn * 0.2, yBase + 2.0, tz);
+        arch.scale.set(1.22, 2.35, 1.0);
+        arch.frustumCulled = false;
+        portalGroup.add(arch);
+
+        const bore = new THREE.Mesh(g.tbmBore, m.slateDark);
+        bore.rotation.z = Math.PI / 2;
+        bore.position.set(xP - sgn * 0.1, yBase + 2.0, tz);
+        bore.scale.set(1.16, 2.38, 0.95);
+        bore.frustumCulled = false;
+        portalGroup.add(bore);
+
+        const rib = new THREE.Mesh(g.tbmRib, m.concreteLight);
+        rib.rotation.y = Math.PI / 2;
+        rib.position.set(xP - sgn * 0.3, yBase + 2.0, tz);
+        rib.scale.set(0.95, 1.15, 1.0);
+        rib.frustumCulled = false;
+        portalGroup.add(rib);
+      });
+    });
+    target.add(portalGroup);
+    return portalGroup;
+  }
+
   function buildDhaulaKuanAeroHub(st, secColor) {
     const m = getMaterials();
     const g = getSharedStationGeos();
@@ -4006,8 +4054,21 @@ window.MetroWebGLLayer = (function () {
     const detail = new THREE.Group();
     const yV = 18.5; // High viaduct over Ring Road / NH-48
 
-    // 1. Ground Level Landscaped Roundabout & Dual Carriageway Ring Road
-    addBox(root, 136, 0.22, 54, m.plazaPave, 0, 0.24, 0);
+    // 1. Natural Southern Ridge Forest & Ground Level Highway Underpass
+    // Preserves native greenery without an artificial flat block covering the terrain
+    [-48, -24, 24, 48].forEach((tx) => {
+      [-24, 24].forEach((tz) => {
+        const trunk = new THREE.Mesh(g.cyl1, m.treeTrunk);
+        trunk.scale.set(0.35, 5.5, 0.35);
+        trunk.position.set(tx, 2.8, tz);
+        root.add(trunk);
+        const crown = new THREE.Mesh(g.sphere, m.treeFoliage);
+        crown.scale.set(2.8, 2.2, 2.8);
+        crown.position.set(tx, 6.2, tz);
+        root.add(crown);
+      });
+    });
+
     // Ground Ring Road Dual Carriageways with asphalt & lane striping
     [-21.0, 21.0].forEach((rz) => {
       addBox(root, 134, 0.08, 11.2, m.asphaltRoad, 0, 0.36, rz);
@@ -4099,9 +4160,9 @@ window.MetroWebGLLayer = (function () {
     // 5. The Famous 710m Travelator Skywalk Tube (Dhaula Kuan -> South Campus Pink Line)
     // Points South-East along Mahatma Gandhi Road (Ring Road) towards Durgabai Deshmukh South Campus station
     const skywalkGrp = new THREE.Group();
-    const swLen = 175;
+    const swLen = 160;
     skywalkGrp.position.set(-14, concFloorY + 1.2, 10.0);
-    skywalkGrp.rotation.y = Math.PI / 2; // Extends along Ring Road toward Pink Line
+    skywalkGrp.rotation.y = -1.179; // Spans South-East along Ring Road towards Pink Line
     // Tubular bridge floor & roof
     addBox(skywalkGrp, swLen, 0.45, 4.8, m.concreteLight, swLen * 0.5, 0, 0);
     addBox(skywalkGrp, swLen, 0.35, 4.8, m.aeroTitanium, swLen * 0.5, 3.6, 0);
@@ -4118,23 +4179,23 @@ window.MetroWebGLLayer = (function () {
     // Dual moving walkways (travelators) inside the skybridge!
     addTravelator(skywalkGrp, swLen - 16, 1.6, swLen * 0.5, 0.25, -1.1);
     addTravelator(skywalkGrp, swLen - 16, 1.6, swLen * 0.5, 0.25, 1.1);
-    // Supporting pylons across the Ring Road
-    [30, 68, 106, 144].forEach((px) => {
+    // Supporting pylons across the Ring Road medians
+    [32, 68, 104, 140].forEach((px) => {
       addBox(skywalkGrp, 2.8, concFloorY + 1.2, 2.8, m.pierCream, px, -(concFloorY + 1.2) * 0.5, 0);
     });
     // Commuters walking along skywalk
     addCommuters(skywalkGrp, [
       [22, 0.25, -1.1, 0], [45, 0.25, 1.1, 1], [68, 0.25, -1.1, 2], [95, 0.25, 1.1, 3],
-      [125, 0.25, -1.1, 4], [150, 0.25, 1.1, 5]
+      [125, 0.25, -1.1, 4], [148, 0.25, 1.1, 5]
     ]);
 
-    // Destination: Durgabai Deshmukh South Campus (Pink Line) Station Portal Building at far end (x = 175m)
+    // Destination: Durgabai Deshmukh South Campus (Pink Line) Station Portal Building at far end
     const pinkHubGrp = new THREE.Group();
-    pinkHubGrp.position.set(swLen + 10, 0, 0);
-    addBox(pinkHubGrp, 22, 13.5, 26, m.concreteLight, 0, 6.7, 0);
-    addBox(pinkHubGrp, 22.5, 1.4, 26.5, m.pinkAccent, 0, 13.6, 0); // Pink Line signature fascia
-    addBox(pinkHubGrp, 0.35, 8.5, 20.5, m.concourseGlass, -11.1, 7.0, 0);
-    const pinkSign = addBox(pinkHubGrp, 18.5, 2.4, 0.35, m.placeholderSign, -11.2, 11.8, 0);
+    pinkHubGrp.position.set(swLen + 8, 0, 0);
+    addBox(pinkHubGrp, 18, 12.5, 22, m.concreteLight, 0, 6.2, 0);
+    addBox(pinkHubGrp, 18.5, 1.2, 22.5, m.pinkAccent, 0, 12.8, 0); // Pink Line signature fascia
+    addBox(pinkHubGrp, 0.35, 7.5, 18.5, m.concourseGlass, -9.1, 6.5, 0);
+    const pinkSign = addBox(pinkHubGrp, 16.5, 2.0, 0.35, m.placeholderSign, -9.2, 11.2, 0);
     pinkSign.frustumCulled = false;
     addCommuters(pinkHubGrp, [
       [-6, 1.0, -3.5, 0], [-4, 1.0, 3.5, 1], [-2, 1.0, 0, 2]
@@ -4271,11 +4332,16 @@ window.MetroWebGLLayer = (function () {
     addBox(detail, 70, 0.20, 0.18, m.blueAccent, 0, yRail + 3.35, -13.2);
     addBox(detail, 70, 1.55, 0.14, m.glassBarrier, 0, yRail + 2.50, -6.8);
     addBox(detail, 70, 0.20, 0.18, m.blueAccent, 0, yRail + 3.35, -6.8);
-    // Blue Line terminal hydraulic buffer stops at x = -38m
+    // Blue Line terminal hydraulic buffer stops at x = -38m with end bulkhead wall
     [-13.1, -6.9].forEach((tz) => {
       addBox(detail, 2.4, 1.35, 2.4, m.steelDark, -38, yRail + 0.85, tz);
       addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, -39.3, yRail + 0.90, tz);
     });
+    addBox(root, 3.8, 6.2, 14.5, m.concreteLight, -41.0, yRail + 3.1, -10.0);
+    addBox(root, 4.4, 0.50, 14.8, m.sandstoneBuff, -41.0, yRail + 6.35, -10.0);
+
+    // Arched TBM Portals for Blue Line entry from East (x = 44m)
+    addStationTbmPortals(root, [44.0], yRail, m, g, m.blueAccent, [-13.1, -6.9]);
 
     // Airport Express Island Platform (z = +10.0m)
     addBox(root, 84, 1.65, 6.8, m.terrazzoDeck, 0, yRail + 0.82, 10.0);
@@ -4284,6 +4350,9 @@ window.MetroWebGLLayer = (function () {
     // Full-height 3.2m glass PSDs along Orange Line tracks
     addAirportPSDs(detail, 72, yRail + 1.65, 6.8, 1);
     addAirportPSDs(detail, 72, yRail + 1.65, 13.2, -1);
+
+    // Arched TBM Portals for Orange Line through tracks (x = ±44m)
+    addStationTbmPortals(root, [-44.0, 44.0], yRail, m, g, m.tactileOrange, [6.9, 13.1]);
 
     // Luggage trolleys on Orange Line platform
     addLuggageTrolleys(detail, [
@@ -4367,6 +4436,9 @@ window.MetroWebGLLayer = (function () {
     // Perimeter retaining walls with airport acoustic panels
     addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, -15.5);
     addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, 15.5);
+
+    // Arched TBM Portals (Matching Rajiv Chowk & Image-2 Reference)
+    addStationTbmPortals(root, [-46.0, 46.0], yRail, m, g, m.tactileOrange);
 
     // 2. Wide Island Platform (width 8.4m, length 84m)
     addBox(root, 84, 1.65, 8.4, m.terrazzoDeck, 0, yRail + 0.82, 0);
@@ -4503,6 +4575,9 @@ window.MetroWebGLLayer = (function () {
     addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, -13.5);
     addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, 13.5);
 
+    // Arched TBM Portals (Matching Rajiv Chowk & Image-2 Reference)
+    addStationTbmPortals(root, [-44.0], yRail, m, g, m.tactileOrange);
+
     // Island Platform with full-height 3.2m glass PSDs
     addBox(root, 82, 1.65, 7.8, m.terrazzoDeck, 0, yRail + 0.82, 0);
     addBox(detail, 82, 0.12, 0.52, m.tactileOrange, 0, yRail + 1.68, -3.5);
@@ -4510,11 +4585,13 @@ window.MetroWebGLLayer = (function () {
     addAirportPSDs(detail, 72, yRail + 1.65, -3.7, 1);
     addAirportPSDs(detail, 72, yRail + 1.65, 3.7, -1);
 
-    // Terminal Hydraulic Buffer Stops at track end (x = 39m)
+    // Terminal Hydraulic Buffer Stops at track end (x = 40.5m) with end bulkhead wall
     [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
-      addBox(detail, 2.4, 1.35, 2.4, m.steelDark, 38.5, yRail + 0.85, tz);
-      addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, 39.8, yRail + 0.90, tz);
+      addBox(detail, 2.4, 1.35, 2.4, m.steelDark, 40.5, yRail + 0.85, tz);
+      addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, 41.8, yRail + 0.90, tz);
     });
+    addBox(root, 3.8, 6.2, 23.2, m.concreteLight, 43.5, yRail + 3.1, 0);
+    addBox(root, 4.4, 0.50, 23.6, m.sandstoneBuff, 43.5, yRail + 6.35, 0);
 
     // Luggage trolleys on platform
     addLuggageTrolleys(detail, [
@@ -4548,104 +4625,65 @@ window.MetroWebGLLayer = (function () {
       addBox(detail, 0.65, 0.65, 28.5, m.steelDark, rx, roofY + 0.3, 0);
     }
 
-    // 5. Surface City Airport Terminal building, Bhavbhuti Marg & NDLS Railway Interchange
+    // 5. Surface City Airport Terminal building on Bhavbhuti Marg
     const surfaceNdlsGrp = new THREE.Group();
     surfaceNdlsGrp.position.set(0, 0, 0);
 
-    // City Airport Terminal Building on Bhavbhuti Marg Forecourt (z = -22m)
-    addBox(surfaceNdlsGrp, 88, 0.45, 28, m.plazaPave, 0, 0.25, -22);
-    addBox(surfaceNdlsGrp, 52, 7.5, 18, m.aeroTitanium, 0, 4.2, -22);
-    addBox(surfaceNdlsGrp, 52, 0.45, 0.55, m.aeroOrangeGlow, 0, 8.1, -12.8);
-    addBox(surfaceNdlsGrp, 50, 6.8, 0.35, m.concourseGlass, 0, 4.0, -12.8);
-    const catSign = addBox(surfaceNdlsGrp, 32, 1.8, 0.35, m.placeholderSign, 0, 8.4, -12.7);
+    // City Airport Terminal Building on Bhavbhuti Marg Forecourt (z = -18m)
+    addBox(surfaceNdlsGrp, 72, 0.45, 24, m.plazaPave, 0, 0.25, -18);
+    addBox(surfaceNdlsGrp, 52, 7.5, 18, m.aeroTitanium, 0, 4.2, -18);
+    addBox(surfaceNdlsGrp, 52, 0.45, 0.55, m.aeroOrangeGlow, 0, 8.1, -8.8);
+    addBox(surfaceNdlsGrp, 50, 6.8, 0.35, m.concourseGlass, 0, 4.0, -8.8);
+    const catSign = addBox(surfaceNdlsGrp, 32, 1.8, 0.35, m.placeholderSign, 0, 8.4, -8.7);
     catSign.frustumCulled = false;
 
     // Yellow Line Subway Transfer Portal pavilion
     const ylPortal = new THREE.Group();
-    ylPortal.position.set(-36, 0.25, -20);
-    addBox(ylPortal, 12, 4.2, 8, m.concreteLight, 0, 2.1, 0);
-    addBox(ylPortal, 12, 0.35, 8.2, m.yellowAccent, 0, 4.3, 0);
-    addBox(ylPortal, 11, 1.2, 0.25, m.placeholderSign, 0, 3.2, 4.1);
+    ylPortal.position.set(-32, 0.25, -16);
+    addBox(ylPortal, 10, 3.8, 7, m.concreteLight, 0, 1.9, 0);
+    addBox(ylPortal, 10, 0.35, 7.2, m.yellowAccent, 0, 3.9, 0);
+    addBox(ylPortal, 9, 1.0, 0.25, m.placeholderSign, 0, 2.9, 3.6);
     surfaceNdlsGrp.add(ylPortal);
 
-    // Bhavbhuti Marg asphalt roadway (z = -6m to -12m)
-    addBox(surfaceNdlsGrp, 92, 0.08, 12, m.asphaltRoad, 0, 0.45, -9);
-    for (let rx = -40; rx <= 40; rx += 8.5) {
-      addBox(surfaceNdlsGrp, 4.2, 0.04, 0.18, m.roadStripeWhite, rx, 0.50, -9);
-    }
-    // Zebra crosswalk
-    for (let zx = -4.5; zx <= 4.5; zx += 1.5) {
-      addBox(surfaceNdlsGrp, 0.85, 0.04, 10.5, m.crosswalkWhite, zx, 0.52, -9);
-    }
-    // Pre-paid taxi and auto-rickshaw bays with active Delhi vehicles
+    // Bhavbhuti Marg drop-off lane with pre-paid taxi and auto-rickshaw bays
     addDelhiVehicles(surfaceNdlsGrp, [
-      { type: 'cab', x: -26, y: 0.45, z: -9, rotY: 0 },
-      { type: 'auto', x: -10, y: 0.45, z: -9, rotY: 0 },
-      { type: 'auto', x: 8, y: 0.45, z: -9, rotY: 0 },
-      { type: 'bus', color: 'red', x: 30, y: 0.45, z: -9, rotY: 0 }
+      { type: 'cab', x: -22, y: 0.45, z: -8, rotY: 0 },
+      { type: 'auto', x: -6, y: 0.45, z: -8, rotY: 0 },
+      { type: 'auto', x: 8, y: 0.45, z: -8, rotY: 0 },
+      { type: 'bus', color: 'red', x: 26, y: 0.45, z: -8, rotY: 0 }
     ]);
 
-    // 6. Elevated Covered Pedestrian Skywalk directly bridging to NDLS Platform 16!
-    // Spans from City Terminal (z = -13m) across Bhavbhuti Marg and the cutaway over to NDLS Platform 16 (z = +26m)
-    const swBridgeLen = 42;
+    // 6. The Famous 242m DMRC-Northern Railway Covered Pedestrian Skywalk to NDLS
+    // Spans across Bhavbhuti Marg directly connecting the City Airport Terminal to NDLS Ajmeri Gate
+    const swBridgeLen = 135;
     const skywalkNDLS = new THREE.Group();
-    skywalkNDLS.position.set(6, 6.2, 6.5);
-    skywalkNDLS.rotation.y = Math.PI / 2; // Perpendicular to railway tracks
-    addBox(skywalkNDLS, swBridgeLen, 0.45, 5.2, m.concreteLight, swBridgeLen * 0.5, 0, 0);
-    addBox(skywalkNDLS, swBridgeLen, 0.35, 5.2, m.aeroTitanium, swBridgeLen * 0.5, 3.6, 0);
-    addBox(skywalkNDLS, swBridgeLen, 0.18, 0.22, m.aeroOrangeGlow, swBridgeLen * 0.5, 3.75, -2.6);
-    addBox(skywalkNDLS, swBridgeLen, 0.18, 0.22, m.aeroOrangeGlow, swBridgeLen * 0.5, 3.75, 2.6);
-    addBox(skywalkNDLS, swBridgeLen, 3.2, 0.12, m.concourseGlass, swBridgeLen * 0.5, 1.8, -2.55);
-    addBox(skywalkNDLS, swBridgeLen, 3.2, 0.12, m.concourseGlass, swBridgeLen * 0.5, 1.8, 2.55);
-    // Skywalk support piers
-    [8, 26].forEach((spx) => {
+    skywalkNDLS.position.set(-12, 6.2, -14);
+    skywalkNDLS.rotation.y = 1.938; // Spans across Bhavbhuti Marg directly connecting to NDLS Ajmeri Gate building
+    addBox(skywalkNDLS, swBridgeLen, 0.45, 4.8, m.concreteLight, swBridgeLen * 0.5, 0, 0);
+    addBox(skywalkNDLS, swBridgeLen, 0.35, 4.8, m.aeroTitanium, swBridgeLen * 0.5, 3.4, 0);
+    addBox(skywalkNDLS, swBridgeLen, 0.18, 0.22, m.aeroOrangeGlow, swBridgeLen * 0.5, 3.55, -2.4);
+    addBox(skywalkNDLS, swBridgeLen, 0.18, 0.22, m.aeroOrangeGlow, swBridgeLen * 0.5, 3.55, 2.4);
+    addBox(skywalkNDLS, swBridgeLen, 3.0, 0.12, m.concourseGlass, swBridgeLen * 0.5, 1.7, -2.35);
+    addBox(skywalkNDLS, swBridgeLen, 3.0, 0.12, m.concourseGlass, swBridgeLen * 0.5, 1.7, 2.35);
+    // Supporting fluted concrete piers on Bhavbhuti Marg medians
+    [32, 68, 104].forEach((spx) => {
       addBox(skywalkNDLS, 2.4, 6.2, 2.4, m.pierCream, spx, -3.1, 0);
     });
     // Internal moving travelator & commuters
-    addTravelator(skywalkNDLS, swBridgeLen - 8, 1.6, swBridgeLen * 0.5, 0.25, 0);
+    addTravelator(skywalkNDLS, swBridgeLen - 12, 1.5, swBridgeLen * 0.5, 0.25, 0);
     addCommuters(skywalkNDLS, [
-      [10, 0.25, 0, 0], [22, 0.25, 0, 1], [34, 0.25, 0, 2]
+      [14, 0.25, 0, 0], [38, 0.25, 0, 1], [65, 0.25, 0, 2], [92, 0.25, 0, 3], [118, 0.25, 0, 4]
     ]);
-    surfaceNdlsGrp.add(skywalkNDLS);
-
-    // 7. NDLS Platform 16 Indian Railways Hub (Ajmeri Gate side, z = +24m to +34m)
-    // Platform 16 deck
-    addBox(surfaceNdlsGrp, 92, 1.2, 8.5, m.terrazzoDeck, 0, 0.60, 24);
-    addBox(surfaceNdlsGrp, 92, 0.12, 0.45, m.tactileYellow, 0, 1.25, 27.8);
-    // Platform 16 canopy
-    addBox(surfaceNdlsGrp, 92, 0.45, 9.5, m.dmrcBlueRoof, 0, 5.2, 24);
-    for (let px = -38; px <= 38; px += 18) {
-      addBox(surfaceNdlsGrp, 0.45, 4.0, 0.45, m.steelDark, px, 3.2, 24);
-    }
-    // Arrival portal from Skywalk onto Platform 16
-    const ndlsPortal = new THREE.Group();
-    ndlsPortal.position.set(6, 0.60, 24);
-    addBox(ndlsPortal, 12, 6.2, 8, m.concreteLight, 0, 3.1, 0);
-    const ndlsSign = addBox(ndlsPortal, 11, 1.4, 0.25, m.placeholderSign, 0, 5.2, -4.1);
+    // NDLS Ajmeri Gate connection portal
+    const ndlsEnd = new THREE.Group();
+    ndlsEnd.position.set(swBridgeLen, 0, 0);
+    addBox(ndlsEnd, 14.5, 7.8, 12.8, m.concreteLight, 7.2, 2.8, 0);
+    addBox(ndlsEnd, 14.5, 0.55, 13.2, m.dmrcBlueRoof, 7.2, 6.9, 0);
+    addBox(ndlsEnd, 12.5, 5.2, 0.35, m.concourseGlass, 7.2, 2.8, -6.5);
+    const ndlsSign = addBox(ndlsEnd, 0.25, 1.6, 9.8, m.placeholderSign, 14.6, 5.2, 0);
     ndlsSign.frustumCulled = false;
-    surfaceNdlsGrp.add(ndlsPortal);
-
-    // Mainline Indian Railways tracks (z = 30m, 34m)
-    addBox(surfaceNdlsGrp, 96, 0.35, 10.5, m.slateCut, 0, 0.18, 32);
-    [29.5, 33.5].forEach((trackCenter) => {
-      [-1.4, 1.4].forEach((rz) => {
-        addBox(surfaceNdlsGrp, 96, 0.18, 0.22, m.railCrown, 0, 0.45, trackCenter + rz);
-      });
-    });
-    // Overhead 25kV AC electric catenary gantries
-    for (let gx = -40; gx <= 40; gx += 20) {
-      addBox(surfaceNdlsGrp, 0.45, 6.8, 0.45, m.catenarySteel, gx, 3.6, 27.2);
-      addBox(surfaceNdlsGrp, 0.45, 6.8, 0.45, m.catenarySteel, gx, 3.6, 36.8);
-      addBox(surfaceNdlsGrp, 0.35, 0.35, 10.2, m.catenarySteel, gx, 6.8, 32);
-    }
-    // Indian Railways parked passenger train (Locomotive + ICF/LHB Coaches)
-    // Locomotive (Red)
-    addBox(surfaceNdlsGrp, 18, 3.4, 2.9, m.irRed, 34, 2.2, 33.5);
-    addBox(surfaceNdlsGrp, 18, 0.4, 2.7, m.aeroDarkMetal, 34, 4.1, 33.5);
-    // Passenger Coaches (Blue)
-    addBox(surfaceNdlsGrp, 26, 3.2, 2.9, m.irBlue, 8, 2.1, 33.5);
-    addBox(surfaceNdlsGrp, 26, 3.2, 2.9, m.irBlue, -20, 2.1, 33.5);
-    addBox(surfaceNdlsGrp, 54, 0.35, 2.7, m.aeroTitanium, -6, 3.85, 33.5);
+    skywalkNDLS.add(ndlsEnd);
+    surfaceNdlsGrp.add(skywalkNDLS);
 
     root.add(surfaceNdlsGrp);
 
@@ -4679,6 +4717,13 @@ window.MetroWebGLLayer = (function () {
     addBox(root, 88, 8.2, 1.8, m.slateCut, 0, yRail + 4.3, -13.5);
     addBox(root, 88, 8.2, 1.8, m.slateCut, 0, yRail + 4.3, 13.5);
 
+    // Arched TBM Portals (Matching Rajiv Chowk & Image-2 Reference)
+    if (isYasho) {
+      addStationTbmPortals(root, [42.0], yRail, m, g, m.tactileOrange);
+    } else {
+      addStationTbmPortals(root, [-42.0, 42.0], yRail, m, g, m.tactileOrange);
+    }
+
     // 2. Island Platform with full-height 3.2m glass PSDs
     addBox(root, 78, 1.65, 7.4, m.terrazzoDeck, 0, yRail + 0.82, 0);
     addBox(detail, 78, 0.12, 0.50, m.tactileOrange, 0, yRail + 1.68, -3.3);
@@ -4705,12 +4750,14 @@ window.MetroWebGLLayer = (function () {
       [10, yRail + 1.65, 1.0, 2], [22, yRail + 1.65, -1.0, 3]
     ]);
 
-    // Buffer stop if Yashobhoomi (western terminus)
+    // Buffer stop if Yashobhoomi (western terminus) with end bulkhead wall
     if (isYasho) {
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
-        addBox(detail, 2.4, 1.35, 2.4, m.steelDark, -37.5, yRail + 0.85, tz);
-        addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, -38.8, yRail + 0.90, tz);
+        addBox(detail, 2.4, 1.35, 2.4, m.steelDark, -38.5, yRail + 0.85, tz);
+        addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, -39.8, yRail + 0.90, tz);
       });
+      addBox(root, 3.8, 6.2, 23.2, m.concreteLight, -41.5, yRail + 3.1, 0);
+      addBox(root, 4.4, 0.50, 23.6, m.sandstoneBuff, -41.5, yRail + 6.35, 0);
     }
 
     // 3. Airline Check-in Desks in Mezzanine
@@ -4734,53 +4781,53 @@ window.MetroWebGLLayer = (function () {
     if (isShivaji) {
       // Connaught Place City Airport Terminal: modern circular glass atrium & drop-off
       const shivajiGrp = new THREE.Group();
-      shivajiGrp.position.set(0, 0, -20);
-      addBox(shivajiGrp, 86, 0.35, 36, m.plazaPave, 0, 0.25, 0);
-      addBox(shivajiGrp, 84, 0.08, 10, m.asphaltRoad, 0, 0.44, 14);
-      addBox(shivajiGrp, 46, 6.2, 18, m.aeroTitanium, 0, 3.4, -4);
-      addBox(shivajiGrp, 46, 0.45, 0.55, m.aeroOrangeGlow, 0, 6.6, 5.2);
+      shivajiGrp.position.set(0, 0, 18);
+      addBox(shivajiGrp, 86, 0.35, 28, m.plazaPave, 0, 0.25, 0);
+      addBox(shivajiGrp, 84, 0.08, 10, m.asphaltRoad, 0, 0.44, 9);
+      addBox(shivajiGrp, 46, 6.2, 14, m.aeroTitanium, 0, 3.4, -4);
+      addBox(shivajiGrp, 46, 0.45, 0.55, m.aeroOrangeGlow, 0, 6.6, 3.2);
       // Circular glazed skylight rotunda
       const rotunda = new THREE.Mesh(g.cyl1, m.concourseGlass);
       rotunda.scale.set(8.5, 4.2, 8.5);
       rotunda.position.set(0, 5.8, -4);
       shivajiGrp.add(rotunda);
       // Escalator well descending toward concourse
-      addBox(shivajiGrp, 6.5, 0.25, 12, m.slateCut, 0, 0.35, 6);
-      addBox(shivajiGrp, 5.2, 2.8, 10, m.escStep, 0, -0.8, 6);
+      addBox(shivajiGrp, 6.5, 0.25, 10, m.slateCut, 0, 0.35, 4);
+      addBox(shivajiGrp, 5.2, 2.8, 8, m.escStep, 0, -0.8, 4);
       // Royal palm trees flanking the entrance plaza
       [-18, -12, 12, 18].forEach((tx) => {
         const trunk = new THREE.Mesh(g.cyl1, m.treeTrunk);
         trunk.scale.set(0.35, 5.5, 0.35);
-        trunk.position.set(tx, 2.8, 4);
+        trunk.position.set(tx, 2.8, 3);
         shivajiGrp.add(trunk);
         const crown = new THREE.Mesh(g.sphere, m.treeFoliage);
         crown.scale.set(2.4, 1.8, 2.4);
-        crown.position.set(tx, 6.0, 4);
+        crown.position.set(tx, 6.0, 3);
         shivajiGrp.add(crown);
       });
       addDelhiVehicles(shivajiGrp, [
-        { type: 'cab', x: -16, y: 0.44, z: 14, rotY: 0 },
-        { type: 'cab', x: 6, y: 0.44, z: 14, rotY: 0 },
-        { type: 'auto', x: 26, y: 0.44, z: 14, rotY: 0 }
+        { type: 'cab', x: -16, y: 0.44, z: 9, rotY: 0 },
+        { type: 'cab', x: 6, y: 0.44, z: 9, rotY: 0 },
+        { type: 'auto', x: 26, y: 0.44, z: 9, rotY: 0 }
       ]);
       root.add(shivajiGrp);
     } else if (isAerocity) {
       // Worldmark hospitality boulevard plaza & airport shuttle bays
       const aeroPlazaGrp = new THREE.Group();
-      aeroPlazaGrp.position.set(0, 0, -22);
-      addBox(aeroPlazaGrp, 88, 0.35, 38, m.plazaPave, 0, 0.25, 0);
-      addBox(aeroPlazaGrp, 86, 0.08, 11, m.asphaltRoad, 0, 0.44, 14);
-      // Worldmark modern corporate blocks
-      addBox(aeroPlazaGrp, 52, 12.5, 18, m.aeroDarkMetal, 0, 6.5, -6);
-      addBox(aeroPlazaGrp, 50, 11.8, 0.35, m.concourseGlass, 0, 6.5, 3.1);
-      addBox(aeroPlazaGrp, 52, 0.45, 0.55, m.aeroOrangeGlow, 0, 12.8, 3.2);
+      aeroPlazaGrp.position.set(0, 0, 18);
+      addBox(aeroPlazaGrp, 88, 0.35, 24, m.plazaPave, 0, 0.25, 0);
+      addBox(aeroPlazaGrp, 86, 0.08, 10, m.asphaltRoad, 0, 0.44, 8);
+      // Aerocity hospitality entrance pavilion
+      addBox(aeroPlazaGrp, 32, 5.4, 12, m.aeroTitanium, 0, 2.9, -4);
+      addBox(aeroPlazaGrp, 32, 0.45, 0.55, m.aeroOrangeGlow, 0, 5.8, 2.2);
+      addBox(aeroPlazaGrp, 30, 4.6, 0.35, m.concourseGlass, 0, 2.6, 2.1);
       // Metro entrance canopy
-      addBox(aeroPlazaGrp, 16, 0.45, 8.5, m.aeroTitanium, 0, 3.8, 6.5);
-      addBox(aeroPlazaGrp, 15.5, 3.2, 0.25, m.concourseGlass, 0, 1.9, 10.6);
+      addBox(aeroPlazaGrp, 16, 0.45, 6.5, m.aeroTitanium, 0, 3.8, 5.5);
+      addBox(aeroPlazaGrp, 15.5, 3.2, 0.25, m.concourseGlass, 0, 1.9, 8.6);
       addDelhiVehicles(aeroPlazaGrp, [
-        { type: 'cab', x: -22, y: 0.44, z: 14, rotY: 0 },
-        { type: 'bus', color: 'red', x: 8, y: 0.44, z: 14, rotY: 0 },
-        { type: 'cab', x: 30, y: 0.44, z: 14, rotY: 0 }
+        { type: 'cab', x: -22, y: 0.44, z: 8, rotY: 0 },
+        { type: 'bus', color: 'red', x: 8, y: 0.44, z: 8, rotY: 0 },
+        { type: 'cab', x: 30, y: 0.44, z: 8, rotY: 0 }
       ]);
       root.add(aeroPlazaGrp);
     } else if (isYasho) {
@@ -9287,6 +9334,17 @@ window.MetroWebGLLayer = (function () {
     for (let i = 0; i < majorStationMarkers.length; i++) {
       const sItem = majorStationMarkers[i];
       let show = isMapVisible && z >= 11.4;
+      const stLk = sItem.st._lineKey || sItem.st.lineId || 'yellow';
+      if (activeLineId !== 'all') {
+        const matches = (activeLineId === 'blue' && (stLk === 'blue' || stLk === 'blue-vaishali')) ||
+                        (activeLineId === 'yellow' && stLk === 'yellow') ||
+                        (activeLineId === 'orange' && stLk === 'orange') ||
+                        (activeLineId === 'magenta' && stLk === 'magenta');
+        if (!matches && !sItem.st._isSharedDualHub) show = false;
+      } else if (sItem.st.name === 'New Delhi' && stLk === 'yellow') {
+        // In all-lines view, prioritize the City Airport Terminal Orange marker at [77.223095, 28.64249]
+        show = false;
+      }
       if (show && map) {
         const pt = map.project(sItem.st.coords);
         if (pt.x < -40 || pt.x > vw + 40 || pt.y < 126 || pt.y > vh - 126) {
@@ -9373,17 +9431,22 @@ window.MetroWebGLLayer = (function () {
       const targetStations = allStationsData.length ? allStationsData : stationsData;
       const seenStationPills = new Set();
       targetStations.forEach((st) => {
-        if (!st.major || !st.coords || seenStationPills.has(st.name)) return;
-        seenStationPills.add(st.name);
+        if (!st.major || !st.coords) return;
+        const isOrangeSt = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
+        const isBlueSt = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.lineKey === 'blue' || st.isBlue;
+        const isMagentaSt = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
+        const lineKey = isOrangeSt ? 'orange' : (isBlueSt ? 'blue' : (isMagentaSt ? 'magenta' : 'yellow'));
+        const pillKey = (st.name === 'New Delhi') ? `${st.name}_${lineKey}` : st.name;
+        if (seenStationPills.has(pillKey)) return;
+        seenStationPills.add(pillKey);
+        st._lineKey = lineKey;
+
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'major-station-pill';
         btn.setAttribute('data-station-name', st.name);
 
         let dotColor = '#EAB308';
-        const isOrangeSt = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
-        const isBlueSt = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.lineKey === 'blue' || st.isBlue;
-        const isMagentaSt = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
         if (isOrangeSt) dotColor = '#F97316';
         else if (isMagentaSt) dotColor = '#D946EF';
         else if (isBlueSt) dotColor = '#3B82F6';
@@ -9401,9 +9464,14 @@ window.MetroWebGLLayer = (function () {
         } else if (st.name === 'IGI Airport') {
           tag = 'AIRPORT T3 UNDERGROUND HUB';
           dotColor = '#F97316';
-        } else if (st.name === 'New Delhi' && (isOrangeSt || st.interchange)) {
-          tag = 'CITY AIRPORT × RAILWAY HUB';
-          dotColor = '#F97316';
+        } else if (st.name === 'New Delhi') {
+          if (isOrangeSt) {
+            tag = 'CITY AIRPORT × RAILWAY HUB';
+            dotColor = '#F97316';
+          } else {
+            tag = 'YELLOW × NDLS RAIL INTERCHANGE';
+            dotColor = '#EAB308';
+          }
         } else if (st.name === 'Shivaji Stadium') {
           tag = 'CP CITY AIRPORT TERMINAL';
           dotColor = '#F97316';
