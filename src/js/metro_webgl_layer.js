@@ -282,6 +282,8 @@ window.MetroWebGLLayer = (function () {
   let yellowCorridor = null;
   let blueCorridor = null;
   let vaishaliCorridor = null;
+  let orangeCorridor = null;
+  let magentaCorridor = null;
   let yamunaYardData = null;
   let yamunaYardGroup = null;
   let interchangeHubsData = null;
@@ -982,6 +984,10 @@ window.MetroWebGLLayer = (function () {
       yellowAccent: new THREE.MeshBasicMaterial({ color: 0xEAB308 }),
       tactileBlue: std(0x2563EB, { emissive: 0x1D4ED8, emissiveIntensity: 0.25, roughness: 0.44 }),
       blueAccent: new THREE.MeshBasicMaterial({ color: 0x2563EB }),
+      tactileOrange: std(0xF97316, { emissive: 0xEA580C, emissiveIntensity: 0.25, roughness: 0.44 }),
+      orangeAccent: new THREE.MeshBasicMaterial({ color: 0xF97316 }),
+      tactileMagenta: std(0xD946EF, { emissive: 0xC026D3, emissiveIntensity: 0.25, roughness: 0.44 }),
+      magentaAccent: new THREE.MeshBasicMaterial({ color: 0xD946EF }),
       dmrcBlueRoof: std(0x0284C7, { roughness: 0.34, metalness: 0.22, envMapIntensity: 0.36, side: THREE.DoubleSide }),
       redRoof: std(0xB9382E, { roughness: 0.48, metalness: 0.16, envMapIntensity: 0.28, side: THREE.DoubleSide }),
       skylightGlass: new THREE.MeshBasicMaterial({ color: 0xBAE6FD, transparent: true, opacity: 0.42, side: THREE.DoubleSide }),
@@ -1126,11 +1132,30 @@ window.MetroWebGLLayer = (function () {
   function buildCorridorCurve(osmData, topoData, svcData, lineKey = 'yellow') {
     const isYellow = lineKey === 'yellow';
     const isBlueVaishali = lineKey === 'blue-vaishali';
-    const topoLineKey = isYellow ? 'yellow-line' : 'blue-line';
-    const lineId = isYellow ? 'yellow' : (isBlueVaishali ? 'blue-vaishali' : 'blue');
-    const lineName = isYellow ? 'Yellow Line (Line 2)' : (isBlueVaishali ? 'Blue Line (Vaishali Branch)' : 'Blue Line (Line 3/4)');
-    const lineColorNum = isYellow ? 0xEAB308 : 0x2563EB;
-    const lineColorHex = isYellow ? '#EAB308' : '#2563EB';
+    const isBlueMain = lineKey === 'blue';
+    const isBlue = isBlueMain || isBlueVaishali;
+    const isOrange = lineKey === 'orange';
+    const isMagenta = lineKey === 'magenta';
+
+    const topoLineKey = isYellow
+      ? 'yellow-line'
+      : (isOrange ? 'airport-express' : (isMagenta ? 'magenta-line' : 'blue-line'));
+    const lineId = isYellow
+      ? 'yellow'
+      : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlueVaishali ? 'blue-vaishali' : 'blue')));
+    const lineName = isYellow
+      ? 'Yellow Line (Line 2)'
+      : (isOrange
+        ? 'Airport Express (Line 10)'
+        : (isMagenta
+          ? 'Magenta Line (Line 8)'
+          : (isBlueVaishali ? 'Blue Line (Vaishali Branch)' : 'Blue Line (Line 3/4)')));
+    const lineColorNum = isYellow
+      ? 0xEAB308
+      : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : 0x2563EB));
+    const lineColorHex = isYellow
+      ? '#EAB308'
+      : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : '#2563EB'));
 
     const rawCoords = osmData.centerline;
     const nTotal = rawCoords.length;
@@ -1219,6 +1244,100 @@ window.MetroWebGLLayer = (function () {
         }
         densePts.push(cur3D);
       }
+    } else if (isOrange) {
+      // Orange Line (Airport Express) 3D elevation profile:
+      // Yashobhoomi (node 0) -> Aerocity (node 74): SUBWAY_Y = 0.28m
+      // Aerocity to Portal South (node 91) to Ramp Top: Hermite climb 82 -> 98 to VIADUCT_Y = 18.5m
+      // Dhaula Kuan high viaduct over Ring Road / NH-48: nodes 98 to 154 (18.5m)
+      // Ramp North descent to Portal North (node 161): Hermite descent 154 -> 166 to SUBWAY_Y = 0.28m
+      // Shivaji Stadium (node 198) & New Delhi (node 216): SUBWAY_Y = 0.28m
+      const ORANGE_VIADUCT_Y = 18.5;
+      const rampSStart = 82;
+      const rampSEnd = 98;
+      const rampNStart = 154;
+      const rampNEnd = 166;
+
+      const orangeElevAt = (idxF) => {
+        if (idxF < rampSStart) return SUBWAY_Y;
+        if (idxF <= rampSEnd) {
+          return SUBWAY_Y + (ORANGE_VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - rampSStart) / (rampSEnd - rampSStart));
+        }
+        if (idxF < rampNStart) return ORANGE_VIADUCT_Y;
+        if (idxF <= rampNEnd) {
+          return ORANGE_VIADUCT_Y - (ORANGE_VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - rampNStart) / (rampNEnd - rampNStart));
+        }
+        return SUBWAY_Y;
+      };
+
+      for (let i = 0; i < nTotal; i++) {
+        const p = raw2D[i];
+        const elev = orangeElevAt(i);
+        const cur3D = new THREE.Vector3(p.x, elev, p.z);
+
+        if (densePts.length > 0 && i > 0) {
+          const prev3D = densePts[densePts.length - 1];
+          const segD = prev3D.distanceTo(cur3D);
+          const inGradeZone = (i >= 80 && i <= 100) || (i >= 152 && i <= 168);
+          if (segD > 85 || inGradeZone) {
+            const steps = inGradeZone ? 10 : Math.min(8, Math.ceil(segD / 70));
+            for (let s = 1; s < steps; s++) {
+              const f = s / steps;
+              const interp = new THREE.Vector3().lerpVectors(prev3D, cur3D, f);
+              interp.y = orangeElevAt((i - 1) + f);
+              densePts.push(interp);
+            }
+          }
+        }
+        densePts.push(cur3D);
+      }
+    } else if (isMagenta) {
+      // Magenta Line (Line 8) 3D elevation profile:
+      // Node 0..58: Underground (Janakpuri West -> Palam)
+      // Node 58..68: Ramp Up to Sadar Bazar viaduct (Portal at 63)
+      // Node 68..80: Sadar Bazar Cantonment elevated viaduct (VIADUCT_Y = 17.5m)
+      // Node 80..90: Ramp Down to T1 airport subway (Portal at 86)
+      // Node 90..101: Terminal 1 IGI Airport underground (SUBWAY_Y = 0.28m)
+      // Node 101..110: Ramp Up to Shankar Vihar viaduct (Portal at 106)
+      // Node 110..118: Shankar Vihar elevated viaduct (VIADUCT_Y = 17.5m)
+      // Node 118..128: Ramp Down to Vasant Vihar subway (Portal at 124)
+      // Node 128..233: Subterranean tube Vasant Vihar -> Hauz Khas -> Kalkaji Mandir (SUBWAY_Y = 0.28m)
+      // Node 233..240: Ramp Up to Okhla NSIC viaduct (Portal at 235)
+      // Node 240..342: Elevated viaduct across Yamuna River to Botanical Garden (VIADUCT_Y = 17.5m)
+      const magentaElevAt = (idxF) => {
+        if (idxF <= 58) return SUBWAY_Y;
+        if (idxF <= 68) return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - 58) / 10);
+        if (idxF <= 80) return VIADUCT_Y;
+        if (idxF <= 90) return VIADUCT_Y - (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - 80) / 10);
+        if (idxF <= 101) return SUBWAY_Y;
+        if (idxF <= 110) return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - 101) / 9);
+        if (idxF <= 118) return VIADUCT_Y;
+        if (idxF <= 128) return VIADUCT_Y - (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - 118) / 10);
+        if (idxF <= 233) return SUBWAY_Y;
+        if (idxF <= 240) return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - 233) / 7);
+        return VIADUCT_Y;
+      };
+
+      for (let i = 0; i < nTotal; i++) {
+        const p = raw2D[i];
+        const elev = magentaElevAt(i);
+        const cur3D = new THREE.Vector3(p.x, elev, p.z);
+
+        if (densePts.length > 0 && i > 0) {
+          const prev3D = densePts[densePts.length - 1];
+          const segD = prev3D.distanceTo(cur3D);
+          const inGradeZone = (i >= 56 && i <= 70) || (i >= 78 && i <= 92) || (i >= 99 && i <= 112) || (i >= 116 && i <= 130) || (i >= 231 && i <= 242);
+          if (segD > 85 || inGradeZone) {
+            const steps = inGradeZone ? 10 : Math.min(8, Math.ceil(segD / 70));
+            for (let s = 1; s < steps; s++) {
+              const f = s / steps;
+              const interp = new THREE.Vector3().lerpVectors(prev3D, cur3D, f);
+              interp.y = magentaElevAt((i - 1) + f);
+              densePts.push(interp);
+            }
+          }
+        }
+        densePts.push(cur3D);
+      }
     } else {
       // Blue Line 3D elevation profile:
       // Dwarka Sector - 21 underground terminus & portal transition:
@@ -1226,11 +1345,12 @@ window.MetroWebGLLayer = (function () {
       //   - Node 5 to 12: ramp up from SUBWAY_Y (0.28m) to VIADUCT_Y (17.5m)
       // West viaduct: 12 to 292 (VIADUCT_Y = 17.5m)
       // West ramp down: 292 to 299 (smooth Hermite to SUBWAY_Y = 0.28m)
-      // Central underground + Rajiv Chowk Dual-Level Cruciform Bridge (node 305):
-      //   - Ramp up nodes 300 -> 304 (SUBWAY_Y 0.28m -> 6.8m)
-      //   - Flat Rajiv Chowk upper bridge deck nodes 304 -> 306 (6.8m, clears lower Yellow trains)
-      //   - Ramp down nodes 306 -> 310 (6.8m -> SUBWAY_Y 0.28m)
-      //   - Barakhamba & Mandi House underground: 310 to 322 (SUBWAY_Y = 0.28m)
+      // Central underground + Rajiv Chowk Enclosed Subsurface Cruciform Hub (node 305):
+      //   - Outside +-135m from Rajiv Chowk: SUBWAY_Y = 0.28m (full CP Radial/Inner Circle underground tube!)
+      //   - Enclosed cut-and-cover vault rise 303.65 -> 304.45 (SUBWAY_Y 0.28m -> 7.6m inside CP park berm)
+      //   - Flat Rajiv Chowk upper crossover deck 304.45 -> 305.55 (7.6m, clears lower Yellow trains)
+      //   - Enclosed cut-and-cover vault descent 305.55 -> 306.35 (7.6m -> SUBWAY_Y 0.28m)
+      //   - Barakhamba & Mandi House underground: 306.35 to 322 (SUBWAY_Y = 0.28m)
       // East ramp up: 323 to 329 (smooth Hermite to VIADUCT_Y = 17.5m)
       // East viaduct & Yamuna River Bridge: 330 to 347 (VIADUCT_Y = 17.5m)
       // Yamuna Bank riverfront descent: 347 to 350 (-944m..-647m beside west depot throat)
@@ -1241,10 +1361,10 @@ window.MetroWebGLLayer = (function () {
       const d21RampEnd = 12;
       const rampWStart = 292;
       const rampWEnd = 299;
-      const rcUpStart = 300;
-      const rcUpEnd = 304;
-      const rcDownStart = 306;
-      const rcDownEnd = 310;
+      const rcUpStart = 303.90;
+      const rcUpEnd = 304.48;
+      const rcDownStart = 305.52;
+      const rcDownEnd = 306.10;
       const rampEStart = 323;
       const rampEEnd = 329;
       const ybDownStart = 347;
@@ -1293,8 +1413,9 @@ window.MetroWebGLLayer = (function () {
         if (densePts.length > 0 && i > 0) {
           const prev3D = densePts[densePts.length - 1];
           const segD = prev3D.distanceTo(cur3D);
-          if (segD > 85) {
-            const steps = Math.min(8, Math.ceil(segD / 70));
+          const inGradeZone = (i >= 5 && i <= 13) || (i >= 292 && i <= 300) || (i >= 303 && i <= 308) || (i >= 323 && i <= 330);
+          if (segD > 85 || inGradeZone) {
+            const steps = inGradeZone ? 10 : Math.min(8, Math.ceil(segD / 70));
             for (let s = 1; s < steps; s++) {
               const f = s / steps;
               const interp = new THREE.Vector3().lerpVectors(prev3D, cur3D, f);
@@ -1411,7 +1532,9 @@ window.MetroWebGLLayer = (function () {
         lineId,
         lineKey,
         isYellow,
-        isBlue: !isYellow,
+        isBlue,
+        isOrange,
+        isMagenta,
         lineName,
         lineColorHex,
         lineColorNum,
@@ -1420,7 +1543,7 @@ window.MetroWebGLLayer = (function () {
         dist: bestDist,
         pos: smpCenter.pos.clone(),
         tan: chordTan,
-        hindi: HINDI_STATION_NAMES[st.name] || st.name,
+        hindi: (svc && svc.hindi) || HINDI_STATION_NAMES[st.name] || st.name,
         elevM: svc.elevM !== undefined ? svc.elevM : (meta.elevM !== undefined ? meta.elevM : st.elevM),
         major: !!(st.major || svc.major || meta.major || mergedIntStr || mergedInts.length),
         terminus: !!(st.terminus || svc.isTerminal || meta.terminus),
@@ -1432,7 +1555,13 @@ window.MetroWebGLLayer = (function () {
     const cPortalDists = [];
     const portalSources = isYellow
       ? [osmData.portalNorth, osmData.portalSouth].filter(Boolean)
-      : [osmData.portalDwarka, osmData.portalWest, osmData.portalEast].filter(Boolean);
+      : (isOrange
+        ? [osmData.portalSouth, osmData.portalNorth].filter(Boolean)
+        : (isMagenta
+          ? (osmData.portalCoords || [])
+          : (isBlueVaishali
+            ? []
+            : [rawCoords[5], rawCoords[299], rawCoords[323]].filter(Boolean))));
 
     const cPortalCoords = portalSources.map((pc) => {
       const pl = toLocalMeters(pc, 0);
@@ -1453,7 +1582,9 @@ window.MetroWebGLLayer = (function () {
       name: lineName,
       lineKey,
       isYellow,
-      isBlue: !isYellow,
+      isBlue,
+      isOrange,
+      isMagenta,
       colorNum: lineColorNum,
       colorHex: lineColorHex,
       samples: cSamples,
@@ -1474,7 +1605,13 @@ window.MetroWebGLLayer = (function () {
   }
 
   function sampleAtDist(distM, corridor = null) {
-    const corr = corridor || activeWalkCorridor || ((activeLineId === 'blue' || activeLineId === 'blue-line') ? blueCorridor : yellowCorridor) || yellowCorridor;
+    const corr = corridor || activeWalkCorridor || (
+      activeLineId === 'blue' ? blueCorridor : (
+        activeLineId === 'orange' ? orangeCorridor : (
+          activeLineId === 'magenta' ? magentaCorridor : yellowCorridor
+        )
+      )
+    ) || yellowCorridor;
     const targetSamples = corr ? corr.samples : samples;
     const targetLen = corr ? corr.totalLen : totalLen;
     if (!targetSamples.length || targetLen <= 0) return null;
@@ -1612,8 +1749,10 @@ window.MetroWebGLLayer = (function () {
     const cStations = c ? c.stationsData : stationsData;
     const cLen = c ? c.totalLen : totalLen;
     const isBlue = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue'));
-    const spineMat = isBlue ? m.tactileBlue : m.tactileYellow;
-    const guideMat = isBlue ? m.blueAccent : m.yellowAccent;
+    const isOrange = Boolean(c && (c.isOrange || c.lineId === 'orange' || c.lineKey === 'orange'));
+    const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
+    const spineMat = isOrange ? m.tactileOrange : (isMagenta ? m.tactileMagenta : (isBlue ? m.tactileBlue : m.tactileYellow));
+    const guideMat = isOrange ? m.orangeAccent : (isMagenta ? m.magentaAccent : (isBlue ? m.blueAccent : m.yellowAccent));
 
     // 1. Elevated Box-Girder Viaduct & Transition Ramps (smooth watertight bridge spans)
     const viaductDeckProf = [
@@ -1623,14 +1762,19 @@ window.MetroWebGLLayer = (function () {
     const parapetRProf = [[6.20, 0.0], [6.75, 0.0], [6.75, 1.05], [6.20, 1.05]];
     const lineSpineProf = [[-0.28, 0.0], [0.28, 0.0], [0.28, 0.45], [-0.28, 0.45]];
 
-    const isNearRajivBlueRamp = (s) => Boolean(
-      isBlue && cStations && cStations.some((st) => st.name === 'Rajiv Chowk' && Math.abs(st.dist - s.dist) <= 460)
+    const rajivStRef = isBlue && cStations ? cStations.find((st) => st.name === 'Rajiv Chowk') : null;
+    const isNearRajivBlueApproach = (s) => Boolean(
+      rajivStRef && Math.abs(rajivStRef.dist - s.dist) <= 118
     );
     const isInsideRajivBridge = (s) => Boolean(
-      isBlue && cStations && cStations.some((st) => st.name === 'Rajiv Chowk' && Math.abs(st.dist - s.dist) <= 55)
+      rajivStRef && Math.abs(rajivStRef.dist - s.dist) <= 55
     );
-    const elevatedAndRampSpans = extractSpans((s) => s.elev > 1.35 && !isNearRajivBlueRamp(s), true, cSamples);
-    const rajivRampSpans = extractSpans((s) => s.elev > 1.35 && isNearRajivBlueRamp(s) && !isInsideRajivBridge(s), true, cSamples);
+    const elevatedAndRampSpans = extractSpans((s) => s.elev > 1.35 && !isNearRajivBlueApproach(s), true, cSamples);
+    const rajivApproachShellSpans = extractSpans(
+      (s) => rajivStRef && Math.abs(s.dist - rajivStRef.dist) >= 71.0 && Math.abs(s.dist - rajivStRef.dist) <= 118,
+      true,
+      cSamples
+    );
     const rajivBridgeWireSpans = extractSpans((s) => isInsideRajivBridge(s), true, cSamples);
     const atGradeFormationSpans = extractSpans((s) => s.elev > SUBWAY_Y + 0.35 && s.elev <= 1.35, true, cSamples);
 
@@ -1647,12 +1791,19 @@ window.MetroWebGLLayer = (function () {
       });
     });
 
-    const rcRampDeckProf = [[-6.8, 0.0], [-6.8, -1.15], [6.8, -1.15], [6.8, 0.0]];
-    rajivRampSpans.forEach((span) => {
+    rajivApproachShellSpans.forEach((span) => {
+      // Grounded sloped cut-and-cover concrete U-trough abutment between CP Outer Berm (±72m) & Inner Circle (±110m)
+      const rcSubBed = [[-6.5, -5.8], [6.5, -5.8], [6.5, 0.02], [-6.5, 0.02]];
+      const rcWallL = [[-7.0, -5.8], [-6.25, -5.8], [-6.25, 1.35], [-7.0, 1.35]];
+      const rcWallR = [[6.25, -5.8], [7.0, -5.8], [7.0, 1.35], [6.25, 1.35]];
+      const rcCapL = [[-7.45, 1.35], [-6.15, 1.35], [-6.15, 1.62], [-7.45, 1.62]];
+      const rcCapR = [[6.15, 1.35], [7.45, 1.35], [7.45, 1.62], [6.15, 1.62]];
       [
-        buildRibbonFromSamples(span, rcRampDeckProf, m.concreteLight),
-        buildRibbonFromSamples(span, parapetLProf, m.concreteWeb),
-        buildRibbonFromSamples(span, parapetRProf, m.concreteWeb),
+        buildRibbonFromSamples(span, rcSubBed, m.slateCut),
+        buildRibbonFromSamples(span, rcWallL, m.concreteWeb),
+        buildRibbonFromSamples(span, rcWallR, m.concreteWeb),
+        buildRibbonFromSamples(span, rcCapL, m.concreteLight),
+        buildRibbonFromSamples(span, rcCapR, m.concreteLight),
         buildRibbonFromSamples(span, lineSpineProf, spineMat)
       ].forEach((mesh) => mesh && parent.add(mesh));
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((lat) => {
@@ -1798,15 +1949,9 @@ window.MetroWebGLLayer = (function () {
     const surfaceSleeperLocations = [];
     const buriedSleeperLocations = [];
 
-    const rcRampPierLocations = [];
     for (let d = 24; d < cLen - 24; d += 44) {
       const smp = sampleAtDist(d, c);
-      if (!smp) continue;
-      if (isBlue && rajivStInCorridor && Math.abs(d - rajivStInCorridor.dist) > 74 && Math.abs(d - rajivStInCorridor.dist) <= 440 && smp.elev >= 3.0 && smp.elev < VIADUCT_Y - 1.5) {
-        rcRampPierLocations.push(smp);
-        continue;
-      }
-      if (smp.elev < VIADUCT_Y - 1.5) continue;
+      if (!smp || smp.elev < VIADUCT_Y - 1.5) continue;
       const nearElevSt = cStations.some((st) => st.structure === 'elevated' && Math.abs(st.dist - d) < 46);
       if (!nearElevSt) pierLocations.push(smp);
     }
@@ -1873,31 +2018,6 @@ window.MetroWebGLLayer = (function () {
         capInst.setMatrixAt(idx, dummy.matrix);
       });
       parent.add(pierAoInst, plinthInst, shaftInst, capInst);
-    }
-
-    if (rcRampPierLocations.length) {
-      const rShaftInst = new THREE.InstancedMesh(g.pierShaft, m.pierCream, rcRampPierLocations.length);
-      const rCapInst = new THREE.InstancedMesh(g.box1, m.concreteLight, rcRampPierLocations.length);
-      rShaftInst.frustumCulled = rCapInst.frustumCulled = false;
-      rShaftInst.castShadow = rCapInst.castShadow = true;
-      rShaftInst.receiveShadow = rCapInst.receiveShadow = true;
-      rcRampPierLocations.forEach((smp, idx) => {
-        const yaw = Math.atan2(-smp.tan.z, smp.tan.x);
-        const capH = 0.85;
-        const capBotY = smp.pos.y - 1.15 - capH;
-        const shaftH = Math.max(0.6, capBotY - 0.15);
-        dummy.position.set(smp.pos.x, 0.15 + shaftH * 0.5, smp.pos.z);
-        dummy.rotation.set(0, yaw, 0);
-        dummy.scale.set(0.9, shaftH, 0.9);
-        dummy.updateMatrix();
-        rShaftInst.setMatrixAt(idx, dummy.matrix);
-        dummy.position.set(smp.pos.x, capBotY + capH * 0.5, smp.pos.z);
-        dummy.rotation.set(0, yaw, 0);
-        dummy.scale.set(2.4, capH, 11.4);
-        dummy.updateMatrix();
-        rCapInst.setMatrixAt(idx, dummy.matrix);
-      });
-      parent.add(rShaftInst, rCapInst);
     }
 
     if (oheLocations.length) {
@@ -3402,7 +3522,11 @@ window.MetroWebGLLayer = (function () {
     if (!st || st._signageReady || !st._signSpec) return;
     st._signageReady = true;
     const { subtitle, secCss } = st._signSpec;
-    const lineHex = (st.lineId === 'blue') ? '#2563EB' : '#EAB308';
+    const lineHex = (st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange)
+      ? '#F97316'
+      : ((st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta)
+        ? '#D946EF'
+        : ((st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.isBlue) ? '#2563EB' : '#EAB308'));
     const signTex = makeBilingualSignTex(st.hindi, st.name, subtitle, lineHex, secCss);
     const pidsTex = makeMapPIDSTex(st.name);
     const signMat = new THREE.MeshBasicMaterial({ map: signTex });
@@ -3422,7 +3546,10 @@ window.MetroWebGLLayer = (function () {
     'Vishwavidyalaya',
     'Vidhan Sabha',
     'Civil Lines',
-    'Central Secretariat'
+    'Central Secretariat',
+    'Barakhamba',
+    'Barakhamba Road',
+    'Mandi House'
   ]);
 
   const HERITAGE_RIDGE_ELEVATED = new Set([
@@ -4047,6 +4174,8 @@ window.MetroWebGLLayer = (function () {
     const wingGlass = addBox(detail, 3.0, 1.4, 14.2, m.escGlass, 29.5, 5.9, escZ);
     wingGlass.rotation.z = -0.58;
 
+    const primaryAccentMat = st.isBlue ? m.blueAccent : m.yellowAccent;
+
     // 3. Terrazzo Platforms + Tactile Strips + Glass PSDs + Live Digital PIDS + Benches + Commuters
     if (isIsland) {
       // Elevated Island kept at 4.4m width so trains on ±4.6m tracks (inner edge ±2.86m) pass cleanly
@@ -4054,7 +4183,7 @@ window.MetroWebGLLayer = (function () {
       [-1.96, 1.96].forEach((tz) => {
         addBox(detail, 82, 0.12, 0.44, m.tactileYellow, 0, yV + 2.05, tz);
         addBox(detail, 66, 1.55, 0.14, m.glassBarrier, 0, yV + 2.82, tz);
-        addBox(detail, 66, 0.20, 0.18, m.yellowAccent, 0, yV + 3.68, tz);
+        addBox(detail, 66, 0.20, 0.18, primaryAccentMat, 0, yV + 3.68, tz);
       });
       addBox(detail, 4.4, 0.60, 1.1, m.steelChrome, -16, yV + 2.30, 0);
       addBox(detail, 4.4, 0.60, 1.1, m.steelChrome, 16, yV + 2.30, 0);
@@ -4067,9 +4196,9 @@ window.MetroWebGLLayer = (function () {
         addBox(root, 82, 2.0, 6.8, m.terrazzoDeck, 0, yV + 1.0, pz);
         addBox(detail, 82, 0.12, 0.50, m.tactileYellow, 0, yV + 2.05, pz - sgn * 2.95);
         addBox(detail, 70, 1.55, 0.14, m.glassBarrier, 0, yV + 2.82, pz - sgn * 3.15);
-        addBox(detail, 70, 0.20, 0.18, m.yellowAccent, 0, yV + 3.68, pz - sgn * 3.15);
+        addBox(detail, 70, 0.20, 0.18, primaryAccentMat, 0, yV + 3.68, pz - sgn * 3.15);
         addBox(detail, 82, 1.65, 0.16, m.glassBarrier, 0, yV + 2.95, pz + sgn * 3.15);
-        addBox(root, 82, 0.62, 0.34, isHeritageRidge ? m.qutabRedStone : (isCyberCorridor ? m.cyberTeal : m.yellowAccent), 0, yV + 1.25, pz + sgn * 3.35);
+        addBox(root, 82, 0.62, 0.34, isHeritageRidge ? m.qutabRedStone : (isCyberCorridor ? m.cyberTeal : primaryAccentMat), 0, yV + 1.25, pz + sgn * 3.35);
         addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, -16, yV + 2.30, pz + sgn * 1.3);
         addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, 16, yV + 2.30, pz + sgn * 1.3);
         addCommuters(detail, [
@@ -4268,6 +4397,7 @@ window.MetroWebGLLayer = (function () {
     const depthM = Math.abs(st.elevM || 18);
     const isDeepCofferdam = depthM >= 25;
     const secMat = secColor ? new THREE.MeshBasicMaterial({ color: secColor }) : null;
+    const ugAccentMat = st.isBlue ? m.blueAccent : m.yellowAccent;
 
     // Chamber lateral spans expand cleanly for Side-Platform stations (tracks run down center!)
     const apronD = isSide ? 32.0 : 27.6;
@@ -4289,7 +4419,7 @@ window.MetroWebGLLayer = (function () {
     addBox(root, 88, 0.32, floorD, m.trenchFloor, 0, 0.36, 0);
     addBox(root, 88, isDeepCofferdam ? 9.6 : 7.6, 2.4, m.slateCut, 0, isDeepCofferdam ? 4.9 : 3.9, rearWallZ);
     addBox(root, 82, isDeepCofferdam ? 8.0 : 6.4, 0.45, m.tileWall, 0, isDeepCofferdam ? 4.5 : 3.7, tileWallZ);
-    addBox(root, 82, 0.72, 0.50, m.tactileYellow, 0, 4.4, friezeZ);
+    addBox(root, 82, 0.72, 0.50, ugAccentMat, 0, 4.4, friezeZ);
     if (secMat) addBox(root, 82, 0.42, 0.50, secMat, 0, 3.65, friezeZ);
 
     if (isDeepCofferdam) {
@@ -4338,7 +4468,7 @@ window.MetroWebGLLayer = (function () {
         addBox(root, 74, 1.65, 4.6, m.terrazzoDeck, 0, SUBWAY_Y + 0.82, pz);
         addBox(detail, 74, 0.12, 0.44, m.tactileYellow, 0, SUBWAY_Y + 1.68, pz - sgn * 1.98);
         addBox(detail, 60, 1.65, 0.14, m.glassBarrier, 0, SUBWAY_Y + 2.50, pz - sgn * 2.15);
-        addBox(detail, 60, 0.22, 0.18, m.yellowAccent, 0, SUBWAY_Y + 3.40, pz - sgn * 2.15);
+        addBox(detail, 60, 0.22, 0.18, ugAccentMat, 0, SUBWAY_Y + 3.40, pz - sgn * 2.15);
         for (let px = -26; px <= 26; px += 5.2) {
           addBox(detail, 0.20, 1.75, 0.20, m.steelDark, px, SUBWAY_Y + 2.55, pz - sgn * 2.15);
           addBox(detail, 0.48, 0.14, 0.22, m.ledGreen, px + 2.6, SUBWAY_Y + 3.55, pz - sgn * 2.15);
@@ -4374,7 +4504,7 @@ window.MetroWebGLLayer = (function () {
       [-2.18, 2.18].forEach((tz) => {
         addBox(detail, 72, 0.12, 0.44, m.tactileYellow, 0, SUBWAY_Y + 1.68, tz);
         addBox(detail, 60, 1.65, 0.14, m.glassBarrier, 0, SUBWAY_Y + 2.50, tz);
-        addBox(detail, 60, 0.22, 0.18, m.yellowAccent, 0, SUBWAY_Y + 3.40, tz);
+        addBox(detail, 60, 0.22, 0.18, ugAccentMat, 0, SUBWAY_Y + 3.40, tz);
         for (let px = -28; px <= 28; px += 4.6) {
           addBox(detail, 0.20, 1.75, 0.20, m.steelDark, px, SUBWAY_Y + 2.55, tz);
           addBox(detail, 0.48, 0.14, 0.22, m.ledGreen, px + 2.3, SUBWAY_Y + 3.55, tz);
@@ -4382,7 +4512,7 @@ window.MetroWebGLLayer = (function () {
       });
       [-22, -7, 8, 23].forEach((cx) => {
         addBox(detail, 0.72, 7.2, 0.72, m.steelChrome, cx, SUBWAY_Y + 4.4, 0);
-        addBox(detail, 0.80, 0.75, 0.80, m.yellowAccent, cx, SUBWAY_Y + 2.8, 0);
+        addBox(detail, 0.80, 0.75, 0.80, ugAccentMat, cx, SUBWAY_Y + 2.8, 0);
         if (secMat) addBox(detail, 0.80, 0.42, 0.80, secMat, cx, SUBWAY_Y + 2.15, 0);
       });
 
@@ -4827,39 +4957,94 @@ window.MetroWebGLLayer = (function () {
       });
     });
 
-    // 4. Upper Level (Blue Line Bridge Deck, BLUE_RC_Y = 7.6m) oriented strictly along Blue corridor
+    // 4. Upper Level (Blue Line Structured Skylit Interchange Hall, BLUE_RC_Y = 7.6m) oriented strictly along Blue corridor
     const blueDeckGrp = new THREE.Group();
     blueDeckGrp.position.set(bx, 0, bz);
     blueDeckGrp.rotation.y = relYaw;
     root.add(blueDeckGrp);
 
-    // Sleek architectural bridge slab (top 7.56m flush under ballast, soffit 6.50m cleanly clearing 5.45m Yellow trains)
+    // Structural deck slab (top 7.56m flush under ballast, soffit 6.50m cleanly clearing 5.45m Yellow trains)
     addBox(blueDeckGrp, 114, 1.06, 19.8, m.concreteLight, 0, BLUE_RC_Y - 0.55, 0);
-    // Twin longitudinal structural concrete ribs under slab outer bays
     [-8.2, 8.2].forEach((rz) => addBox(blueDeckGrp, 114, 0.45, 2.2, m.concreteWeb, 0, BLUE_RC_Y - 1.22, rz));
-    // Cobalt Blue outer deck edge fascia & upper deck border stripes (boldly legible from aerial oblique view)
+    // Cobalt Blue outer deck fascia & upper border stripes
     [-9.95, 9.95].forEach((fz) => {
       addBox(blueDeckGrp, 114, 1.35, 0.48, cobaltMat, 0, BLUE_RC_Y + 0.35, fz);
       addBox(blueDeckGrp, 114, 0.22, 0.54, m.concreteLight, 0, BLUE_RC_Y + 1.08, fz);
     });
 
-    // Blue Side Platforms (±6.55m..±9.55m, 100m long, deck top at BLUE_RC_Y + 1.05m = 8.65m)
+    // Blue Side Platforms (±6.55m..±9.55m, 100m long) + Cobalt PSD Headers & Balustrades
     [-8.05, 8.05].forEach((pz, sIdx) => {
       const sgn = Math.sign(pz);
       addBox(blueDeckGrp, 100, 1.05, 3.0, m.terrazzoDeck, 0, BLUE_RC_Y + 0.52, pz);
       addBox(blueDeckGrp, 100, 0.10, 0.36, m.tactileYellow, 0, BLUE_RC_Y + 1.08, pz - sgn * 1.24);
       addBox(blueDeckGrp, 100, 0.10, 0.58, cobaltMat, 0, BLUE_RC_Y + 1.08, pz + sgn * 1.18);
-      // Outer glass balustrade & cobalt handrail
-      addBox(blueDeckGrp, 100, 1.15, 0.12, m.glassBarrier, 0, BLUE_RC_Y + 1.62, pz + sgn * 1.42);
-      addBox(blueDeckGrp, 100, 0.14, 0.18, cobaltMat, 0, BLUE_RC_Y + 2.22, pz + sgn * 1.42);
+      // Inner platform-edge glass PSDs & cobalt DMRC header
+      addBox(blueDeckGrp, 76, 1.45, 0.12, m.glassBarrier, 0, BLUE_RC_Y + 1.80, pz - sgn * 1.38);
+      addBox(blueDeckGrp, 76, 0.18, 0.16, cobaltMat, 0, BLUE_RC_Y + 2.58, pz - sgn * 1.38);
+      // Outer concourse balustrade & glazed side screens
+      addBox(blueDeckGrp, 100, 1.35, 0.12, m.glassBarrier, 0, BLUE_RC_Y + 1.72, pz + sgn * 1.42);
+      addBox(blueDeckGrp, 100, 0.18, 0.20, cobaltMat, 0, BLUE_RC_Y + 2.45, pz + sgn * 1.42);
       for (let px = -45; px <= 45; px += 9.0) {
-        addBox(blueDeckGrp, 0.18, 1.22, 0.18, m.steelDark, px, BLUE_RC_Y + 1.65, pz + sgn * 1.42);
+        addBox(blueDeckGrp, 0.22, 3.6, 0.22, m.steelDark, px, BLUE_RC_Y + 2.85, pz + sgn * 1.42);
       }
       addCommuters(blueDeckGrp, [
         [-22, BLUE_RC_Y + 1.05, pz + sgn * 0.25, sIdx],
         [4, BLUE_RC_Y + 1.05, pz - sgn * 0.2, sIdx + 1],
         [24, BLUE_RC_Y + 1.05, pz + sgn * 0.2, sIdx + 2]
       ]);
+    });
+
+    // Architectural Skylit Cross-Hall Canopy over Central Park Blue Chamber (-46m..+46m)
+    [-5.0, 5.0].forEach((sz) => {
+      const sgn = Math.sign(sz);
+      const wing = addBox(blueDeckGrp, 92, 0.22, 10.6, m.skylightGlass, 0, BLUE_RC_Y + 5.25, sz);
+      wing.rotation.x = sgn * 0.14;
+      addBox(blueDeckGrp, 92, 0.34, 0.52, cobaltMat, 0, BLUE_RC_Y + 4.48, sgn * 9.9);
+    });
+    addBox(blueDeckGrp, 92, 0.34, 0.55, m.steelDark, 0, BLUE_RC_Y + 5.95, 0);
+    for (let rx = -45; rx <= 45.1; rx += 11.25) {
+      [-5.0, 5.0].forEach((sz) => {
+        const rafter = addBox(blueDeckGrp, 0.34, 0.34, 10.6, m.steelDark, rx, BLUE_RC_Y + 5.20, sz);
+        rafter.rotation.x = Math.sign(sz) * 0.14;
+      });
+    }
+    [-22, 0, 22].forEach((lx) => addBox(blueDeckGrp, 9.0, 0.18, 0.65, m.luminaireGlow, lx, BLUE_RC_Y + 5.65, 0));
+
+    // Symmetrical E/W Inner Chamber Portals (±52m) & Outer Connaught Place Park Berm Portals (±71.5m)
+    [-52.0, 52.0].forEach((xE) => {
+      const sgn = Math.sign(xE);
+      // Inner CP Vault Flanking Pylons & Sandstone Crown Collar
+      [-8.8, 8.8].forEach((wz) => {
+        addBox(blueDeckGrp, 3.8, BLUE_RC_Y + 5.2, 2.6, m.concreteLight, xE + sgn * 1.5, (BLUE_RC_Y + 5.2) * 0.5, wz);
+        addBox(blueDeckGrp, 4.2, 0.45, 3.0, m.sandstoneBuff, xE + sgn * 1.5, BLUE_RC_Y + 5.3, wz);
+      });
+      // Elevated portal arch lintel clearing 6.63m Blue pantographs cleanly (top y = 14.8m)
+      addBox(blueDeckGrp, 3.8, 0.95, 20.2, m.concreteLight, xE + sgn * 1.5, BLUE_RC_Y + 6.95, 0);
+      addBox(blueDeckGrp, 4.1, 0.42, 20.6, cobaltMat, xE + sgn * 1.5, BLUE_RC_Y + 6.45, 0);
+
+      // Enclosed Concrete Berm Portal Vault (x = ±54m..±72.0m) tapering neatly into Outer CP Park Berm
+      [-8.1, 8.1].forEach((wz) => {
+        addBox(blueDeckGrp, 17.5, 9.4, 2.2, m.concreteWeb, sgn * 62.5, 4.7, wz);
+      });
+      addBox(blueDeckGrp, 17.5, 0.75, 18.4, m.concreteLight, sgn * 62.5, 12.9, 0);
+      addBox(blueDeckGrp, 3.8, 12.8, 18.8, m.concreteLight, sgn * 70.8, 6.4, 0);
+      addBox(blueDeckGrp, 4.4, 0.55, 19.4, m.sandstoneBuff, sgn * 70.8, 13.0, 0);
+      addBox(blueDeckGrp, 4.45, 0.34, 19.45, cobaltMat, sgn * 70.8, 12.45, 0);
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        const ewArch = new THREE.Mesh(g.tbmArch, m.concreteLight);
+        ewArch.rotation.z = Math.PI / 2;
+        ewArch.position.set(sgn * 71.8, 7.6, tz);
+        ewArch.scale.set(1.42, 2.35, 1.0);
+        ewArch.frustumCulled = false;
+        blueDeckGrp.add(ewArch);
+
+        const ewBore = new THREE.Mesh(g.tbmBore, m.slateDark);
+        ewBore.rotation.z = Math.PI / 2;
+        ewBore.position.set(sgn * 72.0, 7.6, tz);
+        ewBore.scale.set(1.36, 2.38, 0.95);
+        ewBore.frustumCulled = false;
+        blueDeckGrp.add(ewBore);
+      });
     });
 
     // 4 Cylindrical Bridge Columns outside Yellow trench rails (planted at ±26m along Blue, ±8.2m edge)
@@ -4913,15 +5098,19 @@ window.MetroWebGLLayer = (function () {
     const sbBridge = new THREE.Mesh(g.box1, m.placeholderSign);
     sbBridge.scale.set(24.0, 3.4, 0.36);
     sbBridge.position.set(0, BLUE_RC_Y + 3.0, -9.55);
-    sbLower.frustumCulled = sbBridge.frustumCulled = false;
+    const sbBridgeOpp = new THREE.Mesh(g.box1, m.placeholderSign);
+    sbBridgeOpp.scale.set(24.0, 3.4, 0.36);
+    sbBridgeOpp.position.set(0, BLUE_RC_Y + 3.0, 9.55);
+    sbBridgeOpp.rotation.y = Math.PI;
+    sbLower.frustumCulled = sbBridge.frustumCulled = sbBridgeOpp.frustumCulled = false;
     root.add(sbLower);
-    blueDeckGrp.add(sbBridge);
+    blueDeckGrp.add(sbBridge, sbBridgeOpp);
 
     addBox(detail, 9.6, 2.2, 0.42, m.pidsHousing, -18, SUBWAY_Y + 4.8, 0);
     const pidsPanel = addBox(detail, 9.0, 1.85, 0.48, m.placeholderSign, -18, SUBWAY_Y + 4.8, 0);
 
     root.add(detail);
-    return { root, detail, signMeshes: [sbLower, sbBridge], pidsMesh: pidsPanel };
+    return { root, detail, signMeshes: [sbLower, sbBridge, sbBridgeOpp], pidsMesh: pidsPanel };
   }
 
   const _hubAccentMatCache = new Map();
@@ -4979,13 +5168,59 @@ window.MetroWebGLLayer = (function () {
       return Math.atan2(-lz, lx);
     };
 
+    const primaryBlocked = (wx, wz) => (Math.abs(wx) < 47 && Math.abs(wz) < 17.0);
+
+    const placePierOrStraddle = (wx, wz, topY, yaw, capSpanZ = 7.4) => {
+      if (topY < 3.6) return;
+      if (primaryBlocked(wx, wz) || Math.abs(wz) < 9.8) {
+        // Straddle Portal Bent cleanly bridging outside primary station/corridor box
+        const legZ = primaryBlocked(wx, wz) ? 19.2 : 12.2;
+        const capH = 1.25;
+        const shaftTopY = Math.max(1.2, topY - capH);
+        const spanZ = legZ * 2 + 2.8;
+        [-legZ, legZ].forEach((lz) => {
+          addBox(root, 3.4, 0.85, 3.4, m.concreteWeb, wx, 0.42, lz);
+          const col = addBox(root, 2.0, shaftTopY, 2.0, m.pierCream, wx, shaftTopY * 0.5, lz);
+          col.castShadow = true;
+        });
+        addBox(root, 2.35, capH, spanZ, m.concreteLight, wx, topY - capH * 0.5, 0);
+        return;
+      }
+      const capH = 1.10;
+      const shaftH = Math.max(0.8, topY - capH - 0.55);
+      const py = yaw || 0;
+      const plinth = addBox(root, 3.4, 0.78, 3.4, m.concreteWeb, wx, 0.39, wz);
+      plinth.rotation.y = py;
+      const pShaft = new THREE.Mesh(g.pierShaft, m.pierCream);
+      pShaft.scale.set(0.88, shaftH, 0.88);
+      pShaft.rotation.y = py;
+      pShaft.position.set(wx, 0.65 + shaftH * 0.5, wz);
+      pShaft.frustumCulled = false;
+      pShaft.castShadow = true;
+      root.add(pShaft);
+      const pCap = addBox(root, 2.5, capH, capSpanZ, m.concreteLight, wx, topY - capH * 0.5, wz);
+      pCap.rotation.y = py;
+    };
+
+    const armFootprints = [];
+
     (hubSpec.arms || []).forEach((arm) => {
       const acc = getHubAccentMats(arm.color);
       const isUg = arm.tier === 'underground';
+      const isAtGrade = arm.tier === 'at_grade';
       const isStacked = arm.tier === 'underground_stacked';
-      const deckY = Number(arm.deckY || (isUg ? SUBWAY_Y : VIADUCT_Y));
+      const deckY = Number(arm.deckY || (isUg ? SUBWAY_Y : (isAtGrade ? 1.2 : VIADUCT_Y)));
       const armCenterL = llToLocal(arm.center, deckY);
       const armYaw = tanWorldToLocalYaw(arm.tangent[0], arm.tangent[1]);
+      armFootprints.push({ cx: armCenterL.x, cz: armCenterL.z, yaw: armYaw, halfLen: (arm.stationLen || 84) * 0.52 });
+
+      // Helper transforming arm-local (rx, rz) into primary-local (wx, wz)
+      const cArm = Math.cos(armYaw);
+      const sArm = Math.sin(armYaw);
+      const armToPrimary = (rx, rz) => ({
+        wx: armCenterL.x + rx * cArm + rz * sArm,
+        wz: armCenterL.z - rx * sArm + rz * cArm
+      });
 
       // 1. Resample real clipped OSM/GTFS secondary corridor polyline in primary-local coords
       const rawPts = (arm.trackPolyline || []).map((ll) => llToLocal(ll, 0));
@@ -5074,8 +5309,22 @@ window.MetroWebGLLayer = (function () {
             }
             root.add(pGrp);
           });
+        } else if (isAtGrade) {
+          // Ground-level ballasted embankment & safety parapet walls (Kirti Nagar Green Line beside Northern Rly)
+          const gradeBed = [[-6.8, -1.25], [6.8, -1.25], [5.85, 0.0], [-5.85, 0.0]];
+          const parL = [[-5.85, 0.0], [-5.35, 0.0], [-5.35, 0.85], [-5.85, 0.85]];
+          const parR = [[5.35, 0.0], [5.85, 0.0], [5.85, 0.85], [5.35, 0.85]];
+          const bandL = [[-5.92, 0.32], [-5.82, 0.32], [-5.82, 0.72], [-5.92, 0.72]];
+          const bandR = [[5.82, 0.32], [5.92, 0.32], [5.92, 0.72], [5.82, 0.72]];
+          [
+            buildRibbonFromSpans(spans, gradeBed, m.concreteWeb, 1.2, true),
+            buildRibbonFromSpans(spans, parL, m.concreteLight, 1.2, true),
+            buildRibbonFromSpans(spans, parR, m.concreteLight, 1.2, true),
+            buildRibbonFromSpans(spans, bandL, acc.band, 2.0, false),
+            buildRibbonFromSpans(spans, bandR, acc.band, 2.0, false)
+          ].forEach((mesh) => mesh && root.add(mesh));
         } else {
-          // Elevated / super-elevated / stacked bridge box-girder viaduct + parapets + colored fascia!
+          // Elevated / super-elevated U-girder/box viaduct + parapets + colored fascia!
           const deckProf = [[-5.6, 0.0], [-5.6, -0.52], [-3.0, -1.60], [3.0, -1.60], [5.6, -0.52], [5.6, 0.0]];
           const parL = [[-5.6, 0.0], [-5.1, 0.0], [-5.1, 0.96], [-5.6, 0.96]];
           const parR = [[5.1, 0.0], [5.6, 0.0], [5.6, 0.96], [5.1, 0.96]];
@@ -5089,25 +5338,32 @@ window.MetroWebGLLayer = (function () {
             buildRibbonFromSpans(spans, bandR, acc.band, 2.0, false)
           ].forEach((mesh) => mesh && root.add(mesh));
 
-          // Approach piers (skipping lower primary station core |x|<46 && |z|<16.5; use portal piers outside!)
+          // Grounded viaduct piers along BOTH ends + regular 36m intervals (skip station zone handled by armGrp piers; straddle primary intersections!)
+          const pierIndices = [];
+          const startIdx = Math.min(spanSamples.length - 1, 1);
+          const endIdx = Math.max(0, spanSamples.length - 2);
           let lastPierD = -999;
-          for (let i = 0; i < spanSamples.length; i++) {
+          for (let i = startIdx; i <= endIdx; i++) {
             const smp = spanSamples[i];
-            if (smp.pos.y < 3.4 || smp.dist - lastPierD < 40) continue;
-            if (Math.abs(smp.pos.x) < 46 && Math.abs(smp.pos.z) < 16.5) continue;
-            lastPierD = smp.dist;
-            const capBotY = smp.pos.y - 1.60;
-            const capH = 1.05;
-            const shaftH = Math.max(0.5, capBotY - capH);
-            const pyaw = Math.atan2(-smp.tan.z, smp.tan.x);
-            const pCol = addBox(root, 1.9, shaftH, 1.9, m.pierCream, smp.pos.x, shaftH * 0.5, smp.pos.z);
-            pCol.rotation.y = pyaw;
-            const pCap = addBox(root, 2.3, capH, 6.2, m.concreteLight, smp.pos.x, capBotY - capH * 0.5, smp.pos.z);
-            pCap.rotation.y = pyaw;
+            if (smp.pos.y < 3.6) continue;
+            const dToStation = Math.hypot(smp.pos.x - armCenterL.x, smp.pos.z - armCenterL.z);
+            if (dToStation < 34.0) continue;
+            if (i === startIdx || i === endIdx || smp.dist - lastPierD >= 36.0) {
+              if (i === endIdx && pierIndices.length > 0 && smp.dist - lastPierD < 14.0) {
+                pierIndices.pop();
+              }
+              pierIndices.push(i);
+              lastPierD = smp.dist;
+            }
           }
+          pierIndices.forEach((pi) => {
+            const smp = spanSamples[pi];
+            const pyaw = Math.atan2(-smp.tan.z, smp.tan.x);
+            placePierOrStraddle(smp.pos.x, smp.pos.z, smp.pos.y - 1.55, pyaw, 6.8);
+          });
         }
 
-        // Twin tracks (ballast + four steel rails at ±3.1m) common to both underground cutaway & elevated!
+        // Twin tracks (ballast + four steel rails at ±3.1m) common to all tiers!
         [-3.1, 3.1].forEach((tc) => {
           const bProf = [[tc - 1.32, 0.02], [tc + 1.32, 0.02], [tc + 1.08, 0.24], [tc - 1.08, 0.24]];
           const bMesh = buildRibbonFromSpans(spans, bProf, m.ballastSleeper, 0.65, false);
@@ -5120,7 +5376,7 @@ window.MetroWebGLLayer = (function () {
         });
       }
 
-      // 2. Secondary Station Box (Platform, Fascia, Canopy, Buffer Stops & Livery-Matched Parked Train)
+      // 2. Secondary Station Box (Substructure, Concourse, Platform, Canopy, Buffer Stops & Train)
       const armGrp = new THREE.Group();
       armGrp.position.set(armCenterL.x, deckY, armCenterL.z);
       armGrp.rotation.y = armYaw;
@@ -5128,6 +5384,48 @@ window.MetroWebGLLayer = (function () {
 
       const stLen = arm.stationLen || 84;
       const isSide = arm.platformType === 'side';
+      if (!isUg && !isAtGrade) {
+        // Under-deck box-girder spine + ribs + real DMRC station concourse + flared piers
+        addBox(armGrp, stLen, 1.55, 10.4, m.concreteWeb, 0, -1.52, 0);
+        for (let rx = -34; rx <= 34; rx += 17) {
+          addBox(armGrp, 1.35, 0.95, 18.8, m.concreteLight, rx, -1.25, 0);
+        }
+        const overPrimaryElevated = st.isElevated && Math.hypot(armCenterL.x, armCenterL.z) < 34;
+        if (overPrimaryElevated) {
+          // Upper crossing tier (e.g. Haiderpur Badli Mor): keep central air clear over lower roof pergola, put twin transfer concourse pods at rx = ±28
+          [-28, 28].forEach((px) => {
+            addBox(armGrp, 18, 0.55, 14.5, m.terrazzoDeck, px, -5.8, 0);
+            addBox(armGrp, 17.4, 3.6, 13.6, m.concourseGlass, px, -3.7, 0);
+            addBox(armGrp, 18.2, 0.42, 14.8, acc.band, px, -2.0, 0);
+          });
+        } else {
+          // Standard/High DMRC under-viaduct glazed concourse box + street access core
+          const concFloorY = deckY >= 20 ? -7.2 : -6.4;
+          const concH = 4.4;
+          const concLen = stLen - 14;
+          addBox(armGrp, concLen, 0.65, 16.6, m.concreteLight, 0, concFloorY, 0);
+          addBox(armGrp, concLen - 0.6, 0.14, 16.0, m.terrazzoDeck, 0, concFloorY + 0.36, 0);
+          addBox(armGrp, concLen + 0.8, 0.45, 17.2, m.concreteWeb, 0, concFloorY + concH, 0);
+          addBox(armGrp, concLen - 1.2, concH - 0.4, 15.6, m.concourseGlass, 0, concFloorY + concH * 0.5, 0);
+          [-8.55, 8.55].forEach((cz) => {
+            addBox(armGrp, concLen + 0.8, 0.48, 0.35, acc.band, 0, concFloorY + concH * 0.72, cz);
+          });
+          for (let mx = -concLen * 0.45; mx <= concLen * 0.45 + 0.1; mx += 11) {
+            [-7.95, 7.95].forEach((mz) => addBox(armGrp, 0.36, concH, 0.36, m.steelDark, mx, concFloorY + concH * 0.5, mz));
+          }
+        }
+        // Station support piers down to ground plinth (automatically uses Straddle Portal Bent where crossing primary!)
+        [-28, 0, 28].forEach((rx) => {
+          const { wx, wz } = armToPrimary(rx, 0);
+          placePierOrStraddle(wx, wz, deckY - 1.75, armYaw, 11.4);
+        });
+      } else if (isAtGrade) {
+        // Kirti Nagar Green Line grounded earth embankment foundation & side plaza apron
+        addBox(armGrp, stLen + 6, 1.35, 20.6, m.concreteWeb, 0, -0.68, 0);
+        addBox(armGrp, stLen + 6, 0.35, 22.8, m.plazaPave, 0, -1.18, 0);
+        [-10.4, 10.4].forEach((wz) => addBox(armGrp, stLen + 6, 0.95, 0.45, m.concreteLight, 0, -0.5, wz));
+      }
+
       if (isSide) {
         // Side platforms + wider concrete slab
         addBox(armGrp, stLen, 1.0, 19.6, m.concreteLight, 0, -0.52, 0);
@@ -5149,12 +5447,13 @@ window.MetroWebGLLayer = (function () {
             addBox(armGrp, stLen - 8, 0.30, 0.48, acc.band, 0, 6.35, cz + Math.sign(cz) * 2.4);
           });
         } else {
-          // Full elevated station arched glazed + line-accented roof
-          addBox(armGrp, stLen - 8, 0.28, 19.2, acc.glass, 0, 7.6, 0);
-          [-9.6, 9.6].forEach((cz) => addBox(armGrp, stLen - 8, 0.45, 0.55, acc.band, 0, 7.7, cz));
+          // Full elevated/at-grade station arched glazed + line-accented roof
+          const roofY = isAtGrade ? 6.4 : 7.6;
+          addBox(armGrp, stLen - 8, 0.28, 19.2, acc.glass, 0, roofY, 0);
+          [-9.6, 9.6].forEach((cz) => addBox(armGrp, stLen - 8, 0.45, 0.55, acc.band, 0, roofY + 0.10, cz));
           for (let rx = -stLen * 0.42; rx <= stLen * 0.42 + 0.1; rx += 12) {
-            addBox(armGrp, 0.42, 0.42, 19.6, m.steelDark, rx, 7.82, 0);
-            [-9.2, 9.2].forEach((cz) => addBox(armGrp, 0.38, 6.2, 0.38, m.steelDark, rx, 4.5, cz));
+            addBox(armGrp, 0.42, 0.42, 19.6, m.steelDark, rx, roofY + 0.22, 0);
+            [-9.2, 9.2].forEach((cz) => addBox(armGrp, 0.38, roofY - 1.3, 0.38, m.steelDark, rx, (roofY - 1.3) * 0.5 + 1.3, cz));
           }
         }
       } else {
@@ -5207,16 +5506,36 @@ window.MetroWebGLLayer = (function () {
     });
 
     // 3. Inter-Station Transfer Links (Skywalks, Diagonal Escalator Tubes, Subsurface Galleries, Lift Towers)
+    const nearAnyArmBox = (wx, wz) => armFootprints.some((a) => {
+      const dx = wx - a.cx;
+      const dz = wz - a.cz;
+      const lx = dx * Math.cos(a.yaw) - dz * Math.sin(a.yaw);
+      const lz = dx * Math.sin(a.yaw) + dz * Math.cos(a.yaw);
+      return Math.abs(lx) < a.halfLen + 4 && Math.abs(lz) < 12.5;
+    });
+
     (hubSpec.links || []).forEach((lnk) => {
       const acc = getHubAccentMats(lnk.color);
       if (lnk.kind === 'lift_tower') {
         const pos = llToLocal(lnk.posLngLat, 0);
-        const hTot = Math.max(4.0, (lnk.toY || 19.5) - (lnk.fromY || 0));
-        const yMid = (lnk.fromY || 0) + hTot * 0.5;
-        addBox(root, 5.2, hTot, 5.2, m.glassBarrier, pos.x, yMid, pos.z);
-        addBox(root, 5.8, 0.52, 5.8, acc.trim, pos.x, (lnk.fromY || 0) + hTot + 0.22, pos.z);
+        const y0 = lnk.fromY || 0;
+        const y1 = lnk.toY || 19.5;
+        const hTot = Math.max(4.0, y1 - y0);
+        const yMid = y0 + hTot * 0.5;
+        // Grounded concrete foundation pedestal even when lift starts at elevated tier
+        if (y0 <= 2.2) {
+          addBox(root, 6.2, Math.max(0.7, y0 + 0.65), 6.2, m.concreteWeb, pos.x, Math.max(0.35, (y0 + 0.65) * 0.5), pos.z);
+        } else {
+          addBox(root, 4.0, y0 + 0.3, 4.0, m.pierCream, pos.x, (y0 + 0.3) * 0.5, pos.z);
+          addBox(root, 5.8, 0.7, 5.8, m.concreteLight, pos.x, y0 - 0.15, pos.z);
+        }
+        addBox(root, 5.2, hTot, 5.2, m.concourseGlass, pos.x, yMid, pos.z);
+        addBox(root, 3.0, 3.2, 3.0, m.skylightGlass, pos.x, y0 + hTot * 0.58, pos.z);
+        addBox(root, 5.9, 0.55, 5.9, m.concreteLight, pos.x, y0 + hTot + 0.15, pos.z);
+        addBox(root, 6.1, 0.36, 6.1, acc.trim, pos.x, y0 + hTot + 0.52, pos.z);
+        [y0 + 0.2, y0 + hTot - 0.2].forEach((yc) => addBox(root, 5.5, 0.28, 5.5, m.steelDark, pos.x, yc, pos.z));
         [[-2.5, -2.5], [2.5, -2.5], [-2.5, 2.5], [2.5, 2.5]].forEach(([mx, mz]) => {
-          addBox(root, 0.30, hTot + 0.2, 0.30, m.steelDark, pos.x + mx, yMid, pos.z + mz);
+          addBox(root, 0.32, hTot + 0.4, 0.32, m.steelDark, pos.x + mx, yMid, pos.z + mz);
         });
         return;
       }
@@ -5245,40 +5564,51 @@ window.MetroWebGLLayer = (function () {
       root.add(lnkGrp);
 
       if (lnk.kind === 'skywalk' || lnk.kind === 'escalator_bridge') {
-        const tubeLen = Math.max(8, spanLen - 6);
+        const tubeLen = Math.max(8, spanLen - 2.0);
         addBox(lnkGrp, tubeLen, 0.55, w, m.concreteLight, 0, -1.75, 0);
-        addBox(lnkGrp, tubeLen, 0.38, w + 0.3, acc.band, 0, -1.28, 0);
+        addBox(lnkGrp, tubeLen, 0.34, w + 0.3, acc.trim, 0, -1.32, 0);
         addBox(lnkGrp, tubeLen, 3.2, w - 0.5, lnk.kind === 'escalator_bridge' ? m.escGlass : m.concourseGlass, 0, 0.15, 0);
         addBox(lnkGrp, tubeLen, 0.42, w + 0.4, m.steelDark, 0, 1.85, 0);
-        addBox(lnkGrp, tubeLen, 0.25, w + 0.45, acc.trim, 0, 2.15, 0);
+        addBox(lnkGrp, tubeLen, 0.24, w + 0.45, acc.trim, 0, 2.14, 0);
+        // Compact glazed landing vestibules at both ends flush against station facades / lift towers
+        [-tubeLen * 0.48, tubeLen * 0.48].forEach((ex) => {
+          addBox(lnkGrp, 3.6, 3.8, w + 1.2, m.concreteLight, ex, 0.1, 0);
+          addBox(lnkGrp, 3.8, 0.35, w + 1.5, acc.trim, ex, 2.12, 0);
+        });
         if (lnk.kind === 'escalator_bridge') {
           [-1.3, 1.3].forEach((ez) => addBox(lnkGrp, tubeLen - 2, 0.72, 1.45, m.escStep, 0, -0.65, ez));
         }
         for (let rx = -tubeLen * 0.45; rx <= tubeLen * 0.45 + 0.1; rx += 10) {
           [-w * 0.46, w * 0.46].forEach((cz) => addBox(lnkGrp, 0.30, 3.6, 0.30, m.steelDark, rx, 0.15, cz));
         }
-        // Vertical ground support piers along elevated skywalks (every 42m, outside both station footprints)
-        const nPiers = Math.max(1, Math.floor(horizLen / 42));
+        // Grounded T-piers along elevated skywalks & escalator bridges (every 34m, clear of station footprints)
+        const nPiers = Math.max(1, Math.floor(horizLen / 34));
         for (let pi = 1; pi <= nPiers; pi++) {
           const t = pi / (nPiers + 1);
           const wx = pA.x + dx * t;
           const wz = pA.z + dz * t;
           const wy = pA.y + dy * t;
-          if (wy < 6.0 || (Math.abs(wx) < 42 && Math.abs(wz) < 16)) continue;
+          if (wy < 4.2 || primaryBlocked(wx, wz) || nearAnyArmBox(wx, wz)) continue;
           const pH = wy - 1.9;
+          const plinth = addBox(root, 2.8, 0.65, 2.8, m.concreteWeb, wx, 0.32, wz);
+          plinth.rotation.y = yaw;
           const col = addBox(root, 1.5, pH, 1.5, m.pierCream, wx, pH * 0.5, wz);
           col.rotation.y = yaw;
           const cap = addBox(root, 2.0, 0.9, w + 0.6, m.concreteLight, wx, pH + 0.15, wz);
           cap.rotation.y = yaw;
         }
       } else {
-        // Subsurface glazed skylight plaza transfer gallery
-        const galLen = Math.max(10, horizLen - 8);
-        addBox(lnkGrp, galLen, 0.22, w + 2.4, m.plazaPave, 0, -pA.y + 0.32, 0);
-        addBox(lnkGrp, galLen, 2.6, w, m.skylightGlass, 0, 0.0, 0);
-        addBox(lnkGrp, galLen, 0.36, w + 0.6, acc.band, 0, 1.4, 0);
-        for (let rx = -galLen * 0.45; rx <= galLen * 0.45 + 0.1; rx += 10) {
-          [-w * 0.48, w * 0.48].forEach((cz) => addBox(lnkGrp, 0.28, 3.0, 0.28, m.steelDark, rx, 0.0, cz));
+        // Recessed glazed skylight trench transfer passage (crisp granite coping + steel mullions, zero neon road planks!)
+        const galLen = Math.max(10, horizLen - 6);
+        addBox(lnkGrp, galLen, 0.24, w + 1.4, m.terrazzoDeck, 0, -0.20, 0);
+        addBox(lnkGrp, galLen, 0.08, 0.65, m.luminaireGlow, 0, -0.06, 0);
+        [-w * 0.5 - 0.25, w * 0.5 + 0.25].forEach((cz) => {
+          addBox(lnkGrp, galLen, 0.85, 0.50, m.slateCut, 0, 0.40, cz);
+          addBox(lnkGrp, galLen, 0.14, 0.56, acc.trim, 0, 0.88, cz);
+        });
+        addBox(lnkGrp, galLen, 0.22, w + 0.4, m.subwayCutawayGlass, 0, 0.86, 0);
+        for (let rx = -galLen * 0.46; rx <= galLen * 0.46 + 0.1; rx += 8.5) {
+          addBox(lnkGrp, 0.24, 0.28, w + 0.6, m.steelDark, rx, 0.88, 0);
         }
       }
     });
@@ -5290,16 +5620,35 @@ window.MetroWebGLLayer = (function () {
     const c = corridor || yellowCorridor;
     const stList = c ? c.stationsData : stationsData;
     const isBlue = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue'));
+    const isOrange = Boolean(c && (c.isOrange || c.lineId === 'orange' || c.lineKey === 'orange'));
+    const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
 
     stList.forEach((st) => {
       st.corridor = c;
-      if (!st.lineId) st.lineId = isBlue ? 'blue' : 'yellow';
+      if (!st.lineId) st.lineId = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow'));
       const secColor = pickInterchangeHex(st);
       const secCss = secColor ? ('#' + secColor.toString(16).padStart(6, '0')) : null;
       const isUgSide = st.structure !== 'elevated' && UNDERGROUND_SIDE_STATIONS.has(st.name);
       const isElIsland = st.structure === 'elevated' && st.name === 'Haiderpur Badli Mor';
       let subtitle;
-      if (isBlue) {
+      if (isOrange) {
+        if (st.name === 'IGI Airport') subtitle = 'AIRPORT EXPRESS · IGI TERMINAL 3 AIRPORT LINK';
+        else if (st.name === 'Delhi Aerocity') subtitle = 'AIRPORT EXPRESS · HOSPITALITY DISTRICT';
+        else if (st.name === 'Dhaula Kuan') subtitle = 'AIRPORT EXPRESS · +18.5M ELEVATED FLYOVER OVER RING RD';
+        else if (st.name === 'Shivaji Stadium') subtitle = 'AIRPORT EXPRESS · CONNAUGHT PLACE TERMINAL';
+        else if (st.name === 'New Delhi') subtitle = 'AIRPORT EXPRESS · YELLOW × INDIAN RAILWAYS TERMINUS';
+        else if (st.terminus) subtitle = `AIRPORT EXPRESS · TERMINUS · ${st.structure.toUpperCase()}`;
+        else subtitle = `AIRPORT EXPRESS · ${st.structure === 'elevated' ? '+18.5M ELEVATED' : `${st.elevM || -14}M UNDERGROUND`}`;
+      } else if (isMagenta) {
+        if (st.name === 'Janakpuri West') subtitle = 'MAGENTA × BLUE INTERCHANGE · INDIA HIGHEST ESCALATOR';
+        else if (st.name === 'Hauz Khas') subtitle = 'MAGENTA × YELLOW INTERCHANGE · -29M DEEPEST TUBE';
+        else if (st.name === 'Botanical Garden') subtitle = 'MAGENTA × BLUE NOIDA INTERCHANGE · +17M ELEVATED';
+        else if (st.name === 'Kalkaji Mandir') subtitle = 'MAGENTA × VIOLET INTERCHANGE';
+        else if (st.name === 'Terminal 1 IGI Airport') subtitle = 'MAGENTA LINE · DOMESTIC AIRPORT T1 LINK';
+        else if (st.name === 'Kalindi Kunj') subtitle = 'MAGENTA LINE · YAMUNA RIVER VIADUCT BRIDGE';
+        else if (st.terminus) subtitle = `MAGENTA LINE · TERMINUS · ${st.structure.toUpperCase()}`;
+        else subtitle = `MAGENTA LINE · ${st.structure === 'elevated' ? '+16M ELEVATED' : `${st.elevM || -16}M UNDERGROUND`}`;
+      } else if (isBlue) {
         if (st.name === 'Rajiv Chowk') subtitle = 'BLUE × YELLOW CP INTERCHANGE · UPPER BRIDGE +7.6M';
         else if (st.name === 'Akshardham') subtitle = 'YAMUNA BANK BYPASS · +16M ELEVATED';
         else if (st.name === 'Yamuna Bank') subtitle = 'BLUE LINE FORK · NOIDA × VAISHALI JUNCTION';
@@ -5419,15 +5768,21 @@ window.MetroWebGLLayer = (function () {
     const cProxy = c ? c.fastCurveProxy : fastCurveProxy;
     const isVaishali = Boolean(c && (c.lineId === 'blue-vaishali' || c.lineKey === 'blue-vaishali'));
     const isBlue = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue' || isVaishali));
-    const lineColor = isBlue ? 0x2563EB : 0xEAB308;
-    const idPrefix = isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL');
-    const trainsCount = isVaishali ? 3 : FLEET_TRAINS_PER_DIR;
+    const isOrange = Boolean(c && (c.isOrange || c.lineId === 'orange' || c.lineKey === 'orange'));
+    const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
+    const lineColor = isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : (isBlue ? 0x2563EB : 0xEAB308));
+    const idPrefix = isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL')));
+    const trainsCount = isOrange ? 4 : (isVaishali ? 3 : (isMagenta ? 7 : FLEET_TRAINS_PER_DIR));
 
-    const heroNames = isVaishali
-      ? ['Anand Vihar ISBT', 'Karkarduma', 'Preet Vihar', 'Vaishali']
-      : (isBlue
-        ? ['Dwarka Sector 21', 'Rajiv Chowk', 'Akshardham', 'Botanical Garden', 'Noida City Centre']
-        : ['Qutab Minar', 'Green Park', 'Lok Kalyan Marg', 'Rajiv Chowk', 'Kashmere Gate']);
+    const heroNames = isOrange
+      ? ['IGI Airport', 'Dhaula Kuan', 'Shivaji Stadium', 'Delhi Aerocity', 'Yashobhoomi Dwarka Sector 25']
+      : (isMagenta
+        ? ['Janakpuri West', 'Terminal 1 IGI Airport', 'Hauz Khas', 'Kalkaji Mandir', 'Botanical Garden']
+        : (isVaishali
+          ? ['Anand Vihar ISBT', 'Karkarduma', 'Preet Vihar', 'Vaishali']
+          : (isBlue
+            ? ['Dwarka Sector 21', 'Rajiv Chowk', 'Akshardham', 'Botanical Garden', 'Noida City Centre']
+            : ['Qutab Minar', 'Green Park', 'Lok Kalyan Marg', 'Rajiv Chowk', 'Kashmere Gate'])));
     const heroDists = heroNames
       .map((n) => cStations.find((s) => s.name === n))
       .filter(Boolean)
@@ -5486,7 +5841,7 @@ window.MetroWebGLLayer = (function () {
           initDir: dir,
           dist,
           laneOffset: dir > 0 ? TRACK_HALF_SEP : -TRACK_HALF_SEP,
-          speedMps: 68, // Crisp dignified architectural transit pace
+          speedMps: isOrange ? 78 : (isMagenta ? 66 : 68), // Crisp dignified transit pace (78 mps for Airport Express)
           dwellTimer: 0,
           lastStationIdx: -1,
           group: trainGroup,
@@ -5517,12 +5872,12 @@ window.MetroWebGLLayer = (function () {
       const nLast = Math.max(1, cSamples.length - 1);
 
       if (activeLineId !== 'all') {
-        const isB = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue'));
-        if (activeLineId === 'blue' && !isB) {
-          if (tr.group.visible) tr.group.visible = false;
-          continue;
-        }
-        if (activeLineId === 'yellow' && isB) {
+        const lineKey = c ? (c.lineKey || c.lineId) : 'yellow';
+        const matches = (activeLineId === 'blue' && (lineKey === 'blue' || lineKey === 'blue-vaishali')) ||
+                        (activeLineId === 'yellow' && lineKey === 'yellow') ||
+                        (activeLineId === 'orange' && lineKey === 'orange') ||
+                        (activeLineId === 'magenta' && lineKey === 'magenta');
+        if (!matches) {
           if (tr.group.visible) tr.group.visible = false;
           continue;
         }
@@ -6751,12 +7106,34 @@ window.MetroWebGLLayer = (function () {
       const interchangeHubsPromise = window.__interchangeHubsPromise || (
         window.__interchangeHubsPromise = fetch('src/data/dmrc_interchange_hubs.json').then((r) => r.json()).catch(() => null)
       );
-      const [osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, yamunaYardJson, interchangeHubsJson] = await Promise.all([
-        osmPromise, topoPromise, svcPromise, blueOsmPromise, blueSvcPromise, vaishaliOsmPromise, yamunaYardPromise, interchangeHubsPromise
+      const orangeOsmPromise = window.__orangeLineOsmPromise || (
+        window.__orangeLineOsmPromise = fetch('src/data/orange_line_accurate_osm.json').then((r) => r.json()).catch(() => null)
+      );
+      const orangeSvcPromise = window.__orangeLineServicePromise || (
+        window.__orangeLineServicePromise = fetch('src/data/orange_line_service.json').then((r) => r.json()).catch(() => null)
+      );
+      const magentaOsmPromise = window.__magentaLineOsmPromise || (
+        window.__magentaLineOsmPromise = fetch('src/data/magenta_line_accurate_osm.json').then((r) => r.json()).catch(() => null)
+      );
+      const magentaSvcPromise = window.__magentaLineServicePromise || (
+        window.__magentaLineServicePromise = fetch('src/data/magenta_line_service.json').then((r) => r.json()).catch(() => null)
+      );
+      const [
+        osmData, topoData, svcData,
+        blueOsmData, blueSvcData, vaishaliOsmData,
+        yamunaYardJson, interchangeHubsJson,
+        orangeOsmData, orangeSvcData,
+        magentaOsmData, magentaSvcData
+      ] = await Promise.all([
+        osmPromise, topoPromise, svcPromise,
+        blueOsmPromise, blueSvcPromise, vaishaliOsmPromise,
+        yamunaYardPromise, interchangeHubsPromise,
+        orangeOsmPromise, orangeSvcPromise,
+        magentaOsmPromise, magentaSvcPromise
       ]);
       yamunaYardData = yamunaYardJson;
       interchangeHubsData = interchangeHubsJson;
-      buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData);
+      buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData);
     } catch (err) {
       console.error('MetroWebGLLayer failed to load metro data:', err);
     }
@@ -6788,13 +7165,12 @@ window.MetroWebGLLayer = (function () {
     for (let i = 0; i < list.length; i++) {
       const st = list[i];
       if (activeLineId !== 'all' && !st._isSharedDualHub) {
-        const isB = Boolean(st.isBlue || st.lineId === 'blue' || st.lineKey === 'blue' || (st.corridor && st.corridor.isBlue));
-        if (activeLineId === 'blue' && !isB) {
-          if (st._group && st._group.visible) st._group.visible = false;
-          if (st._ring && st._ring.visible) st._ring.visible = false;
-          continue;
-        }
-        if (activeLineId === 'yellow' && isB) {
+        const stLineKey = st.lineKey || st.lineId || (st.corridor ? (st.corridor.lineKey || st.corridor.lineId) : (st.isBlue ? 'blue' : 'yellow'));
+        const matches = (activeLineId === 'blue' && (stLineKey === 'blue' || stLineKey === 'blue-vaishali')) ||
+                        (activeLineId === 'yellow' && stLineKey === 'yellow') ||
+                        (activeLineId === 'orange' && stLineKey === 'orange') ||
+                        (activeLineId === 'magenta' && stLineKey === 'magenta');
+        if (!matches) {
           if (st._group && st._group.visible) st._group.visible = false;
           if (st._ring && st._ring.visible) st._ring.visible = false;
           continue;
@@ -6880,7 +7256,7 @@ window.MetroWebGLLayer = (function () {
     }
   }
 
-  function buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData) {
+  function buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData) {
     if (!scene) return;
     initOrigin();
 
@@ -6897,7 +7273,13 @@ window.MetroWebGLLayer = (function () {
     if (vaishaliOsmData) {
       vaishaliCorridor = buildCorridorCurve(vaishaliOsmData, topoData, null, 'blue-vaishali');
     }
-    allCorridors = [yellowCorridor, blueCorridor, vaishaliCorridor].filter(Boolean);
+    if (orangeOsmData) {
+      orangeCorridor = buildCorridorCurve(orangeOsmData, topoData, orangeSvcData, 'orange');
+    }
+    if (magentaOsmData) {
+      magentaCorridor = buildCorridorCurve(magentaOsmData, topoData, magentaSvcData, 'magenta');
+    }
+    allCorridors = [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor].filter(Boolean);
     allStationsData = allCorridors.flatMap((c) => (c === vaishaliCorridor ? c.stationsData.filter((s) => s.name !== 'Yamuna Bank') : c.stationsData));
 
     const hemi = new THREE.HemisphereLight(0xF8FAFC, 0x94A3B8, 0.24);
@@ -6938,6 +7320,12 @@ window.MetroWebGLLayer = (function () {
     if (vaishaliCorridor) {
       buildTrackInfrastructure(infraGroup, vaishaliCorridor.portalCoords, vaishaliCorridor);
     }
+    if (orangeCorridor) {
+      buildTrackInfrastructure(infraGroup, orangeCorridor.portalCoords, orangeCorridor);
+    }
+    if (magentaCorridor) {
+      buildTrackInfrastructure(infraGroup, magentaCorridor.portalCoords, magentaCorridor);
+    }
     if (yamunaYardData) {
       yamunaYardGroup = buildYamunaYardInfrastructure(infraGroup, yamunaYardData);
     }
@@ -6949,12 +7337,24 @@ window.MetroWebGLLayer = (function () {
     if (vaishaliCorridor) {
       buildAllStations(infraGroup, vaishaliCorridor);
     }
+    if (orangeCorridor) {
+      buildAllStations(infraGroup, orangeCorridor);
+    }
+    if (magentaCorridor) {
+      buildAllStations(infraGroup, magentaCorridor);
+    }
     buildFleet(infraGroup, yellowCorridor);
     if (blueCorridor) {
       buildFleet(infraGroup, blueCorridor);
     }
     if (vaishaliCorridor) {
       buildFleet(infraGroup, vaishaliCorridor);
+    }
+    if (orangeCorridor) {
+      buildFleet(infraGroup, orangeCorridor);
+    }
+    if (magentaCorridor) {
+      buildFleet(infraGroup, magentaCorridor);
     }
 
     scene.add(infraGroup);
@@ -7123,7 +7523,11 @@ window.MetroWebGLLayer = (function () {
         map.getCanvas().style.cursor = 'pointer';
         const kind = hit.structure === 'elevated' ? 'Elevated Viaduct (+17m)' : 'Underground Cutaway';
         const xBadge = hit.interchange ? ` · ${hit.interchange}` : '';
-        const dotColor = (hit.lineId === 'blue') ? '#3B82F6' : '#FACC15';
+        const dotColor = (hit.lineId === 'orange' || hit.lineKey === 'orange')
+          ? '#F97316'
+          : ((hit.lineId === 'magenta' || hit.lineKey === 'magenta')
+            ? '#D946EF'
+            : ((hit.lineId === 'blue' || hit.isBlue) ? '#3B82F6' : '#FACC15'));
         hoverTooltip.innerHTML = `<span style="color:${dotColor}">●</span> ${hit.name} <span style="color:#CBD5E1;font-weight:500">(${kind}${xBadge})</span>`;
         hoverTooltip.style.left = `${e.originalEvent.clientX + 14}px`;
         hoverTooltip.style.top = `${e.originalEvent.clientY - 14}px`;
@@ -7168,9 +7572,12 @@ window.MetroWebGLLayer = (function () {
     for (let i = 0; i < stList.length; i++) {
       const st = stList[i];
       if (activeLineId !== 'all') {
-        const isB = Boolean(st.isBlue || st.lineId === 'blue' || st.lineKey === 'blue' || (st.corridor && st.corridor.isBlue));
-        if (activeLineId === 'blue' && !isB) continue;
-        if (activeLineId === 'yellow' && isB) continue;
+        const stLineKey = st.lineKey || st.lineId || (st.corridor ? (st.corridor.lineKey || st.corridor.lineId) : (st.isBlue ? 'blue' : 'yellow'));
+        const matches = (activeLineId === 'blue' && (stLineKey === 'blue' || stLineKey === 'blue-vaishali')) ||
+                        (activeLineId === 'yellow' && stLineKey === 'yellow') ||
+                        (activeLineId === 'orange' && stLineKey === 'orange') ||
+                        (activeLineId === 'magenta' && stLineKey === 'magenta');
+        if (!matches) continue;
       }
       tmp.set(st.pos.x, st.structure === 'elevated' ? VIADUCT_Y + 3 : 2.5, st.pos.z);
       tmp.project(camera);
@@ -8208,6 +8615,10 @@ window.MetroWebGLLayer = (function () {
         activeWalkCorridor = blueCorridor;
       } else if (activeLineId === 'yellow') {
         activeWalkCorridor = yellowCorridor;
+      } else if (activeLineId === 'orange') {
+        activeWalkCorridor = orangeCorridor;
+      } else if (activeLineId === 'magenta') {
+        activeWalkCorridor = magentaCorridor;
       }
       updateVisibilityAndCulling(performance.now(), 0, false);
       if (typeof window.syncStationStepper === 'function') {
@@ -8215,7 +8626,7 @@ window.MetroWebGLLayer = (function () {
       }
     },
     getActiveLine() { return activeLineId; },
-    getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor }; },
+    getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor, orange: orangeCorridor, magenta: magentaCorridor }; },
     getActiveStations() {
       if (activeLineId === 'blue') {
         const main = blueCorridor ? blueCorridor.stationsData : [];
@@ -8223,6 +8634,8 @@ window.MetroWebGLLayer = (function () {
         return main.concat(vBranch);
       }
       if (activeLineId === 'yellow' && yellowCorridor) return yellowCorridor.stationsData;
+      if (activeLineId === 'orange' && orangeCorridor) return orangeCorridor.stationsData;
+      if (activeLineId === 'magenta' && magentaCorridor) return magentaCorridor.stationsData;
       return allStationsData.length ? allStationsData : stationsData;
     },
     getStationCount() { return allStationsData.length || stationsData.length; },

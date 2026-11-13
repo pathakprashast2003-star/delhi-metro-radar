@@ -2017,7 +2017,12 @@
       centralsec: { center: [77.2123, 28.6159], zoom: 18.45, pitch: 54, bearing: -18, duration: 1200 },
       dwarka: { center: [77.0583, 28.5523], zoom: 18.4, pitch: 54, bearing: -22, duration: 1100 },
       akshardham: { center: [77.2782, 28.6152], zoom: 16.3, pitch: 58, bearing: -42, duration: 1100 },
-      noida: { center: [77.3732, 28.6258], zoom: 18.4, pitch: 54, bearing: -20, duration: 1100 }
+      noida: { center: [77.3732, 28.6258], zoom: 18.4, pitch: 54, bearing: -20, duration: 1100 },
+      dhaulakuan: { center: [77.1685, 28.5885], zoom: 17.5, pitch: 58, bearing: -30, duration: 1100 },
+      igiairport: { center: [77.0867, 28.5565], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
+      yashobhoomi: { center: [77.0453, 28.5508], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
+      janakpuri: { center: [77.0779, 28.6289], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
+      botanical: { center: [77.3338, 28.5639], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 }
     };
 
     const BOOKMARK_STATION_NAMES = {
@@ -2031,7 +2036,12 @@
       centralsec: 'Central Secretariat',
       dwarka: 'Dwarka Sector 21',
       akshardham: 'Akshardham',
-      noida: 'Noida Electronic City'
+      noida: 'Noida Electronic City',
+      dhaulakuan: 'Dhaula Kuan',
+      igiairport: 'IGI Airport',
+      yashobhoomi: 'Yashobhoomi Dwarka Sector 25',
+      janakpuri: 'Janakpuri West',
+      botanical: 'Botanical Garden'
     };
 
     let currentStepperIndex = 0;
@@ -2069,11 +2079,31 @@
       const countEl = document.getElementById('station-step-count');
       const nameEl = document.getElementById('station-step-name');
       const lineTag = document.getElementById('station-step-line-tag');
+      const activeLine = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveLine === 'function')
+        ? window.MetroWebGLLayer.getActiveLine()
+        : 'all';
+      const isOrange = st && (st.lineId === 'orange' || st.lineKey === 'orange' || (activeLine === 'orange' && !st.lineId));
+      const isMagenta = st && (st.lineId === 'magenta' || st.lineKey === 'magenta' || (activeLine === 'magenta' && !st.lineId));
       const isVaishali = st && (st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali'));
-      const isBlue = st && (st.lineId === 'blue' || isVaishali || (window.MetroWebGLLayer && window.MetroWebGLLayer.getActiveLine() === 'blue'));
+      const isBlue = !isOrange && !isMagenta && st && (st.lineId === 'blue' || isVaishali || (activeLine === 'blue' && !st.lineId));
+
       if (lineTag) {
-        lineTag.textContent = isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL');
-        lineTag.className = `station-step-line-tag ${isBlue ? 'line-blue' : 'line-yellow'}`;
+        if (isOrange) {
+          lineTag.textContent = 'OE';
+          lineTag.className = 'station-step-line-tag line-orange';
+        } else if (isMagenta) {
+          lineTag.textContent = 'ML';
+          lineTag.className = 'station-step-line-tag line-magenta';
+        } else if (isVaishali) {
+          lineTag.textContent = 'BV';
+          lineTag.className = 'station-step-line-tag line-blue';
+        } else if (isBlue) {
+          lineTag.textContent = 'BL';
+          lineTag.className = 'station-step-line-tag line-blue';
+        } else {
+          lineTag.textContent = 'YL';
+          lineTag.className = 'station-step-line-tag line-yellow';
+        }
       }
       if (countEl) countEl.textContent = `${idx + 1}/${stations.length}`;
       if (nameEl && st) nameEl.textContent = st.name;
@@ -2196,20 +2226,32 @@
         : (window.TripEngine ? TripEngine.getStations() : []);
 
       if (tab === 'yellow') {
-        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali'));
+        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && !s.isOrange && !s.isMagenta && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali' && s.lineId !== 'orange' && s.lineId !== 'magenta'));
       }
       if (tab === 'blue') {
         return allStations.filter(s => s.lineId === 'blue' || s.lineId === 'blue-vaishali' || s.isBlue);
+      }
+      if (tab === 'orange') {
+        return allStations.filter(s => s.lineId === 'orange' || s.lineKey === 'orange' || s.isOrange);
+      }
+      if (tab === 'magenta') {
+        return allStations.filter(s => s.lineId === 'magenta' || s.lineKey === 'magenta' || s.isMagenta);
       }
       if (tab === 'all') {
         return allStations;
       }
       // 'active'
+      if (activeLine === 'orange') {
+        return allStations.filter(s => s.lineId === 'orange' || s.lineKey === 'orange' || s.isOrange);
+      }
+      if (activeLine === 'magenta') {
+        return allStations.filter(s => s.lineId === 'magenta' || s.lineKey === 'magenta' || s.isMagenta);
+      }
       if (activeLine === 'blue') {
         return allStations.filter(s => s.lineId === 'blue' || s.lineId === 'blue-vaishali' || s.isBlue);
       }
       if (activeLine === 'yellow') {
-        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali'));
+        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && !s.isOrange && !s.isMagenta && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali' && s.lineId !== 'orange' && s.lineId !== 'magenta'));
       }
       return allStations;
     }
@@ -2242,19 +2284,23 @@
       const curNameNorm = curSt ? String(curSt.name || '').toLowerCase().replace(/[-–—]/g, ' ').trim() : '';
 
       dropdownList.innerHTML = filtered.map((st, idx) => {
+        const isOrange = Boolean(st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange);
+        const isMagenta = Boolean(st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta);
         const isVaishali = Boolean(st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali'));
-        const isB = Boolean(st.isBlue || st.lineId === 'blue' || isVaishali);
-        const lineTag = isVaishali ? 'BV' : (isB ? 'BL' : 'YL');
-        const lineClass = isB ? 'line-blue' : 'line-yellow';
+        const isB = Boolean(!isOrange && !isMagenta && (st.isBlue || st.lineId === 'blue' || isVaishali));
+        const lineTag = isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isB ? 'BL' : 'YL')));
+        const lineClass = isOrange ? 'line-orange' : (isMagenta ? 'line-magenta' : (isB ? 'line-blue' : 'line-yellow'));
+        const lineAttr = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isB ? 'blue' : 'yellow'));
         const stNameNorm = String(st.name || '').toLowerCase().replace(/[-–—]/g, ' ').trim();
         const isActive = curNameNorm && stNameNorm === curNameNorm;
-        const seqText = isVaishali ? `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/8` : `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/${isB ? 50 : 37}`;
+        const totalLineCount = isOrange ? 7 : (isMagenta ? 25 : (isVaishali ? 8 : (isB ? 50 : 37)));
+        const seqText = `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/${totalLineCount}`;
 
         let structBadge = '';
         if (st.structure === 'at-grade') {
           structBadge = '<span class="stepper-badge stepper-badge-fork">At-Grade 0m</span>';
         } else if (st.structure === 'elevated') {
-          structBadge = '<span class="stepper-badge stepper-badge-structure">Elevated +15m</span>';
+          structBadge = `<span class="stepper-badge stepper-badge-structure">Elevated +${st.elevM || 15}m</span>`;
         } else {
           structBadge = `<span class="stepper-badge stepper-badge-structure">Tube ${st.elevM || -18}m</span>`;
         }
@@ -2269,7 +2315,7 @@
         }
 
         return `
-          <button class="stepper-item ${isActive ? 'active' : ''}" type="button" data-name="${st.name}" data-line="${isB ? 'blue' : 'yellow'}" role="option" aria-selected="${isActive}">
+          <button class="stepper-item ${isActive ? 'active' : ''}" type="button" data-name="${st.name}" data-line="${lineAttr}" role="option" aria-selected="${isActive}">
             <span class="stepper-item-num ${lineClass}">${lineTag}</span>
             <div class="stepper-item-info">
               <div class="stepper-item-top">
@@ -2333,7 +2379,11 @@
         ? window.MetroWebGLLayer.getActiveLine()
         : 'all';
       if (activeLine !== 'all' && activeLine !== stLine) {
-        const btnId = stLine === 'blue' ? 'btn-line-blue' : 'btn-line-yellow';
+        const btnId = stLine === 'orange'
+          ? 'btn-line-orange'
+          : (stLine === 'magenta'
+            ? 'btn-line-magenta'
+            : (stLine === 'blue' ? 'btn-line-blue' : 'btn-line-yellow'));
         document.getElementById(btnId)?.click();
       }
 
@@ -2423,13 +2473,19 @@
       });
     }
 
-    ['btn-line-all', 'btn-line-yellow', 'btn-line-blue'].forEach((id) => {
+    ['btn-line-all', 'btn-line-yellow', 'btn-line-blue', 'btn-line-orange', 'btn-line-magenta'].forEach((id) => {
       document.getElementById(id)?.addEventListener('click', (e) => {
-        ['btn-line-all', 'btn-line-yellow', 'btn-line-blue'].forEach((bId) => {
+        ['btn-line-all', 'btn-line-yellow', 'btn-line-blue', 'btn-line-orange', 'btn-line-magenta'].forEach((bId) => {
           document.getElementById(bId)?.classList.remove('active');
         });
         e.currentTarget.classList.add('active');
-        const lineId = id === 'btn-line-blue' ? 'blue' : (id === 'btn-line-yellow' ? 'yellow' : 'all');
+        const lineId = id === 'btn-line-blue'
+          ? 'blue'
+          : (id === 'btn-line-yellow'
+            ? 'yellow'
+            : (id === 'btn-line-orange'
+              ? 'orange'
+              : (id === 'btn-line-magenta' ? 'magenta' : 'all')));
         if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.setLineFilter === 'function') {
           window.MetroWebGLLayer.setLineFilter(lineId);
         }
@@ -2441,6 +2497,14 @@
         } else if (lineId === 'yellow') {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
             window.MetroWebGLLayer.flyToStation('Samaypur Badli');
+          }
+        } else if (lineId === 'orange') {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+            window.MetroWebGLLayer.flyToStation('Dhaula Kuan');
+          }
+        } else if (lineId === 'magenta') {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+            window.MetroWebGLLayer.flyToStation('Janakpuri West');
           }
         } else {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {

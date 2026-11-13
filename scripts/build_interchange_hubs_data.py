@@ -238,6 +238,17 @@ def point_at_offset_along_tan(origin_ll, tan_xy, along_m=0.0, perp_m=0.0):
     return local_to_ll((dx, dy), origin_ll)
 
 
+def edge_anchor_toward(origin_ll, tan_xy, target_ll, perp_dist_m=10.5, along_m=0.0, clamp_along_m=18.0):
+    """Pick the lateral station-concourse facade point facing target_ll, with optional along-track shift."""
+    vx, vy = ll_to_local(target_ll, origin_ll)
+    nx, ny = tan_xy[1], -tan_xy[0]
+    side = 1.0 if (vx * nx + vy * ny) >= 0.0 else -1.0
+    if along_m == 0.0 and clamp_along_m > 0.0:
+        proj_along = vx * tan_xy[0] + vy * tan_xy[1]
+        along_m = max(-clamp_along_m, min(clamp_along_m, proj_along * 0.45))
+    return point_at_offset_along_tan(origin_ll, tan_xy, along_m=along_m, perp_m=side * perp_dist_m)
+
+
 def clearance_box_for_arm(center_ll, tan_xy, length=104.0, width=28.0):
     return {
         "center": [round(center_ll[0], 6), round(center_ll[1], 6)],
@@ -493,11 +504,11 @@ def main():
 
     hubs = {}
 
-    # 1. Haiderpur Badli Mor (Yellow elev 17.5m + Phase-4 Magenta upper elev 27.8m directly over Yellow)
+    # 1. Haiderpur Badli Mor (Yellow elev 17.5m + Phase-4 Magenta upper elev 29.2m directly over Yellow w/ straddle portal bents)
     p = primary_map["Haiderpur Badli Mor"]
     mag_hbm = build_osm_arm(
         "Haiderpur Badli Mor", [538930432], "Magenta Line", "#D946EF", p["center"],
-        tier="elevated_upper", deck_y=27.8, platform_type="side",
+        tier="elevated_upper", deck_y=29.2, platform_type="side",
         station_len=84, platform_width=19.6, clip_back=135.0, clip_fwd=135.0,
     )
     mag_hbm["offsetMeters"] = round(dist_m(p["center"], mag_hbm["center"]), 1)
@@ -514,14 +525,14 @@ def main():
                 "kind": "lift_tower",
                 "posLngLat": point_at_offset_along_tan(p["center"], p["tangent"], along_m=22.0, perp_m=15.0),
                 "fromY": 0.0,
-                "toY": 27.8,
+                "toY": 29.2,
                 "color": "#D946EF",
             }
         ],
         "clearanceBoxes": [clearance_box_for_arm(mag_hbm["center"], mag_hbm["tangent"], 114, 28)],
     }
 
-    # 2. Azadpur (Yellow elev 17.5m + Pink UG 0.28m at real OSM Azadpur (Pink Line) 209m SE + skywalk)
+    # 2. Azadpur (Yellow elev 17.5m + Pink UG 0.28m at real OSM Azadpur (Pink Line) 206m SE + skywalk to street lift/escalator house)
     p = primary_map["Azadpur"]
     az_pink_ll = osm_station_node("Azadpur", "Azadpur (Pink Line)")
     pink_az = build_osm_arm(
@@ -531,6 +542,7 @@ def main():
         gtfs_ids=["P_MS"],
     )
     pink_az["offsetMeters"] = round(dist_m(p["center"], pink_az["center"]), 1)
+    az_tower_ll = edge_anchor_toward(pink_az["center"], pink_az["tangent"], p["center"], perp_dist_m=11.8, clamp_along_m=10.0)
     hubs["Azadpur"] = {
         "primaryLine": p["primaryLine"],
         "primaryStructure": p["structure"],
@@ -542,18 +554,18 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], az_tower_ll, perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": pink_az["center"],
-                "toY": 4.2,
+                "toLngLat": az_tower_ll,
+                "toY": 11.4,
                 "width": 6.4,
                 "color": "#EC4899",
             },
             {
                 "kind": "lift_tower",
-                "posLngLat": pink_az["center"],
+                "posLngLat": az_tower_ll,
                 "fromY": 0.28,
-                "toY": 11.5,
+                "toY": 13.6,
                 "color": "#EC4899",
             },
         ],
@@ -744,7 +756,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(mag_hk["center"], mag_hk["tangent"], 114, 28)],
     }
 
-    # 8. Sikanderpur (Yellow elev 17.5m + Rapid Metro elev 17.5m 143m E + skywalk)
+    # 8. Sikanderpur (Yellow elev 17.5m + Rapid Metro elev 17.5m 143m E + concourse skywalk)
     p = primary_map["Sikanderpur"]
     sik_rmrg_node = osm_station_node("Sikanderpur", "RMRG")
     rmrg_sik = build_osm_arm(
@@ -764,10 +776,10 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], rmrg_sik["center"], perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": rmrg_sik["center"],
-                "toY": 11.8,
+                "toLngLat": edge_anchor_toward(rmrg_sik["center"], rmrg_sik["tangent"], p["center"], perp_dist_m=9.2),
+                "toY": 11.5,
                 "width": 6.4,
                 "color": "#06B6D4",
             }
@@ -813,7 +825,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(aex_d21["center"], aex_d21["tangent"], 114, 28)],
     }
 
-    # 10. Dwarka (Blue elev 17.5m + Grey Line elev 17.5m parallel 114m NNW + headwall + skywalk)
+    # 10. Dwarka (Blue elev 17.5m + Grey Line elev 17.5m parallel 110m NNW + headwall + concourse skywalk)
     p = primary_map["Dwarka"]
     dw_grey_node = osm_station_node("Dwarka", "Grey Line")
     grey_dw = build_osm_arm(
@@ -834,10 +846,10 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], grey_dw["center"], perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": grey_dw["center"],
-                "toY": 11.8,
+                "toLngLat": edge_anchor_toward(grey_dw["center"], grey_dw["tangent"], p["center"], perp_dist_m=9.2),
+                "toY": 11.5,
                 "width": 7.6,
                 "color": "#9CA3AF",
             }
@@ -845,7 +857,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(grey_dw["center"], grey_dw["tangent"], 108, 28)],
     }
 
-    # 11. Janak Puri West (Blue elev 17.5m + Magenta UG 0.28m directly beneath + Phase-4 ext + escalator bridge)
+    # 11. Janak Puri West (Blue elev 17.5m + Magenta UG 0.28m directly south + India's tallest escalator glass hall)
     p = primary_map["Janak Puri West"]
     jp_mag_node = osm_station_node("Janak Puri West", "Janakpuri West", prefer_ll=[77.077949, 28.628947])
     mag_jp = build_osm_arm(
@@ -855,6 +867,11 @@ def main():
         gtfs_ids=["M_JB"],
     )
     mag_jp["offsetMeters"] = round(dist_m(p["center"], mag_jp["center"]), 1)
+    # Pick north end concourse vestibule on Magenta facing Blue station
+    jp_v = ll_to_local(p["center"], mag_jp["center"])
+    jp_along_sign = 1.0 if (jp_v[0] * mag_jp["tangent"][0] + jp_v[1] * mag_jp["tangent"][1]) >= 0.0 else -1.0
+    jp_mag_entry = point_at_offset_along_tan(mag_jp["center"], mag_jp["tangent"], along_m=jp_along_sign * 26.0, perp_m=0.0)
+    jp_mag_entry_side = edge_anchor_toward(jp_mag_entry, mag_jp["tangent"], p["center"], perp_dist_m=11.0, clamp_along_m=0.0)
     hubs["Janak Puri West"] = {
         "primaryLine": p["primaryLine"],
         "primaryStructure": p["structure"],
@@ -865,16 +882,16 @@ def main():
         "links": [
             {
                 "kind": "escalator_bridge",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], jp_mag_entry_side, perp_dist_m=11.5, clamp_along_m=12.0),
                 "fromY": 11.8,
-                "toLngLat": mag_jp["center"],
-                "toY": 4.2,
-                "width": 7.2,
+                "toLngLat": jp_mag_entry_side,
+                "toY": 4.8,
+                "width": 7.6,
                 "color": "#D946EF",
             },
             {
                 "kind": "lift_tower",
-                "posLngLat": point_at_offset_along_tan(mag_jp["center"], mag_jp["tangent"], along_m=18.0, perp_m=14.0),
+                "posLngLat": jp_mag_entry_side,
                 "fromY": 0.28,
                 "toY": 11.8,
                 "color": "#D946EF",
@@ -883,7 +900,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(mag_jp["center"], mag_jp["tangent"], 114, 28)],
     }
 
-    # 12. Rajouri Garden (Blue elev 17.5m w/ full blue canopy + Pink Ring Rd elev 21.5m 271m NE + iconic skywalk)
+    # 12. Rajouri Garden (Blue elev 17.5m + Pink Ring Rd elev 21.5m 275m NE + iconic concourse skywalk)
     p = primary_map["Rajouri Garden"]
     rg_pink_node = osm_station_node("Rajouri Garden", "Pink Line")
     pink_rg = build_osm_arm(
@@ -904,10 +921,10 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], pink_rg["center"], perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": pink_rg["center"],
-                "toY": 15.8,
+                "toLngLat": edge_anchor_toward(pink_rg["center"], pink_rg["tangent"], p["center"], perp_dist_m=9.5),
+                "toY": 15.2,
                 "width": 6.4,
                 "color": "#EC4899",
             }
@@ -915,18 +932,19 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(pink_rg["center"], pink_rg["tangent"], 112, 28)],
     }
 
-    # 13. Kirti Nagar (Blue elev 17.5m + Green Line terminus elev 17.5m 311m ESE + overrun pocket + skywalk)
+    # 13. Kirti Nagar (Blue elev 17.5m + Green Line AT-GRADE terminus 1.2m ~148m ESE + escalator/lift transfer tower)
     p = primary_map["Kirti Nagar"]
     kn_green_node = osm_station_node("Kirti Nagar", "Green Line")
     # [171440669 (overrun SW tail) -> 1489748193 -> 77852923 (mainline NE)]
     green_kn = build_osm_arm(
         "Kirti Nagar", [171440669, 1489748193, 77852923], "Green Line", "#10B981", kn_green_node,
-        tier="elevated", deck_y=17.5, platform_type="side",
+        tier="at_grade", deck_y=1.2, platform_type="side",
         station_len=80, platform_width=18.4, clip_back=265.0, clip_fwd=135.0,
         terminus_side="start",
         gtfs_ids=["G_KB"],
     )
     green_kn["offsetMeters"] = round(dist_m(p["center"], green_kn["center"]), 1)
+    kn_tower_ll = edge_anchor_toward(green_kn["center"], green_kn["tangent"], p["center"], perp_dist_m=11.6, clamp_along_m=10.0)
     hubs["Kirti Nagar"] = {
         "primaryLine": p["primaryLine"],
         "primaryStructure": p["structure"],
@@ -937,24 +955,32 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], kn_tower_ll, perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": green_kn["center"],
+                "toLngLat": kn_tower_ll,
                 "toY": 11.8,
-                "width": 6.2,
+                "width": 6.4,
                 "color": "#10B981",
-            }
+            },
+            {
+                "kind": "lift_tower",
+                "posLngLat": kn_tower_ll,
+                "fromY": 1.2,
+                "toY": 13.8,
+                "color": "#10B981",
+            },
         ],
         "clearanceBoxes": [clearance_box_for_arm(green_kn["center"], green_kn["tangent"], 108, 28)],
     }
 
-    # 14. Mandi House (Blue UG 0.28m + Violet Line UG 0.28m parallel/curving along WY 610024711)
+    # 14. Mandi House (Blue UG 0.28m + Violet Line UG 0.28m parallel 30m S along Sikandra Rd, zero trench overlap)
     p = primary_map["Mandi House"]
     mh_vio_node = osm_station_node("Mandi House", "Mandi House", prefer_ll=[77.234193, 28.625515])
     vio_mh = build_osm_arm(
         "Mandi House", [610024711], "Violet Line", "#7C3AED", mh_vio_node,
         tier="underground", deck_y=0.28, platform_type="island",
         station_len=84, platform_width=18.2, clip_back=135.0, clip_fwd=135.0,
+        perp_offset_m=-24.0,
         gtfs_ids=["V_KB", "V_KR"],
     )
     vio_mh["offsetMeters"] = round(dist_m(p["center"], vio_mh["center"]), 1)
@@ -977,7 +1003,7 @@ def main():
             },
             {
                 "kind": "lift_tower",
-                "posLngLat": point_at_offset_along_tan(vio_mh["center"], vio_mh["tangent"], along_m=18.0, perp_m=13.5),
+                "posLngLat": point_at_offset_along_tan(vio_mh["center"], vio_mh["tangent"], along_m=18.0, perp_m=-11.5),
                 "fromY": 0.28,
                 "toY": 10.2,
                 "color": "#7C3AED",
@@ -986,7 +1012,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(vio_mh["center"], vio_mh["tangent"], 112, 28)],
     }
 
-    # 15. Mayur Vihar-I (Blue elev 17.5m + Pink Line high elev 24.5m 176m ESE + skywalk)
+    # 15. Mayur Vihar-I (Blue elev 17.5m + Pink Line high elev 24.5m ~148m ESE + concourse skywalk)
     p = primary_map["Mayur Vihar-I"]
     mv_pink_node = osm_station_node("Mayur Vihar-I", "Pink Line")
     pink_mv = build_osm_arm(
@@ -1006,10 +1032,10 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], pink_mv["center"], perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": pink_mv["center"],
-                "toY": 18.8,
+                "toLngLat": edge_anchor_toward(pink_mv["center"], pink_mv["tangent"], p["center"], perp_dist_m=9.5),
+                "toY": 18.0,
                 "width": 6.4,
                 "color": "#EC4899",
             }
@@ -1017,7 +1043,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(pink_mv["center"], pink_mv["tangent"], 112, 28)],
     }
 
-    # 16. Botanical Garden (Blue elev 17.5m + Magenta elev 17.5m 51m W + curved NW overrun tail + wide concourse)
+    # 16. Botanical Garden (Blue elev 17.5m + Magenta elev 17.5m 51m W + curved NW overrun tail + wide integrated concourse)
     p = primary_map["Botanical Garden"]
     bg_mag_node = osm_station_node("Botanical Garden", "Magenta Line")
     mag_bg = build_osm_arm(
@@ -1038,18 +1064,18 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
-                "fromY": 11.8,
-                "toLngLat": mag_bg["center"],
-                "toY": 11.8,
-                "width": 12.0,
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], mag_bg["center"], perp_dist_m=9.5, clamp_along_m=4.0),
+                "fromY": 11.5,
+                "toLngLat": edge_anchor_toward(mag_bg["center"], mag_bg["tangent"], p["center"], perp_dist_m=9.2, clamp_along_m=4.0),
+                "toY": 11.5,
+                "width": 14.0,
                 "color": "#D946EF",
             }
         ],
         "clearanceBoxes": [clearance_box_for_arm(mag_bg["center"], mag_bg["tangent"], 112, 28)],
     }
 
-    # 17. Noida Sec-52 (Blue elev 17.5m + Aqua Line Sec-51 elev 17.5m 264m ESE + overrun pocket + glass skywalk)
+    # 17. Noida Sec-52 (Blue elev 17.5m + Aqua Line Sec-51 elev 17.5m 252m ESE + overrun pocket + glass skywalk)
     p = primary_map["Noida Sec-52"]
     n51_node = osm_station_node("Noida Sec-52", "Noida Sector 51")
     aqua_51 = build_osm_arm(
@@ -1070,10 +1096,10 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], aqua_51["center"], perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": aqua_51["center"],
-                "toY": 11.8,
+                "toLngLat": edge_anchor_toward(aqua_51["center"], aqua_51["tangent"], p["center"], perp_dist_m=9.2),
+                "toY": 11.5,
                 "width": 6.4,
                 "color": "#06B6D4",
             }
@@ -1081,7 +1107,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(aqua_51["center"], aqua_51["tangent"], 108, 28)],
     }
 
-    # 18. Karkarduma (Vaishali elev 17.5m + Pink Line high elev 24.5m 121m NNE + skywalk)
+    # 18. Karkarduma (Vaishali elev 17.5m + Pink Line high elev 24.5m ~118m NNE + concourse skywalk)
     p = primary_map["Karkarduma"]
     kdm_pink_node = osm_station_node("Karkarduma", "Pink Line")
     pink_kdm = build_osm_arm(
@@ -1101,10 +1127,10 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], pink_kdm["center"], perp_dist_m=10.5),
                 "fromY": 11.8,
-                "toLngLat": pink_kdm["center"],
-                "toY": 18.8,
+                "toLngLat": edge_anchor_toward(pink_kdm["center"], pink_kdm["tangent"], p["center"], perp_dist_m=9.5),
+                "toY": 18.0,
                 "width": 6.2,
                 "color": "#EC4899",
             }
@@ -1112,7 +1138,7 @@ def main():
         "clearanceBoxes": [clearance_box_for_arm(pink_kdm["center"], pink_kdm["tangent"], 112, 28)],
     }
 
-    # 19. Anand Vihar ISBT (Vaishali elev 17.5m + Pink Line parallel elev 21.5m 51m S + wide skywalk)
+    # 19. Anand Vihar ISBT (Vaishali elev 17.5m + Pink Line parallel elev 21.5m 53m S + wide integrated skywalk)
     p = primary_map["Anand Vihar ISBT"]
     av_pink_node = osm_station_node("Anand Vihar ISBT", "Pink Line")
     pink_av = build_osm_arm(
@@ -1132,11 +1158,11 @@ def main():
         "links": [
             {
                 "kind": "skywalk",
-                "fromLngLat": p["center"],
+                "fromLngLat": edge_anchor_toward(p["center"], p["tangent"], pink_av["center"], perp_dist_m=9.5, clamp_along_m=4.0),
                 "fromY": 11.8,
-                "toLngLat": pink_av["center"],
-                "toY": 15.8,
-                "width": 10.5,
+                "toLngLat": edge_anchor_toward(pink_av["center"], pink_av["tangent"], p["center"], perp_dist_m=9.5, clamp_along_m=4.0),
+                "toY": 15.2,
+                "width": 11.5,
                 "color": "#EC4899",
             }
         ],
