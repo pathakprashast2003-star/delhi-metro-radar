@@ -2018,7 +2018,7 @@
       dwarka: { center: [77.0583, 28.5523], zoom: 18.4, pitch: 54, bearing: -22, duration: 1100 },
       akshardham: { center: [77.2782, 28.6152], zoom: 16.3, pitch: 58, bearing: -42, duration: 1100 },
       noida: { center: [77.3732, 28.6258], zoom: 18.4, pitch: 54, bearing: -20, duration: 1100 },
-      dhaulakuan: { center: [77.1685, 28.5885], zoom: 17.5, pitch: 58, bearing: -30, duration: 1100 },
+      dhaulakuan: { center: [77.16168, 28.59191], zoom: 17.5, pitch: 58, bearing: -32, duration: 1100 },
       igiairport: { center: [77.0867, 28.5565], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
       yashobhoomi: { center: [77.0453, 28.5508], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
       janakpuri: { center: [77.0779, 28.6289], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },

@@ -753,7 +753,7 @@ window.MetroWebGLLayer = (function () {
     return tex;
   }
 
-  function makeMapPIDSTex(stName) {
+  function makeMapPIDSTex(stName, lineId = 'yellow') {
     const c = document.createElement('canvas');
     c.width = 512;
     c.height = 128;
@@ -764,18 +764,84 @@ window.MetroWebGLLayer = (function () {
     ctx.lineWidth = 4;
     ctx.strokeRect(4, 4, 504, 120);
 
-    ctx.fillStyle = '#EAB308';
+    const isOrange = lineId === 'orange';
+    const isMagenta = lineId === 'magenta';
+    const isBlue = lineId === 'blue' || lineId === 'blue-vaishali';
+    const headerColor = isOrange ? '#F97316' : (isMagenta ? '#D946EF' : (isBlue ? '#2563EB' : '#EAB308'));
+    const lineLabel = isOrange ? 'AIRPORT EXPRESS' : (isMagenta ? 'MAGENTA LINE' : (isBlue ? 'BLUE LINE' : 'YELLOW LINE'));
+
+    ctx.fillStyle = headerColor;
     ctx.fillRect(10, 10, 492, 26);
-    ctx.fillStyle = '#0F172A';
+    ctx.fillStyle = isBlue || isMagenta || isOrange ? '#FFFFFF' : '#0F172A';
     ctx.font = '800 17px -apple-system, Inter, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${stName.toUpperCase()}  ·  LIVE PIDS`, 20, 23);
+    ctx.fillText(`${stName.toUpperCase()}  ·  ${lineLabel} PIDS`, 20, 23);
 
-    ctx.fillStyle = '#FACC15';
+    ctx.fillStyle = isOrange ? '#FDBA74' : (isMagenta ? '#F0ABFC' : (isBlue ? '#93C5FD' : '#FACC15'));
     ctx.font = '700 22px "SF Mono", Menlo, monospace';
-    ctx.fillText('P1  MILLENNIUM CITY CTR   01 MIN', 20, 64);
-    ctx.fillStyle = '#BAE6FD';
-    ctx.fillText('P2  SAMAYPUR BADLI        02 MIN', 20, 100);
+    if (isOrange) {
+      ctx.fillText('P1  NEW DELHI (NDLS)     02 MIN', 20, 64);
+      ctx.fillStyle = '#FED7AA';
+      ctx.fillText('P2  YASHOBHOOMI SEC 25    04 MIN', 20, 100);
+    } else if (isMagenta) {
+      ctx.fillText('P1  BOTANICAL GARDEN     02 MIN', 20, 64);
+      ctx.fillStyle = '#E9D5FF';
+      ctx.fillText('P2  JANAKPURI WEST       03 MIN', 20, 100);
+    } else if (isBlue) {
+      ctx.fillText('P1  NOIDA ELECTR CITY    02 MIN', 20, 64);
+      ctx.fillStyle = '#BAE6FD';
+      ctx.fillText('P2  DWARKA SECTOR 21     03 MIN', 20, 100);
+    } else {
+      ctx.fillText('P1  MILLENNIUM CITY CTR  01 MIN', 20, 64);
+      ctx.fillStyle = '#BAE6FD';
+      ctx.fillText('P2  SAMAYPUR BADLI       02 MIN', 20, 100);
+    }
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.minFilter = THREE.LinearFilter;
+    return tex;
+  }
+
+  function makeAirportFidsTex(stName = 'AIRPORT EXPRESS') {
+    const c = document.createElement('canvas');
+    c.width = 512;
+    c.height = 256;
+    const ctx = c.getContext('2d');
+    if (!ctx) return new THREE.CanvasTexture(c);
+    ctx.fillStyle = '#090D16';
+    ctx.fillRect(0, 0, 512, 256);
+    ctx.strokeStyle = '#1E293B';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(4, 4, 504, 248);
+
+    // Glowing Orange Header
+    ctx.fillStyle = '#EA580C';
+    ctx.fillRect(8, 8, 496, 40);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px "Segoe UI", -apple-system, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✈ FLIGHT DEPARTURES · इंदिरा गांधी अंतर्राष्ट्रीय हवाई अड्डा', 20, 28);
+
+    // Flight List
+    const flights = [
+      { code: 'AI 101', dest: 'NEW YORK (JFK)', time: '11:45', status: 'ON TIME', color: '#22C55E' },
+      { code: '6E 204', dest: 'DUBAI (DXB)', time: '12:10', status: 'BOARDING', color: '#FACC15' },
+      { code: 'UK 955', dest: 'MUMBAI (BOM)', time: '12:25', status: 'ON TIME', color: '#22C55E' },
+      { code: 'BA 142', dest: 'LONDON (LHR)', time: '13:00', status: 'GATE OPEN', color: '#38BDF8' },
+      { code: 'LH 761', dest: 'FRANKFURT (FRA)', time: '13:30', status: 'ON TIME', color: '#22C55E' }
+    ];
+    ctx.font = '600 14px "SF Mono", Menlo, monospace';
+    flights.forEach((f, idx) => {
+      const y = 72 + idx * 34;
+      ctx.fillStyle = '#E2E8F0';
+      ctx.fillText(f.code, 20, y);
+      ctx.fillText(f.dest, 96, y);
+      ctx.fillText(f.time, 310, y);
+      ctx.fillStyle = f.color;
+      ctx.fillText(f.status, 396, y);
+      ctx.fillStyle = '#1E293B';
+      ctx.fillRect(16, y + 10, 480, 1);
+    });
 
     const tex = new THREE.CanvasTexture(c);
     tex.minFilter = THREE.LinearFilter;
@@ -919,7 +985,7 @@ window.MetroWebGLLayer = (function () {
       slateCut: lam(0x475569),
       plazaPave: lam(0xD2C9B8),
       sagePark: lam(0xADD096),
-      asphaltRoad: lam(0x94A3B8),
+      asphaltRoad: std(0x1F2937, { roughness: 0.88, metalness: 0.05 }),
       crosswalkWhite: lam(0xF8FAFC),
       steelDark: std(0x334155, { roughness: 0.42, metalness: 0.54 }),
       steelChrome: std(0xCBD5E1, { roughness: 0.28, metalness: 0.68 }),
@@ -986,6 +1052,24 @@ window.MetroWebGLLayer = (function () {
       blueAccent: new THREE.MeshBasicMaterial({ color: 0x2563EB }),
       tactileOrange: std(0xF97316, { emissive: 0xEA580C, emissiveIntensity: 0.25, roughness: 0.44 }),
       orangeAccent: new THREE.MeshBasicMaterial({ color: 0xF97316 }),
+      aeroTitanium: std(0xCBD5E1, { roughness: 0.28, metalness: 0.65, envMapIntensity: 0.45, side: THREE.DoubleSide }),
+      aeroDarkMetal: std(0x1E293B, { roughness: 0.38, metalness: 0.50, side: THREE.DoubleSide }),
+      aeroOrangeGlow: std(0xEA580C, { emissive: 0xF97316, emissiveIntensity: 0.65, roughness: 0.25 }),
+      fidsScreen: lam(0x0A0F1D),
+      travelatorBelt: std(0x111827, { roughness: 0.9, metalness: 0.1 }),
+      travelatorYellow: std(0xFACC15, { roughness: 0.35, metalness: 0.15 }),
+      luggageSilver: std(0xE2E8F0, { metalness: 0.85, roughness: 0.18 }),
+      roadStripeWhite: new THREE.MeshBasicMaterial({ color: 0xF8FAFC }),
+      airIndiaRed: std(0xDC2626, { roughness: 0.4 }),
+      indigoBlue: std(0x1D4ED8, { roughness: 0.4 }),
+      dtcBusRed: std(0xDC2626, { roughness: 0.35, metalness: 0.2 }),
+      dtcBusGreen: std(0x16A34A, { roughness: 0.35, metalness: 0.2 }),
+      autoYellow: std(0xFACC15, { roughness: 0.35, metalness: 0.2 }),
+      autoGreen: std(0x15803D, { roughness: 0.35, metalness: 0.2 }),
+      taxiWhite: std(0xF8FAFC, { roughness: 0.35, metalness: 0.2 }),
+      highwaySignGreen: std(0x047857, { emissive: 0x065F46, emissiveIntensity: 0.35, roughness: 0.3 }),
+      pinkAccent: new THREE.MeshBasicMaterial({ color: 0xEC4899 }),
+      tactilePink: std(0xEC4899, { emissive: 0xDB2777, emissiveIntensity: 0.25, roughness: 0.44 }),
       tactileMagenta: std(0xD946EF, { emissive: 0xC026D3, emissiveIntensity: 0.25, roughness: 0.44 }),
       magentaAccent: new THREE.MeshBasicMaterial({ color: 0xD946EF }),
       dmrcBlueRoof: std(0x0284C7, { roughness: 0.34, metalness: 0.22, envMapIntensity: 0.36, side: THREE.DoubleSide }),
@@ -2324,33 +2408,38 @@ window.MetroWebGLLayer = (function () {
     const curbLProf = [[-4.55, 0.08], [-4.15, 0.08], [-4.15, 0.38], [-4.55, 0.38]];
     const curbRProf = [[4.15, 0.08], [4.55, 0.08], [4.55, 0.38], [4.15, 0.38]];
     const viaductShadowProf = [[-6.8, 0.14], [6.8, 0.14], [6.8, 0.15], [-6.8, 0.15]];
-    const elevatedOnlySpans = extractSpans((s) => s.elev >= VIADUCT_Y - 0.5, false);
-    elevatedOnlySpans.forEach((span) => {
-      const groundSpan = span.map((s) => ({
-        dist: s.dist,
-        tan: s.tan,
-        pos: new THREE.Vector3(s.pos.x, 0, s.pos.z)
-      }));
-      const shadowSpan = span.map((s) => ({
-        dist: s.dist,
-        tan: s.tan,
-        pos: new THREE.Vector3(s.pos.x - 4.8, 0, s.pos.z - 3.6)
-      }));
-      const shadMesh = buildRibbonFromSamples(shadowSpan, viaductShadowProf, m.viaductShadow);
-      if (shadMesh) {
-        shadMesh.castShadow = false;
-        shadMesh.receiveShadow = false;
-        parent.add(shadMesh);
-      }
-      [
-        buildRibbonFromSamples(groundSpan, medianProf, m.sagePark),
-        buildRibbonFromSamples(groundSpan, curbLProf, m.concreteLight),
-        buildRibbonFromSamples(groundSpan, curbRProf, m.concreteLight)
-      ].forEach((mesh) => {
-        if (!mesh) return;
-        mesh.castShadow = false;
-        mesh.receiveShadow = true;
-        parent.add(mesh);
+    const activeElevCorridors = [yellowCorridor, blueCorridor, orangeCorridor, magentaCorridor].filter(Boolean);
+    activeElevCorridors.forEach((corr) => {
+      const cSamples = corr.samples;
+      if (!cSamples || !cSamples.length) return;
+      const elevatedOnlySpans = extractSpans((s) => s.elev >= VIADUCT_Y - 0.5, false, cSamples);
+      elevatedOnlySpans.forEach((span) => {
+        const groundSpan = span.map((s) => ({
+          dist: s.dist,
+          tan: s.tan,
+          pos: new THREE.Vector3(s.pos.x, 0, s.pos.z)
+        }));
+        const shadowSpan = span.map((s) => ({
+          dist: s.dist,
+          tan: s.tan,
+          pos: new THREE.Vector3(s.pos.x - 4.8, 0, s.pos.z - 3.6)
+        }));
+        const shadMesh = buildRibbonFromSamples(shadowSpan, viaductShadowProf, m.viaductShadow);
+        if (shadMesh) {
+          shadMesh.castShadow = false;
+          shadMesh.receiveShadow = false;
+          parent.add(shadMesh);
+        }
+        [
+          buildRibbonFromSamples(groundSpan, medianProf, m.sagePark),
+          buildRibbonFromSamples(groundSpan, curbLProf, m.concreteLight),
+          buildRibbonFromSamples(groundSpan, curbRProf, m.concreteLight)
+        ].forEach((mesh) => {
+          if (!mesh) return;
+          mesh.castShadow = false;
+          mesh.receiveShadow = true;
+          parent.add(mesh);
+        });
       });
     });
 
@@ -2487,6 +2576,61 @@ window.MetroWebGLLayer = (function () {
       }
     }
 
+    // E) Delhi Southern Ridge Botanical Forest around Dhaula Kuan (Orange Line elevated viaduct)
+    const dhaulaSt = (allStationsData.length ? allStationsData : stationsData).find((s) => s.name === 'Dhaula Kuan');
+    if (dhaulaSt && orangeCorridor && orangeCorridor.samples) {
+      const oSmps = orangeCorridor.samples;
+      // Dhaula Kuan is elevated at 18.5m; Ridge forest flanks Sardar Patel Marg & Ring Road
+      for (let i = 0; i < 340; i++) {
+        const sampleIdx = Math.max(86, Math.min(oSmps.length - 1, 90 + Math.floor(rand() * 70)));
+        const smp = oSmps[sampleIdx];
+        if (!smp) continue;
+        const right = new THREE.Vector3(-smp.tan.z, 0, smp.tan.x).normalize();
+        const side = rand() < 0.5 ? 1 : -1;
+        const lat = (22 + rand() * 175) * side;
+        const tx = smp.pos.x + right.x * lat + (rand() - 0.5) * 16;
+        const tz = smp.pos.z + right.z * lat + (rand() - 0.5) * 16;
+        if (!nearAnyStation(tx, tz, 52) && !nearTrackCenterline(tx, tz, 18)) {
+          const isAshok = rand() < 0.22;
+          trees.push({
+            x: tx,
+            z: tz,
+            scale: 0.95 + rand() * 0.90,
+            shade: isAshok ? 3 : Math.floor(rand() * 3),
+            sx: 0.86 + rand() * 0.32,
+            sy: 0.88 + rand() * 0.34,
+            sz: 0.86 + rand() * 0.32,
+            yaw: rand() * Math.PI * 2
+          });
+        }
+      }
+    }
+
+    // F) Airport Boulevard Trees along Aerocity & IGI Airport approaches
+    const aeroSt = (allStationsData.length ? allStationsData : stationsData).find((s) => s.name === 'Delhi Aerocity');
+    const igiSt = (allStationsData.length ? allStationsData : stationsData).find((s) => s.name === 'IGI Airport');
+    [aeroSt, igiSt].forEach((st) => {
+      if (!st) return;
+      for (let i = 0; i < 65; i++) {
+        const ang = (i / 65) * Math.PI * 2 + (rand() - 0.5) * 0.4;
+        const rad = 32 + Math.sqrt(rand()) * 78;
+        const tx = st.pos.x + Math.cos(ang) * rad + (rand() - 0.5) * 6;
+        const tz = st.pos.z + Math.sin(ang) * rad + (rand() - 0.5) * 6;
+        if (!nearAnyStation(tx, tz, 38) && !nearTrackCenterline(tx, tz, 16)) {
+          trees.push({
+            x: tx,
+            z: tz,
+            scale: 0.82 + rand() * 0.55,
+            shade: rand() < 0.38 ? 3 : Math.floor(rand() * 3), // Ashok columnar trees along airport roads!
+            sx: 0.85 + rand() * 0.25,
+            sy: 0.95 + rand() * 0.30,
+            sz: 0.85 + rand() * 0.25,
+            yaw: rand() * Math.PI * 2
+          });
+        }
+      }
+    });
+
     // Emit InstancedMesh calls + Ground Contact AO Discs
     const dummy = new THREE.Object3D();
     const foliageMats = [m.treeFoliageDeep, m.treeFoliageMid, m.treeFoliageBright, m.treeFoliageAshok];
@@ -2566,17 +2710,21 @@ window.MetroWebGLLayer = (function () {
 
     // 3. Boulevard Lamp Posts along elevated viaduct curbs
     const lamps = [];
-    for (let d = 35; d < totalLen - 35; d += 40) {
-      const smp = sampleAtDist(d);
-      if (!smp || smp.elev < VIADUCT_Y - 1.5 || nearAnyStation(smp.pos.x, smp.pos.z, 54)) continue;
-      const right = new THREE.Vector3(-smp.tan.z, 0, smp.tan.x).normalize();
-      const side = ((Math.round(d / 40) % 2) === 0) ? 1 : -1;
-      lamps.push({
-        x: smp.pos.x + right.x * (side * 4.35),
-        z: smp.pos.z + right.z * (side * 4.35),
-        yaw: Math.atan2(-smp.tan.z, smp.tan.x)
-      });
-    }
+    activeElevCorridors.forEach((corr) => {
+      const cTotalLen = corr.totalLen;
+      if (!cTotalLen || !corr.sampleAtDist) return;
+      for (let d = 35; d < cTotalLen - 35; d += 44) {
+        const smp = corr.sampleAtDist(d);
+        if (!smp || smp.elev < VIADUCT_Y - 1.5 || nearAnyStation(smp.pos.x, smp.pos.z, 54)) continue;
+        const right = new THREE.Vector3(-smp.tan.z, 0, smp.tan.x).normalize();
+        const side = ((Math.round(d / 44) % 2) === 0) ? 1 : -1;
+        lamps.push({
+          x: smp.pos.x + right.x * (side * 4.35),
+          z: smp.pos.z + right.z * (side * 4.35),
+          yaw: Math.atan2(-smp.tan.z, smp.tan.x)
+        });
+      }
+    });
     if (lamps.length) {
       const postInst = new THREE.InstancedMesh(g.cyl1, m.steelDark, lamps.length);
       const glowInst = new THREE.InstancedMesh(g.box1, m.lampGlow, lamps.length);
@@ -3522,13 +3670,17 @@ window.MetroWebGLLayer = (function () {
     if (!st || st._signageReady || !st._signSpec) return;
     st._signageReady = true;
     const { subtitle, secCss } = st._signSpec;
-    const lineHex = (st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange)
+    const isOrange = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
+    const isMagenta = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
+    const isBlue = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.isBlue;
+    const lineHex = isOrange
       ? '#F97316'
-      : ((st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta)
+      : (isMagenta
         ? '#D946EF'
-        : ((st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.isBlue) ? '#2563EB' : '#EAB308'));
+        : (isBlue ? '#2563EB' : '#EAB308'));
     const signTex = makeBilingualSignTex(st.hindi, st.name, subtitle, lineHex, secCss);
-    const pidsTex = makeMapPIDSTex(st.name);
+    const lineKeyStr = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow'));
+    const pidsTex = makeMapPIDSTex(st.name, lineKeyStr);
     const signMat = new THREE.MeshBasicMaterial({ map: signTex });
     const pidsMat = new THREE.MeshBasicMaterial({ map: pidsTex });
     if (st._signMeshes) {
@@ -3538,6 +3690,10 @@ window.MetroWebGLLayer = (function () {
     }
     if (st._pidsMesh) {
       st._pidsMesh.material = pidsMat;
+    }
+    if (st._fidsMesh) {
+      const fidsTex = makeAirportFidsTex(st.name);
+      st._fidsMesh.material = new THREE.MeshBasicMaterial({ map: fidsTex });
     }
   }
 
@@ -3686,6 +3842,837 @@ window.MetroWebGLLayer = (function () {
       // Exposed starter rebar corbels on top of pier cap
       addBox(detail, 1.8, 0.8, 11.2, m.steelDark, fpx, yV - 1.25, 0);
     });
+  }
+
+  /* ───────────────────────────────────────────────────────────
+   * 3C-ii. Airport Express (Orange Line) Dedicated Architectural Vocabulary
+   * ─────────────────────────────────────────────────────────── */
+  function addAirportPSDs(target, length, yBase, zPos, facingSign = 1) {
+    const m = getMaterials();
+    // Stainless base sill
+    addBox(target, length, 0.12, 0.35, m.steelDark, 0, yBase + 0.06, zPos);
+    // Full-height 3.1m structural glass screen
+    addBox(target, length, 3.10, 0.12, m.glassBarrier, 0, yBase + 1.62, zPos);
+    // Illuminated Tangerine Orange Header Band
+    addBox(target, length, 0.38, 0.22, m.aeroOrangeGlow, 0, yBase + 3.05, zPos);
+    // Top Titanium structural lintel
+    addBox(target, length, 0.18, 0.28, m.aeroTitanium, 0, yBase + 3.28, zPos);
+
+    // Mullions and sliding door frames every 4.6m
+    const halfL = length * 0.5 - 2;
+    for (let px = -halfL; px <= halfL; px += 4.6) {
+      addBox(target, 0.22, 3.20, 0.24, m.aeroTitanium, px, yBase + 1.60, zPos);
+      // Green LED door status indicator
+      addBox(target, 0.45, 0.12, 0.26, m.ledGreen, px + 2.3, yBase + 2.85, zPos);
+    }
+  }
+
+  function addFlightInfoDisplays(target, locationsList) {
+    const m = getMaterials();
+    locationsList.forEach(([x, y, z]) => {
+      // Suspension rods
+      addBox(target, 0.10, 1.8, 0.10, m.steelDark, x - 2.8, y + 1.4, z);
+      addBox(target, 0.10, 1.8, 0.10, m.steelDark, x + 2.8, y + 1.4, z);
+      // Monitor housing
+      addBox(target, 6.8, 2.2, 0.45, m.pidsHousing, x, y, z);
+      // FIDS Screen Face
+      addBox(target, 6.4, 1.9, 0.49, m.fidsScreen, x, y, z);
+      // Orange Header Bar
+      addBox(target, 6.4, 0.25, 0.51, m.aeroOrangeGlow, x, y + 0.85, z);
+    });
+  }
+
+  function addLuggageTrolleys(target, coordsList) {
+    const m = getMaterials();
+    const bagColors = [m.airIndiaRed, m.indigoBlue, m.yellowAccent, m.steelDark];
+    coordsList.forEach(([x, y, z, yaw = 0, colorIdx = 0]) => {
+      const tg = new THREE.Group();
+      tg.position.set(x, y, z);
+      tg.rotation.y = yaw;
+      // Trolley tubular frame
+      addBox(tg, 1.1, 0.12, 0.65, m.luggageSilver, 0, 0.18, 0);
+      addBox(tg, 0.08, 0.85, 0.65, m.luggageSilver, -0.48, 0.60, 0);
+      // Suitcases stacked on trolley
+      const bMat1 = bagColors[colorIdx % bagColors.length];
+      const bMat2 = bagColors[(colorIdx + 1) % bagColors.length];
+      addBox(tg, 0.72, 0.38, 0.50, bMat1, 0.05, 0.44, 0);
+      addBox(tg, 0.48, 0.24, 0.38, bMat2, 0.08, 0.75, 0);
+      target.add(tg);
+    });
+  }
+
+  function addAirlineCheckInDesks(target, x, y, z, count = 3, rotY = 0) {
+    const m = getMaterials();
+    const grp = new THREE.Group();
+    grp.position.set(x, y, z);
+    grp.rotation.y = rotY;
+    const airlines = [m.airIndiaRed, m.indigoBlue, m.aeroOrangeGlow];
+    for (let i = 0; i < count; i++) {
+      const dx = (i - (count - 1) * 0.5) * 4.2;
+      // Titanium check-in counter desk
+      addBox(grp, 2.6, 1.15, 1.2, m.aeroTitanium, dx, 0.58, 0);
+      addBox(grp, 2.6, 0.22, 0.08, airlines[i % airlines.length], dx, 1.05, 0.58);
+      // LCD check-in agent monitor
+      addBox(grp, 0.65, 0.45, 0.10, m.pidsHousing, dx - 0.5, 1.42, 0);
+      // Baggage digital weighing scale
+      addBox(grp, 1.1, 0.10, 1.0, m.steelDark, dx + 1.5, 0.08, 0);
+      // Luggage conveyor belt feeder behind desk
+      addBox(grp, 3.8, 0.22, 0.95, m.travelatorBelt, dx, 0.25, -1.05);
+    }
+    target.add(grp);
+  }
+
+  function addTravelator(target, length, width, x, y, z, rotY = 0) {
+    const m = getMaterials();
+    const tg = new THREE.Group();
+    tg.position.set(x, y, z);
+    tg.rotation.y = rotY;
+    // Moving belt bed
+    addBox(tg, length, 0.18, width, m.travelatorBelt, 0, 0.09, 0);
+    // Yellow hazard safety border strips
+    addBox(tg, length, 0.20, 0.18, m.travelatorYellow, 0, 0.10, -width * 0.5 + 0.09);
+    addBox(tg, length, 0.20, 0.18, m.travelatorYellow, 0, 0.10, width * 0.5 - 0.09);
+    // Glass side balustrades
+    addBox(tg, length, 0.95, 0.10, m.glassBarrier, 0, 0.65, -width * 0.5);
+    addBox(tg, length, 0.95, 0.10, m.glassBarrier, 0, 0.65, width * 0.5);
+    // Moving handrails
+    addBox(tg, length, 0.14, 0.16, m.steelDark, 0, 1.18, -width * 0.5);
+    addBox(tg, length, 0.14, 0.16, m.steelDark, 0, 1.18, width * 0.5);
+    target.add(tg);
+  }
+
+  function addDelhiVehicles(target, list) {
+    const m = getMaterials();
+    const vg = new THREE.Group();
+    list.forEach((veh) => {
+      const { type, x, y, z, rotY = 0 } = veh;
+      const grp = new THREE.Group();
+      grp.position.set(x, y, z);
+      grp.rotation.y = rotY;
+
+      if (type === 'bus') {
+        const isGreen = veh.color === 'green';
+        const busMat = isGreen ? m.dtcBusGreen : m.dtcBusRed;
+        // Chassis & wheels
+        addBox(grp, 9.6, 0.45, 2.5, m.steelDark, 0, 0.35, 0);
+        [-3.2, 3.2].forEach((wx) => {
+          [-1.25, 1.25].forEach((wz) => {
+            addBox(grp, 1.1, 0.85, 0.35, m.slateDark, wx, 0.45, wz);
+          });
+        });
+        // Bus lower body
+        addBox(grp, 9.6, 1.2, 2.5, busMat, 0, 1.15, 0);
+        // Tinted continuous glass window band
+        addBox(grp, 9.4, 0.95, 2.46, m.slateDark, 0, 2.15, 0);
+        // White AC bus roof
+        addBox(grp, 9.6, 0.35, 2.5, m.concreteLight, 0, 2.75, 0);
+        // Roof AC unit
+        addBox(grp, 3.2, 0.45, 1.6, m.steelDark, 0.5, 3.1, 0);
+        // Headlights & taillights
+        addBox(grp, 0.15, 0.25, 0.35, m.luminaireGlow, 4.82, 0.9, -0.9);
+        addBox(grp, 0.15, 0.25, 0.35, m.luminaireGlow, 4.82, 0.9, 0.9);
+        addBox(grp, 0.15, 0.25, 0.35, m.bufferRed, -4.82, 0.9, -0.9);
+        addBox(grp, 0.15, 0.25, 0.35, m.bufferRed, -4.82, 0.9, 0.9);
+      } else if (type === 'auto') {
+        // Auto rickshaw: 3-wheeler green & yellow
+        addBox(grp, 2.6, 0.35, 1.3, m.steelDark, 0, 0.25, 0);
+        addBox(grp, 2.6, 0.75, 1.3, m.autoGreen, 0, 0.75, 0);
+        addBox(grp, 2.0, 0.75, 1.28, m.autoYellow, -0.2, 1.45, 0);
+        addBox(grp, 0.1, 0.65, 1.15, m.glassBarrier, 0.82, 1.4, 0);
+        addBox(grp, 0.12, 0.18, 0.22, m.luminaireGlow, 1.32, 0.7, 0);
+      } else if (type === 'cab') {
+        // White airport taxi sedan
+        addBox(grp, 4.4, 0.4, 1.8, m.steelDark, 0, 0.28, 0);
+        addBox(grp, 4.4, 0.65, 1.8, m.taxiWhite, 0, 0.75, 0);
+        addBox(grp, 2.4, 0.55, 1.65, m.taxiWhite, -0.2, 1.3, 0);
+        addBox(grp, 2.35, 0.48, 1.68, m.slateDark, -0.2, 1.28, 0);
+        addBox(grp, 0.65, 0.18, 0.35, m.autoYellow, -0.1, 1.65, 0);
+        addBox(grp, 0.12, 0.18, 0.3, m.luminaireGlow, 2.22, 0.65, -0.65);
+        addBox(grp, 0.12, 0.18, 0.3, m.luminaireGlow, 2.22, 0.65, 0.65);
+      }
+      vg.add(grp);
+    });
+    target.add(vg);
+    return vg;
+  }
+
+  function buildDhaulaKuanAeroHub(st, secColor) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+    const yV = 18.5; // High viaduct over Ring Road / NH-48
+
+    // 1. Ground Level Landscaped Roundabout & Dual Carriageway Ring Road
+    addBox(root, 136, 0.22, 54, m.plazaPave, 0, 0.24, 0);
+    // Ground Ring Road Dual Carriageways with asphalt & lane striping
+    [-21.0, 21.0].forEach((rz) => {
+      addBox(root, 134, 0.08, 11.2, m.asphaltRoad, 0, 0.36, rz);
+      for (let rx = -58; rx <= 58; rx += 9.5) {
+        addBox(root, 4.2, 0.04, 0.18, m.roadStripeWhite, rx, 0.41, rz);
+      }
+      // Road curbs
+      addBox(root, 134, 0.22, 0.45, m.concreteLight, 0, 0.44, rz - 5.8);
+      addBox(root, 134, 0.22, 0.45, m.concreteLight, 0, 0.44, rz + 5.8);
+    });
+    // Landscaped grass medians & flowerbeds
+    addBox(root, 130, 0.28, 7.5, m.sagePark, 0, 0.38, 0);
+    addBox(root, 132, 0.26, 4.5, m.sagePark, 0, 0.37, -27.5);
+    addBox(root, 132, 0.26, 4.5, m.sagePark, 0, 0.37, 27.5);
+
+    // Ground traffic vehicles
+    addDelhiVehicles(detail, [
+      { type: 'auto', x: -28, y: 0.36, z: -21.0, rotY: 0 },
+      { type: 'cab', x: 12, y: 0.36, z: -21.0, rotY: 0 },
+      { type: 'bus', color: 'red', x: 38, y: 0.36, z: -21.0, rotY: 0 },
+      { type: 'cab', x: -16, y: 0.36, z: 21.0, rotY: Math.PI },
+      { type: 'auto', x: 22, y: 0.36, z: 21.0, rotY: Math.PI }
+    ]);
+
+    // 2. Dhaula Kuan Multi-Tier Highway Overpass (Ring Road & Benito Juarez Marg Flyover)
+    const flyoverGrp = new THREE.Group();
+    flyoverGrp.position.set(0, 0, 0);
+    flyoverGrp.rotation.y = 0.52; // Diagonal road crossing
+    // Dual carriageway deck
+    addBox(flyoverGrp, 132, 1.2, 15.6, m.concreteLight, 0, 6.2, 0);
+    addBox(flyoverGrp, 132, 0.10, 14.2, m.asphaltRoad, 0, 6.85, 0);
+    // Concrete crash barriers
+    addBox(flyoverGrp, 132, 1.15, 0.45, m.concreteLight, 0, 7.4, -7.6);
+    addBox(flyoverGrp, 132, 1.15, 0.45, m.concreteLight, 0, 7.4, 7.6);
+    // Center divider & white lane markings
+    addBox(flyoverGrp, 132, 0.75, 0.55, m.concreteLight, 0, 7.2, 0);
+    for (let rx = -54; rx <= 54; rx += 8) {
+      addBox(flyoverGrp, 4.2, 0.05, 0.18, m.roadStripeWhite, rx, 6.91, -3.8);
+      addBox(flyoverGrp, 4.2, 0.05, 0.18, m.roadStripeWhite, rx, 6.91, 3.8);
+    }
+    // Overhead Green Highway Gantry Sign at x = -36m
+    addBox(flyoverGrp, 0.55, 6.5, 0.55, m.steelDark, -36, 10.4, -7.4);
+    addBox(flyoverGrp, 0.55, 6.5, 0.55, m.steelDark, -36, 10.4, 7.4);
+    addBox(flyoverGrp, 0.45, 0.45, 15.6, m.steelDark, -36, 13.5, 0);
+    addBox(flyoverGrp, 0.22, 2.2, 7.2, m.highwaySignGreen, -36, 12.4, -3.8);
+    addBox(flyoverGrp, 0.22, 2.2, 7.2, m.highwaySignGreen, -36, 12.4, 3.8);
+
+    // Highway support piers
+    [-42, 0, 42].forEach((hpx) => {
+      addBox(flyoverGrp, 3.6, 5.8, 3.6, m.pierCream, hpx, 3.0, 0);
+    });
+
+    // Traffic vehicles driving along the flyover
+    addDelhiVehicles(flyoverGrp, [
+      { type: 'bus', color: 'red', x: -22, y: 6.85, z: -3.8, rotY: 0 },
+      { type: 'cab', x: 18, y: 6.85, z: -3.8, rotY: 0 },
+      { type: 'auto', x: 44, y: 6.85, z: -3.8, rotY: 0 },
+      { type: 'bus', color: 'green', x: -14, y: 6.85, z: 3.8, rotY: Math.PI },
+      { type: 'cab', x: 26, y: 6.85, z: 3.8, rotY: Math.PI }
+    ]);
+    root.add(flyoverGrp);
+
+    // 3. High Viaduct Box Girder & Massive Flared Concrete Piers (y = 18.5m)
+    addBox(root, 96, 1.1, 15.6, m.concreteLight, 0, yV - 0.55, 0);
+    addBox(root, 96, 2.2, 10.4, m.concreteWeb, 0, yV - 2.15, 0);
+    [-36, -18, 0, 18, 36].forEach((cx) => {
+      addBox(root, 1.4, 1.1, 28.8, m.concreteWeb, cx, yV - 0.55, 0);
+    });
+    [-32, 0, 32].forEach((px) => {
+      addBox(root, 5.8, 1.1, 6.2, m.concreteWeb, px, 0.55, 0);
+      const shaft = new THREE.Mesh(g.pierShaft, m.pierCream);
+      shaft.scale.set(1.45, yV - 4.2, 1.45);
+      shaft.position.set(px, (yV - 4.2) * 0.5 + 0.85, 0);
+      shaft.frustumCulled = false;
+      root.add(shaft);
+      addBox(root, 4.2, 2.8, 17.5, m.concreteLight, px, yV - 3.2, 0);
+    });
+
+    // 4. Glazed Concourse Hall at y = 10.5m
+    const concFloorY = 10.5;
+    addBox(root, 62, 0.95, 20.4, m.concreteLight, 0, concFloorY, 0);
+    addBox(root, 62, 0.65, 20.4, m.concreteWeb, 0, concFloorY + 5.8, 0);
+    [-10.0, 10.0].forEach((cz) => {
+      addBox(root, 61, 5.0, 0.22, m.concourseGlass, 0, concFloorY + 2.9, cz);
+    });
+    addAFCTurnstiles(detail, -8, concFloorY + 0.48, 5.0, 6);
+    addAirlineCheckInDesks(detail, 14, concFloorY + 0.48, -4.5, 3, 0);
+
+    // 5. The Famous 710m Travelator Skywalk Tube (Dhaula Kuan -> South Campus Pink Line)
+    const skywalkGrp = new THREE.Group();
+    const swLen = 130;
+    skywalkGrp.position.set(12, concFloorY + 1.2, -10.0);
+    skywalkGrp.rotation.y = -Math.PI / 2; // Extends perpendicular to station across highway
+    // Tubular bridge floor & roof
+    addBox(skywalkGrp, swLen, 0.45, 4.8, m.concreteLight, swLen * 0.5, 0, 0);
+    addBox(skywalkGrp, swLen, 0.35, 4.8, m.aeroTitanium, swLen * 0.5, 3.6, 0);
+    // Aero orange roof trim
+    addBox(skywalkGrp, swLen, 0.18, 0.22, m.aeroOrangeGlow, swLen * 0.5, 3.75, -2.4);
+    addBox(skywalkGrp, swLen, 0.18, 0.22, m.aeroOrangeGlow, swLen * 0.5, 3.75, 2.4);
+    // Transparent glass walls
+    addBox(skywalkGrp, swLen, 3.2, 0.12, m.glassBarrier, swLen * 0.5, 1.8, -2.35);
+    addBox(skywalkGrp, swLen, 3.2, 0.12, m.glassBarrier, swLen * 0.5, 1.8, 2.35);
+    // Structural steel aero-rings every 14m
+    for (let sx = 8; sx <= swLen - 8; sx += 14) {
+      addBox(skywalkGrp, 0.55, 3.9, 5.1, m.aeroTitanium, sx, 1.8, 0);
+    }
+    // Dual moving walkways (travelators) inside the skybridge!
+    addTravelator(skywalkGrp, swLen - 16, 1.6, swLen * 0.5, 0.25, -1.1);
+    addTravelator(skywalkGrp, swLen - 16, 1.6, swLen * 0.5, 0.25, 1.1);
+    // Supporting pylons across the road
+    [32, 74, 114].forEach((px) => {
+      addBox(skywalkGrp, 2.8, concFloorY + 1.2, 2.8, m.pierCream, px, -(concFloorY + 1.2) * 0.5, 0);
+    });
+    // Commuters walking along skywalk
+    addCommuters(skywalkGrp, [
+      [22, 0.25, -1.1, 0], [45, 0.25, 1.1, 1], [68, 0.25, -1.1, 2], [95, 0.25, 1.1, 3]
+    ]);
+
+    // Destination: Durgabai Deshmukh South Campus (Pink Line) Station Portal Building at far end (x = 130m)
+    const pinkHubGrp = new THREE.Group();
+    pinkHubGrp.position.set(swLen + 8, 0, 0);
+    addBox(pinkHubGrp, 18, 12.5, 24, m.concreteLight, 0, 6.2, 0);
+    addBox(pinkHubGrp, 18.5, 1.2, 24.5, m.pinkAccent, 0, 12.8, 0); // Pink Line signature fascia
+    addBox(pinkHubGrp, 0.35, 7.5, 18.5, m.concourseGlass, -9.1, 6.5, 0);
+    addBox(pinkHubGrp, 16.5, 2.2, 0.35, m.placeholderSign, -9.2, 11.2, 0);
+    addCommuters(pinkHubGrp, [
+      [-6, 1.0, -3.5, 0], [-4, 1.0, 3.5, 1], [-2, 1.0, 0, 2]
+    ]);
+    skywalkGrp.add(pinkHubGrp);
+    root.add(skywalkGrp);
+
+    // 6. Dual Side Platforms with Full-Height Glass PSDs at y = 18.5m
+    [-10.4, 10.4].forEach((pz, sIdx) => {
+      const sgn = Math.sign(pz);
+      addBox(root, 86, 2.0, 6.8, m.terrazzoDeck, 0, yV + 1.0, pz);
+      // Orange tactile warning pavers
+      addBox(detail, 86, 0.12, 0.52, m.tactileOrange, 0, yV + 2.05, pz - sgn * 2.95);
+      // Full-height 3.2m glass PSDs along track edge
+      addAirportPSDs(detail, 76, yV + 2.0, pz - sgn * 3.15, sgn);
+      // Outer glass concourse balustrades
+      addBox(detail, 86, 1.65, 0.16, m.glassBarrier, 0, yV + 2.95, pz + sgn * 3.15);
+      addBox(root, 86, 0.65, 0.35, m.orangeAccent, 0, yV + 1.25, pz + sgn * 3.35);
+
+      // Luggage trolleys parked in trolley bay
+      addLuggageTrolleys(detail, [
+        [-24, yV + 2.0, pz + sgn * 1.5, 0, sIdx],
+        [-21, yV + 2.0, pz + sgn * 1.5, 0, sIdx + 1],
+        [22, yV + 2.0, pz + sgn * 1.5, Math.PI, sIdx + 2]
+      ]);
+
+      // Benches & commuters
+      addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, -12, yV + 2.30, pz + sgn * 1.2);
+      addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, 12, yV + 2.30, pz + sgn * 1.2);
+      addCommuters(detail, [
+        [-28, yV + 2.0, pz - sgn * 1.5, sIdx * 2],
+        [-6, yV + 2.0, pz - sgn * 1.5, sIdx * 2 + 1],
+        [16, yV + 2.0, pz - sgn * 1.5, sIdx + 3]
+      ]);
+    });
+
+    // 7. Swept-Wing Aerodynamic Titanium Roof Canopy
+    const roofY = yV + 9.5;
+    // Central Titanium Spine & Skylight
+    addBox(root, 88, 0.45, 10.4, m.aeroTitanium, 0, roofY + 0.6, 0);
+    addBox(root, 88, 0.25, 6.2, m.skylightGlass, 0, roofY + 0.9, 0);
+    // Cantilevered swept wings
+    [-1, 1].forEach((side) => {
+      const wing = addBox(root, 88, 0.38, 12.5, m.aeroTitanium, 0, roofY - 0.4, side * 11.2);
+      wing.rotation.x = side * 0.12;
+      // Leading-edge orange glow trim
+      addBox(root, 88, 0.35, 0.45, m.aeroOrangeGlow, 0, roofY - 1.15, side * 17.4);
+    });
+    // Cantilevered wingtip pylons with orange beacons
+    [-42, 42].forEach((wx) => {
+      [-17.4, 17.4].forEach((wz) => {
+        addBox(detail, 0.45, 3.2, 0.45, m.aeroTitanium, wx, roofY + 0.4, wz);
+        addBox(detail, 0.65, 0.65, 0.65, m.aeroOrangeGlow, wx, roofY + 2.1, wz);
+      });
+    });
+
+    // 8. Live PIDS & FIDS Flight Boards
+    addBox(detail, 10.4, 2.4, 0.42, m.pidsHousing, 0, roofY - 1.2, 0);
+    const pFront = addBox(detail, 9.8, 2.0, 0.48, m.placeholderSign, 0, roofY - 1.2, 0);
+    pFront.frustumCulled = false;
+
+    addFlightInfoDisplays(detail, [
+      [-18, roofY - 1.8, 0],
+      [18, roofY - 1.8, 0]
+    ]);
+    const fidsMesh = addBox(detail, 6.4, 1.9, 0.52, m.placeholderSign, 0, roofY - 1.8, 0);
+    fidsMesh.frustumCulled = false;
+
+    // Station signage boards
+    const sb1 = addBox(root, 14.5, 2.2, 0.25, m.placeholderSign, 0, yV + 6.8, -17.5);
+    const sb2 = addBox(root, 14.5, 2.2, 0.25, m.placeholderSign, 0, yV + 6.8, 17.5);
+
+    root.add(detail);
+    return { root, detail, signMeshes: [sb1, sb2], pidsMesh: pFront, fidsMesh };
+  }
+
+  function buildDwarkaSector21DualHub(blueSt, orangeSt, secColor) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+
+    // Semi-underground / ground-level grand interchange terminal
+    const yRail = SUBWAY_Y + 0.28;
+
+    // 1. Terminal Foundation Plinth, Forecourt & Pacific Mall Drop-off Loop
+    addBox(root, 120, 0.35, 68, m.plazaPave, 0, 0.24, 0);
+    // Drop-off asphalt roadway loop
+    addBox(root, 118, 0.08, 12.5, m.asphaltRoad, 0, 0.44, 28);
+    for (let rx = -50; rx <= 50; rx += 9.5) {
+      addBox(root, 4.2, 0.04, 0.18, m.roadStripeWhite, rx, 0.49, 28);
+    }
+    // Zebra pedestrian crossing
+    for (let zx = -4.5; zx <= 4.5; zx += 1.5) {
+      addBox(root, 0.85, 0.04, 10.5, m.crosswalkWhite, 38 + zx, 0.50, 28);
+    }
+    // Landscaped perimeter parkings and medians
+    addBox(root, 116, 0.30, 4.5, m.sagePark, 0, 0.38, -32);
+    addBox(root, 116, 0.30, 4.5, m.sagePark, 0, 0.38, 35);
+
+    // Terminal forecourt vehicles (DTC airport feeder bus, cabs, autos)
+    addDelhiVehicles(detail, [
+      { type: 'bus', color: 'green', x: -28, y: 0.44, z: 28, rotY: 0 },
+      { type: 'cab', x: 8, y: 0.44, z: 28, rotY: 0 },
+      { type: 'cab', x: 22, y: 0.44, z: 28, rotY: 0 },
+      { type: 'auto', x: 44, y: 0.44, z: 28, rotY: 0 }
+    ]);
+
+    // Pacific Mall Dwarka Entrance Facade (z = -30m)
+    const mallGrp = new THREE.Group();
+    mallGrp.position.set(0, 0, -30);
+    addBox(mallGrp, 76, 11.5, 5.5, m.buildingSand, 0, 5.75, 0);
+    addBox(mallGrp, 72, 8.5, 0.35, m.concourseGlass, 0, 4.5, 2.8);
+    addBox(mallGrp, 32, 0.65, 4.5, m.aeroDarkMetal, 0, 8.5, 3.2); // Entrance canopy
+    addBox(mallGrp, 30, 1.4, 0.25, m.placeholderSign, 0, 9.8, 3.3); // Pacific Mall illuminated signage
+    root.add(mallGrp);
+
+    // 2. 4 Parallel Track Bays & Platform Layout:
+    // Tracks 1 & 2: Blue Line Terminus (z = -14.0m .. -6.0m)
+    // Central Interchange Concourse: (z = -4.0m .. +4.0m)
+    // Tracks 3 & 4: Airport Express Through Tracks (z = +6.0m .. +14.0m)
+
+    // Blue Line Island Platform (z = -10.0m)
+    addBox(root, 84, 1.65, 6.8, m.terrazzoDeck, 0, yRail + 0.82, -10.0);
+    addBox(detail, 84, 0.12, 0.50, m.tactileYellow, 0, yRail + 1.68, -13.1);
+    addBox(detail, 84, 0.12, 0.50, m.tactileYellow, 0, yRail + 1.68, -6.9);
+    addBox(detail, 70, 1.55, 0.14, m.glassBarrier, 0, yRail + 2.50, -13.2);
+    addBox(detail, 70, 0.20, 0.18, m.blueAccent, 0, yRail + 3.35, -13.2);
+    addBox(detail, 70, 1.55, 0.14, m.glassBarrier, 0, yRail + 2.50, -6.8);
+    addBox(detail, 70, 0.20, 0.18, m.blueAccent, 0, yRail + 3.35, -6.8);
+    // Blue Line terminal hydraulic buffer stops at x = -38m
+    [-13.1, -6.9].forEach((tz) => {
+      addBox(detail, 2.4, 1.35, 2.4, m.steelDark, -38, yRail + 0.85, tz);
+      addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, -39.3, yRail + 0.90, tz);
+    });
+
+    // Airport Express Island Platform (z = +10.0m)
+    addBox(root, 84, 1.65, 6.8, m.terrazzoDeck, 0, yRail + 0.82, 10.0);
+    addBox(detail, 84, 0.12, 0.50, m.tactileOrange, 0, yRail + 1.68, 6.9);
+    addBox(detail, 84, 0.12, 0.50, m.tactileOrange, 0, yRail + 1.68, 13.1);
+    // Full-height 3.2m glass PSDs along Orange Line tracks
+    addAirportPSDs(detail, 72, yRail + 1.65, 6.8, 1);
+    addAirportPSDs(detail, 72, yRail + 1.65, 13.2, -1);
+
+    // Luggage trolleys on Orange Line platform
+    addLuggageTrolleys(detail, [
+      [-22, yRail + 1.65, 10.0, 0, 0],
+      [-19, yRail + 1.65, 10.0, 0, 1],
+      [18, yRail + 1.65, 10.0, Math.PI, 2]
+    ]);
+
+    // 3. Central Grand Interchange Concourse (z = -3.5m .. +3.5m)
+    addBox(root, 84, 1.65, 7.2, m.terrazzoDeck, 0, yRail + 0.82, 0);
+    addBox(detail, 84, 0.12, 0.45, m.concreteLight, 0, yRail + 1.68, 0);
+    // AFC Interchange Fare Gates connecting Blue Line to Airport Express!
+    addAFCTurnstiles(detail, -12, yRail + 1.68, 0, 6, Math.PI / 2);
+    addAFCTurnstiles(detail, 12, yRail + 1.68, 0, 6, Math.PI / 2);
+
+    // Airline Check-in Desks in central concourse
+    addAirlineCheckInDesks(detail, -28, yRail + 1.68, 0, 3, 0);
+
+    // Commuters transferring between lines
+    addCommuters(detail, [
+      [-10, yRail + 1.65, -8.0, 0], [5, yRail + 1.65, -8.0, 1],
+      [-5, yRail + 1.65, 8.0, 2], [15, yRail + 1.65, 8.0, 3],
+      [-15, yRail + 1.65, 0, 4], [0, yRail + 1.65, 0, 5], [18, yRail + 1.65, 0, 0]
+    ]);
+
+    // 4. Space-Frame Modern Terminal Roof & Facade (y = 8.5m)
+    const roofY = yRail + 7.8;
+    addBox(root, 96, 0.65, 48, m.aeroTitanium, 0, roofY, 0);
+    // Dual linear glass skylights over Blue & Orange bays
+    addBox(root, 92, 0.25, 8.2, m.skylightGlass, 0, roofY + 0.45, -10.0);
+    addBox(root, 92, 0.25, 8.2, m.skylightGlass, 0, roofY + 0.45, 10.0);
+    // Central space frame truss ribs
+    for (let rx = -44; rx <= 44; rx += 11) {
+      addBox(detail, 0.65, 0.65, 48.5, m.steelDark, rx, roofY + 0.35, 0);
+      [-23.5, -0.5, 23.5].forEach((cz) => {
+        addBox(detail, 0.55, 6.8, 0.55, m.steelDark, rx, yRail + 4.8, cz);
+      });
+    }
+
+    // Outer Glazed Facade & Airport Terminal Entrance Portico
+    [-24.2, 24.2].forEach((fz) => {
+      addBox(root, 92, 6.2, 0.25, m.concourseGlass, 0, yRail + 4.8, fz);
+    });
+    // Grand Terminal Portico Canopy
+    addBox(root, 28, 0.55, 12, m.aeroTitanium, 38, yRail + 4.8, 0);
+    addBox(root, 28, 0.35, 0.45, m.aeroOrangeGlow, 38, yRail + 5.1, 6.0);
+    addBox(root, 28, 0.35, 0.45, m.blueAccent, 38, yRail + 5.1, -6.0);
+
+    // 5. Dual PIDS & FIDS Displays
+    addBox(detail, 10.4, 2.4, 0.42, m.pidsHousing, 0, yRail + 5.5, -6.0);
+    const pFront = addBox(detail, 9.8, 2.0, 0.48, m.placeholderSign, 0, yRail + 5.5, -6.0);
+    pFront.frustumCulled = false;
+
+    // FIDS flight monitors
+    addFlightInfoDisplays(detail, [[0, yRail + 5.5, 6.0]]);
+    const fidsMesh = addBox(detail, 6.4, 1.9, 0.52, m.placeholderSign, 0, yRail + 5.5, 6.0);
+    fidsMesh.frustumCulled = false;
+
+    const sb1 = addBox(root, 18.5, 2.2, 0.25, m.placeholderSign, 38, yRail + 5.8, 0);
+
+    root.add(detail);
+    return { root, detail, signMeshes: [sb1], pidsMesh: pFront, fidsMesh };
+  }
+
+  function buildIgiAirportT3Station(st, secColor) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+    const yRail = SUBWAY_Y + 0.28;
+
+    // 1. Direct Terminal 3 Subterranean Cutaway Station (width 32m, length 92m)
+    addBox(root, 92, 0.35, 32, m.trenchFloor, 0, yRail + 0.18, 0);
+    // Perimeter retaining walls with airport acoustic panels
+    addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, -15.5);
+    addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, 15.5);
+
+    // 2. Wide Island Platform (width 8.4m, length 84m)
+    addBox(root, 84, 1.65, 8.4, m.terrazzoDeck, 0, yRail + 0.82, 0);
+    // Orange tactile guidance paths
+    addBox(detail, 84, 0.12, 0.52, m.tactileOrange, 0, yRail + 1.68, -3.8);
+    addBox(detail, 84, 0.12, 0.52, m.tactileOrange, 0, yRail + 1.68, 3.8);
+
+    // Full-height 3.2m glass PSD walls with airport gate branding
+    addAirportPSDs(detail, 76, yRail + 1.65, -4.0, 1);
+    addAirportPSDs(detail, 76, yRail + 1.65, 4.0, -1);
+
+    // Polished stainless steel elliptical columns with glowing orange halo rings
+    [-28, -14, 0, 14, 28].forEach((cx) => {
+      addBox(detail, 0.85, 7.2, 0.85, m.steelChrome, cx, yRail + 4.5, 0);
+      addBox(detail, 1.1, 0.35, 1.1, m.aeroOrangeGlow, cx, yRail + 3.2, 0);
+    });
+
+    // 3. Airport Baggage Trolley Bays & Luggage Staging
+    addLuggageTrolleys(detail, [
+      [-22, yRail + 1.65, -1.8, 0, 0],
+      [-19, yRail + 1.65, -1.8, 0, 1],
+      [-16, yRail + 1.65, -1.8, 0, 2],
+      [18, yRail + 1.65, 1.8, Math.PI, 0],
+      [21, yRail + 1.65, 1.8, Math.PI, 1],
+      [24, yRail + 1.65, 1.8, Math.PI, 2]
+    ]);
+
+    // Commuters with suitcases arriving at the airport
+    addCommuters(detail, [
+      [-26, yRail + 1.65, 1.2, 0], [-8, yRail + 1.65, -1.5, 1],
+      [2, yRail + 1.65, 1.2, 2], [12, yRail + 1.65, -1.2, 3], [32, yRail + 1.65, 1.5, 4]
+    ]);
+
+    // 4. Direct Subterranean Corridors Marked "✈ TERMINAL 3 DEPARTURES & ARRIVALS"
+    [-34, 34].forEach((tx) => {
+      addBox(root, 6.8, 4.2, 14, m.concreteLight, tx, yRail + 3.2, -18.5);
+      addBox(detail, 6.2, 0.65, 0.22, m.aeroOrangeGlow, tx, yRail + 4.9, -11.6);
+      addBox(detail, 6.2, 0.45, 0.24, m.placeholderSign, tx, yRail + 4.9, -11.6);
+    });
+
+    // 5. Ceiling Skylights & Transverse Rafters
+    const roofY = yRail + 8.2;
+    addBox(root, 92, 0.65, 32, m.concreteLight, 0, roofY, 0);
+    addBox(detail, 84, 0.25, 10.2, m.skylightGlass, 0, roofY + 0.4, 0);
+    for (let rx = -40; rx <= 40; rx += 10) {
+      addBox(detail, 0.65, 0.65, 32.5, m.steelDark, rx, roofY + 0.3, 0);
+    }
+
+    // 6. Surface Terminal 3 Grand Wing Canopy, Elevated Departure Flyover & ATC Tower
+    const surfaceT3Grp = new THREE.Group();
+    surfaceT3Grp.position.set(0, 0, 0);
+    // Grand Terminal 3 Forecourt Plinth
+    addBox(surfaceT3Grp, 92, 0.45, 52, m.plazaPave, 0, 0.25, 6.0);
+    // Terminal 3 Sweeping Aerodynamic Wing Roof
+    addBox(surfaceT3Grp, 76, 1.2, 28, m.aeroTitanium, 0, 8.5, -4.0);
+    addBox(surfaceT3Grp, 76, 0.45, 0.55, m.aeroOrangeGlow, 0, 9.1, 10.2);
+    // Glass Curtain Wall Facade with Terminal 3 Illuminated Branding
+    addBox(surfaceT3Grp, 74, 8.2, 0.35, m.concourseGlass, 0, 4.2, -4.0);
+    addBox(surfaceT3Grp, 28, 1.8, 0.35, m.placeholderSign, 0, 9.5, -3.9);
+
+    // Elevated Departure Drop-Off Roadway Flyover (y = 5.2m)
+    addBox(surfaceT3Grp, 96, 1.1, 12.5, m.concreteLight, 0, 5.2, 20.0);
+    addBox(surfaceT3Grp, 96, 0.10, 11.2, m.asphaltRoad, 0, 5.85, 20.0);
+    addBox(surfaceT3Grp, 96, 1.15, 0.45, m.concreteLight, 0, 6.4, 14.2);
+    addBox(surfaceT3Grp, 96, 1.15, 0.45, m.concreteLight, 0, 6.4, 25.8);
+    // Zebra crossing on departure deck
+    for (let zx = -4.5; zx <= 4.5; zx += 1.5) {
+      addBox(surfaceT3Grp, 0.85, 0.04, 9.5, m.crosswalkWhite, zx, 5.92, 20.0);
+    }
+    // Flyover piers
+    [-34, 0, 34].forEach((px) => {
+      addBox(surfaceT3Grp, 3.2, 5.0, 3.2, m.pierCream, px, 2.5, 20.0);
+    });
+
+    // Airport cabs and DTC airport express bus at the departure curb
+    addDelhiVehicles(surfaceT3Grp, [
+      { type: 'cab', x: -28, y: 5.85, z: 17.5, rotY: 0 },
+      { type: 'cab', x: -14, y: 5.85, z: 17.5, rotY: 0 },
+      { type: 'bus', color: 'red', x: 22, y: 5.85, z: 17.5, rotY: 0 }
+    ]);
+
+    // Iconic Air Traffic Control (ATC) Tower in background at x = -48m, z = -32m
+    const atcGrp = new THREE.Group();
+    atcGrp.position.set(-48, 0, -32);
+    addBox(atcGrp, 6.5, 28, 6.5, m.concreteLight, 0, 14, 0); // Tower shaft
+    addBox(atcGrp, 11.5, 4.5, 11.5, m.aeroDarkMetal, 0, 29.5, 0); // Observation cab base
+    addBox(atcGrp, 10.5, 3.2, 10.5, m.concourseGlass, 0, 29.5, 0); // Glazed cab
+    addBox(atcGrp, 12.5, 0.85, 12.5, m.aeroTitanium, 0, 32.2, 0); // Cab roof
+    addBox(atcGrp, 3.2, 2.8, 3.2, m.concreteLight, 0, 34.0, 0); // Radar radome dome
+    surfaceT3Grp.add(atcGrp);
+
+    root.add(surfaceT3Grp);
+
+    // 7. PIDS & FIDS Flight Boards
+    addBox(detail, 10.4, 2.4, 0.42, m.pidsHousing, 0, yRail + 5.5, 0);
+    const pFront = addBox(detail, 9.8, 2.0, 0.48, m.placeholderSign, 0, yRail + 5.5, 0);
+    pFront.frustumCulled = false;
+
+    addFlightInfoDisplays(detail, [
+      [-16, yRail + 5.5, 0],
+      [16, yRail + 5.5, 0]
+    ]);
+    const fidsMesh = addBox(detail, 6.4, 1.9, 0.52, m.placeholderSign, 0, yRail + 5.5, 0);
+    fidsMesh.frustumCulled = false;
+
+    const sbWall = addBox(root, 18.5, 2.2, 0.25, m.placeholderSign, 0, 4.2, -15.4);
+    const sbFore = addBox(root, 22.5, 2.2, 0.25, m.placeholderSign, 0, 9.2, 10.3);
+
+    root.add(detail);
+    return { root, detail, signMeshes: [sbWall, sbFore], pidsMesh: pFront, fidsMesh };
+  }
+
+  function buildNewDelhiAirportHub(st, secColor) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+    const yRail = SUBWAY_Y + 0.28;
+
+    // Multi-level City Airport Terminal at Ajmeri Gate
+    // 1. Lower Level Platform (y = 0.28m, width 28m, length 92m)
+    addBox(root, 92, 0.35, 28, m.trenchFloor, 0, yRail + 0.18, 0);
+    addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, -13.5);
+    addBox(root, 92, 8.5, 1.8, m.slateCut, 0, yRail + 4.4, 13.5);
+
+    // Island Platform with full-height 3.2m glass PSDs
+    addBox(root, 82, 1.65, 7.8, m.terrazzoDeck, 0, yRail + 0.82, 0);
+    addBox(detail, 82, 0.12, 0.52, m.tactileOrange, 0, yRail + 1.68, -3.5);
+    addBox(detail, 82, 0.12, 0.52, m.tactileOrange, 0, yRail + 1.68, 3.5);
+    addAirportPSDs(detail, 72, yRail + 1.65, -3.7, 1);
+    addAirportPSDs(detail, 72, yRail + 1.65, 3.7, -1);
+
+    // Terminal Hydraulic Buffer Stops at track end (x = 39m)
+    [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+      addBox(detail, 2.4, 1.35, 2.4, m.steelDark, 38.5, yRail + 0.85, tz);
+      addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, 39.8, yRail + 0.90, tz);
+    });
+
+    // Luggage trolleys on platform
+    addLuggageTrolleys(detail, [
+      [-18, yRail + 1.65, 0, 0, 0],
+      [-15, yRail + 1.65, 0, 0, 1],
+      [14, yRail + 1.65, 0, Math.PI, 2]
+    ]);
+
+    // 2. Upper Concourse: City Airport Check-in Hall (y = 4.8m)
+    const concFloorY = yRail + 4.6;
+    addBox(root, 44, 0.65, 24, m.concreteLight, -18, concFloorY, 0);
+    // 4 Airline Check-in Desks (Air India, Vistara, IndiGo)
+    addAirlineCheckInDesks(detail, -18, concFloorY + 0.35, -7.5, 4, 0);
+    // AFC turnstiles
+    addAFCTurnstiles(detail, -18, concFloorY + 0.35, 6.5, 5);
+
+    // 3. Multi-Modal Transfer Connections:
+    // Subterranean passage connecting to Yellow Line New Delhi station
+    addBox(root, 8.5, 3.8, 22, m.concreteLight, -38, concFloorY + 1.6, 0);
+    addBox(detail, 8.5, 0.45, 0.22, m.aeroOrangeGlow, -38, concFloorY + 3.2, 10.5);
+
+    // Pedestrian Skywalk bridge extending toward New Delhi Railway Station (Platform 16)
+    addBox(root, 10, 3.8, 24, m.concreteLight, 0, concFloorY + 1.6, 22);
+
+    // 4. Roof & Surface Terminal Building (Ajmeri Gate Forecourt)
+    const roofY = yRail + 8.5;
+    addBox(root, 92, 0.65, 28, m.concreteLight, 0, roofY, 0);
+    addBox(detail, 82, 0.25, 9.5, m.skylightGlass, 0, roofY + 0.4, 0);
+
+    // Surface City Airport Terminal building & Bhavbhuti Marg drop-off
+    const surfaceNdlsGrp = new THREE.Group();
+    addBox(surfaceNdlsGrp, 92, 0.45, 54, m.plazaPave, 0, 0.25, 0);
+    // Bhavbhuti Marg asphalt roadway
+    addBox(surfaceNdlsGrp, 90, 0.08, 12, m.asphaltRoad, 0, 0.45, -20);
+    for (let rx = -38; rx <= 38; rx += 8.5) {
+      addBox(surfaceNdlsGrp, 4.2, 0.04, 0.18, m.roadStripeWhite, rx, 0.50, -20);
+    }
+    // Terminal building portico
+    addBox(surfaceNdlsGrp, 42, 6.2, 16, m.aeroTitanium, 0, 3.5, 0);
+    addBox(surfaceNdlsGrp, 42, 0.45, 0.55, m.aeroOrangeGlow, 0, 6.7, 8.2);
+    // Pre-paid taxi and auto lane with vehicles
+    addDelhiVehicles(surfaceNdlsGrp, [
+      { type: 'cab', x: -24, y: 0.45, z: -20, rotY: 0 },
+      { type: 'auto', x: -8, y: 0.45, z: -20, rotY: 0 },
+      { type: 'auto', x: 6, y: 0.45, z: -20, rotY: 0 },
+      { type: 'bus', color: 'red', x: 28, y: 0.45, z: -20, rotY: 0 }
+    ]);
+
+    // NDLS Platform 16 Indian Railways tracks beside terminal (z = +24m)
+    addBox(surfaceNdlsGrp, 92, 0.22, 6.5, m.slateCut, 0, 0.36, 22);
+    [-1.8, 1.8].forEach((rz) => {
+      addBox(surfaceNdlsGrp, 92, 0.18, 0.22, m.railCrown, 0, 0.54, 22 + rz);
+    });
+
+    root.add(surfaceNdlsGrp);
+
+    // 5. Displays
+    addBox(detail, 10.4, 2.4, 0.42, m.pidsHousing, 0, yRail + 5.5, 0);
+    const pFront = addBox(detail, 9.8, 2.0, 0.48, m.placeholderSign, 0, yRail + 5.5, 0);
+    pFront.frustumCulled = false;
+
+    addFlightInfoDisplays(detail, [[-12, concFloorY + 2.8, 0]]);
+    const fidsMesh = addBox(detail, 6.4, 1.9, 0.52, m.placeholderSign, -12, concFloorY + 2.8, 0);
+    fidsMesh.frustumCulled = false;
+
+    const sb1 = addBox(root, 18.5, 2.2, 0.25, m.placeholderSign, 0, 5.8, 8.3);
+
+    root.add(detail);
+    return { root, detail, signMeshes: [sb1], pidsMesh: pFront, fidsMesh };
+  }
+
+  function buildAirportExpressStation(st, secColor) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+    const yRail = SUBWAY_Y + 0.28;
+    const isShivaji = st.name === 'Shivaji Stadium';
+    const isAerocity = st.name === 'Delhi Aerocity';
+    const isYasho = st.name === 'Yashobhoomi Dwarka Sector 25';
+
+    // 1. Cutaway Chamber (width 28m, length 88m)
+    addBox(root, 88, 0.35, 28, m.trenchFloor, 0, yRail + 0.18, 0);
+    addBox(root, 88, 8.2, 1.8, m.slateCut, 0, yRail + 4.3, -13.5);
+    addBox(root, 88, 8.2, 1.8, m.slateCut, 0, yRail + 4.3, 13.5);
+
+    // 2. Island Platform with full-height 3.2m glass PSDs
+    addBox(root, 78, 1.65, 7.4, m.terrazzoDeck, 0, yRail + 0.82, 0);
+    addBox(detail, 78, 0.12, 0.50, m.tactileOrange, 0, yRail + 1.68, -3.3);
+    addBox(detail, 78, 0.12, 0.50, m.tactileOrange, 0, yRail + 1.68, 3.3);
+    addAirportPSDs(detail, 68, yRail + 1.65, -3.5, 1);
+    addAirportPSDs(detail, 68, yRail + 1.65, 3.5, -1);
+
+    // Titanium structural columns with orange halo lighting
+    [-24, -8, 8, 24].forEach((cx) => {
+      addBox(detail, 0.75, 7.2, 0.75, m.aeroTitanium, cx, yRail + 4.4, 0);
+      addBox(detail, 0.95, 0.35, 0.95, m.aeroOrangeGlow, cx, yRail + 2.8, 0);
+    });
+
+    // Luggage trolleys & benches
+    addLuggageTrolleys(detail, [
+      [-16, yRail + 1.65, 0, 0, 0],
+      [-13, yRail + 1.65, 0, 0, 1],
+      [14, yRail + 1.65, 0, Math.PI, 2]
+    ]);
+    addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, -4, yRail + 2.2, 0);
+    addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, 4, yRail + 2.2, 0);
+    addCommuters(detail, [
+      [-20, yRail + 1.65, 1.0, 0], [-2, yRail + 1.65, -1.0, 1],
+      [10, yRail + 1.65, 1.0, 2], [22, yRail + 1.65, -1.0, 3]
+    ]);
+
+    // Buffer stop if Yashobhoomi (western terminus)
+    if (isYasho) {
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        addBox(detail, 2.4, 1.35, 2.4, m.steelDark, -37.5, yRail + 0.85, tz);
+        addBox(detail, 0.45, 0.95, 2.6, m.bufferRed, -38.8, yRail + 0.90, tz);
+      });
+    }
+
+    // 3. Airline Check-in Desks in Mezzanine
+    const concFloorY = yRail + 4.6;
+    addBox(root, 36, 0.65, 18, m.concreteLight, -6, concFloorY, 0);
+    addAirlineCheckInDesks(detail, -6, concFloorY + 0.35, -5.5, 2, 0);
+    addAFCTurnstiles(detail, -6, concFloorY + 0.35, 5.5, 4);
+
+    // 4. Custom Surface Architecture per Station
+    const roofY = yRail + 8.2;
+    addBox(root, 88, 0.65, 28, m.concreteLight, 0, roofY, 0);
+    addBox(detail, 78, 0.25, 8.5, m.skylightGlass, 0, roofY + 0.4, 0);
+
+    if (isShivaji) {
+      // Connaught Place City Airport Terminal: modern circular glass atrium & drop-off
+      const shivajiGrp = new THREE.Group();
+      addBox(shivajiGrp, 86, 0.35, 44, m.plazaPave, 0, 0.25, 0);
+      addBox(shivajiGrp, 84, 0.08, 10, m.asphaltRoad, 0, 0.44, 16);
+      addBox(shivajiGrp, 46, 6.2, 18, m.aeroTitanium, 0, 3.4, -4);
+      addBox(shivajiGrp, 46, 0.45, 0.55, m.aeroOrangeGlow, 0, 6.6, 5.2);
+      // Circular glazed skylight rotunda
+      const rotunda = new THREE.Mesh(g.cyl1, m.concourseGlass);
+      rotunda.scale.set(7.5, 3.8, 7.5);
+      rotunda.position.set(0, 5.4, -4);
+      shivajiGrp.add(rotunda);
+      addDelhiVehicles(shivajiGrp, [
+        { type: 'cab', x: -16, y: 0.44, z: 16, rotY: 0 },
+        { type: 'cab', x: 6, y: 0.44, z: 16, rotY: 0 },
+        { type: 'auto', x: 26, y: 0.44, z: 16, rotY: 0 }
+      ]);
+      root.add(shivajiGrp);
+    } else if (isAerocity) {
+      // Worldmark hospitality boulevard plaza & airport shuttle bays
+      const aeroPlazaGrp = new THREE.Group();
+      addBox(aeroPlazaGrp, 88, 0.35, 46, m.plazaPave, 0, 0.25, 0);
+      addBox(aeroPlazaGrp, 86, 0.08, 11, m.asphaltRoad, 0, 0.44, 16);
+      addBox(aeroPlazaGrp, 52, 5.5, 16, m.aeroTitanium, 0, 3.1, -4);
+      addBox(aeroPlazaGrp, 52, 0.45, 0.55, m.aeroOrangeGlow, 0, 6.0, 4.2);
+      addDelhiVehicles(aeroPlazaGrp, [
+        { type: 'cab', x: -22, y: 0.44, z: 16, rotY: 0 },
+        { type: 'bus', color: 'red', x: 8, y: 0.44, z: 16, rotY: 0 },
+        { type: 'cab', x: 30, y: 0.44, z: 16, rotY: 0 }
+      ]);
+      root.add(aeroPlazaGrp);
+    } else if (isYasho) {
+      // Futuristic IICC exhibition hall canopy & grand forecourt
+      const yashoGrp = new THREE.Group();
+      addBox(yashoGrp, 92, 0.35, 48, m.plazaPave, 0, 0.25, 0);
+      addBox(yashoGrp, 64, 7.2, 22, m.aeroTitanium, 0, 4.1, 0);
+      addBox(yashoGrp, 64, 0.55, 0.65, m.aeroOrangeGlow, 0, 7.8, 11.2);
+      // IICC geometric space-frame louvers
+      for (let lx = -26; lx <= 26; lx += 8.5) {
+        addBox(yashoGrp, 0.65, 7.2, 22.5, m.steelDark, lx, 4.1, 0);
+      }
+      root.add(yashoGrp);
+    }
+
+    // 5. Displays
+    addBox(detail, 10.4, 2.4, 0.42, m.pidsHousing, 0, yRail + 5.5, 0);
+    const pFront = addBox(detail, 9.8, 2.0, 0.48, m.placeholderSign, 0, yRail + 5.5, 0);
+    pFront.frustumCulled = false;
+
+    addFlightInfoDisplays(detail, [[-14, yRail + 5.5, 0]]);
+    const fidsMesh = addBox(detail, 6.4, 1.9, 0.52, m.placeholderSign, -14, yRail + 5.5, 0);
+    fidsMesh.frustumCulled = false;
+
+    const sb1 = addBox(root, 18.5, 2.2, 0.25, m.placeholderSign, 0, 5.2, 8.3);
+
+    root.add(detail);
+    return { root, detail, signMeshes: [sb1], pidsMesh: pFront, fidsMesh };
   }
 
   /* ───────────────────────────────────────────────────────────
@@ -5691,6 +6678,24 @@ window.MetroWebGLLayer = (function () {
         subtitle = 'YELLOW × BLUE CP INTERCHANGE · CRUCIFORM HUB';
       }
 
+      // Handle Dwarka Sector 21 interchange between Blue Line & Airport Express
+      const isDwarka21 = st.name === 'Dwarka Sector - 21' || st.name === 'Dwarka Sector 21';
+      const blueD21St = (blueCorridor && blueCorridor.stationsData)
+        ? blueCorridor.stationsData.find((s) => s.name === 'Dwarka Sector - 21' || s.name === 'Dwarka Sector 21')
+        : null;
+      if (isDwarka21 && isBlue && orangeCorridor) {
+        return; // Skip duplicate Dwarka Sector 21 model; unified dual hub is built with Orange corridor!
+      }
+      const isSharedDwarka21 = isDwarka21 && isOrange && Boolean(blueD21St);
+      if (isSharedDwarka21) {
+        st._isSharedDualHub = true;
+        subtitle = 'BLUE × AIRPORT EXPRESS · DWARKA SEC-21 TERMINAL HUB';
+      }
+
+      const isDhaulaKuan = st.name === 'Dhaula Kuan';
+      const isIgiAirport = st.name === 'IGI Airport';
+      const isNewDelhiAirport = st.name === 'New Delhi' && isOrange;
+
       const hubSpec = interchangeHubsData && interchangeHubsData.hubs && interchangeHubsData.hubs[st.name];
       if (hubSpec && st.name === 'Dwarka') {
         subtitle = 'BLUE × GREY INTERCHANGE · NAJAFGARH BRANCH';
@@ -5700,11 +6705,21 @@ window.MetroWebGLLayer = (function () {
         ? buildYamunaBankJunctionStation(st, secColor)
         : (isSharedRajiv
             ? buildRajivChowkCruciformHub(st, blueRajivSt, secColor)
-            : (st.structure === 'elevated'
-                ? buildElevatedStation(st, secColor)
-                : buildUndergroundCutawayStation(st, secColor)));
+            : (isDhaulaKuan
+                ? buildDhaulaKuanAeroHub(st, secColor)
+                : (isSharedDwarka21
+                    ? buildDwarkaSector21DualHub(blueD21St, st, secColor)
+                    : (isIgiAirport
+                        ? buildIgiAirportT3Station(st, secColor)
+                        : (isNewDelhiAirport
+                            ? buildNewDelhiAirportHub(st, secColor)
+                            : (isOrange
+                                ? buildAirportExpressStation(st, secColor)
+                                : (st.structure === 'elevated'
+                                    ? buildElevatedStation(st, secColor)
+                                    : buildUndergroundCutawayStation(st, secColor))))))));
 
-      if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank') {
+      if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank' && !isSharedDwarka21) {
         attachGenuineInterchangeGeometry(built, st, hubSpec, m, g);
       }
 
@@ -5729,7 +6744,7 @@ window.MetroWebGLLayer = (function () {
 
       if (st.major || secColor || st.terminus) {
         const ringMat = new THREE.MeshBasicMaterial({
-          color: secColor || (isBlue ? 0x2563EB : 0xEAB308),
+          color: secColor || (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : (isBlue ? 0x2563EB : 0xEAB308))),
           transparent: true,
           opacity: 0.26,
           side: THREE.DoubleSide
@@ -5748,6 +6763,9 @@ window.MetroWebGLLayer = (function () {
       st._detail = built.detail;
       st._signMeshes = built.signMeshes;
       st._pidsMesh = built.pidsMesh;
+      if (built.fidsMesh) {
+        st._fidsMesh = built.fidsMesh;
+      }
       st._signSpec = { subtitle, secCss };
       st._signageReady = false;
       st._shadowMeshes = shadowMeshes;
@@ -7621,8 +8639,14 @@ window.MetroWebGLLayer = (function () {
       'qutab minar': 'qutab',
       'millennium city centre': 'gurgaon',
       'dwarka sector 21': 'dwarka',
+      'dwarka sector - 21': 'dwarka',
       'akshardham': 'akshardham',
-      'noida electronic city': 'noida'
+      'noida electronic city': 'noida',
+      'dhaula kuan': 'dhaulakuan',
+      'igi airport': 'igiairport',
+      'yashobhoomi dwarka sector 25': 'yashobhoomi',
+      'janakpuri west': 'janakpuri',
+      'botanical garden': 'botanical'
     };
     const matchLoc = locMap[normalizeStationName(st.name)];
     document.querySelectorAll('.bookmark-chip').forEach((chip) => {
@@ -7648,6 +8672,14 @@ window.MetroWebGLLayer = (function () {
       map.flyTo({
         center: st.coords,
         zoom: 16.8,
+        pitch: 58,
+        bearing: -32,
+        duration: 950
+      });
+    } else if (normName === 'dhaula kuan') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 17.5,
         pitch: 58,
         bearing: -32,
         duration: 950
@@ -8191,16 +9223,74 @@ window.MetroWebGLLayer = (function () {
       });
     }
 
-    if (!majorStationMarkersInitialized && stationsData.length) {
+    if (!majorStationMarkersInitialized && (allStationsData.length || stationsData.length)) {
       majorStationMarkersInitialized = true;
-      stationsData.forEach((st) => {
-        if (!st.major || !st.coords) return;
+      const targetStations = allStationsData.length ? allStationsData : stationsData;
+      const seenStationPills = new Set();
+      targetStations.forEach((st) => {
+        if (!st.major || !st.coords || seenStationPills.has(st.name)) return;
+        seenStationPills.add(st.name);
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'major-station-pill';
         btn.setAttribute('data-station-name', st.name);
-        const tag = st.terminus ? 'TERMINUS' : (st._isSharedDualHub ? 'YELLOW × BLUE HUB' : (st.structure === 'elevated' ? '+15m' : `${st.elevM || -16}m TUBE`));
-        btn.innerHTML = `<span class="major-station-dot" aria-hidden="true"></span><span>${st.name}</span><span class="major-station-meta">${tag}</span>`;
+
+        let dotColor = '#EAB308';
+        const isOrangeSt = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
+        const isBlueSt = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.lineKey === 'blue' || st.isBlue;
+        const isMagentaSt = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
+        if (isOrangeSt) dotColor = '#F97316';
+        else if (isMagentaSt) dotColor = '#D946EF';
+        else if (isBlueSt) dotColor = '#3B82F6';
+
+        let tag = '';
+        if (st.name === 'Rajiv Chowk') {
+          tag = 'YELLOW × BLUE HUB';
+          dotColor = '#EAB308';
+        } else if (st.name === 'Dwarka Sector - 21' || st.name === 'Dwarka Sector 21') {
+          tag = 'BLUE × AIRPORT TERMINAL HUB';
+          dotColor = '#F97316';
+        } else if (st.name === 'Dhaula Kuan') {
+          tag = 'AERO × PINK SKYWALK HUB';
+          dotColor = '#F97316';
+        } else if (st.name === 'IGI Airport') {
+          tag = 'AIRPORT T3 UNDERGROUND HUB';
+          dotColor = '#F97316';
+        } else if (st.name === 'New Delhi' && (isOrangeSt || st.interchange)) {
+          tag = 'CITY AIRPORT × RAILWAY HUB';
+          dotColor = '#F97316';
+        } else if (st.name === 'Shivaji Stadium') {
+          tag = 'CP CITY AIRPORT TERMINAL';
+          dotColor = '#F97316';
+        } else if (st.name === 'Yashobhoomi Dwarka Sector 25') {
+          tag = 'IICC CONVENTION TERMINUS';
+          dotColor = '#F97316';
+        } else if (st.name === 'Kashmere Gate') {
+          tag = 'TRIPLE INTERCHANGE HUB';
+          dotColor = '#EAB308';
+        } else if (st.name === 'Yamuna Bank') {
+          tag = 'BLUE MAIN × VAISHALI JUNCTION';
+          dotColor = '#3B82F6';
+        } else if (st.name === 'Botanical Garden') {
+          tag = 'MAGENTA × BLUE INTERCHANGE';
+          dotColor = '#D946EF';
+        } else if (st.name === 'Hauz Khas') {
+          tag = 'MAGENTA × YELLOW DEEP TUBE';
+          dotColor = '#D946EF';
+        } else if (st.name === 'Janakpuri West') {
+          tag = 'MAGENTA × BLUE INTERCHANGE';
+          dotColor = '#D946EF';
+        } else if (st.terminus) {
+          tag = 'TERMINUS';
+        } else if (st._isSharedDualHub) {
+          tag = 'INTERCHANGE HUB';
+        } else if (st.structure === 'elevated') {
+          tag = `+${st.elevM || 15}m`;
+        } else {
+          tag = `${st.elevM || -16}m TUBE`;
+        }
+
+        btn.innerHTML = `<span class="major-station-dot" style="background:${dotColor};border-color:#0F172A;" aria-hidden="true"></span><span>${st.name}</span><span class="major-station-meta">${tag}</span>`;
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           hideTooltip();
