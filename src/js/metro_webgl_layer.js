@@ -1087,6 +1087,12 @@ window.MetroWebGLLayer = (function () {
       placeholderSign: new THREE.MeshBasicMaterial({ color: 0x0F172A }),
       luminaireGlow: new THREE.MeshBasicMaterial({ color: 0xFEF9C3 }),
       tileWall: lam(0xFFFFFF, { map: makeGridTileTex() }),
+      solarpvBlue: std(0x1E3A8A, { roughness: 0.15, metalness: 0.75, envMapIntensity: 0.6 }),
+      waterBlue: std(0x0284C7, { roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0.75 }),
+      airplaneWhite: std(0xF8FAFC, { roughness: 0.25, metalness: 0.35, envMapIntensity: 0.4 }),
+      vistaraPurple: std(0x581C87, { roughness: 0.4 }),
+      taxiwayYellow: new THREE.MeshBasicMaterial({ color: 0xFACC15 }),
+      runwayGreen: new THREE.MeshBasicMaterial({ color: 0x10B981 }),
       treeFoliage: lam(0x588A4F),
       treeFoliageAlt: lam(0x6B9D5E),
       treeTrunk: lam(0x6B4F3A),
@@ -4047,6 +4053,329 @@ window.MetroWebGLLayer = (function () {
     return portalGroup;
   }
 
+  /**
+   * Commercial Airliner 3D Model for IGI Airport (Air India, IndiGo, Vistara)
+   */
+  function buildCommercialAirplane(m, g, type, x, y, z, rotY) {
+    const grp = new THREE.Group();
+    grp.position.set(x, y, z);
+    grp.rotation.y = rotY;
+
+    // 1. Fuselage
+    const fuse = new THREE.Mesh(g.cyl1, m.airplaneWhite);
+    fuse.scale.set(2.4, 34, 2.4);
+    fuse.rotation.z = Math.PI / 2;
+    fuse.position.set(0, 3.4, 0);
+    grp.add(fuse);
+
+    // Nose Cone (Radome)
+    const nose = new THREE.Mesh(g.sphere, m.slateCut);
+    nose.scale.set(2.2, 2.4, 2.2);
+    nose.position.set(-17.2, 3.4, 0);
+    grp.add(nose);
+
+    // Cockpit windshield stripe
+    addBox(grp, 1.8, 0.7, 3.2, m.slateDark, -15.5, 4.4, 0);
+
+    // Tail fin (vertical stabilizer)
+    const tailMat = type === 'airindia' ? m.airIndiaRed : (type === 'indigo' ? m.indigoBlue : m.vistaraPurple);
+    const vFin = addBox(grp, 6.5, 7.8, 0.45, tailMat, 15.2, 7.8, 0);
+    vFin.rotation.z = -0.32; // Swept back
+
+    // Horizontal tailplanes
+    addBox(grp, 3.8, 0.35, 12.5, m.airplaneWhite, 14.8, 4.8, 0);
+
+    // Swept Main Wings
+    const wingL = addBox(grp, 7.5, 0.45, 18.5, m.airplaneWhite, -1.5, 3.1, -9.5);
+    wingL.rotation.y = -0.35; // Swept
+    const wingR = addBox(grp, 7.5, 0.45, 18.5, m.airplaneWhite, -1.5, 3.1, 9.5);
+    wingR.rotation.y = 0.35;
+
+    // Winglets at tips
+    addBox(grp, 1.8, 1.8, 0.25, tailMat, 4.5, 4.2, -18.8);
+    addBox(grp, 1.8, 1.8, 0.25, tailMat, 4.5, 4.2, 18.8);
+
+    // Twin Turbofan Jet Engines
+    [-6.5, 6.5].forEach((ez) => {
+      const eng = new THREE.Mesh(g.cyl1, m.airplaneWhite);
+      eng.scale.set(1.4, 5.2, 1.4);
+      eng.rotation.z = Math.PI / 2;
+      eng.position.set(-2.5, 2.1, ez);
+      grp.add(eng);
+
+      // Intake cowling dark ring
+      addBox(grp, 0.45, 2.7, 2.7, m.slateDark, -5.2, 2.1, ez);
+      // Pylon
+      addBox(grp, 3.2, 0.95, 0.35, m.aeroDarkMetal, -2.5, 2.8, ez);
+    });
+
+    // Landing gear struts & wheels
+    addBox(grp, 0.35, 1.8, 0.35, m.steelDark, -12, 1.2, 0);
+    addBox(grp, 0.8, 0.8, 0.6, m.slateDark, -12, 0.45, 0);
+    [-3.8, 3.8].forEach((wz) => {
+      addBox(grp, 0.45, 1.8, 0.45, m.steelDark, 2.5, 1.2, wz);
+      addBox(grp, 1.2, 1.1, 0.9, m.slateDark, 2.5, 0.55, wz);
+    });
+
+    return grp;
+  }
+
+  /**
+   * Indira Gandhi International Airport Airside Infrastructure
+   * High-detail 3D Runways ("Flying Strips"), Taxiways, Aerobridges & Parked Airliners
+   */
+  function buildIgiAirportAirside(parent, m, g) {
+    const airside = new THREE.Group();
+    airside.position.set(0, 0, 0);
+
+    // ─────────────────────────────────────────────────────────────
+    // 1. RUNWAY 11R/29L ("THE FLYING STRIP")
+    // Length 560m, Width 54m at z = -80m relative to surfaceT3Grp (z = -106m total)
+    // ─────────────────────────────────────────────────────────────
+    const rwyLen = 560;
+    const rwyWid = 54;
+    const rwyZ = -80;
+    const rwyY = 0.22;
+
+    // Asphalt Runway Base
+    addBox(airside, rwyLen, 0.12, rwyWid, m.asphaltRoad, 0, rwyY, rwyZ);
+
+    // Blast Pads (30m x 54m) with Yellow Chevrons at Runway Ends
+    [-1, 1].forEach((dir) => {
+      const bpx = dir * (rwyLen * 0.5 - 15);
+      addBox(airside, 30, 0.14, rwyWid, m.asphaltRoad, bpx, rwyY + 0.01, rwyZ);
+      for (let c = -10; c <= 10; c += 8) {
+        const chev = addBox(airside, 12, 0.04, 2.2, m.tactileOrange, bpx + c * 0.8, rwyY + 0.02, rwyZ);
+        chev.rotation.y = dir * 0.78;
+      }
+    });
+
+    // Threshold Markings ("Piano Keys") - 16 White Stripes across runway width
+    [-1, 1].forEach((dir) => {
+      const thX = dir * (rwyLen * 0.5 - 45);
+      for (let pz = -22; pz <= 22; pz += 3.0) {
+        addBox(airside, 24, 0.04, 1.6, m.crosswalkWhite, thX, rwyY + 0.02, rwyZ + pz);
+      }
+      // Threshold Green Lights
+      addBox(airside, 1.2, 0.35, rwyWid, m.runwayGreen, thX - dir * 14, rwyY + 0.15, rwyZ);
+    });
+
+    // Runway Designation Markings: "11R" (West) and "29L" (East)
+    const num11R = addBox(airside, 18, 0.04, 8.5, m.placeholderSign, -rwyLen * 0.5 + 75, rwyY + 0.02, rwyZ);
+    num11R.frustumCulled = false;
+    const num29L = addBox(airside, 18, 0.04, 8.5, m.placeholderSign, rwyLen * 0.5 - 75, rwyY + 0.02, rwyZ);
+    num29L.frustumCulled = false;
+
+    // Centerline Dashed White Stripes
+    for (let cx = -rwyLen * 0.5 + 95; cx <= rwyLen * 0.5 - 95; cx += 32) {
+      addBox(airside, 18, 0.04, 2.2, m.crosswalkWhite, cx, rwyY + 0.02, rwyZ);
+    }
+
+    // Touchdown Zone Markings (pairs of rectangular bars)
+    [-1, 1].forEach((dir) => {
+      [110, 150, 190].forEach((dist) => {
+        const tX = dir * (rwyLen * 0.5 - dist);
+        [-12, 12].forEach((tz) => {
+          addBox(airside, 16, 0.04, 4.5, m.crosswalkWhite, tX, rwyY + 0.02, rwyZ + tz);
+        });
+      });
+    });
+
+    // Continuous Runway Edge Stripes
+    addBox(airside, rwyLen - 60, 0.04, 1.2, m.crosswalkWhite, 0, rwyY + 0.02, rwyZ - rwyWid * 0.5 + 1.2);
+    addBox(airside, rwyLen - 60, 0.04, 1.2, m.crosswalkWhite, 0, rwyY + 0.02, rwyZ + rwyWid * 0.5 - 1.2);
+
+    // Runway Edge Lights (glowing white/amber along runway perimeter)
+    for (let lx = -rwyLen * 0.5 + 30; lx <= rwyLen * 0.5 - 30; lx += 28) {
+      addBox(airside, 0.45, 0.45, 0.45, m.luminaireGlow, lx, rwyY + 0.25, rwyZ - rwyWid * 0.5 + 0.8);
+      addBox(airside, 0.45, 0.45, 0.45, m.luminaireGlow, lx, rwyY + 0.25, rwyZ + rwyWid * 0.5 - 0.8);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 2. HIGH-SPEED TAXIWAYS & APRON
+    // Parallel Taxiway Alpha at z = -48m (Length 480m, Width 26m)
+    // ─────────────────────────────────────────────────────────────
+    const taxZ = -48;
+    addBox(airside, 480, 0.10, 26, m.asphaltRoad, 0, rwyY - 0.01, taxZ);
+    addBox(airside, 470, 0.04, 0.85, m.taxiwayYellow, 0, rwyY + 0.02, taxZ);
+
+    // High-Speed Angled Exit Taxiways (45° turnoffs linking Runway to Taxiway Alpha)
+    [-140, 0, 140].forEach((tx) => {
+      const link = addBox(airside, 42, 0.10, 22, m.asphaltRoad, tx, rwyY - 0.01, (rwyZ + taxZ) * 0.5);
+      link.rotation.y = 0.65;
+      const stripe = addBox(airside, 46, 0.04, 0.85, m.taxiwayYellow, tx, rwyY + 0.02, (rwyZ + taxZ) * 0.5);
+      stripe.rotation.y = 0.65;
+    });
+
+    // ─────────────────────────────────────────────────────────────
+    // 3. TERMINAL 3 CONTACT APRON & PARKED COMMERCIAL JETLINERS
+    // ─────────────────────────────────────────────────────────────
+    addBox(airside, 340, 0.12, 24, m.concreteWeb, 0, rwyY - 0.01, -26);
+
+    // Aerobridges (Glass & steel passenger boarding bridges from T3 to planes)
+    [-75, -5, 65].forEach((ax) => {
+      addBox(airside, 4.2, 3.2, 12.5, m.steelDark, ax, 3.4, -14);
+      addBox(airside, 3.8, 2.6, 12.0, m.concourseGlass, ax, 3.4, -14);
+      addBox(airside, 0.65, 3.8, 0.65, m.steelChrome, ax, 1.9, -20);
+    });
+
+    // 1. Air India Boeing 787 Dreamliner at Gate 1
+    const plane1 = buildCommercialAirplane(m, g, 'airindia', -75, rwyY, -26, Math.PI * 0.95);
+    airside.add(plane1);
+
+    // 2. IndiGo Airbus A320neo at Gate 2
+    const plane2 = buildCommercialAirplane(m, g, 'indigo', -5, rwyY, -26, Math.PI * 0.95);
+    airside.add(plane2);
+
+    // 3. Vistara Airbus A321 at Gate 3
+    const plane3 = buildCommercialAirplane(m, g, 'vistara', 65, rwyY, -26, Math.PI * 0.95);
+    airside.add(plane3);
+
+    // Ground Support Equipment: Pushback Tugs & Baggage Carts
+    addBox(airside, 4.2, 1.4, 2.4, m.autoYellow, -68, rwyY + 0.7, -28);
+    addBox(airside, 4.2, 1.4, 2.4, m.autoYellow, 2, rwyY + 0.7, -28);
+    addBox(airside, 6.5, 1.2, 1.8, m.steelChrome, 72, rwyY + 0.6, -28);
+
+    parent.add(airside);
+  }
+
+  /**
+   * Yashobhoomi (India International Convention & Expo Centre - IICC) Campus
+   * Fills the entire empty area around Yashobhoomi Dwarka Sector 25 with:
+   * Grand Curvilinear Diagrid Foyer Canopy, Exhibition Hall 1 & 2, Plenary Auditorium,
+   * Reflection Pool, Ceremonial Promenades, and Subterranean Metro Entrances!
+   */
+  function buildYashobhoomiIiccCampus(root, detail, yRail, m, g) {
+    const iicc = new THREE.Group();
+    iicc.position.set(0, 0, 0);
+
+    // 1. Grand IICC Ceremonial Plaza & Campus Ground (260m x 190m)
+    addBox(iicc, 260, 0.35, 190, m.plazaPave, 0, 0.22, 0);
+    addBox(iicc, 250, 0.08, 22, m.concreteLight, 0, 0.40, 0);
+    addBox(iicc, 18, 0.08, 170, m.concreteLight, 0, 0.40, 0);
+
+    // 2. The Grand Foyer: Curvilinear Diagrid Space-Frame Canopy (126m x 42m)
+    const foyerY = 12.5;
+    addBox(iicc, 126, 1.8, 42, m.aeroTitanium, 0, foyerY, 0);
+    addBox(iicc, 126, 0.55, 0.65, m.aeroOrangeGlow, 0, foyerY + 0.9, -21.0);
+    addBox(iicc, 126, 0.55, 0.65, m.aeroOrangeGlow, 0, foyerY + 0.9, 21.0);
+
+    // Diagrid tubular lattice space-frame ribs
+    for (let fx = -55; fx <= 55; fx += 11) {
+      addBox(iicc, 0.75, 14.5, 42.5, m.steelDark, fx, foyerY * 0.5, 0);
+      addBox(iicc, 0.45, 0.45, 28, m.steelDark, fx, foyerY - 2.5, 0);
+    }
+    // High-tech glass skylight inserts
+    addBox(iicc, 118, 0.15, 32, m.skylightGlass, 0, foyerY + 0.85, 0);
+
+    // Glass Curtain Wall Facade of Grand Foyer
+    addBox(iicc, 122, 11.5, 0.35, m.concourseGlass, 0, 6.0, -20.5);
+    addBox(iicc, 122, 11.5, 0.35, m.concourseGlass, 0, 6.0, 20.5);
+
+    // Yashobhoomi IICC Illuminated Signboard
+    const yashoSign = addBox(iicc, 48, 2.4, 0.45, m.placeholderSign, 0, foyerY + 2.2, 21.2);
+    yashoSign.frustumCulled = false;
+
+    // 3. IICC Exhibition Hall 1 (North Expo Hall, 185m x 68m, Height 15m)
+    const hall1Z = -65;
+    addBox(iicc, 185, 14.5, 68, m.buildingSand, 0, 7.5, hall1Z);
+    addBox(iicc, 188, 1.8, 72, m.aeroTitanium, 0, 15.6, hall1Z);
+    // Solar Photovoltaic (PV) Panels on Hall 1 Roof
+    for (let sx = -75; sx <= 75; sx += 22) {
+      addBox(iicc, 18, 0.25, 58, m.solarpvBlue, sx, 16.6, hall1Z);
+    }
+    addBox(iicc, 160, 4.5, 0.35, m.concourseGlass, 0, 2.5, hall1Z + 34.2);
+    const hall1Sign = addBox(iicc, 32, 1.6, 0.25, m.placeholderSign, 0, 13.5, hall1Z + 34.2);
+    hall1Sign.frustumCulled = false;
+
+    // 4. IICC Exhibition Hall 2 (South Expo Hall, 185m x 68m, Height 15m)
+    const hall2Z = 65;
+    addBox(iicc, 185, 14.5, 68, m.buildingSand, 0, 7.5, hall2Z);
+    addBox(iicc, 188, 1.8, 72, m.aeroTitanium, 0, 15.6, hall2Z);
+    for (let sx = -75; sx <= 75; sx += 22) {
+      addBox(iicc, 18, 0.25, 58, m.solarpvBlue, sx, 16.6, hall2Z);
+    }
+    addBox(iicc, 160, 4.5, 0.35, m.concourseGlass, 0, 2.5, hall2Z - 34.2);
+    const hall2Sign = addBox(iicc, 32, 1.6, 0.25, m.placeholderSign, 0, 13.5, hall2Z - 34.2);
+    hall2Sign.frustumCulled = false;
+
+    // 5. Plenary / Convention Centre Auditorium (Diameter 54m, Height 18m)
+    const plenX = -115;
+    const plenDrum = new THREE.Mesh(g.cyl1, m.aeroTitanium);
+    plenDrum.scale.set(26, 17.5, 26);
+    plenDrum.position.set(plenX, 9.0, 0);
+    iicc.add(plenDrum);
+
+    const plenDome = new THREE.Mesh(g.sphere, m.aeroTitanium);
+    plenDome.scale.set(27, 8.5, 27);
+    plenDome.position.set(plenX, 17.5, 0);
+    iicc.add(plenDome);
+    addBox(iicc, 54, 0.65, 0.65, m.aeroOrangeGlow, plenX, 17.5, 0);
+
+    // 6. Ceremonial Reflection Pool & Fountains
+    const poolX = 85;
+    addBox(iicc, 52, 0.45, 24, m.concreteLight, poolX, 0.30, 0);
+    addBox(iicc, 48, 0.15, 20, m.waterBlue, poolX, 0.45, 0);
+    [-14, 0, 14].forEach((fx) => {
+      const fJet = new THREE.Mesh(g.cyl1, m.luminaireGlow);
+      fJet.scale.set(0.65, 4.5, 0.65);
+      fJet.position.set(poolX + fx, 2.5, 0);
+      iicc.add(fJet);
+    });
+
+    // 7. Manicured Lawns & Royal Palm Trees
+    [-1, 1].forEach((dir) => {
+      addBox(iicc, 84, 0.12, 18, m.sagePark, -45, 0.32, dir * 28);
+      addBox(iicc, 84, 0.12, 18, m.sagePark, 45, 0.32, dir * 28);
+      for (let tx = -75; tx <= 75; tx += 18) {
+        const trunk = new THREE.Mesh(g.cyl1, m.treeTrunk);
+        trunk.scale.set(0.35, 6.2, 0.35);
+        trunk.position.set(tx, 3.1, dir * 34);
+        iicc.add(trunk);
+        const crown = new THREE.Mesh(g.sphere, m.treeFoliage);
+        crown.scale.set(2.8, 2.0, 2.8);
+        crown.position.set(tx, 6.8, dir * 34);
+        iicc.add(crown);
+      }
+    });
+
+    // 8. Subterranean Metro Station Cutaway Skylight & 4 Entry Pavilions
+    addBox(iicc, 82, 0.25, 22, m.skylightGlass, 0, 0.45, 0);
+    addBox(iicc, 84, 0.35, 1.2, m.aeroOrangeGlow, 0, 0.55, -11.5);
+    addBox(iicc, 84, 0.35, 1.2, m.aeroOrangeGlow, 0, 0.55, 11.5);
+
+    [
+      [-36, -16, 0], [36, -16, 0],
+      [-36, 16, Math.PI], [36, 16, Math.PI]
+    ].forEach(([px, pz, prot]) => {
+      const pav = new THREE.Group();
+      pav.position.set(px, 0.40, pz);
+      pav.rotation.y = prot;
+      addBox(pav, 12.5, 4.2, 7.5, m.concreteLight, 0, 2.1, 0);
+      addBox(pav, 12.8, 0.45, 7.8, m.aeroTitanium, 0, 4.4, 0);
+      addBox(pav, 12.8, 0.15, 0.25, m.aeroOrangeGlow, 0, 4.65, 3.8);
+      addBox(pav, 11.5, 3.4, 0.25, m.concourseGlass, 0, 1.9, 3.7);
+      addBox(pav, 4.5, 2.2, 6.5, m.escStep, 0, 0.2, 0);
+      const dSign = addBox(pav, 1.4, 4.8, 1.4, m.aeroDarkMetal, 5.5, 2.4, 4.2);
+      addBox(pav, 1.6, 0.85, 1.6, m.aeroOrangeGlow, 5.5, 4.2, 4.2);
+      iicc.add(pav);
+    });
+
+    // 9. VIP Drop-Off Roadway & Vehicles
+    addBox(iicc, 250, 0.08, 12.5, m.asphaltRoad, 0, 0.40, 102);
+    for (let rx = -110; rx <= 110; rx += 12) {
+      addBox(iicc, 5.5, 0.04, 0.22, m.roadStripeWhite, rx, 0.45, 102);
+    }
+    addDelhiVehicles(iicc, [
+      { type: 'cab', x: -45, y: 0.40, z: 102, rotY: 0 },
+      { type: 'bus', color: 'green', x: -10, y: 0.40, z: 102, rotY: 0 },
+      { type: 'cab', x: 25, y: 0.40, z: 102, rotY: 0 },
+      { type: 'auto', x: 60, y: 0.40, z: 102, rotY: 0 }
+    ]);
+
+    root.add(iicc);
+  }
+
   function buildDhaulaKuanAeroHub(st, secColor) {
     const m = getMaterials();
     const g = getSharedStationGeos();
@@ -4541,6 +4870,9 @@ window.MetroWebGLLayer = (function () {
     addBox(atcGrp, 3.2, 2.8, 3.2, m.concreteLight, 0, 34.0, 0); // Radar radome dome
     surfaceT3Grp.add(atcGrp);
 
+    // 3D Airside Runways ("Flying Strips"), High-Speed Taxiways & Parked Airliners
+    buildIgiAirportAirside(surfaceT3Grp, m, g);
+
     root.add(surfaceT3Grp);
 
     // 7. PIDS & FIDS Flight Boards
@@ -4613,16 +4945,19 @@ window.MetroWebGLLayer = (function () {
     addBox(root, 12, 3.8, 22, m.concreteLight, -38, concFloorY + 1.6, 0);
     addBox(detail, 12, 0.45, 0.22, m.aeroOrangeGlow, -38, concFloorY + 3.2, 10.5);
 
-    // 4. Open-Well Subterranean Cutaway Coping & Skylights (Platform fully visible from above!)
+    // 4. Ground-Level Concourse Slab & Architectural Glass Lightwell Atrium
+    // Encloses the station cavern with street-level plaza pavement while preserving the central glass lightwell
     const roofY = yRail + 8.5;
-    [-13.5, 13.5].forEach((cy) => {
-      addBox(root, 92, 0.55, 2.8, m.concreteLight, 0, roofY, cy);
-      addBox(root, 92, 0.25, 0.45, m.aeroOrangeGlow, 0, roofY + 0.35, cy > 0 ? cy - 1.2 : cy + 1.2);
-    });
+    addBox(root, 92, 0.65, 8.5, m.concreteLight, 0, roofY, -10.5);
+    addBox(root, 92, 0.65, 8.5, m.concreteLight, 0, roofY, 10.5);
+    addBox(root, 16, 0.65, 15, m.concreteLight, -38, roofY, 0);
+    addBox(root, 16, 0.65, 15, m.concreteLight, 38, roofY, 0);
+    addBox(root, 64, 0.25, 0.45, m.aeroOrangeGlow, 0, roofY + 0.35, -6.5);
+    addBox(root, 64, 0.25, 0.45, m.aeroOrangeGlow, 0, roofY + 0.35, 6.5);
     // High-transparency skylight glass canopy directly over platform tracks
-    addBox(detail, 88, 0.15, 22.0, m.skylightGlass, 0, roofY + 0.35, 0);
-    for (let rx = -40; rx <= 40; rx += 10) {
-      addBox(detail, 0.65, 0.65, 28.5, m.steelDark, rx, roofY + 0.3, 0);
+    addBox(detail, 60, 0.15, 13.0, m.skylightGlass, 0, roofY + 0.35, 0);
+    for (let rx = -25; rx <= 25; rx += 10) {
+      addBox(detail, 0.65, 0.65, 14.5, m.steelDark, rx, roofY + 0.3, 0);
     }
 
     // 5. Surface City Airport Terminal building on Bhavbhuti Marg
@@ -4779,39 +5114,79 @@ window.MetroWebGLLayer = (function () {
     }
 
     if (isShivaji) {
-      // Connaught Place City Airport Terminal: modern circular glass atrium & drop-off
+      // Connaught Place City Airport Terminal & Shivaji Stadium Bus Terminal
+      // Directly structured over and along Baba Kharak Singh Marg
       const shivajiGrp = new THREE.Group();
-      shivajiGrp.position.set(0, 0, 18);
-      addBox(shivajiGrp, 86, 0.35, 28, m.plazaPave, 0, 0.25, 0);
-      addBox(shivajiGrp, 84, 0.08, 10, m.asphaltRoad, 0, 0.44, 9);
-      addBox(shivajiGrp, 46, 6.2, 14, m.aeroTitanium, 0, 3.4, -4);
-      addBox(shivajiGrp, 46, 0.45, 0.55, m.aeroOrangeGlow, 0, 6.6, 3.2);
-      // Circular glazed skylight rotunda
+      shivajiGrp.position.set(0, 0, 0);
+
+      // 1. Street-Level Paved Concourse Deck spanning over Baba Kharak Singh Marg
+      addBox(shivajiGrp, 92, 0.35, 44, m.plazaPave, 0, 0.25, 0);
+
+      // Baba Kharak Singh Marg Multi-Lane Roadway (z = 14m)
+      addBox(shivajiGrp, 90, 0.08, 12.5, m.asphaltRoad, 0, 0.44, 14);
+      for (let rx = -38; rx <= 38; rx += 9.5) {
+        addBox(shivajiGrp, 4.2, 0.04, 0.18, m.roadStripeWhite, rx, 0.48, 14);
+      }
+
+      // Connaught Place Neo-Classical Colonnade Entrance Portal (z = -12m)
+      addBox(shivajiGrp, 64, 1.2, 12, m.sandstoneBuff, 0, 7.8, -12);
+      addBox(shivajiGrp, 64, 0.35, 12.4, m.concreteLight, 0, 8.5, -12);
+      for (let cx = -28; cx <= 28; cx += 8) {
+        const pillar = new THREE.Mesh(g.cyl1, m.lutyensCream);
+        pillar.scale.set(0.95, 7.2, 0.95);
+        pillar.position.set(cx, 3.8, -12);
+        shivajiGrp.add(pillar);
+      }
+
+      // 2. Central Circular Glazed Rotunda Skylight (directly over platform!)
       const rotunda = new THREE.Mesh(g.cyl1, m.concourseGlass);
-      rotunda.scale.set(8.5, 4.2, 8.5);
-      rotunda.position.set(0, 5.8, -4);
+      rotunda.scale.set(11.5, 4.8, 11.5);
+      rotunda.position.set(0, 3.2, 0);
       shivajiGrp.add(rotunda);
-      // Escalator well descending toward concourse
-      addBox(shivajiGrp, 6.5, 0.25, 10, m.slateCut, 0, 0.35, 4);
-      addBox(shivajiGrp, 5.2, 2.8, 8, m.escStep, 0, -0.8, 4);
-      // Royal palm trees flanking the entrance plaza
-      [-18, -12, 12, 18].forEach((tx) => {
+
+      const dome = new THREE.Mesh(g.sphere, m.aeroTitanium);
+      dome.scale.set(12.0, 3.2, 12.0);
+      dome.position.set(0, 5.6, 0);
+      shivajiGrp.add(dome);
+      addBox(shivajiGrp, 24, 0.35, 24, m.aeroOrangeGlow, 0, 5.6, 0);
+
+      // Escalator well descending from street into the concourse
+      addBox(shivajiGrp, 7.5, 0.25, 12, m.slateCut, 0, 0.35, -4);
+      addBox(shivajiGrp, 6.2, 3.2, 10, m.escStep, 0, -1.0, -4);
+
+      // 3. Shivaji Stadium Bus Terminal Bays
+      addBox(shivajiGrp, 48, 0.45, 8.5, m.concreteLight, 0, 4.4, 20);
+      addBox(shivajiGrp, 48, 0.15, 0.25, m.dtcBusGreen, 0, 4.65, 24.2);
+
+      // Royal palm trees lining Baba Kharak Singh Marg promenade
+      [-32, -22, 22, 32].forEach((tx) => {
         const trunk = new THREE.Mesh(g.cyl1, m.treeTrunk);
         trunk.scale.set(0.35, 5.5, 0.35);
-        trunk.position.set(tx, 2.8, 3);
+        trunk.position.set(tx, 2.8, 6);
         shivajiGrp.add(trunk);
         const crown = new THREE.Mesh(g.sphere, m.treeFoliage);
         crown.scale.set(2.4, 1.8, 2.4);
-        crown.position.set(tx, 6.0, 3);
+        crown.position.set(tx, 6.0, 6);
         shivajiGrp.add(crown);
       });
+
+      // Delhi vehicles on Baba Kharak Singh Marg & bus terminal
       addDelhiVehicles(shivajiGrp, [
-        { type: 'cab', x: -16, y: 0.44, z: 9, rotY: 0 },
-        { type: 'cab', x: 6, y: 0.44, z: 9, rotY: 0 },
-        { type: 'auto', x: 26, y: 0.44, z: 9, rotY: 0 }
+        { type: 'cab', x: -28, y: 0.44, z: 14, rotY: 0 },
+        { type: 'bus', color: 'green', x: -6, y: 0.44, z: 20, rotY: 0 },
+        { type: 'cab', x: 12, y: 0.44, z: 14, rotY: 0 },
+        { type: 'auto', x: 30, y: 0.44, z: 14, rotY: 0 }
       ]);
       root.add(shivajiGrp);
     } else if (isAerocity) {
+      // Continuous side railway corridor infrastructure (third rail & evacuation walkways)
+      [-9.8, 9.8].forEach((wz) => {
+        addBox(detail, 78, 0.75, 1.8, m.concreteLight, 0, yRail + 0.95, wz);
+        addBox(detail, 78, 0.85, 0.12, m.yellowAccent, 0, yRail + 1.75, wz > 0 ? wz - 0.85 : wz + 0.85);
+        addBox(detail, 78, 0.22, 0.28, m.steelDark, 0, yRail + 0.35, wz > 0 ? wz - 1.2 : wz + 1.2);
+        addBox(detail, 78, 0.08, 0.22, m.aeroOrangeGlow, 0, yRail + 0.48, wz > 0 ? wz - 1.2 : wz + 1.2);
+      });
+
       // Worldmark hospitality boulevard plaza & airport shuttle bays
       const aeroPlazaGrp = new THREE.Group();
       aeroPlazaGrp.position.set(0, 0, 18);
@@ -4831,25 +5206,8 @@ window.MetroWebGLLayer = (function () {
       ]);
       root.add(aeroPlazaGrp);
     } else if (isYasho) {
-      // Futuristic IICC exhibition hall space-frame canopy & grand forecourt
-      const yashoGrp = new THREE.Group();
-      yashoGrp.position.set(0, 0, -22);
-      addBox(yashoGrp, 92, 0.35, 40, m.plazaPave, 0, 0.25, 0);
-      // Curved parametric space-frame roof
-      addBox(yashoGrp, 72, 1.4, 26, m.aeroTitanium, 0, 8.5, -4);
-      addBox(yashoGrp, 72, 0.55, 0.65, m.aeroOrangeGlow, 0, 9.2, 9.2);
-      // IICC geometric space-frame louvers & columns
-      for (let lx = -30; lx <= 30; lx += 10) {
-        addBox(yashoGrp, 0.65, 8.2, 26.5, m.steelDark, lx, 4.4, -4);
-      }
-      // Direct subway portal into Yashobhoomi IICC
-      addBox(yashoGrp, 18, 4.2, 10, m.concreteLight, 0, 2.1, 10);
-      addBox(yashoGrp, 18, 0.35, 10.2, m.aeroOrangeGlow, 0, 4.3, 10);
-      addDelhiVehicles(yashoGrp, [
-        { type: 'cab', x: -24, y: 0.44, z: 16, rotY: 0 },
-        { type: 'cab', x: 12, y: 0.44, z: 16, rotY: 0 }
-      ]);
-      root.add(yashoGrp);
+      // Full-Scale Yashobhoomi (IICC) International Convention Campus & Metro Hub
+      buildYashobhoomiIiccCampus(root, detail, yRail, m, g);
     }
 
     // 5. Displays
