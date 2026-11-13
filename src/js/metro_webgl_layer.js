@@ -6326,18 +6326,64 @@ window.MetroWebGLLayer = (function () {
     addShapeMesh(root, plazaShape, PLAZA_Y - 0.25, [m.plazaPave, m.slateCut], 0.25);
 
     // Outer chamfered sage-green park collar tapering CP Podium (r=61.4..72.2m) down to street grade (0.22m)
-    const skirtProfile = [
-      new THREE.Vector2(61.4, 0.22),
-      new THREE.Vector2(72.2, 0.22),
-      new THREE.Vector2(65.5, 2.20),
-      new THREE.Vector2(61.4, PLAZA_Y)
-    ];
+    // Segmented into 4 quadrants to leave wide open, unblocked cuts for all rail corridors!
     const skirtMat = m.sagePark.clone();
     skirtMat.side = THREE.DoubleSide;
-    const skirtMesh = new THREE.Mesh(new THREE.LatheGeometry(skirtProfile, 48), skirtMat);
-    skirtMesh.frustumCulled = false;
-    skirtMesh.receiveShadow = true;
-    root.add(skirtMesh);
+
+    const buildSectorSkirt = (a0, a1, targetGroup) => {
+      const segs = Math.max(8, Math.round((a1 - a0) * 14));
+      const profile = [[61.4, PLAZA_Y], [65.5, 2.20], [72.2, 0.22]];
+      const positions = [];
+      for (let s = 0; s < segs; s++) {
+        const sa0 = a0 + (a1 - a0) * (s / segs);
+        const sa1 = a0 + (a1 - a0) * ((s + 1) / segs);
+        const cos0 = Math.cos(sa0);
+        const sin0 = Math.sin(sa0);
+        const cos1 = Math.cos(sa1);
+        const sin1 = Math.sin(sa1);
+        for (let p = 0; p < profile.length - 1; p++) {
+          const rA = profile[p][0];
+          const yA = profile[p][1];
+          const rB = profile[p + 1][0];
+          const yB = profile[p + 1][1];
+          positions.push(
+            rA * cos0, yA, -rA * sin0,
+            rA * cos1, yA, -rA * sin1,
+            rB * cos1, yB, -rB * sin1,
+            rA * cos0, yA, -rA * sin0,
+            rB * cos1, yB, -rB * sin1,
+            rB * cos0, yB, -rB * sin0
+          );
+        }
+      }
+      // Radial endcap vertical walls facing rail cuts at a0 and a1
+      [a0, a1].forEach((ea, ei) => {
+        const ec = Math.cos(ea);
+        const es = Math.sin(ea);
+        const pTop = [61.4 * ec, PLAZA_Y, -61.4 * es];
+        const pMid = [65.5 * ec, 2.20, -65.5 * es];
+        const pToe = [72.2 * ec, 0.22, -72.2 * es];
+        const pIn = [61.4 * ec, 0.22, -61.4 * es];
+        if (ei === 0) {
+          positions.push(
+            pTop[0], pTop[1], pTop[2], pMid[0], pMid[1], pMid[2], pIn[0], pIn[1], pIn[2],
+            pMid[0], pMid[1], pMid[2], pToe[0], pToe[1], pToe[2], pIn[0], pIn[1], pIn[2]
+          );
+        } else {
+          positions.push(
+            pTop[0], pTop[1], pTop[2], pIn[0], pIn[1], pIn[2], pMid[0], pMid[1], pMid[2],
+            pMid[0], pMid[1], pMid[2], pIn[0], pIn[1], pIn[2], pToe[0], pToe[1], pToe[2]
+          );
+        }
+      });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+      const mesh = new THREE.Mesh(geo, skirtMat);
+      mesh.frustumCulled = false;
+      mesh.receiveShadow = true;
+      targetGroup.add(mesh);
+    };
 
     // Radial park quadrants + Georgian White Colonnades in the 4 inter-rail sectors
     // In Shape XY (mesh rot.x = -PI/2 -> x_3d=x_s, z_3d=-y_s), sector angle phi satisfies x=r cos(phi), z=-r sin(phi)
@@ -6394,6 +6440,9 @@ window.MetroWebGLLayer = (function () {
       const cA0 = aStart + colPad;
       const cA1 = aEnd - colPad;
       if (cA1 - cA0 > 0.35) {
+        // Chamfered sage-green outer berm collar cleanly confined to quadrant sectors, leaving rail portals open
+        buildSectorSkirt(cA0, cA1, root);
+
         // Main curved Georgian building core + upper white marble cornice + stepped roof parapet
         buildRadialSector(48.3, 53.5, cA0, cA1, 6.2, m.lutyensCream, PLAZA_Y, root);
         buildRadialSector(46.9, 54.9, cA0 - 0.012, cA1 + 0.012, 0.55, m.whiteMarble, PLAZA_Y + 6.2, root);
@@ -7269,7 +7318,7 @@ window.MetroWebGLLayer = (function () {
                                     ? buildElevatedStation(st, secColor)
                                     : buildUndergroundCutawayStation(st, secColor))))))));
 
-      if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank' && !isSharedDwarka21) {
+      if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank' && !isSharedDwarka21 && st.name !== 'New Delhi') {
         attachGenuineInterchangeGeometry(built, st, hubSpec, m, g);
       }
 
@@ -10325,6 +10374,8 @@ window.MetroWebGLLayer = (function () {
         undergroundXRay,
         subwayRailsVisible
       };
-    }
+    },
+    getScene() { return scene; },
+    getInfraGroup() { return infraGroup; }
   };
 })();
