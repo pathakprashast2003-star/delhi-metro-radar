@@ -284,10 +284,13 @@ window.MetroWebGLLayer = (function () {
   let vaishaliCorridor = null;
   let orangeCorridor = null;
   let magentaCorridor = null;
+  let redCorridor = null;
   let yamunaYardData = null;
   let yamunaYardGroup = null;
   let kalindiDepotData = null;
   let kalindiDepotGroup = null;
+  let shastriYardData = null;
+  let shastriYardGroup = null;
   let interchangeHubsData = null;
   let allCorridors = [];
   let allStationsData = [];
@@ -766,22 +769,27 @@ window.MetroWebGLLayer = (function () {
     ctx.lineWidth = 4;
     ctx.strokeRect(4, 4, 504, 120);
 
+    const isRed = lineId === 'red';
     const isOrange = lineId === 'orange';
     const isMagenta = lineId === 'magenta';
     const isBlue = lineId === 'blue' || lineId === 'blue-vaishali';
-    const headerColor = isOrange ? '#F97316' : (isMagenta ? '#D946EF' : (isBlue ? '#2563EB' : '#EAB308'));
-    const lineLabel = isOrange ? 'AIRPORT EXPRESS' : (isMagenta ? 'MAGENTA LINE' : (isBlue ? 'BLUE LINE' : 'YELLOW LINE'));
+    const headerColor = isRed ? '#DC2626' : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : (isBlue ? '#2563EB' : '#EAB308')));
+    const lineLabel = isRed ? 'RED LINE (LINE 1)' : (isOrange ? 'AIRPORT EXPRESS' : (isMagenta ? 'MAGENTA LINE' : (isBlue ? 'BLUE LINE' : 'YELLOW LINE')));
 
     ctx.fillStyle = headerColor;
     ctx.fillRect(10, 10, 492, 26);
-    ctx.fillStyle = isBlue || isMagenta || isOrange ? '#FFFFFF' : '#0F172A';
+    ctx.fillStyle = isBlue || isMagenta || isOrange || isRed ? '#FFFFFF' : '#0F172A';
     ctx.font = '800 17px -apple-system, Inter, sans-serif';
     ctx.textBaseline = 'middle';
     ctx.fillText(`${stName.toUpperCase()}  ·  ${lineLabel} PIDS`, 20, 23);
 
-    ctx.fillStyle = isOrange ? '#FDBA74' : (isMagenta ? '#F0ABFC' : (isBlue ? '#93C5FD' : '#FACC15'));
+    ctx.fillStyle = isRed ? '#FCA5A5' : (isOrange ? '#FDBA74' : (isMagenta ? '#F0ABFC' : (isBlue ? '#93C5FD' : '#FACC15')));
     ctx.font = '700 22px "SF Mono", Menlo, monospace';
-    if (isOrange) {
+    if (isRed) {
+      ctx.fillText('P1  SHAHEED STHAL (GZB)  02 MIN', 20, 64);
+      ctx.fillStyle = '#FECACA';
+      ctx.fillText('P2  RITHALA (TERMINUS)   03 MIN', 20, 100);
+    } else if (isOrange) {
       ctx.fillText('P1  NEW DELHI (NDLS)     02 MIN', 20, 64);
       ctx.fillStyle = '#FED7AA';
       ctx.fillText('P2  YASHOBHOOMI SEC 25    04 MIN', 20, 100);
@@ -1083,6 +1091,7 @@ window.MetroWebGLLayer = (function () {
       concourseGlass: std(0x38BDF8, { transparent: true, opacity: 0.44, roughness: 0.14, metalness: 0.18, envMapIntensity: 0.45 }),
       glassBarrier: std(0xBAE6FD, { transparent: true, opacity: 0.46, roughness: 0.14, metalness: 0.16, envMapIntensity: 0.45 }),
       roundelRed: std(0xDC2626, { emissive: 0x991B1B, emissiveIntensity: 0.28, roughness: 0.42 }),
+      redAccent: new THREE.MeshBasicMaterial({ color: 0xDC2626 }),
       afcFlap: std(0xEF4444, { transparent: true, opacity: 0.78 }),
       ledGreen: new THREE.MeshBasicMaterial({ color: 0x22C55E }),
       pidsHousing: lam(0x0F172A),
@@ -1231,26 +1240,37 @@ window.MetroWebGLLayer = (function () {
     const isBlue = isBlueMain || isBlueVaishali;
     const isOrange = lineKey === 'orange';
     const isMagenta = lineKey === 'magenta';
+    const isRed = lineKey === 'red';
 
     const topoLineKey = isYellow
       ? 'yellow-line'
-      : (isOrange ? 'airport-express' : (isMagenta ? 'magenta-line' : 'blue-line'));
+      : (isRed
+        ? 'red-line'
+        : (isOrange ? 'airport-express' : (isMagenta ? 'magenta-line' : 'blue-line')));
     const lineId = isYellow
       ? 'yellow'
-      : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlueVaishali ? 'blue-vaishali' : 'blue')));
+      : (isRed
+        ? 'red'
+        : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlueVaishali ? 'blue-vaishali' : 'blue'))));
     const lineName = isYellow
       ? 'Yellow Line (Line 2)'
-      : (isOrange
-        ? 'Airport Express (Line 10)'
-        : (isMagenta
-          ? 'Magenta Line (Line 8)'
-          : (isBlueVaishali ? 'Blue Line (Vaishali Branch)' : 'Blue Line (Line 3/4)')));
+      : (isRed
+        ? 'Red Line (Line 1)'
+        : (isOrange
+          ? 'Airport Express (Line 10)'
+          : (isMagenta
+            ? 'Magenta Line (Line 8)'
+            : (isBlueVaishali ? 'Blue Line (Vaishali Branch)' : 'Blue Line (Line 3/4)'))));
     const lineColorNum = isYellow
       ? 0xEAB308
-      : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : 0x2563EB));
+      : (isRed
+        ? 0xDC2626
+        : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : 0x2563EB)));
     const lineColorHex = isYellow
       ? '#EAB308'
-      : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : '#2563EB'));
+      : (isRed
+        ? '#DC2626'
+        : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : '#2563EB')));
 
     const rawCoords = osmData.centerline;
     const nTotal = rawCoords.length;
@@ -1427,6 +1447,66 @@ window.MetroWebGLLayer = (function () {
               const f = s / steps;
               const interp = new THREE.Vector3().lerpVectors(prev3D, cur3D, f);
               interp.y = magentaElevAt((i - 1) + f);
+              densePts.push(interp);
+            }
+          }
+        }
+        densePts.push(cur3D);
+      }
+    } else if (isRed) {
+      // Red Line (Line 1) 3D elevation profile:
+      // Node 0..147: Rithala -> Rohini -> Pitampura -> NSP -> Inderlok (+17.5m) -> Pul Bangash -> Tis Hazari -> Kashmere Gate (+16.8m)
+      // Node 147..158: Ramp down from Kashmere Gate to Yamuna River Bridge (+16.8m -> +11.0m)
+      // Node 158..165: Historic Yamuna River Bridge viaduct span (+11.0m)
+      // Node 165..170: Ramp down from Yamuna Bridge east bank into Shastri Park ground level (+11.0m -> +1.35m)
+      // Node 170..175: Shastri Park At-Grade Station & Depot throat (+1.35m)
+      // Node 175..184: Ramp up from Shastri Park to Seelampur elevated viaduct (+1.35m -> +16.5m)
+      // Node 184..334: Seelampur -> Welcome (+16.5m) -> Shahdara -> Dilshad Garden -> Hindon River (+17.5m) -> Shaheed Sthal
+      const redElevAt = (idxF) => {
+        if (idxF <= 147) {
+          if (idxF >= 84 && idxF <= 92) return 17.5; // Inderlok upper tier crossing above Green Line
+          if (idxF >= 143) return 16.8; // Kashmere Gate elevated tier
+          return VIADUCT_Y;
+        }
+        if (idxF <= 158) {
+          const u = (idxF - 147) / 11;
+          return 16.8 + (11.0 - 16.8) * hermiteSmooth(u);
+        }
+        if (idxF <= 165) {
+          return 11.0; // Yamuna River crossing span
+        }
+        if (idxF <= 170) {
+          const u = (idxF - 165) / 5;
+          return 11.0 + (1.35 - 11.0) * hermiteSmooth(u);
+        }
+        if (idxF <= 175) {
+          return 1.35; // Shastri Park at-grade station
+        }
+        if (idxF <= 184) {
+          const u = (idxF - 175) / 9;
+          return 1.35 + (VIADUCT_Y - 1.35) * hermiteSmooth(u);
+        }
+        if (idxF >= 320 && idxF <= 328) {
+          return 17.5; // Hindon River crossing
+        }
+        return VIADUCT_Y;
+      };
+
+      for (let i = 0; i < nTotal; i++) {
+        const p = raw2D[i];
+        const elev = redElevAt(i);
+        const cur3D = new THREE.Vector3(p.x, elev, p.z);
+
+        if (densePts.length > 0 && i > 0) {
+          const prev3D = densePts[densePts.length - 1];
+          const segD = prev3D.distanceTo(cur3D);
+          const inGradeZone = (i >= 145 && i <= 186);
+          if (segD > 85 || inGradeZone) {
+            const steps = inGradeZone ? 10 : Math.min(8, Math.ceil(segD / 70));
+            for (let s = 1; s < steps; s++) {
+              const f = s / steps;
+              const interp = new THREE.Vector3().lerpVectors(prev3D, cur3D, f);
+              interp.y = redElevAt((i - 1) + f);
               densePts.push(interp);
             }
           }
@@ -1680,6 +1760,7 @@ window.MetroWebGLLayer = (function () {
       isBlue,
       isOrange,
       isMagenta,
+      isRed,
       colorNum: lineColorNum,
       colorHex: lineColorHex,
       samples: cSamples,
@@ -1703,7 +1784,9 @@ window.MetroWebGLLayer = (function () {
     const corr = corridor || activeWalkCorridor || (
       activeLineId === 'blue' ? blueCorridor : (
         activeLineId === 'orange' ? orangeCorridor : (
-          activeLineId === 'magenta' ? magentaCorridor : yellowCorridor
+          activeLineId === 'magenta' ? magentaCorridor : (
+            activeLineId === 'red' ? redCorridor : yellowCorridor
+          )
         )
       )
     ) || yellowCorridor;
@@ -1846,8 +1929,9 @@ window.MetroWebGLLayer = (function () {
     const isBlue = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue'));
     const isOrange = Boolean(c && (c.isOrange || c.lineId === 'orange' || c.lineKey === 'orange'));
     const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
-    const spineMat = isOrange ? m.tactileOrange : (isMagenta ? m.tactileMagenta : (isBlue ? m.tactileBlue : m.tactileYellow));
-    const guideMat = isOrange ? m.orangeAccent : (isMagenta ? m.magentaAccent : (isBlue ? m.blueAccent : m.yellowAccent));
+    const isRed = Boolean(c && (c.isRed || c.lineId === 'red' || c.lineKey === 'red'));
+    const spineMat = isRed ? m.roundelRed : (isOrange ? m.tactileOrange : (isMagenta ? m.tactileMagenta : (isBlue ? m.tactileBlue : m.tactileYellow)));
+    const guideMat = isRed ? m.redAccent : (isOrange ? m.orangeAccent : (isMagenta ? m.magentaAccent : (isBlue ? m.blueAccent : m.yellowAccent)));
 
     // 1. Elevated Box-Girder Viaduct & Transition Ramps (smooth watertight bridge spans)
     const viaductDeckProf = [
@@ -2341,7 +2425,8 @@ window.MetroWebGLLayer = (function () {
       toBox(77.2215, 28.6598, 77.2345, 28.6632), // DLI
       toBox(77.2940, 28.5410, 77.2995, 28.5480), // Jasola Vihar Stabling Yard & Flyover Throat
       toBox(77.2980, 28.5405, 77.3035, 28.5435), // Agra Canal Flyover & Bowstring Bridge Corridor
-      toBox(77.3025, 28.5405, 77.3105, 28.5460)  // Kalindi Kunj Ground Depot & Incline Ramp
+      toBox(77.3025, 28.5405, 77.3105, 28.5460), // Kalindi Kunj Ground Depot & Incline Ramp
+      toBox(77.2410, 28.6670, 77.2515, 28.6730)  // Shastri Park Maintenance Depot & Training Academy
     );
     INDIA_RAILWAY_HUBS.forEach((hub) => {
       if (!hub.p0 || !hub.p1) return;
@@ -2422,7 +2507,7 @@ window.MetroWebGLLayer = (function () {
     const curbLProf = [[-4.55, 0.08], [-4.15, 0.08], [-4.15, 0.38], [-4.55, 0.38]];
     const curbRProf = [[4.15, 0.08], [4.55, 0.08], [4.55, 0.38], [4.15, 0.38]];
     const viaductShadowProf = [[-6.8, 0.14], [6.8, 0.14], [6.8, 0.15], [-6.8, 0.15]];
-    const activeElevCorridors = [yellowCorridor, blueCorridor, orangeCorridor, magentaCorridor].filter(Boolean);
+    const activeElevCorridors = [yellowCorridor, blueCorridor, orangeCorridor, magentaCorridor, redCorridor].filter(Boolean);
     activeElevCorridors.forEach((corr) => {
       const cSamples = corr.samples;
       if (!cSamples || !cSamples.length) return;
@@ -3686,14 +3771,17 @@ window.MetroWebGLLayer = (function () {
     const { subtitle, secCss } = st._signSpec;
     const isOrange = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
     const isMagenta = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
+    const isRed = st.lineId === 'red' || st.lineKey === 'red' || st.isRed;
     const isBlue = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.isBlue;
-    const lineHex = isOrange
-      ? '#F97316'
-      : (isMagenta
-        ? '#D946EF'
-        : (isBlue ? '#2563EB' : '#EAB308'));
+    const lineHex = isRed
+      ? '#DC2626'
+      : (isOrange
+        ? '#F97316'
+        : (isMagenta
+          ? '#D946EF'
+          : (isBlue ? '#2563EB' : '#EAB308')));
     const signTex = makeBilingualSignTex(st.hindi, st.name, subtitle, lineHex, secCss);
-    const lineKeyStr = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow'));
+    const lineKeyStr = isRed ? 'red' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow')));
     const pidsTex = makeMapPIDSTex(st.name, lineKeyStr);
     const signMat = new THREE.MeshBasicMaterial({ map: signTex });
     const pidsMat = new THREE.MeshBasicMaterial({ map: pidsTex });
@@ -7391,12 +7479,100 @@ window.MetroWebGLLayer = (function () {
     return { root, detail, signMeshes, pidsMesh };
   }
 
+  function buildShastriParkYardInfrastructure(parent, depotData) {
+    if (!depotData || !depotData.tracks) return null;
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const grp = new THREE.Group();
+    const tr = depotData.tracks;
+
+    const toYardSpan = (poly, defaultElev = 1.35) => {
+      if (!poly || poly.length < 2) return null;
+      const pts3 = poly.map((c) => toLocalMeters([c[0], c[1]], Number.isFinite(c[2]) ? c[2] : defaultElev));
+      let acc = 0;
+      const out = [];
+      for (let i = 0; i < pts3.length; i++) {
+        if (i > 0) acc += Math.hypot(pts3[i].x - pts3[i - 1].x, pts3[i].z - pts3[i - 1].z);
+        const prev = pts3[Math.max(0, i - 1)];
+        const next = pts3[Math.min(pts3.length - 1, i + 1)];
+        const tan = new THREE.Vector3(next.x - prev.x, 0, next.z - prev.z);
+        if (tan.lengthSq() < 1e-6) tan.set(1, 0, 0);
+        tan.normalize();
+        out.push({ pos: pts3[i], tan, dist: acc, elev: Number.isFinite(poly[i][2]) ? poly[i][2] : defaultElev });
+      }
+      return out.length >= 2 ? out : null;
+    };
+
+    // 1. Lead turnouts from Shastri Park station into yard
+    const turnoutSpans = (tr.turnouts || []).map((p) => toYardSpan(p, 1.35)).filter(Boolean);
+    if (turnoutSpans.length) {
+      const ballastProf = [[-2.4, 0.0], [2.4, 0.0], [2.2, 0.22], [-2.2, 0.22]];
+      const bM = buildRibbonFromSpans(turnoutSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.22], [lat + 0.035, 0.22], [lat + 0.035, 0.38], [lat - 0.035, 0.38]];
+        const rM = buildRibbonFromSpans(turnoutSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+    }
+
+    // 2. Stabling and inspection fan tracks
+    const stablingSpans = (tr.stabling_tracks || []).map((p) => toYardSpan(p, 1.35)).filter(Boolean);
+    if (stablingSpans.length) {
+      const ballastProf = [[-2.2, 0.0], [2.2, 0.0], [2.0, 0.20], [-2.0, 0.20]];
+      const bM = buildRibbonFromSpans(stablingSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.20], [lat + 0.035, 0.20], [lat + 0.035, 0.36], [lat - 0.035, 0.36]];
+        const rM = buildRibbonFromSpans(stablingSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+      // Overhead catenary wires
+      const wireProf = [[-0.08, 5.6], [0.08, 5.6], [0.08, 5.75], [-0.08, 5.75]];
+      const wM = buildRibbonFromSpans(stablingSpans, wireProf, m.steelDark, 1.2, false);
+      if (wM) grp.add(wM);
+    }
+
+    // 3. Workshop Sheds and Maintenance Facilities
+    (depotData.workshops || []).forEach((ws) => {
+      const pos = toLocalMeters(ws.coords, ws.coords[2] || 1.35);
+      const wsGroup = new THREE.Group();
+      wsGroup.position.set(pos.x, 1.35, pos.z);
+      if (ws.headingDeg) {
+        wsGroup.rotation.y = THREE.MathUtils.degToRad(-ws.headingDeg);
+      }
+      // Main shed body
+      addBox(wsGroup, ws.widthM, ws.heightM, ws.lengthM, m.concreteLight, 0, ws.heightM * 0.5, 0);
+      // Pitched industrial roof with DMRC red accent trim
+      addBox(wsGroup, ws.widthM + 1.2, 0.8, ws.lengthM + 1.2, m.redRoof, 0, ws.heightM + 0.4, 0);
+      // Skylights
+      for (let sz = -ws.lengthM * 0.4; sz <= ws.lengthM * 0.4; sz += 20) {
+        addBox(wsGroup, ws.widthM * 0.6, 0.25, 8.0, m.skylightGlass, 0, ws.heightM + 0.85, sz);
+      }
+      // Workshop track doors
+      if (ws.tracksInside > 0) {
+        const spacing = ws.widthM / (ws.tracksInside + 1);
+        for (let t = 1; t <= ws.tracksInside; t++) {
+          const dx = -ws.widthM * 0.5 + t * spacing;
+          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, -ws.lengthM * 0.5);
+        }
+      }
+      grp.add(wsGroup);
+    });
+
+    parent.add(grp);
+    return grp;
+  }
+
   function buildElevatedStation(st, secColor) {
     const m = getMaterials();
     const g = getSharedStationGeos();
     const root = new THREE.Group();
     const detail = new THREE.Group();
-    const yV = VIADUCT_Y;
+    const isAtGrade = (st.structure === 'at-grade' || (st.elevM !== undefined && st.elevM < 4.0));
+    const yV = isAtGrade ? (st.elevM || 1.35) : (st.elevM ? st.elevM : VIADUCT_Y);
+    const concFloorY = yV - 8.2;
     // Out of all 17 elevated Yellow Line stations, ONLY Haiderpur Badli Mor has an Island platform.
     const isIsland = st.name === 'Haiderpur Badli Mor';
     const isHaiderpur = st.name === 'Haiderpur Badli Mor';
@@ -7424,44 +7600,55 @@ window.MetroWebGLLayer = (function () {
     });
 
     [-32, 0, 32].forEach((px) => {
-      addBox(root, 5.2, 0.9, 5.6, m.concreteWeb, px, 0.45, 0);
-      const shaft = new THREE.Mesh(g.pierShaft, isHeritageRidge ? m.sandstoneBuff : m.pierCream);
-      shaft.scale.set(1.25, yV - 3.6, 1.25);
-      shaft.position.set(px, (yV - 3.6) * 0.5 + 0.75, 0);
-      shaft.frustumCulled = false;
-      root.add(shaft);
-      addBox(root, 3.8, 2.5, 16.5, isHeritageRidge ? m.sandstoneBuff : m.concreteLight, px, yV - 2.9, 0);
-    });
-
-    // 2. Glazed Under-Viaduct Concourse Hall + Internal AFC Gates & Escalators + Sidewalk Glass Lift Wing
-    const concFloorY = yV - 8.2;
-    addBox(root, 58, 0.9, 18.6, m.concreteLight, 0, concFloorY, 0);
-    addBox(root, 58, 0.6, 18.6, m.concreteWeb, 0, concFloorY + 5.6, 0);
-    [-9.1, 9.1].forEach((cz) => {
-      addBox(root, 57, 4.9, 0.22, isCyberCorridor ? m.cyberTeal : m.concourseGlass, 0, concFloorY + 2.8, cz);
-      for (let mx = -26; mx <= 26; mx += 6.5) {
-        addBox(detail, 0.34, 5.2, 0.34, m.steelDark, mx, concFloorY + 2.8, cz);
+      addBox(root, 5.2, isAtGrade ? 0.4 : 0.9, 5.6, m.concreteWeb, px, isAtGrade ? 0.2 : 0.45, 0);
+      if (!isAtGrade) {
+        const shaft = new THREE.Mesh(g.pierShaft, isHeritageRidge ? m.sandstoneBuff : m.pierCream);
+        shaft.scale.set(1.25, yV - 3.6, 1.25);
+        shaft.position.set(px, (yV - 3.6) * 0.5 + 0.75, 0);
+        shaft.frustumCulled = false;
+        root.add(shaft);
+        addBox(root, 3.8, 2.5, 16.5, isHeritageRidge ? m.sandstoneBuff : m.concreteLight, px, yV - 2.9, 0);
       }
     });
-    addAFCTurnstiles(detail, -6, concFloorY + 0.45, 4.2, 5);
-    [-8.5, 8.5].forEach((ez) => {
-      const esc = addBox(detail, 2.2, 0.9, 14.0, m.escStep, -18, concFloorY + 4.8, ez);
-      esc.rotation.z = 0.65;
-    });
 
-    // External Glass Lift + Sidewalk Escalator Wing (alternated side along corridor)
-    const wingZ = wingSide * 13.6;
-    const escZ = wingSide * 14.0;
-    addBox(detail, 6.4, 0.5, 6.4, m.plazaPave, 22.0, 0.25, wingZ);
-    addBox(detail, 5.4, yV + 2.6, 5.4, isCyberCorridor ? m.cyberTeal : m.glassBarrier, 22.0, (yV + 2.6) * 0.5, wingZ);
-    addBox(detail, 5.8, 0.5, 5.8, isHeritageRidge ? m.qutabRedStone : m.dmrcBlueRoof, 22.0, yV + 2.9, wingZ);
-    addBox(detail, 3.0, 2.4, 3.0, m.concreteWeb, 22.0, 6.2, wingZ);
-    const wingEsc = addBox(detail, 2.8, 1.0, 14.2, m.escStep, 29.5, 5.2, escZ);
-    wingEsc.rotation.z = -0.58;
-    const wingGlass = addBox(detail, 3.0, 1.4, 14.2, m.escGlass, 29.5, 5.9, escZ);
-    wingGlass.rotation.z = -0.58;
+    if (!isAtGrade) {
+      // 2. Glazed Under-Viaduct Concourse Hall + Internal AFC Gates & Escalators + Sidewalk Glass Lift Wing
+      const concFloorY = yV - 8.2;
+      addBox(root, 58, 0.9, 18.6, m.concreteLight, 0, concFloorY, 0);
+      addBox(root, 58, 0.6, 18.6, m.concreteWeb, 0, concFloorY + 5.6, 0);
+      [-9.1, 9.1].forEach((cz) => {
+        addBox(root, 57, 4.9, 0.22, isCyberCorridor ? m.cyberTeal : m.concourseGlass, 0, concFloorY + 2.8, cz);
+        for (let mx = -26; mx <= 26; mx += 6.5) {
+          addBox(detail, 0.34, 5.2, 0.34, m.steelDark, mx, concFloorY + 2.8, cz);
+        }
+      });
+      addAFCTurnstiles(detail, -6, concFloorY + 0.45, 4.2, 5);
+      [-8.5, 8.5].forEach((ez) => {
+        const esc = addBox(detail, 2.2, 0.9, 14.0, m.escStep, -18, concFloorY + 4.8, ez);
+        esc.rotation.z = 0.65;
+      });
 
-    const primaryAccentMat = st.isBlue ? m.blueAccent : m.yellowAccent;
+      // External Glass Lift + Sidewalk Escalator Wing (alternated side along corridor)
+      const wingZ = wingSide * 13.6;
+      const escZ = wingSide * 14.0;
+      addBox(detail, 6.4, 0.5, 6.4, m.plazaPave, 22.0, 0.25, wingZ);
+      addBox(detail, 5.4, yV + 2.6, 5.4, isCyberCorridor ? m.cyberTeal : m.glassBarrier, 22.0, (yV + 2.6) * 0.5, wingZ);
+      addBox(detail, 5.8, 0.5, 5.8, isHeritageRidge ? m.qutabRedStone : (st.isRed ? m.redRoof : m.dmrcBlueRoof), 22.0, yV + 2.9, wingZ);
+      addBox(detail, 3.0, 2.4, 3.0, m.concreteWeb, 22.0, 6.2, wingZ);
+      const wingEsc = addBox(detail, 2.8, 1.0, 14.2, m.escStep, 29.5, 5.2, escZ);
+      wingEsc.rotation.z = -0.58;
+      const wingGlass = addBox(detail, 3.0, 1.4, 14.2, m.escGlass, 29.5, 5.9, escZ);
+      wingGlass.rotation.z = -0.58;
+    } else {
+      // Ground-level at-grade concourse entry hall & glass over-track pedestrian bridge
+      addBox(root, 62, 0.5, 24, m.plazaPave, 0, 0.25, 0);
+      addBox(root, 48, 5.0, 18.0, m.concreteLight, 0, 2.5, 0);
+      addBox(detail, 46, 3.8, 0.22, m.concourseGlass, 0, 2.5, 9.1);
+      addBox(detail, 46, 3.8, 0.22, m.concourseGlass, 0, 2.5, -9.1);
+      addBox(root, 50, 0.8, 20.0, m.redRoof, 0, 5.4, 0);
+    }
+
+    const primaryAccentMat = st.isRed ? m.roundelRed : (st.isBlue ? m.blueAccent : m.yellowAccent);
 
     // 3. Terrazzo Platforms + Tactile Strips + Glass PSDs + Live Digital PIDS + Benches + Commuters
     if (isIsland) {
@@ -7516,7 +7703,7 @@ window.MetroWebGLLayer = (function () {
     //    (Lower stations directly beneath a +27.8m stacked flyover use a sleek flat pergola so no roof clips the upper deck)
     const archCenterY = yV + 1.8;
     const isNoidaTerminus = (st.name === 'Noida Electronic City');
-    const roofMat = isNoidaTerminus ? m.concreteLight : m.dmrcBlueRoof;
+    const roofMat = st.isRed ? m.redRoof : (isNoidaTerminus ? m.concreteLight : m.dmrcBlueRoof);
 
     if (isFlatOverStacked) {
       const pergW = isIsland ? 14.8 : 26.8;
@@ -8555,11 +8742,13 @@ window.MetroWebGLLayer = (function () {
 
     (hubSpec.arms || []).forEach((arm) => {
       // If the line already exists as a full first-class corridor, do not build a duplicate stub arm!
+      if (arm.line === 'Red Line' && redCorridor) return;
       if (arm.line === 'Magenta Line' && magentaCorridor) return;
       if (arm.line === 'Blue Line' && blueCorridor) return;
       if (arm.line === 'Yellow Line' && yellowCorridor) return;
       if ((arm.line === 'Airport Express' || arm.line === 'Orange Line') && orangeCorridor) return;
-      if ((st.isMagenta && arm.line === 'Magenta Line') ||
+      if ((st.isRed && arm.line === 'Red Line') ||
+          (st.isMagenta && arm.line === 'Magenta Line') ||
           (st.isBlue && arm.line === 'Blue Line') ||
           (st.isYellow && arm.line === 'Yellow Line') ||
           (st.isOrange && (arm.line === 'Airport Express' || arm.line === 'Orange Line'))) {
@@ -8998,20 +9187,34 @@ window.MetroWebGLLayer = (function () {
     const isBlue = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue'));
     const isOrange = Boolean(c && (c.isOrange || c.lineId === 'orange' || c.lineKey === 'orange'));
     const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
+    const isRed = Boolean(c && (c.isRed || c.lineId === 'red' || c.lineKey === 'red'));
 
     stList.forEach((st) => {
       st.corridor = c;
-      if (!st.lineId) st.lineId = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow'));
+      if (!st.lineId) st.lineId = isRed ? 'red' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow')));
       st.isBlue = isBlue;
       st.isOrange = isOrange;
       st.isMagenta = isMagenta;
-      st.isYellow = (!isBlue && !isOrange && !isMagenta);
+      st.isRed = isRed;
+      st.isYellow = (!isBlue && !isOrange && !isMagenta && !isRed);
       const secColor = pickInterchangeHex(st);
       const secCss = secColor ? ('#' + secColor.toString(16).padStart(6, '0')) : null;
       const isUgSide = st.structure !== 'elevated' && UNDERGROUND_SIDE_STATIONS.has(st.name);
       const isElIsland = st.structure === 'elevated' && st.name === 'Haiderpur Badli Mor';
       let subtitle;
-      if (isOrange) {
+      if (isRed) {
+        if (st.name === 'Kashmere Gate') subtitle = 'RED × YELLOW × VIOLET MEGA HUB · +16.8M ELEVATED';
+        else if (st.name === 'Inderlok') subtitle = 'RED × GREEN INTERCHANGE · UPPER VIADUCT +17.5M';
+        else if (st.name === 'Netaji Subhash Place') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED';
+        else if (st.name === 'Welcome') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED';
+        else if (st.name === 'Shastri Park') subtitle = 'RED LINE · AT-GRADE STATION & FIRST DMRC DEPOT';
+        else if (st.name === 'Shahdara') subtitle = 'RED LINE · SHAHDARA INDIAN RAILWAYS JUNCTION';
+        else if (st.name === 'Hindon River') subtitle = 'RED LINE · HINDON RIVER BRIDGE VIADUCT';
+        else if (st.name === 'Rithala') subtitle = 'RED LINE · WEST TERMINUS · SCISSORS CROSSOVER';
+        else if (st.name === 'Shaheed Sthal') subtitle = 'RED LINE · GHAZIABAD EAST TERMINUS · NEW BUS ADDA';
+        else if (st.terminus) subtitle = `RED LINE · TERMINUS · ${st.structure.toUpperCase()}`;
+        else subtitle = `RED LINE · ${st.structure === 'at-grade' ? 'AT-GRADE GROUND LEVEL' : '+16M ELEVATED'}`;
+      } else if (isOrange) {
         if (st.name === 'IGI Airport') subtitle = 'AIRPORT EXPRESS · IGI TERMINAL 3 AIRPORT LINK';
         else if (st.name === 'Delhi Aerocity') subtitle = 'AIRPORT EXPRESS · HOSPITALITY DISTRICT';
         else if (st.name === 'Dhaula Kuan') subtitle = 'AIRPORT EXPRESS · +18.5M ELEVATED FLYOVER OVER RING RD';
@@ -9121,7 +9324,7 @@ window.MetroWebGLLayer = (function () {
                             ? buildNewDelhiAirportHub(st, secColor)
                             : (isOrange
                                 ? buildAirportExpressStation(st, secColor)
-                                : (st.structure === 'elevated'
+                                : ((st.structure === 'elevated' || st.structure === 'at-grade')
                                     ? buildElevatedStation(st, secColor)
                                     : buildUndergroundCutawayStation(st, secColor))))))));
 
@@ -9212,19 +9415,25 @@ window.MetroWebGLLayer = (function () {
     const isBlue = Boolean(c && (c.isBlue || c.lineId === 'blue' || c.lineKey === 'blue' || isVaishali));
     const isOrange = Boolean(c && (c.isOrange || c.lineId === 'orange' || c.lineKey === 'orange'));
     const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
-    const lineColor = isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : (isBlue ? 0x2563EB : 0xEAB308));
-    const idPrefix = isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL')));
-    const trainsCount = isOrange ? 4 : (isVaishali ? 3 : (isMagenta ? 7 : FLEET_TRAINS_PER_DIR));
+    const isRed = Boolean(c && (c.isRed || c.lineId === 'red' || c.lineKey === 'red'));
+    const lineColor = isRed ? 0xDC2626 : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : (isBlue ? 0x2563EB : 0xEAB308)));
+    const idPrefix = isRed ? 'RL' : (isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL'))));
+    const trainsCount = isRed ? 8 : (isOrange ? 4 : (isVaishali ? 3 : (isMagenta ? 7 : FLEET_TRAINS_PER_DIR)));
 
-    const heroNames = isOrange
-      ? ['IGI Airport', 'Dhaula Kuan', 'Shivaji Stadium', 'Delhi Aerocity', 'Yashobhoomi Dwarka Sector 25']
-      : (isMagenta
-        ? ['Janakpuri West', 'Terminal 1 IGI Airport', 'Hauz Khas', 'Kalkaji Mandir', 'Botanical Garden']
-        : (isVaishali
-          ? ['Anand Vihar ISBT', 'Karkarduma', 'Preet Vihar', 'Vaishali']
-          : (isBlue
-            ? ['Dwarka Sector 21', 'Rajiv Chowk', 'Akshardham', 'Botanical Garden', 'Noida City Centre']
-            : ['Qutab Minar', 'Green Park', 'Lok Kalyan Marg', 'Rajiv Chowk', 'Kashmere Gate'])));
+    let heroNames;
+    if (isRed) {
+      heroNames = ['Rithala', 'Netaji Subhash Place', 'Inderlok', 'Kashmere Gate', 'Welcome', 'Dilshad Garden', 'Shaheed Sthal'];
+    } else if (isOrange) {
+      heroNames = ['IGI Airport', 'Dhaula Kuan', 'Shivaji Stadium', 'Delhi Aerocity', 'Yashobhoomi Dwarka Sector 25'];
+    } else if (isMagenta) {
+      heroNames = ['Janakpuri West', 'Terminal 1 IGI Airport', 'Hauz Khas', 'Kalkaji Mandir', 'Botanical Garden'];
+    } else if (isVaishali) {
+      heroNames = ['Anand Vihar ISBT', 'Karkarduma', 'Preet Vihar', 'Vaishali'];
+    } else if (isBlue) {
+      heroNames = ['Dwarka Sector 21', 'Rajiv Chowk', 'Akshardham', 'Botanical Garden', 'Noida City Centre'];
+    } else {
+      heroNames = ['Qutab Minar', 'Green Park', 'Lok Kalyan Marg', 'Rajiv Chowk', 'Kashmere Gate'];
+    }
     const heroDists = heroNames
       .map((n) => cStations.find((s) => s.name === n))
       .filter(Boolean)
@@ -9318,7 +9527,8 @@ window.MetroWebGLLayer = (function () {
         const matches = (activeLineId === 'blue' && (lineKey === 'blue' || lineKey === 'blue-vaishali')) ||
                         (activeLineId === 'yellow' && lineKey === 'yellow') ||
                         (activeLineId === 'orange' && lineKey === 'orange') ||
-                        (activeLineId === 'magenta' && lineKey === 'magenta');
+                        (activeLineId === 'magenta' && lineKey === 'magenta') ||
+                        (activeLineId === 'red' && lineKey === 'red');
         if (!matches) {
           if (tr.group.visible) tr.group.visible = false;
           continue;
@@ -10563,25 +10773,39 @@ window.MetroWebGLLayer = (function () {
       const kalindiDepotPromise = window.__kalindiDepotPromise || (
         window.__kalindiDepotPromise = fetch('src/data/kalindi_kunj_yard_tracks.json').then((r) => r.json()).catch(() => null)
       );
+      const redOsmPromise = window.__redLineOsmPromise || (
+        window.__redLineOsmPromise = fetch('src/data/red_line_accurate_osm.json').then((r) => r.json()).catch(() => null)
+      );
+      const redSvcPromise = window.__redLineServicePromise || (
+        window.__redLineServicePromise = fetch('src/data/red_line_service.json').then((r) => r.json()).catch(() => null)
+      );
+      const shastriYardPromise = window.__shastriYardPromise || (
+        window.__shastriYardPromise = fetch('src/data/shastri_park_yard_tracks.json').then((r) => r.json()).catch(() => null)
+      );
       const [
         osmData, topoData, svcData,
         blueOsmData, blueSvcData, vaishaliOsmData,
         yamunaYardJson, interchangeHubsJson,
         orangeOsmData, orangeSvcData,
         magentaOsmData, magentaSvcData,
-        kalindiDepotJson
+        kalindiDepotJson,
+        redOsmData, redSvcData,
+        shastriYardJson
       ] = await Promise.all([
         osmPromise, topoPromise, svcPromise,
         blueOsmPromise, blueSvcPromise, vaishaliOsmPromise,
         yamunaYardPromise, interchangeHubsPromise,
         orangeOsmPromise, orangeSvcPromise,
         magentaOsmPromise, magentaSvcPromise,
-        kalindiDepotPromise
+        kalindiDepotPromise,
+        redOsmPromise, redSvcPromise,
+        shastriYardPromise
       ]);
       yamunaYardData = yamunaYardJson;
       kalindiDepotData = kalindiDepotJson;
+      shastriYardData = shastriYardJson;
       interchangeHubsData = interchangeHubsJson;
-      buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData);
+      buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData);
     } catch (err) {
       console.error('MetroWebGLLayer failed to load metro data:', err);
     }
@@ -10615,7 +10839,13 @@ window.MetroWebGLLayer = (function () {
       const refSt = jkSt || kkSt;
       const kdD2 = refSt ? ((refSt.pos.x - focusX) * (refSt.pos.x - focusX) + (refSt.pos.z - focusZ) * (refSt.pos.z - focusZ)) : 0;
       const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
-      kalindiDepotGroup.visible = (activeLineId !== 'yellow' && activeLineId !== 'blue' && activeLineId !== 'orange') && (kdD2 <= yardR2);
+      kalindiDepotGroup.visible = (activeLineId !== 'yellow' && activeLineId !== 'blue' && activeLineId !== 'orange' && activeLineId !== 'red') && (kdD2 <= yardR2);
+    }
+    if (shastriYardGroup && redCorridor && redCorridor.stationsData) {
+      const spSt = redCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('shastri park'));
+      const spD2 = spSt ? ((spSt.pos.x - focusX) * (spSt.pos.x - focusX) + (spSt.pos.z - focusZ) * (spSt.pos.z - focusZ)) : 0;
+      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
+      shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red') && (spD2 <= yardR2);
     }
 
     const list = allStationsData.length ? allStationsData : stationsData;
@@ -10626,7 +10856,8 @@ window.MetroWebGLLayer = (function () {
         const matches = (activeLineId === 'blue' && (stLineKey === 'blue' || stLineKey === 'blue-vaishali')) ||
                         (activeLineId === 'yellow' && stLineKey === 'yellow') ||
                         (activeLineId === 'orange' && stLineKey === 'orange') ||
-                        (activeLineId === 'magenta' && stLineKey === 'magenta');
+                        (activeLineId === 'magenta' && stLineKey === 'magenta') ||
+                        (activeLineId === 'red' && stLineKey === 'red');
         if (!matches) {
           if (st._group && st._group.visible) st._group.visible = false;
           if (st._ring && st._ring.visible) st._ring.visible = false;
@@ -10713,7 +10944,7 @@ window.MetroWebGLLayer = (function () {
     }
   }
 
-  function buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData) {
+  function buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData) {
     if (!scene) return;
     initOrigin();
 
@@ -10736,7 +10967,10 @@ window.MetroWebGLLayer = (function () {
     if (magentaOsmData) {
       magentaCorridor = buildCorridorCurve(magentaOsmData, topoData, magentaSvcData, 'magenta');
     }
-    allCorridors = [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor].filter(Boolean);
+    if (redOsmData) {
+      redCorridor = buildCorridorCurve(redOsmData, topoData, redSvcData, 'red');
+    }
+    allCorridors = [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor, redCorridor].filter(Boolean);
     allStationsData = allCorridors.flatMap((c) => (c === vaishaliCorridor ? c.stationsData.filter((s) => s.name !== 'Yamuna Bank') : c.stationsData));
 
     const hemi = new THREE.HemisphereLight(0xF8FAFC, 0x94A3B8, 0.24);
@@ -10783,11 +11017,17 @@ window.MetroWebGLLayer = (function () {
     if (magentaCorridor) {
       buildTrackInfrastructure(infraGroup, magentaCorridor.portalCoords, magentaCorridor);
     }
+    if (redCorridor) {
+      buildTrackInfrastructure(infraGroup, redCorridor.portalCoords, redCorridor);
+    }
     if (yamunaYardData) {
       yamunaYardGroup = buildYamunaYardInfrastructure(infraGroup, yamunaYardData);
     }
     if (kalindiDepotData) {
       kalindiDepotGroup = buildKalindiKunjGroundDepot(infraGroup, kalindiDepotData);
+    }
+    if (shastriYardData) {
+      shastriYardGroup = buildShastriParkYardInfrastructure(infraGroup, shastriYardData);
     }
     buildBeautifulDelhiEnvironment(infraGroup);
     buildAllStations(infraGroup, yellowCorridor);
@@ -10803,6 +11043,9 @@ window.MetroWebGLLayer = (function () {
     if (magentaCorridor) {
       buildAllStations(infraGroup, magentaCorridor);
     }
+    if (redCorridor) {
+      buildAllStations(infraGroup, redCorridor);
+    }
     buildFleet(infraGroup, yellowCorridor);
     if (blueCorridor) {
       buildFleet(infraGroup, blueCorridor);
@@ -10815,6 +11058,9 @@ window.MetroWebGLLayer = (function () {
     }
     if (magentaCorridor) {
       buildFleet(infraGroup, magentaCorridor);
+    }
+    if (redCorridor) {
+      buildFleet(infraGroup, redCorridor);
     }
 
     scene.add(infraGroup);
@@ -10983,11 +11229,13 @@ window.MetroWebGLLayer = (function () {
         map.getCanvas().style.cursor = 'pointer';
         const kind = hit.structure === 'elevated' ? 'Elevated Viaduct (+17m)' : 'Underground Cutaway';
         const xBadge = hit.interchange ? ` · ${hit.interchange}` : '';
-        const dotColor = (hit.lineId === 'orange' || hit.lineKey === 'orange')
-          ? '#F97316'
-          : ((hit.lineId === 'magenta' || hit.lineKey === 'magenta')
-            ? '#D946EF'
-            : ((hit.lineId === 'blue' || hit.isBlue) ? '#3B82F6' : '#FACC15'));
+        const dotColor = (hit.lineId === 'red' || hit.lineKey === 'red')
+          ? '#DC2626'
+          : ((hit.lineId === 'orange' || hit.lineKey === 'orange')
+            ? '#F97316'
+            : ((hit.lineId === 'magenta' || hit.lineKey === 'magenta')
+              ? '#D946EF'
+              : ((hit.lineId === 'blue' || hit.isBlue) ? '#3B82F6' : '#FACC15')));
         hoverTooltip.innerHTML = `<span style="color:${dotColor}">●</span> ${hit.name} <span style="color:#CBD5E1;font-weight:500">(${kind}${xBadge})</span>`;
         hoverTooltip.style.left = `${e.originalEvent.clientX + 14}px`;
         hoverTooltip.style.top = `${e.originalEvent.clientY - 14}px`;
@@ -11036,7 +11284,8 @@ window.MetroWebGLLayer = (function () {
         const matches = (activeLineId === 'blue' && (stLineKey === 'blue' || stLineKey === 'blue-vaishali')) ||
                         (activeLineId === 'yellow' && stLineKey === 'yellow') ||
                         (activeLineId === 'orange' && stLineKey === 'orange') ||
-                        (activeLineId === 'magenta' && stLineKey === 'magenta');
+                        (activeLineId === 'magenta' && stLineKey === 'magenta') ||
+                        (activeLineId === 'red' && stLineKey === 'red');
         if (!matches) continue;
       }
       tmp.set(st.pos.x, st.structure === 'elevated' ? VIADUCT_Y + 3 : 2.5, st.pos.z);
@@ -11598,7 +11847,8 @@ window.MetroWebGLLayer = (function () {
         const matches = (activeLineId === 'blue' && (stLk === 'blue' || stLk === 'blue-vaishali')) ||
                         (activeLineId === 'yellow' && stLk === 'yellow') ||
                         (activeLineId === 'orange' && stLk === 'orange') ||
-                        (activeLineId === 'magenta' && stLk === 'magenta');
+                        (activeLineId === 'magenta' && stLk === 'magenta') ||
+                        (activeLineId === 'red' && stLk === 'red');
         if (!matches && !sItem.st._isSharedDualHub) show = false;
       } else if (sItem.st.name === 'New Delhi' && stLk === 'yellow') {
         // In all-lines view, prioritize the City Airport Terminal Orange marker at [77.223095, 28.64249]
@@ -12187,6 +12437,8 @@ window.MetroWebGLLayer = (function () {
         activeWalkCorridor = orangeCorridor;
       } else if (activeLineId === 'magenta') {
         activeWalkCorridor = magentaCorridor;
+      } else if (activeLineId === 'red') {
+        activeWalkCorridor = redCorridor;
       }
       updateVisibilityAndCulling(performance.now(), 0, false);
       if (typeof window.syncStationStepper === 'function') {
@@ -12194,7 +12446,7 @@ window.MetroWebGLLayer = (function () {
       }
     },
     getActiveLine() { return activeLineId; },
-    getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor, orange: orangeCorridor, magenta: magentaCorridor }; },
+    getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor, orange: orangeCorridor, magenta: magentaCorridor, red: redCorridor }; },
     getActiveStations() {
       if (activeLineId === 'blue') {
         const main = blueCorridor ? blueCorridor.stationsData : [];
@@ -12204,6 +12456,7 @@ window.MetroWebGLLayer = (function () {
       if (activeLineId === 'yellow' && yellowCorridor) return yellowCorridor.stationsData;
       if (activeLineId === 'orange' && orangeCorridor) return orangeCorridor.stationsData;
       if (activeLineId === 'magenta' && magentaCorridor) return magentaCorridor.stationsData;
+      if (activeLineId === 'red' && redCorridor) return redCorridor.stationsData;
       return allStationsData.length ? allStationsData : stationsData;
     },
     getStationCount() { return allStationsData.length || stationsData.length; },

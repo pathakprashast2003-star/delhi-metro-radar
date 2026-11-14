@@ -3176,6 +3176,11 @@ a:focus-visible {
   color: #FFFFFF;
 }
 
+.station-step-line-tag.line-red {
+  background: #DC2626;
+  color: #FFFFFF;
+}
+
 #btn-line-yellow.active {
   background: #EAB308 !important;
   color: #0F172A !important;
@@ -3196,6 +3201,12 @@ a:focus-visible {
 
 #btn-line-magenta.active {
   background: #D946EF !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+}
+
+#btn-line-red.active {
+  background: #DC2626 !important;
   color: #FFFFFF !important;
   font-weight: 700;
 }
@@ -3480,6 +3491,11 @@ a:focus-visible {
 
 .stepper-item-num.line-magenta {
   background: #D946EF;
+  color: #FFFFFF;
+}
+
+.stepper-item-num.line-red {
+  background: #DC2626;
   color: #FFFFFF;
 }
 

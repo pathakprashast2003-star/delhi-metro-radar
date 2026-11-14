@@ -2661,7 +2661,7 @@
     {
       "id": "red-line",
       "name": "Red Line (Line 1)",
-      "color": "#E21E26",
+      "color": "#DC2626",
       "points": [
         [
           -110.091,
@@ -3676,23 +3676,6 @@
       "interchange": "yellow-line \u2715 pink-line"
     },
     {
-      "id": "dilshad_garden",
-      "name": "Dilshad Garden",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.3125,
-        28.6815
-      ],
-      "x": 90.606,
-      "y": 0.25,
-      "z": -54.057,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "durgabai_deshmukh_south_campus",
       "name": "Durgabai Deshmukh South Campus",
       "line": "pink-line",
@@ -3965,23 +3948,6 @@
       "interchange": null
     },
     {
-      "id": "inderlok",
-      "name": "Inderlok",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.1905,
-        28.6755
-      ],
-      "x": -28.253,
-      "y": 0.25,
-      "z": -47.397,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "indraprastha",
       "name": "Indraprastha",
       "line": "blue-line",
@@ -4220,23 +4186,6 @@
       "interchange": "yellow-line \u2715 red-line \u2715 violet-line"
     },
     {
-      "id": "keshav_puram",
-      "name": "Keshav Puram",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.1705,
-        28.6875
-      ],
-      "x": -47.739,
-      "y": 0.25,
-      "z": -60.717,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "khan_market",
       "name": "Khan Market",
       "line": "violet-line",
@@ -4334,23 +4283,6 @@
       "x": -36.048,
       "y": 0.25,
       "z": -95.127,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
-      "id": "major_mohit_sharma_rajendra_nagar",
-      "name": "Major Mohit Sharma Rajendra Nagar",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.3455,
-        28.6825
-      ],
-      "x": 122.756,
-      "y": 0.25,
-      "z": -55.167,
       "major": false,
       "terminus": false,
       "interchange": null
@@ -4611,23 +4543,6 @@
       "interchange": null
     },
     {
-      "id": "netaji_subhash_place",
-      "name": "Netaji Subhash Place",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.1525,
-        28.6965
-      ],
-      "x": -65.275,
-      "y": 0.25,
-      "z": -70.707,
-      "major": true,
-      "terminus": false,
-      "interchange": "red-line \u2715 pink-line"
-    },
-    {
       "id": "new_ashok_nagar",
       "name": "New Ashok Nagar",
       "line": "blue-line",
@@ -4832,23 +4747,6 @@
       "interchange": null
     },
     {
-      "id": "pitampura",
-      "name": "Pitampura",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.1385,
-        28.7055
-      ],
-      "x": -78.915,
-      "y": 0.25,
-      "z": -80.697,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "punjabi_bagh_west",
       "name": "Punjabi Bagh West",
       "line": "pink-line",
@@ -4951,23 +4849,6 @@
       "interchange": null
     },
     {
-      "id": "rithala",
-      "name": "Rithala",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.1065,
-        28.7205
-      ],
-      "x": -110.091,
-      "y": 0.25,
-      "z": -97.347,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "rohini_18_19",
       "name": "Rohini Sector 18, 19",
       "line": "yellow-line",
@@ -4980,23 +4861,6 @@
       "x": -77.586,
       "y": 0.25,
       "z": -117.154,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
-      "id": "rohini_west",
-      "name": "Rohini West",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.1225,
-        28.7125
-      ],
-      "x": -94.503,
-      "y": 0.25,
-      "z": -88.467,
       "major": false,
       "terminus": false,
       "interchange": null
@@ -5138,23 +5002,6 @@
       "interchange": null
     },
     {
-      "id": "seelampur",
-      "name": "Seelampur",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.2565,
-        28.6745
-      ],
-      "x": 36.048,
-      "y": 0.25,
-      "z": -46.287,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "shadipur",
       "name": "Shadipur",
       "line": "blue-line",
@@ -5167,40 +5014,6 @@
       "x": -53.584,
       "y": 0.25,
       "z": -24.087,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
-      "id": "shahdara",
-      "name": "Shahdara",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.2915,
-        28.6805
-      ],
-      "x": 70.146,
-      "y": 0.25,
-      "z": -52.947,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
-      "id": "shaheed_sthal_new_bus_adda_ghaziabad",
-      "name": "Shaheed Sthal (New Bus Adda Ghaziabad)",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.3785,
-        28.6845
-      ],
-      "x": 154.907,
-      "y": 0.25,
-      "z": -57.387,
       "major": false,
       "terminus": false,
       "interchange": null
@@ -5252,23 +5065,6 @@
       "x": -59.43,
       "y": 0.25,
       "z": 89.133,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
-      "id": "shastri_park",
-      "name": "Shastri Park",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.2425,
-        28.6695
-      ],
-      "x": 22.408,
-      "y": 0.25,
-      "z": -40.737,
       "major": false,
       "terminus": false,
       "interchange": null
@@ -5427,23 +5223,6 @@
       "interchange": null
     },
     {
-      "id": "tis_hazari",
-      "name": "Tis Hazari",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.2085,
-        28.6695
-      ],
-      "x": -10.717,
-      "y": 0.25,
-      "z": -40.737,
-      "major": false,
-      "terminus": false,
-      "interchange": null
-    },
-    {
       "id": "udyog_bhawan",
       "name": "Udyog Bhawan",
       "line": "yellow-line",
@@ -5529,23 +5308,6 @@
       "interchange": null
     },
     {
-      "id": "welcome",
-      "name": "Welcome",
-      "line": "red-line",
-      "lineColor": "#E21E26",
-      "structure": "elevated",
-      "coords": [
-        77.2725,
-        28.6785
-      ],
-      "x": 51.636,
-      "y": 0.25,
-      "z": -50.727,
-      "major": true,
-      "terminus": false,
-      "interchange": "red-line \u2715 pink-line"
-    },
-    {
       "id": "yamuna_bank",
       "name": "Yamuna Bank",
       "line": "blue-line",
@@ -5578,6 +5340,590 @@
       "major": false,
       "terminus": false,
       "interchange": null
+    },
+    {
+      "id": "rithala",
+      "name": "Rithala",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.107161,
+        28.720788
+      ],
+      "mx": -109.763,
+      "mz": -97.535,
+      "major": true,
+      "terminus": true,
+      "interchange": null,
+      "interchanges": [
+        "Bawana Industrial Area feeder"
+      ],
+      "index": 0
+    },
+    {
+      "id": "rohini_west",
+      "name": "Rohini West",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.0,
+      "coords": [
+        77.115385,
+        28.714957
+      ],
+      "mx": -101.727,
+      "mz": -91.071,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 1
+    },
+    {
+      "id": "rohini_east",
+      "name": "Rohini East",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.0,
+      "coords": [
+        77.126022,
+        28.707597
+      ],
+      "mx": -91.334,
+      "mz": -82.912,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 2
+    },
+    {
+      "id": "pitampura",
+      "name": "Pitampura",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.0,
+      "coords": [
+        77.13225,
+        28.703268
+      ],
+      "mx": -85.249,
+      "mz": -78.114,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [
+        "Madhuban Chowk BRT Corridor"
+      ],
+      "index": 3
+    },
+    {
+      "id": "kohat_enclave",
+      "name": "Kohat Enclave",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.0,
+      "coords": [
+        77.140539,
+        28.698041
+      ],
+      "mx": -77.15,
+      "mz": -72.32,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 4
+    },
+    {
+      "id": "netaji_subhash_place_red",
+      "name": "Netaji Subhash Place",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.152467,
+        28.696076
+      ],
+      "mx": -65.496,
+      "mz": -70.141,
+      "major": true,
+      "terminus": false,
+      "interchange": "Pink Line",
+      "interchanges": [
+        "Pink Line"
+      ],
+      "index": 5
+    },
+    {
+      "id": "keshav_puram",
+      "name": "Keshav Puram",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.161683,
+        28.688926
+      ],
+      "mx": -56.491,
+      "mz": -62.216,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 6
+    },
+    {
+      "id": "kanhaiya_nagar",
+      "name": "Kanhaiya Nagar",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.164775,
+        28.682408
+      ],
+      "mx": -53.47,
+      "mz": -54.99,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 7
+    },
+    {
+      "id": "inderlok_red",
+      "name": "Inderlok",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 17.5,
+      "coords": [
+        77.170347,
+        28.673589
+      ],
+      "mx": -48.026,
+      "mz": -45.215,
+      "major": true,
+      "terminus": false,
+      "interchange": "Green Line",
+      "interchanges": [
+        "Green Line"
+      ],
+      "index": 8
+    },
+    {
+      "id": "shastri_nagar",
+      "name": "Shastri Nagar",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.181859,
+        28.670088
+      ],
+      "mx": -36.778,
+      "mz": -41.334,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 9
+    },
+    {
+      "id": "pratap_nagar",
+      "name": "Pratap Nagar",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.198897,
+        28.666718
+      ],
+      "mx": -20.13,
+      "mz": -37.598,
+      "major": false,
+      "terminus": false,
+      "interchange": "Subzi Mandi IR",
+      "interchanges": [
+        "Subzi Mandi Railway Station (Indian Railways)"
+      ],
+      "index": 10
+    },
+    {
+      "id": "pul_bangash",
+      "name": "Pul Bangash",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.207416,
+        28.666407
+      ],
+      "mx": -11.807,
+      "mz": -37.253,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [
+        "Magenta Line Phase 4 under construction"
+      ],
+      "index": 11
+    },
+    {
+      "id": "tis_hazari",
+      "name": "Tis Hazari",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.0,
+      "coords": [
+        77.216631,
+        28.667163
+      ],
+      "mx": -2.803,
+      "mz": -38.091,
+      "major": false,
+      "terminus": false,
+      "interchange": "District Courts",
+      "interchanges": [
+        "Tis Hazari District Court Complex"
+      ],
+      "index": 12
+    },
+    {
+      "id": "kashmere_gate_red",
+      "name": "Kashmere Gate",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.8,
+      "coords": [
+        77.228247,
+        28.667478
+      ],
+      "mx": 8.546,
+      "mz": -38.441,
+      "major": true,
+      "terminus": false,
+      "interchange": "Yellow & Violet Lines / ISBT",
+      "interchanges": [
+        "Yellow Line",
+        "Violet Line",
+        "ISBT Maharana Pratap Bus Terminal"
+      ],
+      "index": 13
+    },
+    {
+      "id": "shastri_park",
+      "name": "Shastri Park",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "at-grade",
+      "elevM": 1.5,
+      "coords": [
+        77.250539,
+        28.668455
+      ],
+      "mx": 30.327,
+      "mz": -39.524,
+      "major": true,
+      "terminus": false,
+      "interchange": "Shastri Park Depot",
+      "interchanges": [
+        "DMRC Shastri Park Depot & Training Academy"
+      ],
+      "index": 14
+    },
+    {
+      "id": "seelampur",
+      "name": "Seelampur",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.266763,
+        28.669917
+      ],
+      "mx": 46.179,
+      "mz": -41.144,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 15
+    },
+    {
+      "id": "welcome_red",
+      "name": "Welcome",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.277815,
+        28.671862
+      ],
+      "mx": 56.978,
+      "mz": -43.3,
+      "major": true,
+      "terminus": false,
+      "interchange": "Pink Line",
+      "interchanges": [
+        "Pink Line"
+      ],
+      "index": 16
+    },
+    {
+      "id": "shahdara",
+      "name": "Shahdara",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.0,
+      "coords": [
+        77.289882,
+        28.67346
+      ],
+      "mx": 68.768,
+      "mz": -45.072,
+      "major": true,
+      "terminus": false,
+      "interchange": "Shahdara IR Junction",
+      "interchanges": [
+        "Shahdara Junction Railway Station (Indian Railways)"
+      ],
+      "index": 17
+    },
+    {
+      "id": "mansarovar_park",
+      "name": "Mansarovar Park",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.300869,
+        28.675415
+      ],
+      "mx": 79.503,
+      "mz": -47.239,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 18
+    },
+    {
+      "id": "jhilmil",
+      "name": "Jhilmil",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 15.5,
+      "coords": [
+        77.312394,
+        28.67575
+      ],
+      "mx": 90.764,
+      "mz": -47.61,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 19
+    },
+    {
+      "id": "dilshad_garden",
+      "name": "Dilshad Garden",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.0,
+      "coords": [
+        77.321513,
+        28.675885
+      ],
+      "mx": 99.673,
+      "mz": -47.76,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [
+        "Apsara Border Delhi-UP"
+      ],
+      "index": 20
+    },
+    {
+      "id": "shaheed_nagar",
+      "name": "Shaheed Nagar",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.333915,
+        28.676691
+      ],
+      "mx": 111.791,
+      "mz": -48.653,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 21
+    },
+    {
+      "id": "raj_bagh",
+      "name": "Raj Bagh",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.346863,
+        28.677119
+      ],
+      "mx": 124.442,
+      "mz": -49.128,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 22
+    },
+    {
+      "id": "major_mohit_sharma_rajendra_nagar",
+      "name": "Major Mohit Sharma Rajendra Nagar",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.358137,
+        28.67764
+      ],
+      "mx": 135.457,
+      "mz": -49.705,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 23
+    },
+    {
+      "id": "shyam_park",
+      "name": "Shyam Park",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.370485,
+        28.678238
+      ],
+      "mx": 147.522,
+      "mz": -50.368,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 24
+    },
+    {
+      "id": "mohan_nagar",
+      "name": "Mohan Nagar",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 17.0,
+      "coords": [
+        77.383902,
+        28.678563
+      ],
+      "mx": 160.632,
+      "mz": -50.728,
+      "major": true,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [
+        "Mohan Nagar Junction / World Square Mall"
+      ],
+      "index": 25
+    },
+    {
+      "id": "arthala",
+      "name": "Arthala",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.391894,
+        28.677027
+      ],
+      "mx": 168.44,
+      "mz": -49.026,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [],
+      "index": 26
+    },
+    {
+      "id": "hindon_river",
+      "name": "Hindon River",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 17.5,
+      "coords": [
+        77.406548,
+        28.673456
+      ],
+      "mx": 182.758,
+      "mz": -45.067,
+      "major": false,
+      "terminus": false,
+      "interchange": null,
+      "interchanges": [
+        "Hindon Eco Park"
+      ],
+      "index": 27
+    },
+    {
+      "id": "shaheed_sthal",
+      "name": "Shaheed Sthal",
+      "line": "red-line",
+      "lineColor": "#DC2626",
+      "structure": "elevated",
+      "elevM": 16.5,
+      "coords": [
+        77.41539,
+        28.670706
+      ],
+      "mx": 191.397,
+      "mz": -42.019,
+      "major": true,
+      "terminus": true,
+      "interchange": "Ghaziabad Bus Stand",
+      "interchanges": [
+        "Ghaziabad Old Bus Stand",
+        "Meerut Road BRT"
+      ],
+      "index": 28
     }
   ]
 }
