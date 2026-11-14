@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 2,
-    "hubCount": 19,
+    "hubCount": 22,
     "source": "OpenStreetMap live ways (osm_hubs_cache.json) + DMRC corridor geometry",
     "note": "Genuine DMRC dual/tri interchange station geometry from real OSM tracks across Yellow, Blue, and Vaishali lines."
   },
@@ -2865,6 +2865,245 @@
           ],
           "length": 112,
           "width": 28
+        }
+      ]
+    },
+    "Inderlok": {
+      "primaryLine": "Red Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.1706,
+        28.6738
+      ],
+      "primaryTangent": [
+        0.082,
+        0.996
+      ],
+      "archetype": "el_cross_over",
+      "flattenLowerCanopy": false,
+      "arms": [
+        {
+          "line": "Green Line",
+          "color": "#22C55E",
+          "tier": "elevated",
+          "deckY": 10.5,
+          "platformType": "island",
+          "stationLen": 120,
+          "platformWidth": 18.0,
+          "isTerminus": true,
+          "terminusEnd": "end",
+          "center": [
+            77.1698,
+            28.6732
+          ],
+          "tangent": [
+            0.778,
+            0.628
+          ],
+          "trackPolyline": [
+            [
+              77.164082,
+              28.670702
+            ],
+            [
+              77.164699,
+              28.670571
+            ],
+            [
+              77.165194,
+              28.670558
+            ],
+            [
+              77.165704,
+              28.670613
+            ],
+            [
+              77.166121,
+              28.670713
+            ],
+            [
+              77.166564,
+              28.670947
+            ],
+            [
+              77.1672,
+              28.6713
+            ],
+            [
+              77.167964,
+              28.671749
+            ],
+            [
+              77.1685,
+              28.6721
+            ],
+            [
+              77.169092,
+              28.672675
+            ],
+            [
+              77.16945,
+              28.67298
+            ],
+            [
+              77.16975,
+              28.67323
+            ],
+            [
+              77.17005,
+              28.67347
+            ],
+            [
+              77.170204,
+              28.67358
+            ]
+          ]
+        }
+      ]
+    },
+    "Welcome": {
+      "primaryLine": "Red Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.277815,
+        28.671862
+      ],
+      "primaryTangent": [
+        0.998,
+        0.063
+      ],
+      "archetype": "el_cross_over",
+      "flattenLowerCanopy": false,
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "elevated",
+          "deckY": 11.5,
+          "platformType": "island",
+          "stationLen": 130,
+          "platformWidth": 18.5,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.276082,
+            28.672252
+          ],
+          "tangent": [
+            0.155,
+            0.988
+          ],
+          "trackPolyline": [
+            [
+              77.27532,
+              28.66785
+            ],
+            [
+              77.27551,
+              28.66902
+            ],
+            [
+              77.27575,
+              28.67025
+            ],
+            [
+              77.27592,
+              28.6712
+            ],
+            [
+              77.276082,
+              28.672252
+            ],
+            [
+              77.27625,
+              28.6734
+            ],
+            [
+              77.27648,
+              28.67465
+            ],
+            [
+              77.2767,
+              28.6758
+            ],
+            [
+              77.27702,
+              28.6771
+            ]
+          ]
+        }
+      ]
+    },
+    "Netaji Subhash Place": {
+      "primaryLine": "Red Line",
+      "primaryStructure": "elevated",
+      "primaryCenter": [
+        77.1528,
+        28.6961
+      ],
+      "primaryTangent": [
+        -0.642,
+        0.767
+      ],
+      "archetype": "el_to_ug_cross",
+      "flattenLowerCanopy": false,
+      "arms": [
+        {
+          "line": "Pink Line",
+          "color": "#EC4899",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "side",
+          "stationLen": 130,
+          "platformWidth": 19.0,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.15395,
+            28.6949
+          ],
+          "tangent": [
+            0.707,
+            0.707
+          ],
+          "trackPolyline": [
+            [
+              77.1518,
+              28.6926
+            ],
+            [
+              77.15235,
+              28.69325
+            ],
+            [
+              77.1529,
+              28.69385
+            ],
+            [
+              77.1534,
+              28.69438
+            ],
+            [
+              77.15395,
+              28.6949
+            ],
+            [
+              77.15455,
+              28.69545
+            ],
+            [
+              77.1552,
+              28.69605
+            ],
+            [
+              77.1559,
+              28.6967
+            ],
+            [
+              77.15665,
+              28.6974
+            ]
+          ]
         }
       ]
     }
