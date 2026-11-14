@@ -1,160 +1,93 @@
-# Delhi Metro Radar — Live Reports Backend (Supabase / Postgres)
+# Delhi Metro Radar — live reports backend
 
-A lightweight, zero-maintenance crowdsourced consensus backend for real-time metro tracking corrections.
+Optional crowd-sourced corrections on top of the timetable map, for the whole
+Delhi Metro network. The website always works from its own timetable; this
+backend only adds what riders report. If it is down, the map still works.
 
----
+Unofficial. Not affiliated with DMRC.
 
-## 1. What This Backend Does
+## What riders can send, and what everyone can read
 
-The browser's scheduled timetable is **always the self-contained baseline**. This backend provides real-time, peer-to-peer corrections on top of the schedule by aggregating observations from actual riders traveling on the Yellow Line.
+| Function | Who | What it does |
+|---|---|---|
+| `submit_report(id, line, station, towards, kind, age_s)` | signed-in (anonymous is fine) | One observation: a train `departed` / `arrived` / is `stuck` / `cleared`, at `station`, heading `towards` (the destination shown on the train, or just the next station). `age_s` = seconds since it happened, measured on the phone. `id` = a UUID the app makes, so a resend is ignored. |
+| `get_live_state(line?)` | anyone | Combined recent observations and warnings for one line, or the whole network. Never waits: always answers within milliseconds. |
+| `get_network()` | anyone | Lines, routes, stations and valid destinations, with the ids the server uses. |
+
+Every `submit_report` answer has a `status`: `accepted`, `duplicate`, `rate_limited`, `busy`,
+`implausible`, `bad_station`, `bad_towards`, `bad_kind`, `bad_time`, `unauthenticated`, `missing_id`.
+Only `rate_limited` and `busy` are worth retrying later.
+
+Every `get_live_state` answer carries `age_s` and `stale`. When `stale` is true (older than a minute),
+or `status` is `warming`, show the timetable alone and say live reports are delayed.
+
+Admin only (service key, never in the website): `apply_network`, `admin_set_alert`, `admin_clear_alert`,
+`admin_block_device`, `admin_unblock_device`, `get_health`, `refresh_live_state`, `purge_old_reports`,
+`schedule_purge`.
+
+## Setting it up on Supabase
+
+1. Create a project. In **Authentication → Sign In / Providers**, turn on **anonymous sign-ins**, and
+   turn on **CAPTCHA protection** (Cloudflare Turnstile). Without CAPTCHA, anyone can make accounts in
+   bulk and fake reports.
+2. In **Database → Extensions**, enable **pg_cron** (version 1.5 or later, for the 10-second refresh).
+3. Run `supabase/migrations/0001_live_reports.sql`, then `0002_seed_network.sql`, each as a whole
+   (`supabase db push`, or paste the whole file into the SQL editor).
+4. If pg_cron was enabled after step 3, run `select public.schedule_purge();` once.
+5. Check: `select public.get_health();` should show 276 active stations and `pg_cron_enabled: true`.
+6. In the website, call the functions with **POST** (the supabase-js default for `rpc`).
+
+Without pg_cron it still works, but the live copy is only rebuilt when someone reads it, and old reports
+are cleared more slowly than they may arrive at peak.
+
+To undo everything: `supabase/rollback/0001_live_reports.down.sql`.
+
+## How it decides things
+
+- **Direction.** The server turns `towards` into the next station on the way there, using the order of
+  the route that holds both stations (how trains are signed) or else the shortest way on the line. A true
+  tie on the Pink ring with no route to decide it is refused (`bad_towards`).
+- **Trust.** A report counts fully only if its device was first seen at least a day before it
+  ("established"); otherwise it counts as half.
+- **Observations.** Each device speaks for one train: only its latest departure and latest arrival
+  count, and their weight halves every 2 minutes. "high" confidence needs three established devices.
+- **"Train stuck" warnings.** Each device has one current word, its latest report anywhere. A warning
+  needs riders adding up to 3, counted over a stretch of consecutive stations on one track (only places
+  with an established rider link up). One warning per stretch, "confirmed" when 3 or more are
+  established. Only the riders who said stuck can take it back; at plain through stations, clearly more
+  established riders still leaving the same way (at least 4, and twice the established riders saying
+  stuck, within 5 minutes) cancel it. A stuck report stands for 20 minutes.
+- **Limits.** 10 reports a minute and 30 per 10 minutes per device; 6,000 a minute overall, of which new
+  devices share 1,500; an established rider who has been quiet for 2 minutes still gets through a flood
+  (up to 12,000 a minute overall). Reports from far-apart stations too close in time are refused.
+- **Retention.** Raw reports are deleted after 24 hours; devices unused for 6 months are forgotten.
+
+All numbers are in `metro.cfg()` at the top of the migration.
+
+## Keeping the network current
+
+`data/network.json` is generated from the GTFS timetable copy plus `data/network_updates.json`, which
+lists everything opened since that copy (as of 2026-11-13: Magenta to Krishna Park Extension, Magenta
+Majlis Park–Deepali Chowk, the Pink ring, Airport line to Yashobhoomi Dwarka Sector 25). When DMRC opens
+or renames something, edit `network_updates.json`, then:
 
 ```
-                  ┌─────────────────────────────────────────┐
-                  │          Riders on Yellow Line          │
-                  │   ("Train left Rajiv Chowk just now")   │
-                  └────────────────────┬────────────────────┘
-                                       │ 1-tap anonymous report
-                                       ▼
-                  ┌─────────────────────────────────────────┐
-                  │       PostgreSQL / Supabase Edge        │
-                  │  • Deduplication & rate-limiting        │
-                  │  • Temporal half-life decay (300s)      │
-                  │  • Consensus threshold (3+ riders)      │
-                  │  • Automated "Stuck Train" alerts       │
-                  └────────────────────┬────────────────────┘
-                                       │ get_live_state('yellow')
-                                       ▼
-                  ┌─────────────────────────────────────────┐
-                  │           Every Waiting Rider           │
-                  │   "🟢 Live Verified: Left Rajiv Chowk"   │
-                  │   "⚠️ Advisory: Train held at Patel Ch" │
-                  └─────────────────────────────────────────┘
+node scripts/build_network.mjs <path-to-gtfs-folder>
 ```
 
-### Core Functions & Capabilities:
-1. **Consensus-Driven Verification**: 
-   - 1 rider reporting = *Low confidence* (provisional).
-   - 3+ independent riders reporting within 5 minutes = *High confidence* (`confidence: 'high'`).
-2. **Exponential Half-Life Decay**:
-   - Observations automatically decay using a 5-minute half-life formula:
-     $$\text{score} = \sum 0.5^{(\text{age} / 300\text{s})}$$
-   - Observations older than 10 minutes automatically drop out. Zero manual cleanup required.
-3. **Automated Stuck-Train Detection**:
-   - When 3 or more distinct riders report being `stuck` at the same station, the backend automatically generates a line advisory for that sector.
-   - When 2 riders report `cleared` (train moving again), the advisory automatically clears.
-4. **Anti-Troll & Security Defenses**:
-   - Device identity uses anonymous cryptographic UUIDs (`auth.uid()`). No phone numbers, names, or emails are ever requested or stored.
-   - Double-taps from the same device within 60 seconds are silently deduplicated.
-   - Rate limit: Maximum 30 reports per 10 minutes per device; spammers are automatically rate-limited.
-   - Row-Level Security (RLS): Anonymous API keys can only execute `submit_report()` and `get_live_state()`; direct reads/writes to raw report tables are blocked.
+and apply the regenerated `supabase/migrations/0002_seed_network.sql` (as a new migration). Reloading
+clears stored live reports, since their directions may no longer fit.
 
----
+Still to check against DMRC: the 14 newer stations have no coordinates yet; the list of short-turn
+stations comes from the old timetable copy (only 5); and whether Pink Line trains for Shiv Vihar still
+run the original way round from Majlis Park.
 
-## 2. Directory Layout
+## Tests
 
 ```
-backend/
-├── package.json              # Embedded test runner (@electric-sql/pglite)
-├── README.md                 # System overview and operational guide
-├── supabase/
-│   └── migrations/
-│       ├── 0001_live_reports.sql     # Core tables, functions, RLS & decay logic
-│       └── 0002_seed_yellow_line.sql # Station index reference data (0-36)
-└── tests/
-    └── run_tests.mjs         # 26 automated unit & integration tests on PGlite
+npm ci
+npm test                                   # embedded Postgres, no setup
+DATABASE_URL=postgres://... npm test       # a real Postgres: adds the concurrency and load tests
 ```
 
----
-
-## 3. Running Automated Tests Locally
-
-This backend includes an embedded PostgreSQL test harness that runs in Node.js without needing Docker or a remote database:
-
-```bash
-cd backend
-npm test
-```
-
-Expected output:
-```
-Validation: 12 tests passed
-Rate limit: 1 test passed
-Row level security: 3 tests passed
-Live state & decay: 3 tests passed
-Stuck trains: 3 tests passed
-Manual alerts: 1 test passed
-Blocked devices: 2 tests passed
-Retention: 1 test passed
-
-26 passed, 0 failed
-```
-
----
-
-## 4. Deploying to Supabase (Free Tier)
-
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Link your project via the Supabase CLI:
-   ```bash
-   npx supabase login
-   npx supabase link --project-ref <your-project-id>
-   ```
-3. Push the migrations:
-   ```bash
-   npx supabase db push
-   ```
-4. Copy your project's **URL** and **Anon Public Key** from the Supabase dashboard into `src/data/backend_config.json`:
-   ```json
-   {
-     "supabaseUrl": "https://your-project.supabase.co",
-     "supabaseAnonKey": "your-anon-public-key",
-     "line": "yellow",
-     "pollIntervalMs": 30000,
-     "enabled": true
-   }
-   ```
-
----
-
-## 5. API Contracts
-
-### A. Submit an Observation (`public.submit_report`)
-```sql
-SELECT public.submit_report(
-  p_id          := '550e8400-e29b-41d4-a716-446655440000', -- Client UUID (idempotency key)
-  p_line        := 'yellow',
-  p_kind        := 'departed', -- 'arrived' | 'departed' | 'stuck' | 'cleared' | 'cell'
-  p_station     := 15,         -- Rajiv Chowk
-  p_direction   := 1,          -- 1 = Southbound (➔ MCC), -1 = Northbound (➔ Badli)
-  p_observed_at := now(),
-  p_cell_id     := NULL,
-  p_network     := NULL
-);
-```
-**Response**: `{"ok": true, "status": "accepted"}`
-
-### B. Query Aggregated State (`public.get_live_state`)
-```sql
-SELECT public.get_live_state('yellow');
-```
-**Response**:
-```json
-{
-  "line": "yellow",
-  "generated_at": "2026-11-09T10:45:00Z",
-  "observations": [
-    {
-      "station_idx": 15,
-      "direction": 1,
-      "kind": "departed",
-      "devices": 3,
-      "score": 2.85,
-      "confidence": "high",
-      "typical_observed_at": "2026-11-09T10:44:40Z",
-      "age_s": 20
-    }
-  ],
-  "alerts": []
-}
-```
-
+With `DATABASE_URL`, the tests create and drop their own temporary database.

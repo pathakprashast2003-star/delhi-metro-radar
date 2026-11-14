@@ -11,3 +11,21 @@ live_*.png
 noida_turnback_closeup_verified.png
 yamuna_bank_closeup_verified.png
 
+*.png
+!public/*.png
+*.gif
+*.mp4
+*_frames/
+frames_*/
+*_cinematic.html
+*_widget.html
+dwarka_helpers.js
+extracted_helpers.js
+clean_localities_raw.txt
+canal_at_crossing.json
+all_water_source_features.json
+dwarka_actual_tiles.json
+dwarka_detailed_structures.json
+dwarka_rendered_feats.json
+extracted_water_features.json
+water_coords.json

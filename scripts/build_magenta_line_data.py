@@ -54,6 +54,7 @@ def resample_polyline(coords, target_step_m=105.0):
     return resampled
 
 HINDI_NAMES = {
+    "Krishna Park Extension": "कृष्णा पार्क एक्सटेंशन",
     "Janakpuri West": "जनकपुरी पश्चिम",
     "Dabri Mor - Janakpuri South": "डाबरी मोड़ - जनकपुरी दक्षिण",
     "Dashrath Puri": "दशरथ पुरी",
@@ -83,12 +84,23 @@ HINDI_NAMES = {
 
 STATION_METADATA = [
     {
+        "id": "krishna_park_extension",
+        "name": "Krishna Park Extension",
+        "structure": "underground",
+        "elevM": -16,
+        "major": True,
+        "terminus": True,
+        "interchanges": ["Outer Ring Road / Vikaspuri"],
+        "interchange": "Outer Ring Road",
+        "code": "KPE"
+    },
+    {
         "id": "janakpuri_west_magenta",
         "name": "Janakpuri West",
         "structure": "underground",
         "elevM": -18,
         "major": True,
-        "terminus": True,
+        "terminus": False,
         "interchanges": ["Blue Line"],
         "interchange": "Blue Line",
         "code": "JW"
@@ -372,7 +384,7 @@ def main():
     rel = next(e for e in data["elements"] if e["type"] == "relation")
 
     way_members = [m for m in rel["members"] if m["type"] == "way"]
-    rev_ways = list(reversed(way_members[:-1]))
+    rev_ways = list(reversed(way_members))
 
     raw_coords = []
     for idx, m in enumerate(rev_ways):
@@ -406,8 +418,6 @@ def main():
     for m in reversed(raw_stops):
         nid = m["ref"]
         name = node_tags.get(nid, {}).get("name", "")
-        if "Krishna Park" in name:
-            continue
         clean_name = name.replace(" (Magenta Line)", "")
         osm_stops_rev.append({"name": clean_name, "coords": nodes[nid]})
 
@@ -452,7 +462,7 @@ def main():
     # Portal 3: T1 airport ramp up to Shankar Vihar viaduct (node 106)
     # Portal 4: Shankar Vihar ramp down to Vasant Vihar subway (node 124)
     # Portal 5: Kalkaji Mandir ramp up to Okhla NSIC viaduct (node 235)
-    portal_indices = [63, 86, 106, 124, 235]
+    portal_indices = [85, 108, 128, 146, 257]
     portal_coords = [resampled_centerline[idx] for idx in portal_indices]
 
     out_osm = {

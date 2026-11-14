@@ -2021,7 +2021,9 @@
       dhaulakuan: { center: [77.16168, 28.59191], zoom: 17.5, pitch: 58, bearing: -32, duration: 1100 },
       igiairport: { center: [77.0867, 28.5565], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
       yashobhoomi: { center: [77.0453, 28.5508], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
+      krishnapark: { center: [77.08431, 28.647802], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
       janakpuri: { center: [77.0779, 28.6289], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
+      jasolavihar: { center: [77.296635, 28.545819], zoom: 17.1, pitch: 60, bearing: 38, duration: 1100 },
       botanical: { center: [77.3338, 28.5639], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 }
     };
 
@@ -2040,11 +2042,17 @@
       dhaulakuan: 'Dhaula Kuan',
       igiairport: 'IGI Airport',
       yashobhoomi: 'Yashobhoomi Dwarka Sector 25',
+      krishnapark: 'Krishna Park Extension',
       janakpuri: 'Janakpuri West',
+      jasolavihar: 'Jasola Vihar Shaheen Bagh',
       botanical: 'Botanical Garden'
     };
 
     let currentStepperIndex = 0;
+
+    function normalizeStationName(name) {
+      return String(name || '').toLowerCase().replace(/[-–—]/g, ' ').replace(/\s+gurugram\b/, '').replace(/\s+/g, ' ').trim();
+    }
 
     function getOrderedYellowStations() {
       if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveStations === 'function') {
@@ -2061,15 +2069,15 @@
       return [];
     }
 
-    function syncStationStepper(indexOrName) {
+    function syncStationStepper(indexOrName, forcedOffsetM) {
       const stations = getOrderedYellowStations();
       if (!stations.length) return -1;
       let idx = -1;
       if (typeof indexOrName === 'number' && Number.isFinite(indexOrName)) {
         idx = Math.max(0, Math.min(stations.length - 1, Math.round(indexOrName)));
       } else if (indexOrName) {
-        const norm = String(indexOrName || '').toLowerCase().replace(/\s+gurugram\b/, '').trim();
-        idx = stations.findIndex((s) => String(s.name || '').toLowerCase().replace(/\s+gurugram\b/, '').trim() === norm);
+        const norm = normalizeStationName(indexOrName);
+        idx = stations.findIndex((s) => normalizeStationName(s.name) === norm);
       } else {
         idx = Math.max(0, Math.min(stations.length - 1, currentStepperIndex));
       }
@@ -2082,10 +2090,10 @@
       const activeLine = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveLine === 'function')
         ? window.MetroWebGLLayer.getActiveLine()
         : 'all';
-      const isOrange = st && (st.lineId === 'orange' || st.lineKey === 'orange' || (activeLine === 'orange' && !st.lineId));
-      const isMagenta = st && (st.lineId === 'magenta' || st.lineKey === 'magenta' || (activeLine === 'magenta' && !st.lineId));
-      const isVaishali = st && (st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali'));
-      const isBlue = !isOrange && !isMagenta && st && (st.lineId === 'blue' || isVaishali || (activeLine === 'blue' && !st.lineId));
+      const isOrange = Boolean(st && (st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange || (activeLine === 'orange' && !st.lineId)));
+      const isMagenta = Boolean(st && (st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta || (activeLine === 'magenta' && !st.lineId)));
+      const isVaishali = Boolean(st && (st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali')));
+      const isBlue = Boolean(!isOrange && !isMagenta && st && (st.isBlue || st.lineId === 'blue' || isVaishali || (activeLine === 'blue' && !st.lineId)));
 
       if (lineTag) {
         if (isOrange) {
@@ -2105,7 +2113,16 @@
           lineTag.className = 'station-step-line-tag line-yellow';
         }
       }
-      if (countEl) countEl.textContent = `${idx + 1}/${stations.length}`;
+
+      const totalLineCount = isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isBlue ? 50 : 37)));
+      const lineSeq = (st && st.seqIndex !== undefined) ? (st.seqIndex + 1) : (idx + 1);
+      if (countEl) {
+        if (activeLine !== 'all') {
+          countEl.textContent = `${idx + 1}/${stations.length}`;
+        } else {
+          countEl.textContent = `${lineSeq}/${totalLineCount}`;
+        }
+      }
       if (nameEl && st) nameEl.textContent = st.name;
 
       const isFirst = idx <= 0;
@@ -2118,7 +2135,11 @@
         const el = document.getElementById(id);
         if (el) el.disabled = isLast;
       });
-      updateTrackOffsetUI(0);
+      if (typeof forcedOffsetM === 'number') {
+        updateTrackOffsetUI(forcedOffsetM);
+      } else {
+        updateTrackOffsetUI(0);
+      }
       return idx;
     }
     window.syncStationStepper = syncStationStepper;
@@ -2143,8 +2164,13 @@
       if (!window.MetroWebGLLayer || typeof window.MetroWebGLLayer.stepAlongTrack !== 'function') return;
       followTrainId = null;
       const res = window.MetroWebGLLayer.stepAlongTrack(deltaM);
-      if (res && typeof res.offsetM === 'number') {
-        updateTrackOffsetUI(res.offsetM);
+      if (res) {
+        if (typeof res.offsetM === 'number') {
+          updateTrackOffsetUI(res.offsetM);
+        }
+        if (res.stationName) {
+          syncStationStepper(res.stationName, res.offsetM);
+        }
       }
     }
 
@@ -2281,7 +2307,7 @@
 
       const activeStations = getOrderedYellowStations();
       const curSt = activeStations[currentStepperIndex];
-      const curNameNorm = curSt ? String(curSt.name || '').toLowerCase().replace(/[-–—]/g, ' ').trim() : '';
+      const curNameNorm = curSt ? normalizeStationName(curSt.name) : '';
 
       dropdownList.innerHTML = filtered.map((st, idx) => {
         const isOrange = Boolean(st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange);
@@ -2291,9 +2317,9 @@
         const lineTag = isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isB ? 'BL' : 'YL')));
         const lineClass = isOrange ? 'line-orange' : (isMagenta ? 'line-magenta' : (isB ? 'line-blue' : 'line-yellow'));
         const lineAttr = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isB ? 'blue' : 'yellow'));
-        const stNameNorm = String(st.name || '').toLowerCase().replace(/[-–—]/g, ' ').trim();
+        const stNameNorm = normalizeStationName(st.name);
         const isActive = curNameNorm && stNameNorm === curNameNorm;
-        const totalLineCount = isOrange ? 7 : (isMagenta ? 25 : (isVaishali ? 8 : (isB ? 50 : 37)));
+        const totalLineCount = isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isB ? 50 : 37)));
         const seqText = `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/${totalLineCount}`;
 
         let structBadge = '';
@@ -2309,6 +2335,10 @@
         let intBadge = '';
         if (st.name === 'Yamuna Bank') {
           intBadge = '<span class="stepper-badge stepper-badge-fork">NOIDA × VAISHALI FORK</span>';
+        } else if (st.name && st.name.toLowerCase().includes('jasola')) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(217,70,239,0.2); color: #d946ef; border: 1px solid rgba(217,70,239,0.4);">ELEVATED DEPOT</span>';
+        } else if (st.name && st.name.toLowerCase().includes('kalindi')) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(217,70,239,0.2); color: #d946ef; border: 1px solid rgba(217,70,239,0.4);">GROUND DEPOT YARD</span>';
         } else if (st.interchange || (st.interchanges && st.interchanges.length)) {
           const intText = st.interchange || st.interchanges[0];
           intBadge = `<span class="stepper-badge stepper-badge-interchange">${intText}</span>`;
@@ -2504,7 +2534,7 @@
           }
         } else if (lineId === 'magenta') {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
-            window.MetroWebGLLayer.flyToStation('Janakpuri West');
+            window.MetroWebGLLayer.flyToStation('Krishna Park Extension');
           }
         } else {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {

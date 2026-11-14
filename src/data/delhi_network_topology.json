@@ -3748,7 +3748,7 @@
       "name": "Dwarka Sector 21",
       "line": "blue-line",
       "lineColor": "#0055A5",
-      "structure": "elevated",
+      "structure": "underground",
       "coords": [
         77.0195,
         28.5522

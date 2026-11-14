@@ -1,0 +1,44 @@
+{
+  "as_of": "2026-11-13",
+  "note": "Changes since the GTFS snapshot. Edit this file when DMRC opens or renames something, then run: node scripts/build_network.mjs <gtfs-folder>. New stations have no coordinates until they are checked against a map.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Delhi_Metro",
+    "https://en.wikipedia.org/wiki/Magenta_Line_(Delhi_Metro)",
+    "https://en.wikipedia.org/wiki/Pink_Line_(Delhi_Metro)"
+  ],
+  "stations": [
+    { "id": "yashobhoomi_dwarka_sector_25", "name": "Yashobhoomi Dwarka Sector - 25" },
+    { "id": "krishna_park_extension", "name": "Krishna Park Extension" },
+    { "id": "bhalaswa", "name": "Bhalaswa" },
+    { "id": "haiderpur_village", "name": "Haiderpur Village" },
+    { "id": "uttari_pitampura_prashant_vihar", "name": "Uttari Pitampura - Prashant Vihar" },
+    { "id": "madhuban_chowk", "name": "Madhuban Chowk" },
+    { "id": "deepali_chowk", "name": "Deepali Chowk" },
+    { "id": "yamuna_vihar", "name": "Yamuna Vihar" },
+    { "id": "bhajanpura", "name": "Bhajanpura" },
+    { "id": "khajuri_khas", "name": "Khajuri Khas" },
+    { "id": "nanaksar_sonia_vihar", "name": "Nanaksar - Sonia Vihar" },
+    { "id": "jagatpur_wazirabad", "name": "Jagatpur - Wazirabad" },
+    { "id": "jharoda_majra", "name": "Jharoda Majra" },
+    { "id": "burari", "name": "Burari" }
+  ],
+  "extend": [
+    { "route": "airport_1", "opened": "2023-09-17", "prepend": ["yashobhoomi_dwarka_sector_25"] },
+    { "route": "magenta_1", "opened": "2025-01-05", "append": ["krishna_park_extension"] }
+  ],
+  "routes": [
+    { "id": "magenta_2", "line": "magenta", "opened": "2026-03-08",
+      "stops": ["majlis_park", "bhalaswa", "haiderpur_badli_mor", "haiderpur_village",
+                "uttari_pitampura_prashant_vihar", "madhuban_chowk", "deepali_chowk"] },
+    { "id": "pink_2", "line": "pink", "opened": "2026-03-08",
+      "comment": "Closes the Pink Line ring: Maujpur back round to Majlis Park.",
+      "stops": ["maujpur_babarpur", "yamuna_vihar", "bhajanpura", "khajuri_khas", "nanaksar_sonia_vihar",
+                "jagatpur_wazirabad", "jharoda_majra", "burari", "majlis_park"] }
+  ],
+  "not_open_yet": [
+    "Magenta: Krishna Park Extension - Deepali Chowk (Pushpanjali, Mangolpur Kalan-West Enclave, Mangolpuri, Peeragarhi, Paschim Vihar, Keshopur)",
+    "Magenta: Majlis Park - Ramakrishna Ashram Marg",
+    "Golden Line: Delhi Aerocity - Tughlakabad",
+    "Pink: Soorghat station (trains pass without stopping)"
+  ]
+}

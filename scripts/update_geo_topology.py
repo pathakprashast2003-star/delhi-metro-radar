@@ -93,63 +93,63 @@ def build_blue_centerline(raw_coords, p_dwarka=12, p_west=296, p_east=326):
 def build_magenta_centerline(raw_coords):
     cl = []
     for i, c in enumerate(raw_coords):
-        if i <= 58:
-            # Janakpuri West, Dabri Mor, Dashrath Puri, Palam
+        if i <= 80:
+            # Krishna Park Ext, Janakpuri West, Dabri Mor, Dashrath Puri, Palam
             elev = -15.0
             struct = "underground"
-        elif 58 < i <= 68:
+        elif 80 < i <= 90:
             # Palam South Ramp Up
-            t = (i - 58) / 10.0
+            t = (i - 80) / 10.0
             elev = round(hermite_interp(-15.0, 15.0, t), 2)
             struct = "elevated" if elev > 0 else "underground"
-        elif 68 < i <= 80:
+        elif 90 < i <= 102:
             # Sadar Bazar Cantonment
             elev = 15.0
             struct = "elevated"
-        elif 80 < i <= 90:
+        elif 102 < i <= 112:
             # Sadar Bazar East Ramp Down
-            t = (i - 80) / 10.0
+            t = (i - 102) / 10.0
             elev = round(hermite_interp(15.0, -17.0, t), 2)
             struct = "elevated" if elev > 0 else "underground"
-        elif 90 < i <= 101:
+        elif 112 < i <= 123:
             # Terminal 1 IGI Airport
             elev = -17.0
             struct = "underground"
-        elif 101 < i <= 110:
+        elif 123 < i <= 132:
             # T1 North Ramp Up
-            t = (i - 101) / 9.0
+            t = (i - 123) / 9.0
             elev = round(hermite_interp(-17.0, 14.0, t), 2)
             struct = "elevated" if elev > 0 else "underground"
-        elif 110 < i <= 118:
+        elif 132 < i <= 140:
             # Shankar Vihar elevated
             elev = 14.0
             struct = "elevated"
-        elif 118 < i <= 128:
+        elif 140 < i <= 150:
             # Shankar Vihar East Ramp Down
-            t = (i - 118) / 10.0
+            t = (i - 140) / 10.0
             elev = round(hermite_interp(14.0, -18.0, t), 2)
             struct = "elevated" if elev > 0 else "underground"
-        elif 128 < i <= 233:
+        elif 150 < i <= 255:
             # Vasant Vihar -> Hauz Khas (-29m) -> Kalkaji Mandir (-14m)
-            if 175 <= i <= 185:
+            if 197 <= i <= 207:
                 elev = -29.0 # Hauz Khas deep tube
-            elif 165 <= i < 175:
-                t = (i - 165) / 10.0
+            elif 187 <= i < 197:
+                t = (i - 187) / 10.0
                 elev = round(hermite_interp(-17.0, -29.0, t), 2)
-            elif 185 < i <= 195:
-                t = (i - 185) / 10.0
+            elif 207 < i <= 217:
+                t = (i - 207) / 10.0
                 elev = round(hermite_interp(-29.0, -15.0, t), 2)
             else:
                 elev = -16.0
             struct = "underground"
-        elif 233 < i <= 240:
+        elif 255 < i <= 262:
             # Kalkaji East Ramp Up
-            t = (i - 233) / 7.0
+            t = (i - 255) / 7.0
             elev = round(hermite_interp(-14.0, 16.0, t), 2)
             struct = "elevated" if elev > 0 else "underground"
         else:
             # Okhla NSIC -> Jamia -> Kalindi Kunj (18m river bridge) -> Botanical Garden (17m)
-            elev = 18.0 if (300 <= i <= 315) else 16.0
+            elev = 18.0 if (322 <= i <= 337) else 16.0
             struct = "elevated"
         cl.append({
             "coords": c,

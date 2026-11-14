@@ -2404,23 +2404,7 @@
           "offsetMeters": 50.6
         }
       ],
-      "links": [
-        {
-          "kind": "skywalk",
-          "fromLngLat": [
-            77.33428,
-            28.563893
-          ],
-          "fromY": 11.5,
-          "toLngLat": [
-            77.333961,
-            28.563942
-          ],
-          "toY": 11.5,
-          "width": 14.0,
-          "color": "#D946EF"
-        }
-      ],
+      "links": [],
       "clearanceBoxes": [
         {
           "center": [
