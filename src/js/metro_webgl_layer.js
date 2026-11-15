@@ -540,9 +540,27 @@ window.MetroWebGLLayer = (function () {
   function prewarmOvertureHeroCorridor() {
     if (heroCorridorPrewarmed || !primaryOverturePMTiles) return;
     heroCorridorPrewarmed = true;
-    // Warm Rajiv Chowk North (881 KB dense Connaught Place) + South seam tiles silently in background
+    // Warm Rajiv Chowk North & South seam tiles silently in background
     prewarmOvertureTileZxy(14, 11706, 6830);
     prewarmOvertureTileZxy(14, 11706, 6831);
+    // Prewarm key Delhi Metro interchange hubs for buttery-smooth nearby location inspection
+    const keyHubCoords = [
+      [77.2282, 28.6675], // Kashmere Gate (Red x Yellow x Violet)
+      [77.1703, 28.6735], // Inderlok (Red x Green)
+      [77.1526, 28.6960], // Netaji Subhash Place (Red x Pink)
+      [77.2777, 28.6718], // Welcome (Red x Pink)
+      [77.1071, 28.7207], // Rithala (Red Terminus)
+      [77.3185, 28.6755], // Dilshad Garden / Shaheed Sthal
+      [77.0782, 28.6293], // Janakpuri West (Blue x Magenta)
+      [77.3342, 28.5641], // Botanical Garden (Blue x Magenta)
+      [77.0583, 28.5522], // Dwarka Sector 21 (Blue x Orange)
+      [77.1666, 28.5916]  // Dhaula Kuan (Airport Express x Pink)
+    ];
+    let delay = 120;
+    keyHubCoords.forEach(([lng, lat]) => {
+      setTimeout(() => prewarmOvertureAtLngLat(lng, lat, false), delay);
+      delay += 80;
+    });
   }
 
   function ensurePMTilesProtocol() {
@@ -10900,6 +10918,7 @@ window.MetroWebGLLayer = (function () {
     }
 
     // Distance & shadow culling for 3D Delhi Hero Landmarks & Indian Railways Stations
+    let lazyMonumentBuiltThisFrame = 0;
     for (let i = 0; i < monumentGroups.length; i++) {
       const mon = monumentGroups[i];
       const dx = mon.x - focusX;
@@ -10907,7 +10926,10 @@ window.MetroWebGLLayer = (function () {
       const d2 = dx * dx + dz * dz;
       const isVis = d2 <= mon.visR2;
       if (isVis && !mon.group && mon.buildFn) {
-        ensureMonumentBuilt(mon);
+        if (lazyMonumentBuiltThisFrame < 1) {
+          ensureMonumentBuilt(mon);
+          lazyMonumentBuiltThisFrame++;
+        }
       }
       if (!mon.group) continue;
       if (mon.group.visible !== isVis) {

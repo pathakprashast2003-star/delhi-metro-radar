@@ -288,8 +288,8 @@
       maxZoom: 20.5,
       maxPitch: 74,
       pixelRatio: Math.min(window.devicePixelRatio || 1, mobileView ? 1.75 : 2),
-      maxTileCacheSize: mobileView ? 64 : 160,
-      maxTileCacheZoomLevels: mobileView ? 5 : 8,
+      maxTileCacheSize: mobileView ? 256 : 512,
+      maxTileCacheZoomLevels: mobileView ? 7 : 10,
       dragRotate: true,
       pitchWithRotate: true,
       touchPitch: true,
@@ -319,11 +319,19 @@
       map.on('style.load', () => setTimeout(collapseMobileAttrib, 50));
     }
 
+    // Pre-create a lightweight 1x1 transparent RGBA image for instant fallback when OSM/Liberty POI sprites are missing
+    const fallbackPixel = { width: 1, height: 1, data: new Uint8Array([0, 0, 0, 0]) };
+
     map.on('styleimagemissing', (e) => {
       if (e.id === 'delhi-metro-consist') {
         preloadImage('/public/metro_train_topdown_vibrant.png', 'delhi-metro-consist');
       } else if (e.id === 'dmrc-rail-pattern') {
         preloadImage('/public/delhi_metro_track_pattern.png', 'dmrc-rail-pattern');
+      } else if (!map.hasImage(e.id)) {
+        // Provide immediate fallback to eliminate MapLibre symbol layer stalls, warnings & hitching
+        try {
+          map.addImage(e.id, fallbackPixel);
+        } catch (_) { }
       }
     });
 
