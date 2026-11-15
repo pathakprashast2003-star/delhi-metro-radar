@@ -29,11 +29,10 @@ def build_mukundpur():
     yard_stabling = []
     workshop_tracks = []
 
-    # Spur way IDs and bridge ways that connect Majlis Park to Mukundpur Depot
+    # Operational Flyover spur way IDs connecting Majlis Park to Mukundpur Depot
     flyover_way_ids = {
         '279102624', '364876207', '364876208', '364876209', 
-        '1183304780', '1183304781', '1183304782', '1183304783',
-        '1339456776', '1486693035', '1486693036'
+        '1183304780', '1183304782', '1486693035', '1486693036'
     }
 
     # Workshop internal track IDs

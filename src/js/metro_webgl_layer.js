@@ -1133,6 +1133,17 @@ window.MetroWebGLLayer = (function () {
       airplaneWhite: std(0xF8FAFC, { roughness: 0.25, metalness: 0.35, envMapIntensity: 0.4 }),
       vistaraPurple: std(0x581C87, { roughness: 0.4 }),
       taxiwayYellow: new THREE.MeshBasicMaterial({ color: 0xFACC15 }),
+      viaductConcrete: std(0x7D8896, { roughness: 0.85, metalness: 0.04 }),
+      viaductParapet: std(0x8D97A5, { roughness: 0.78, metalness: 0.05 }),
+      viaductPier: std(0x727E8D, { roughness: 0.82, metalness: 0.04 }),
+      pierCapConcrete: std(0x8A96A6, { roughness: 0.80, metalness: 0.05 }),
+      pierBasePlinth: std(0x5C6674, { roughness: 0.90, metalness: 0.03 }),
+      depotBallastSlab: std(0x2E343C, { roughness: 0.94, metalness: 0.05 }),
+      depotApronPave: std(0x4C5562, { roughness: 0.86, metalness: 0.06 }),
+      depotFenceWall: std(0x6E7988, { roughness: 0.88, metalness: 0.04 }),
+      stationRoofSilver: std(0xD2D9E2, { roughness: 0.35, metalness: 0.42, envMapIntensity: 0.52 }),
+      stationTrussSteel: std(0x1E293B, { roughness: 0.45, metalness: 0.65 }),
+      neopreneBearing: std(0x1F2937, { roughness: 0.92, metalness: 0.1 }),
       runwayGreen: new THREE.MeshBasicMaterial({ color: 0x10B981 }),
       treeFoliage: lam(0x588A4F),
       treeFoliageAlt: lam(0x6B9D5E),
@@ -4533,49 +4544,43 @@ window.MetroWebGLLayer = (function () {
   }
 
   function buildMajlisParkTurnaround(root, detail, m, g, yV) {
-    const extLen = 190;
-    const extStart = -43; // North throat toward Mukundpur Depot
-    const extEnd = extStart - extLen;
+    const extLen = 28;
+    const extStart = -43; // North throat directly meeting Mukundpur flyover ramps
     const extMidX = extStart - extLen * 0.5;
 
-    // 1. Overrun Viaduct Deck toward Mukundpur Depot throat
-    addBox(root, extLen, 1.0, 14.2, m.concreteLight, extMidX, yV - 0.50, 0);
-    addBox(root, extLen, 2.0, 9.6, m.concreteWeb, extMidX, yV - 1.95, 0);
-    addBox(root, extLen, 1.1, 0.45, m.concreteWeb, extMidX, yV + 0.55, -6.8);
-    addBox(root, extLen, 1.1, 0.45, m.concreteWeb, extMidX, yV + 0.55, 6.8);
+    // 1. Concrete deck transition throat
+    addBox(root, extLen, 1.2, 14.2, m.viaductConcrete, extMidX, yV - 0.60, 0);
+    addBox(root, extLen, 2.2, 9.6, m.viaductPier, extMidX, yV - 2.10, 0);
+    addBox(root, extLen, 1.25, 0.45, m.viaductParapet, extMidX, yV + 0.62, -6.8);
+    addBox(root, extLen, 1.25, 0.45, m.viaductParapet, extMidX, yV + 0.62, 6.8);
     addBox(root, extLen, 0.45, 0.55, m.tactilePink, extMidX, yV + 0.22, 0);
 
-    // 2. Viaduct Support Piers
-    const pierSpacing = 38;
-    for (let px = extStart - 30; px >= extEnd + 20; px -= pierSpacing) {
-      addBox(root, 5.2, 0.9, 5.6, m.concreteWeb, px, 0.45, 0);
-      const shaft = new THREE.Mesh(g.pierShaft, m.pierCream);
-      shaft.scale.set(1.25, yV - 3.6, 1.25);
-      shaft.position.set(px, (yV - 3.6) * 0.5 + 0.75, 0);
-      shaft.frustumCulled = false;
-      root.add(shaft);
-      addBox(root, 3.8, 2.5, 16.5, m.concreteLight, px, yV - 2.9, 0);
-    }
+    // 2. Viaduct Support Pier
+    const px = extStart - 14;
+    addBox(root, 5.2, 0.9, 5.6, m.pierBasePlinth, px, 0.45, 0);
+    const shaft = new THREE.Mesh(g.pierShaft, m.viaductPier);
+    shaft.scale.set(1.25, yV - 3.6, 1.25);
+    shaft.position.set(px, (yV - 3.6) * 0.5 + 0.75, 0);
+    shaft.frustumCulled = false;
+    root.add(shaft);
+    addBox(root, 4.2, 2.5, 16.5, m.pierCapConcrete, px, yV - 2.9, 0);
 
-    // 3. Turnaround Siding Tracks & Sleepers
-    const trackEnd = extStart - 150;
-    const trackMid = extStart + (trackEnd - extStart) * 0.5;
-    const trackLen = Math.abs(trackEnd - extStart);
+    // 3. Throat Tracks & Sleepers
     [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
-      addBox(root, trackLen, 0.22, 3.4, m.slateCut, trackMid, yV + 0.11, tz);
-      addBox(root, trackLen, 0.18, 0.08, m.railCrown, trackMid, yV + 0.32, tz - 0.71);
-      addBox(root, trackLen, 0.18, 0.08, m.railCrown, trackMid, yV + 0.32, tz + 0.71);
+      addBox(root, extLen, 0.22, 3.4, m.slateCut, extMidX, yV + 0.11, tz);
+      addBox(root, extLen, 0.18, 0.08, m.railCrown, extMidX, yV + 0.32, tz - 0.71);
+      addBox(root, extLen, 0.18, 0.08, m.railCrown, extMidX, yV + 0.32, tz + 0.71);
     });
 
-    for (let sx = extStart - 2; sx >= trackEnd; sx -= 1.8) {
+    for (let sx = extStart - 2; sx >= extStart - extLen; sx -= 1.8) {
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
         addBox(detail, 0.24, 0.12, 2.4, m.concreteWeb, sx, yV + 0.22, tz);
       });
     }
 
-    // 4. Diamond Scissors Crossover
-    const xMid = extStart - 50;
-    const xSpan = 38;
+    // 4. Diamond Scissors Crossover connecting up and down lines
+    const xMid = extStart - 14;
+    const xSpan = 22;
     const diagLen = Math.hypot(xSpan, TRACK_HALF_SEP * 2);
     const diagAngle = Math.atan2(TRACK_HALF_SEP * 2, xSpan);
 
@@ -4583,18 +4588,6 @@ window.MetroWebGLLayer = (function () {
     crossA.rotation.y = -diagAngle;
     const crossB = addBox(detail, diagLen, 0.18, 0.08, m.railCrown, xMid, yV + 0.32, 0);
     crossB.rotation.y = diagAngle;
-
-    // 5. Heavy-Duty Hydraulic Buffer Stops
-    [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
-      const bx = trackEnd - 1.5;
-      addBox(detail, 3.8, 1.9, 2.6, m.steelDark, bx, yV + 1.05, tz);
-      addBox(detail, 0.8, 0.4, 0.4, m.bufferRed, bx + 2.1, yV + 1.05, tz - 0.71);
-      addBox(detail, 0.8, 0.4, 0.4, m.bufferRed, bx + 2.1, yV + 1.05, tz + 0.71);
-      addBox(detail, 0.22, 1.4, 2.2, m.pinkAccent, bx + 1.8, yV + 1.15, tz);
-      addBox(detail, 0.3, 0.4, 0.3, m.bufferRed, bx, yV + 2.2, tz);
-    });
-
-    addBox(root, 1.6, 2.4, 14.2, m.concreteLight, trackEnd - 6.0, yV + 1.2, 0);
   }
 
   /* ───────────────────────────────────────────────────────────
@@ -8267,51 +8260,133 @@ window.MetroWebGLLayer = (function () {
 
     const flyoverSpans = (tr.flyover_spurs || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
     if (flyoverSpans.length) {
-      // 1. Viaduct concrete deck ribbon
-      const deckProf = [[-2.4, -0.75], [2.4, -0.75], [2.2, 0.0], [-2.2, 0.0]];
+      // 1. Solid Precast DMRC Box-Girder Trough (Trapezoidal 1.85m depth with soffit)
+      const deckProf = [
+        [-2.7, 0.0],
+        [-2.7, -0.65],
+        [-1.6, -1.85],
+        [1.6, -1.85],
+        [2.7, -0.65],
+        [2.7, 0.0]
+      ];
       const dM = buildRibbonFromSpans(flyoverSpans, deckProf, m.viaductConcrete, 1.2, false);
       if (dM) grp.add(dM);
 
-      // 2. Concrete parapets on both sides
-      const parapetLeft = [[-2.4, 0.0], [-2.15, 0.0], [-2.15, 1.1], [-2.4, 1.1]];
-      const parapetRight = [[2.15, 0.0], [2.4, 0.0], [2.4, 1.1], [2.15, 1.1]];
-      const pLM = buildRibbonFromSpans(flyoverSpans, parapetLeft, m.concreteLight, 1.2, false);
+      // 2. Precast Parapet Walls with Top Coping Caps
+      const parapetLeft = [[-2.7, 0.0], [-2.42, 0.0], [-2.42, 1.20], [-2.7, 1.20]];
+      const parapetRight = [[2.42, 0.0], [2.7, 0.0], [2.7, 1.20], [2.42, 1.20]];
+      const pLM = buildRibbonFromSpans(flyoverSpans, parapetLeft, m.viaductParapet, 1.2, false);
       if (pLM) grp.add(pLM);
-      const pRM = buildRibbonFromSpans(flyoverSpans, parapetRight, m.concreteLight, 1.2, false);
+      const pRM = buildRibbonFromSpans(flyoverSpans, parapetRight, m.viaductParapet, 1.2, false);
       if (pRM) grp.add(pRM);
 
-      // 3. Ballast ribbon on deck
-      const ballastProf = [[-1.9, 0.0], [1.9, 0.0], [1.7, 0.18], [-1.7, 0.18]];
+      const capL = [[-2.76, 1.15], [-2.38, 1.15], [-2.38, 1.26], [-2.76, 1.26]];
+      const capR = [[2.38, 1.15], [2.76, 1.15], [2.76, 1.26], [2.38, 1.26]];
+      const cLM = buildRibbonFromSpans(flyoverSpans, capL, m.pierCapConcrete, 1.2, false);
+      if (cLM) grp.add(cLM);
+      const cRM = buildRibbonFromSpans(flyoverSpans, capR, m.pierCapConcrete, 1.2, false);
+      if (cRM) grp.add(cRM);
+
+      // 3. Track Ballast / Slab Bed on Deck
+      const ballastProf = [[-2.1, 0.0], [2.1, 0.0], [1.9, 0.22], [-1.9, 0.22]];
       const bM = buildRibbonFromSpans(flyoverSpans, ballastProf, m.ballastSleeper, 1.2, false);
       if (bM) grp.add(bM);
 
-      // 4. Twin steel rails
+      // 4. Dual Steel Rails (UIC 60 steel rails with silver crowns)
       [-0.7175, 0.7175].forEach((lat) => {
-        const railProf = [[lat - 0.035, 0.18], [lat + 0.035, 0.18], [lat + 0.035, 0.34], [lat - 0.035, 0.34]];
+        const railProf = [[lat - 0.038, 0.22], [lat + 0.038, 0.22], [lat + 0.038, 0.40], [lat - 0.038, 0.40]];
         const rM = buildRibbonFromSpans(flyoverSpans, railProf, m.steelRail, 1.2, false);
         if (rM) grp.add(rM);
+        const crownProf = [[lat - 0.026, 0.40], [lat + 0.026, 0.40], [lat + 0.026, 0.46], [lat - 0.026, 0.46]];
+        const crM = buildRibbonFromSpans(flyoverSpans, crownProf, m.railCrown, 1.2, false);
+        if (crM) grp.add(crM);
       });
 
-      // 5. Catenary wire
+      // 5. Catenary overhead wire
       const wireProf = [[-0.08, 5.2], [0.08, 5.2], [0.08, 5.35], [-0.08, 5.35]];
       const wM = buildRibbonFromSpans(flyoverSpans, wireProf, m.steelDark, 1.2, false);
       if (wM) grp.add(wM);
 
-      // 6. Concrete viaduct piers down to ground level (y = 0) wherever elevated
+      // 6. Realistic DMRC Concrete Piers with Hammerhead Caps, Base Plinths, and Neoprene Bearing Pads
       flyoverSpans.forEach((spList) => {
         let lastPierDist = -999;
         for (let i = 0; i < spList.length; i++) {
           const pt = spList[i];
           if (pt.elev > 2.8 && (pt.dist - lastPierDist >= 26.0 || (i === 0 && pt.elev > 4.0))) {
-            const pierH = pt.elev - 0.75;
-            if (pierH > 1.0) {
-              addBox(grp, 1.9, pierH, 1.9, m.viaductConcrete, pt.pos.x, pierH * 0.5, pt.pos.z);
-              addBox(grp, 3.6, 0.6, 2.4, m.concreteLight, pt.pos.x, pierH - 0.3, pt.pos.z);
+            const pierH = pt.elev - 1.85; // accounts for 1.85m girder trough
+            if (pierH > 0.8) {
+              const yaw = Math.atan2(-pt.tan.z, pt.tan.x);
+
+              // Soft ground contact shadow disc
+              const ao = new THREE.Mesh(g.shadowQuad, m.shadowDisc);
+              ao.position.set(pt.pos.x, 0.12, pt.pos.z);
+              ao.rotation.x = -Math.PI * 0.5;
+              ao.scale.set(7.5, 7.5, 1);
+              grp.add(ao);
+
+              // Heavy concrete collision base plinth (3.8m x 3.8m x 0.8m)
+              const plinth = addBox(grp, 3.8, 0.8, 3.8, m.pierBasePlinth, pt.pos.x, 0.4, pt.pos.z);
+              plinth.rotation.y = yaw;
+
+              // Round concrete pier shaft
+              const shaftH = Math.max(0.6, pierH - 1.6);
+              const shaft = new THREE.Mesh(g.pierShaft, m.viaductPier);
+              shaft.scale.set(1.15, shaftH, 1.15);
+              shaft.position.set(pt.pos.x, 0.8 + shaftH * 0.5, pt.pos.z);
+              shaft.rotation.y = yaw;
+              grp.add(shaft);
+
+              // Flared transverse hammerhead pier cap (crosshead beam)
+              const capY = 0.8 + shaftH + 0.65;
+              const cap = addBox(grp, 2.6, 1.3, 5.8, m.pierCapConcrete, pt.pos.x, capY, pt.pos.z);
+              cap.rotation.y = yaw;
+
+              // Neoprene elastomeric bearing pads
+              [-1.4, 1.4].forEach((bz) => {
+                const pad = addBox(grp, 0.8, 0.16, 0.8, m.neopreneBearing, pt.pos.x, capY + 0.73, pt.pos.z + bz);
+                pad.rotation.y = yaw;
+              });
+
+              // OHE cantilever portal mast on parapet
+              const mastX = pt.pos.x - Math.sin(yaw) * 2.75;
+              const mastZ = pt.pos.z - Math.cos(yaw) * 2.75;
+              addBox(grp, 0.35, 6.2, 0.35, m.steelDark, mastX, pt.elev + 3.1, mastZ);
+              addBox(grp, 2.8, 0.25, 0.25, m.steelDark, mastX + Math.sin(yaw) * 1.4, pt.elev + 5.8, mastZ + Math.cos(yaw) * 1.4);
             }
             lastPierDist = pt.dist;
           }
         }
       });
+    }
+
+    // 7. Massive Depot Ground Slab & Yard Complex (Eliminating the Dark Void)
+    const depotCenterLL = depotData.origin || [77.1870, 28.7245];
+    const depotCenterPos = toLocalMeters(depotCenterLL, defaultElev);
+    
+    // Main crushed-granite ballast bed (width 680m x length 860m)
+    addBox(grp, 680, 0.28, 860, m.depotBallastSlab, depotCenterPos.x, 0.14, depotCenterPos.z);
+    
+    // Concrete maintenance apron around workshop throat
+    addBox(grp, 320, 0.32, 280, m.depotApronPave, depotCenterPos.x - 20, 0.16, depotCenterPos.z - 40);
+
+    // Perimeter asphalt service ring road with curbs
+    const ringW = 710;
+    const ringL = 890;
+    addBox(grp, ringW, 0.22, 18, m.asphaltRoad, depotCenterPos.x, 0.11, depotCenterPos.z - ringL * 0.5);
+    addBox(grp, ringW, 0.22, 18, m.asphaltRoad, depotCenterPos.x, 0.11, depotCenterPos.z + ringL * 0.5);
+    addBox(grp, 18, 0.22, ringL, m.asphaltRoad, depotCenterPos.x - ringW * 0.5, 0.11, depotCenterPos.z);
+    addBox(grp, 18, 0.22, ringL, m.asphaltRoad, depotCenterPos.x + ringW * 0.5, 0.11, depotCenterPos.z);
+
+    // Perimeter security boundary wall (2.8m high)
+    addBox(grp, ringW + 4, 2.8, 0.6, m.depotFenceWall, depotCenterPos.x, 1.4, depotCenterPos.z - ringL * 0.5 - 9.3);
+    addBox(grp, ringW + 4, 2.8, 0.6, m.depotFenceWall, depotCenterPos.x, 1.4, depotCenterPos.z + ringL * 0.5 + 9.3);
+    addBox(grp, 0.6, 2.8, ringL + 4, m.depotFenceWall, depotCenterPos.x - ringW * 0.5 - 9.3, 1.4, depotCenterPos.z);
+    addBox(grp, 0.6, 2.8, ringL + 4, m.depotFenceWall, depotCenterPos.x + ringW * 0.5 + 9.3, 1.4, depotCenterPos.z);
+
+    // Lush landscaping along perimeter boundary
+    for (let lx = -ringW * 0.45; lx <= ringW * 0.45; lx += 38) {
+      addStreetTree(grp, depotCenterPos.x + lx, 0.2, depotCenterPos.z - ringL * 0.5 - 14, false, 1.1, lx * 0.1);
+      addStreetTree(grp, depotCenterPos.x + lx, 0.2, depotCenterPos.z + ringL * 0.5 + 14, true, 1.2, lx * 0.15);
     }
 
     const turnoutSpans = (tr.turnouts || []).concat(tr.workshop_tracks || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
@@ -8348,19 +8423,42 @@ window.MetroWebGLLayer = (function () {
       if (ws.headingDeg) {
         wsGroup.rotation.y = THREE.MathUtils.degToRad(-ws.headingDeg);
       }
-      addBox(wsGroup, ws.widthM, ws.heightM, ws.lengthM, m.concreteLight, 0, ws.heightM * 0.5, 0);
-      addBox(wsGroup, ws.widthM + 1.2, 0.8, ws.lengthM + 1.2, m.pinkRoof, 0, ws.heightM + 0.4, 0);
-      for (let sz = -ws.lengthM * 0.4; sz <= ws.lengthM * 0.4; sz += 20) {
-        addBox(wsGroup, ws.widthM * 0.6, 0.25, 8.0, m.skylightGlass, 0, ws.heightM + 0.85, sz);
+      
+      // 1. Lower concrete plinth and blast wall (height 3.5m)
+      addBox(wsGroup, ws.widthM, 3.5, ws.lengthM, m.concreteWeb, 0, 1.75, 0);
+      
+      // 2. Upper insulated corrugated metal cladding (slate/dark steel)
+      addBox(wsGroup, ws.widthM - 0.4, ws.heightM - 3.5, ws.lengthM - 0.4, m.slateCut, 0, 3.5 + (ws.heightM - 3.5) * 0.5, 0);
+      
+      // 3. Pitched standing-seam industrial roof with overhang
+      addBox(wsGroup, ws.widthM + 1.8, 1.2, ws.lengthM + 1.8, m.steelDark, 0, ws.heightM + 0.6, 0);
+      
+      // 4. Longitudinal clerestory skylights with blue glass
+      for (let sz = -ws.lengthM * 0.42; sz <= ws.lengthM * 0.42; sz += 16) {
+        addBox(wsGroup, ws.widthM * 0.72, 0.65, 9.5, m.skylightGlass, 0, ws.heightM + 1.2, sz);
+        addBox(wsGroup, ws.widthM * 0.75, 0.25, 0.45, m.steelChrome, 0, ws.heightM + 1.55, sz);
       }
+      
+      // 5. Articulated train portals with yellow/black safety chevrons
       if (ws.tracksInside > 0) {
         const spacing = ws.widthM / (ws.tracksInside + 1);
         for (let t = 1; t <= ws.tracksInside; t++) {
           const dx = -ws.widthM * 0.5 + t * spacing;
-          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, ws.lengthM * 0.5);
-          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, -ws.lengthM * 0.5);
+          addBox(wsGroup, 4.8, 6.2, 0.5, m.yellowAccent, dx, 3.1, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.2, 5.8, 0.6, m.steelDark, dx, 2.9, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.8, 6.2, 0.5, m.yellowAccent, dx, 3.1, -ws.lengthM * 0.5);
+          addBox(wsGroup, 4.2, 5.8, 0.6, m.steelDark, dx, 2.9, -ws.lengthM * 0.5);
+          addBox(wsGroup, 4.6, 0.9, 0.9, m.slateDark, dx, 6.4, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.6, 0.9, 0.9, m.slateDark, dx, 6.4, -ws.lengthM * 0.5);
         }
       }
+      
+      // 6. Rooftop HVAC industrial equipment & exhaust vents
+      for (let rx = -ws.widthM * 0.35; rx <= ws.widthM * 0.35; rx += 28) {
+        addBox(wsGroup, 4.2, 2.4, 5.6, m.steelDark, rx, ws.heightM + 1.8, -ws.lengthM * 0.25);
+        addBox(wsGroup, 1.2, 3.2, 1.2, m.steelChrome, rx + 1.5, ws.heightM + 2.2, -ws.lengthM * 0.25);
+      }
+
       grp.add(wsGroup);
     });
 
@@ -8455,51 +8553,133 @@ window.MetroWebGLLayer = (function () {
 
     const flyoverSpans = (tr.flyover_spurs || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
     if (flyoverSpans.length) {
-      // 1. Viaduct concrete deck ribbon
-      const deckProf = [[-2.4, -0.75], [2.4, -0.75], [2.2, 0.0], [-2.2, 0.0]];
+      // 1. Solid Precast DMRC Box-Girder Trough (Trapezoidal 1.85m depth with soffit)
+      const deckProf = [
+        [-2.7, 0.0],
+        [-2.7, -0.65],
+        [-1.6, -1.85],
+        [1.6, -1.85],
+        [2.7, -0.65],
+        [2.7, 0.0]
+      ];
       const dM = buildRibbonFromSpans(flyoverSpans, deckProf, m.viaductConcrete, 1.2, false);
       if (dM) grp.add(dM);
 
-      // 2. Concrete parapets on both sides
-      const parapetLeft = [[-2.4, 0.0], [-2.15, 0.0], [-2.15, 1.1], [-2.4, 1.1]];
-      const parapetRight = [[2.15, 0.0], [2.4, 0.0], [2.4, 1.1], [2.15, 1.1]];
-      const pLM = buildRibbonFromSpans(flyoverSpans, parapetLeft, m.concreteLight, 1.2, false);
+      // 2. Precast Parapet Walls with Top Coping Caps
+      const parapetLeft = [[-2.7, 0.0], [-2.42, 0.0], [-2.42, 1.20], [-2.7, 1.20]];
+      const parapetRight = [[2.42, 0.0], [2.7, 0.0], [2.7, 1.20], [2.42, 1.20]];
+      const pLM = buildRibbonFromSpans(flyoverSpans, parapetLeft, m.viaductParapet, 1.2, false);
       if (pLM) grp.add(pLM);
-      const pRM = buildRibbonFromSpans(flyoverSpans, parapetRight, m.concreteLight, 1.2, false);
+      const pRM = buildRibbonFromSpans(flyoverSpans, parapetRight, m.viaductParapet, 1.2, false);
       if (pRM) grp.add(pRM);
 
-      // 3. Ballast ribbon on deck
-      const ballastProf = [[-1.9, 0.0], [1.9, 0.0], [1.7, 0.18], [-1.7, 0.18]];
+      const capL = [[-2.76, 1.15], [-2.38, 1.15], [-2.38, 1.26], [-2.76, 1.26]];
+      const capR = [[2.38, 1.15], [2.76, 1.15], [2.76, 1.26], [2.38, 1.26]];
+      const cLM = buildRibbonFromSpans(flyoverSpans, capL, m.pierCapConcrete, 1.2, false);
+      if (cLM) grp.add(cLM);
+      const cRM = buildRibbonFromSpans(flyoverSpans, capR, m.pierCapConcrete, 1.2, false);
+      if (cRM) grp.add(cRM);
+
+      // 3. Track Ballast / Slab Bed on Deck
+      const ballastProf = [[-2.1, 0.0], [2.1, 0.0], [1.9, 0.22], [-1.9, 0.22]];
       const bM = buildRibbonFromSpans(flyoverSpans, ballastProf, m.ballastSleeper, 1.2, false);
       if (bM) grp.add(bM);
 
-      // 4. Twin steel rails
+      // 4. Dual Steel Rails (UIC 60 steel rails with silver crowns)
       [-0.7175, 0.7175].forEach((lat) => {
-        const railProf = [[lat - 0.035, 0.18], [lat + 0.035, 0.18], [lat + 0.035, 0.34], [lat - 0.035, 0.34]];
+        const railProf = [[lat - 0.038, 0.22], [lat + 0.038, 0.22], [lat + 0.038, 0.40], [lat - 0.038, 0.40]];
         const rM = buildRibbonFromSpans(flyoverSpans, railProf, m.steelRail, 1.2, false);
         if (rM) grp.add(rM);
+        const crownProf = [[lat - 0.026, 0.40], [lat + 0.026, 0.40], [lat + 0.026, 0.46], [lat - 0.026, 0.46]];
+        const crM = buildRibbonFromSpans(flyoverSpans, crownProf, m.railCrown, 1.2, false);
+        if (crM) grp.add(crM);
       });
 
-      // 5. Catenary wire
+      // 5. Catenary overhead wire
       const wireProf = [[-0.08, 5.2], [0.08, 5.2], [0.08, 5.35], [-0.08, 5.35]];
       const wM = buildRibbonFromSpans(flyoverSpans, wireProf, m.steelDark, 1.2, false);
       if (wM) grp.add(wM);
 
-      // 6. Concrete viaduct piers down to ground level (y = 0) wherever elevated
+      // 6. Realistic DMRC Concrete Piers with Hammerhead Caps, Base Plinths, and Neoprene Bearing Pads
       flyoverSpans.forEach((spList) => {
         let lastPierDist = -999;
         for (let i = 0; i < spList.length; i++) {
           const pt = spList[i];
           if (pt.elev > 2.8 && (pt.dist - lastPierDist >= 26.0 || (i === 0 && pt.elev > 4.0))) {
-            const pierH = pt.elev - 0.75;
-            if (pierH > 1.0) {
-              addBox(grp, 1.9, pierH, 1.9, m.viaductConcrete, pt.pos.x, pierH * 0.5, pt.pos.z);
-              addBox(grp, 3.6, 0.6, 2.4, m.concreteLight, pt.pos.x, pierH - 0.3, pt.pos.z);
+            const pierH = pt.elev - 1.85; // accounts for 1.85m girder trough
+            if (pierH > 0.8) {
+              const yaw = Math.atan2(-pt.tan.z, pt.tan.x);
+
+              // Soft ground contact shadow disc
+              const ao = new THREE.Mesh(g.shadowQuad, m.shadowDisc);
+              ao.position.set(pt.pos.x, 0.12, pt.pos.z);
+              ao.rotation.x = -Math.PI * 0.5;
+              ao.scale.set(7.5, 7.5, 1);
+              grp.add(ao);
+
+              // Heavy concrete collision base plinth (3.8m x 3.8m x 0.8m)
+              const plinth = addBox(grp, 3.8, 0.8, 3.8, m.pierBasePlinth, pt.pos.x, 0.4, pt.pos.z);
+              plinth.rotation.y = yaw;
+
+              // Round concrete pier shaft
+              const shaftH = Math.max(0.6, pierH - 1.6);
+              const shaft = new THREE.Mesh(g.pierShaft, m.viaductPier);
+              shaft.scale.set(1.15, shaftH, 1.15);
+              shaft.position.set(pt.pos.x, 0.8 + shaftH * 0.5, pt.pos.z);
+              shaft.rotation.y = yaw;
+              grp.add(shaft);
+
+              // Flared transverse hammerhead pier cap (crosshead beam)
+              const capY = 0.8 + shaftH + 0.65;
+              const cap = addBox(grp, 2.6, 1.3, 5.8, m.pierCapConcrete, pt.pos.x, capY, pt.pos.z);
+              cap.rotation.y = yaw;
+
+              // Neoprene elastomeric bearing pads
+              [-1.4, 1.4].forEach((bz) => {
+                const pad = addBox(grp, 0.8, 0.16, 0.8, m.neopreneBearing, pt.pos.x, capY + 0.73, pt.pos.z + bz);
+                pad.rotation.y = yaw;
+              });
+
+              // OHE cantilever portal mast on parapet
+              const mastX = pt.pos.x - Math.sin(yaw) * 2.75;
+              const mastZ = pt.pos.z - Math.cos(yaw) * 2.75;
+              addBox(grp, 0.35, 6.2, 0.35, m.steelDark, mastX, pt.elev + 3.1, mastZ);
+              addBox(grp, 2.8, 0.25, 0.25, m.steelDark, mastX + Math.sin(yaw) * 1.4, pt.elev + 5.8, mastZ + Math.cos(yaw) * 1.4);
             }
             lastPierDist = pt.dist;
           }
         }
       });
+    }
+
+    // 7. Massive Depot Ground Slab & Yard Complex (Eliminating the Dark Void)
+    const depotCenterLL = depotData.origin || [77.1870, 28.7245];
+    const depotCenterPos = toLocalMeters(depotCenterLL, defaultElev);
+    
+    // Main crushed-granite ballast bed (width 680m x length 860m)
+    addBox(grp, 680, 0.28, 860, m.depotBallastSlab, depotCenterPos.x, 0.14, depotCenterPos.z);
+    
+    // Concrete maintenance apron around workshop throat
+    addBox(grp, 320, 0.32, 280, m.depotApronPave, depotCenterPos.x - 20, 0.16, depotCenterPos.z - 40);
+
+    // Perimeter asphalt service ring road with curbs
+    const ringW = 710;
+    const ringL = 890;
+    addBox(grp, ringW, 0.22, 18, m.asphaltRoad, depotCenterPos.x, 0.11, depotCenterPos.z - ringL * 0.5);
+    addBox(grp, ringW, 0.22, 18, m.asphaltRoad, depotCenterPos.x, 0.11, depotCenterPos.z + ringL * 0.5);
+    addBox(grp, 18, 0.22, ringL, m.asphaltRoad, depotCenterPos.x - ringW * 0.5, 0.11, depotCenterPos.z);
+    addBox(grp, 18, 0.22, ringL, m.asphaltRoad, depotCenterPos.x + ringW * 0.5, 0.11, depotCenterPos.z);
+
+    // Perimeter security boundary wall (2.8m high)
+    addBox(grp, ringW + 4, 2.8, 0.6, m.depotFenceWall, depotCenterPos.x, 1.4, depotCenterPos.z - ringL * 0.5 - 9.3);
+    addBox(grp, ringW + 4, 2.8, 0.6, m.depotFenceWall, depotCenterPos.x, 1.4, depotCenterPos.z + ringL * 0.5 + 9.3);
+    addBox(grp, 0.6, 2.8, ringL + 4, m.depotFenceWall, depotCenterPos.x - ringW * 0.5 - 9.3, 1.4, depotCenterPos.z);
+    addBox(grp, 0.6, 2.8, ringL + 4, m.depotFenceWall, depotCenterPos.x + ringW * 0.5 + 9.3, 1.4, depotCenterPos.z);
+
+    // Lush landscaping along perimeter boundary
+    for (let lx = -ringW * 0.45; lx <= ringW * 0.45; lx += 38) {
+      addStreetTree(grp, depotCenterPos.x + lx, 0.2, depotCenterPos.z - ringL * 0.5 - 14, false, 1.1, lx * 0.1);
+      addStreetTree(grp, depotCenterPos.x + lx, 0.2, depotCenterPos.z + ringL * 0.5 + 14, true, 1.2, lx * 0.15);
     }
 
     const turnoutSpans = (tr.turnouts || []).concat(tr.workshop_tracks || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
@@ -8536,19 +8716,42 @@ window.MetroWebGLLayer = (function () {
       if (ws.headingDeg) {
         wsGroup.rotation.y = THREE.MathUtils.degToRad(-ws.headingDeg);
       }
-      addBox(wsGroup, ws.widthM, ws.heightM, ws.lengthM, m.concreteLight, 0, ws.heightM * 0.5, 0);
-      addBox(wsGroup, ws.widthM + 1.2, 0.8, ws.lengthM + 1.2, m.pinkRoof, 0, ws.heightM + 0.4, 0);
-      for (let sz = -ws.lengthM * 0.4; sz <= ws.lengthM * 0.4; sz += 20) {
-        addBox(wsGroup, ws.widthM * 0.6, 0.25, 8.0, m.skylightGlass, 0, ws.heightM + 0.85, sz);
+      
+      // 1. Lower concrete plinth and blast wall (height 3.5m)
+      addBox(wsGroup, ws.widthM, 3.5, ws.lengthM, m.concreteWeb, 0, 1.75, 0);
+      
+      // 2. Upper insulated corrugated metal cladding (slate/dark steel)
+      addBox(wsGroup, ws.widthM - 0.4, ws.heightM - 3.5, ws.lengthM - 0.4, m.slateCut, 0, 3.5 + (ws.heightM - 3.5) * 0.5, 0);
+      
+      // 3. Pitched standing-seam industrial roof with overhang
+      addBox(wsGroup, ws.widthM + 1.8, 1.2, ws.lengthM + 1.8, m.steelDark, 0, ws.heightM + 0.6, 0);
+      
+      // 4. Longitudinal clerestory skylights with blue glass
+      for (let sz = -ws.lengthM * 0.42; sz <= ws.lengthM * 0.42; sz += 16) {
+        addBox(wsGroup, ws.widthM * 0.72, 0.65, 9.5, m.skylightGlass, 0, ws.heightM + 1.2, sz);
+        addBox(wsGroup, ws.widthM * 0.75, 0.25, 0.45, m.steelChrome, 0, ws.heightM + 1.55, sz);
       }
+      
+      // 5. Articulated train portals with yellow/black safety chevrons
       if (ws.tracksInside > 0) {
         const spacing = ws.widthM / (ws.tracksInside + 1);
         for (let t = 1; t <= ws.tracksInside; t++) {
           const dx = -ws.widthM * 0.5 + t * spacing;
-          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, ws.lengthM * 0.5);
-          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, -ws.lengthM * 0.5);
+          addBox(wsGroup, 4.8, 6.2, 0.5, m.yellowAccent, dx, 3.1, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.2, 5.8, 0.6, m.steelDark, dx, 2.9, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.8, 6.2, 0.5, m.yellowAccent, dx, 3.1, -ws.lengthM * 0.5);
+          addBox(wsGroup, 4.2, 5.8, 0.6, m.steelDark, dx, 2.9, -ws.lengthM * 0.5);
+          addBox(wsGroup, 4.6, 0.9, 0.9, m.slateDark, dx, 6.4, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.6, 0.9, 0.9, m.slateDark, dx, 6.4, -ws.lengthM * 0.5);
         }
       }
+      
+      // 6. Rooftop HVAC industrial equipment & exhaust vents
+      for (let rx = -ws.widthM * 0.35; rx <= ws.widthM * 0.35; rx += 28) {
+        addBox(wsGroup, 4.2, 2.4, 5.6, m.steelDark, rx, ws.heightM + 1.8, -ws.lengthM * 0.25);
+        addBox(wsGroup, 1.2, 3.2, 1.2, m.steelChrome, rx + 1.5, ws.heightM + 2.2, -ws.lengthM * 0.25);
+      }
+
       grp.add(wsGroup);
     });
 
@@ -8758,7 +8961,7 @@ window.MetroWebGLLayer = (function () {
     //    (Lower stations directly beneath a +27.8m stacked flyover use a sleek flat pergola so no roof clips the upper deck)
     const archCenterY = yV + 1.8;
     const isNoidaTerminus = (st.name === 'Noida Electronic City');
-    const roofMat = st.isPink ? m.pinkRoof : (st.isRed ? m.redRoof : (isNoidaTerminus ? m.concreteLight : m.dmrcBlueRoof));
+    const roofMat = st.isPink ? m.stationRoofSilver : (st.isRed ? m.redRoof : (isNoidaTerminus ? m.concreteLight : m.dmrcBlueRoof));
 
     if (isFlatOverStacked) {
       const pergW = isIsland ? 14.8 : 26.8;
@@ -8814,6 +9017,10 @@ window.MetroWebGLLayer = (function () {
       }
       addBox(detail, 83, 0.45, 0.45, m.steelDark, 0, haunchY, -haunchZ);
       addBox(detail, 83, 0.45, 0.45, m.steelDark, 0, haunchY, haunchZ);
+      if (st.isPink) {
+        addBox(detail, 83, 0.65, 0.48, m.pinkAccent, 0, haunchY + 0.1, -haunchZ);
+        addBox(detail, 83, 0.65, 0.48, m.pinkAccent, 0, haunchY + 0.1, haunchZ);
+      }
       [-22, 0, 22].forEach((lx) => addBox(detail, 9.5, 0.24, 0.65, m.luminaireGlow, lx, archCenterY + g.archR - 0.7, 0));
     }
 
@@ -10320,53 +10527,6 @@ window.MetroWebGLLayer = (function () {
         else if (st.name === 'Netaji Subhash Place') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED';
         else if (st.name === 'Welcome') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED';
         else if (st.name === 'Shastri Park') subtitle = 'RED LINE · AT-GRADE STATION & FIRST DMRC DEPOT';
-        else if (st.name === 'Shahdara') subtitle = 'RED LINE · SHAHDARA INDIAN RAILWAYS JUNCTION';
-        else if (st.name === 'Hindon River') subtitle = 'RED LINE · HINDON RIVER BRIDGE VIADUCT';
-        else if (st.name === 'Rithala') subtitle = 'RED LINE · WEST TERMINUS · SCISSORS CROSSOVER';
-        else if (st.name === 'Shaheed Sthal') subtitle = 'RED LINE · GHAZIABAD EAST TERMINUS · NEW BUS ADDA';
-        else if (st.terminus) subtitle = `RED LINE · TERMINUS · ${st.structure.toUpperCase()}`;
-        else subtitle = `RED LINE · ${st.structure === 'at-grade' ? 'AT-GRADE GROUND LEVEL' : '+16M ELEVATED'}`;
-      } else if (isOrange) {
-        if (st.name === 'IGI Airport') subtitle = 'AIRPORT EXPRESS · IGI TERMINAL 3 AIRPORT LINK';
-        else if (st.name === 'Delhi Aerocity') subtitle = 'AIRPORT EXPRESS · HOSPITALITY DISTRICT';
-        else if (st.name === 'Dhaula Kuan') subtitle = 'AIRPORT EXPRESS · +18.5M ELEVATED FLYOVER OVER RING RD';
-        else if (st.name === 'Shivaji Stadium') subtitle = 'AIRPORT EXPRESS · CONNAUGHT PLACE TERMINAL';
-        else if (st.name === 'New Delhi') subtitle = 'AIRPORT EXPRESS · YELLOW × INDIAN RAILWAYS TERMINUS';
-        else if (st.terminus) subtitle = `AIRPORT EXPRESS · TERMINUS · ${st.structure.toUpperCase()}`;
-        else subtitle = `AIRPORT EXPRESS · ${st.structure === 'elevated' ? '+18.5M ELEVATED' : `${st.elevM || -14}M UNDERGROUND`}`;
-      } else if (isMagenta) {
-        if (st.name === 'Janakpuri West') subtitle = 'MAGENTA × BLUE INTERCHANGE · INDIA HIGHEST ESCALATOR';
-        else if (st.name === 'Hauz Khas') subtitle = 'MAGENTA × YELLOW INTERCHANGE · -29M DEEPEST TUBE';
-        else if (st.name === 'Botanical Garden') subtitle = 'MAGENTA × BLUE NOIDA INTERCHANGE · +17M ELEVATED';
-        else if (st.name === 'Kalkaji Mandir') subtitle = 'MAGENTA × VIOLET INTERCHANGE';
-        else if (st.name === 'Terminal 1 IGI Airport') subtitle = 'MAGENTA LINE · DOMESTIC AIRPORT T1 LINK';
-        else if (st.name === 'Kalindi Kunj') subtitle = 'MAGENTA LINE · YAMUNA RIVER VIADUCT BRIDGE';
-        else if (st.terminus) subtitle = `MAGENTA LINE · TERMINUS · ${st.structure.toUpperCase()}`;
-        else subtitle = `MAGENTA LINE · ${st.structure === 'elevated' ? '+16M ELEVATED' : `${st.elevM || -16}M UNDERGROUND`}`;
-      } else if (isBlue) {
-        if (st.name === 'Rajiv Chowk') subtitle = 'BLUE × YELLOW CP INTERCHANGE · UPPER BRIDGE +7.6M';
-        else if (st.name === 'Akshardham') subtitle = 'YAMUNA BANK BYPASS · +16M ELEVATED';
-        else if (st.name === 'Yamuna Bank') subtitle = 'BLUE LINE FORK · NOIDA × VAISHALI JUNCTION';
-        else if (st.name === 'Dwarka Sector 21') subtitle = 'BLUE LINE × AIRPORT EXPRESS TERMINUS';
-        else if (st.name === 'Noida Electronic City') subtitle = 'EASTERN TERMINUS · UTTAR PRADESH';
-        else if (st.name === 'Botanical Garden') subtitle = 'BLUE × MAGENTA INTERCHANGE';
-        else if (st.name === 'Mandi House') subtitle = 'BLUE × VIOLET CULTURAL HUB';
-        else if (st.name === 'Kirti Nagar') subtitle = 'BLUE × GREEN INTERCHANGE';
-        else if (st.name === 'Janakpuri West') subtitle = 'BLUE × MAGENTA INTERCHANGE';
-        else if (st.name === 'Mayur Vihar-I') subtitle = 'BLUE × PINK INTERCHANGE';
-        else if (st.name === 'Anand Vihar') subtitle = 'BLUE × PINK × RAILWAY INTERCHANGE';
-        else if (st.terminus) subtitle = `${st.name.includes('Dwarka') ? 'WESTERN' : 'EASTERN'} TERMINUS · ${st.structure.toUpperCase()}`;
-        else if (st.interchange) subtitle = `${st.structure.toUpperCase()} · ${st.interchange.toUpperCase()}`;
-        else subtitle = `BLUE LINE · ${st.structure === 'elevated' ? '+15M ELEVATED' : `${st.elevM || -18}M UNDERGROUND`}`;
-      } else {
-        if (st.name === 'Kashmere Gate') subtitle = 'YELLOW · RED · VIOLET MEGA HUB';
-        else if (st.name === 'Chawri Bazar') subtitle = 'DEEPEST TUBE · -30M COFFERDAM';
-        else if (st.name === 'Hauz Khas') subtitle = 'DEEP TUBE · -28M YELLOW × MAGENTA';
-        else if (st.name === 'New Delhi') subtitle = 'YELLOW × AIRPORT EXPRESS × NDLS RAIL';
-        else if (st.name === 'Haiderpur Badli Mor') subtitle = 'ELEVATED ISLAND · YELLOW × MAGENTA';
-        else if (st.name === 'Central Secretariat') subtitle = 'SIDE PLATFORMS · YELLOW × VIOLET';
-        else if (st.terminus) subtitle = `${st.name === 'Samaypur Badli' ? 'NORTHERN' : 'SOUTHERN'} TERMINUS · SIDE PLATFORMS`;
-        else if (st.interchange) subtitle = `${isElIsland ? 'ISLAND' : (isUgSide ? 'SIDE PLATFORMS' : st.structure.toUpperCase())} · ${st.interchange.toUpperCase()}`;
         else subtitle = `YELLOW LINE · ${st.structure === 'elevated' ? '+15M ELEVATED SIDE' : `${st.elevM || -16}M UNDERGROUND ${isUgSide ? 'SIDE' : 'ISLAND'}`}`;
       }
 
