@@ -485,6 +485,48 @@
             ]
           ],
           "offsetMeters": 117.7
+        },
+        {
+          "line": "Yellow Line",
+          "color": "#EAB308",
+          "tier": "underground",
+          "deckY": 0.28,
+          "platformType": "island",
+          "stationLen": 90,
+          "platformWidth": 18.0,
+          "isTerminus": false,
+          "terminusEnd": null,
+          "center": [
+            77.228217,
+            28.667526
+          ],
+          "tangent": [
+            0.42753,
+            -0.904
+          ],
+          "trackPolyline": [
+            [
+              77.2272,
+              28.6698
+            ],
+            [
+              77.2276,
+              28.6688
+            ],
+            [
+              77.228217,
+              28.667526
+            ],
+            [
+              77.2288,
+              28.6663
+            ],
+            [
+              77.2294,
+              28.6651
+            ]
+          ],
+          "offsetMeters": 0.0
         }
       ],
       "links": [
@@ -2872,8 +2914,8 @@
       "primaryLine": "Red Line",
       "primaryStructure": "elevated",
       "primaryCenter": [
-        77.1706,
-        28.6738
+        77.170354,
+        28.673543
       ],
       "primaryTangent": [
         0.082,
@@ -2888,13 +2930,13 @@
           "tier": "elevated",
           "deckY": 10.5,
           "platformType": "island",
-          "stationLen": 120,
-          "platformWidth": 18.0,
+          "stationLen": 100,
+          "platformWidth": 16.0,
           "isTerminus": true,
           "terminusEnd": "end",
           "center": [
-            77.1698,
-            28.6732
+            77.169563,
+            28.672961
           ],
           "tangent": [
             0.778,
@@ -2938,26 +2980,40 @@
               28.6721
             ],
             [
-              77.169092,
-              28.672675
+              77.1689,
+              28.67248
             ],
             [
-              77.16945,
-              28.67298
+              77.16922,
+              28.67272
             ],
             [
-              77.16975,
-              28.67323
+              77.169563,
+              28.672961
             ],
             [
-              77.17005,
-              28.67347
-            ],
-            [
-              77.170204,
-              28.67358
+              77.16985,
+              28.6732
             ]
           ]
+        }
+      ],
+      "links": [
+        {
+          "kind": "concourse_bridge",
+          "name": "Parsvnath Metro Mall Integrated Transit Concourse",
+          "fromLngLat": [
+            77.170354,
+            28.673543
+          ],
+          "fromY": 11.5,
+          "toLngLat": [
+            77.169563,
+            28.672961
+          ],
+          "toY": 10.5,
+          "width": 12.0,
+          "color": "#10B981"
         }
       ]
     },
@@ -2965,8 +3021,8 @@
       "primaryLine": "Red Line",
       "primaryStructure": "elevated",
       "primaryCenter": [
-        77.277815,
-        28.671862
+        77.27771,
+        28.671834
       ],
       "primaryTangent": [
         0.998,
@@ -2979,58 +3035,68 @@
           "line": "Pink Line",
           "color": "#EC4899",
           "tier": "elevated",
-          "deckY": 11.5,
+          "deckY": 22.5,
           "platformType": "island",
-          "stationLen": 130,
-          "platformWidth": 18.5,
+          "stationLen": 110,
+          "platformWidth": 17.0,
           "isTerminus": false,
           "terminusEnd": null,
           "center": [
-            77.276082,
-            28.672252
+            77.276779,
+            28.672444
           ],
           "tangent": [
-            0.155,
-            0.988
+            0.38,
+            0.925
           ],
           "trackPolyline": [
             [
-              77.27532,
-              28.66785
+              77.2758,
+              28.6698
             ],
             [
-              77.27551,
-              28.66902
+              77.2762,
+              28.6708
             ],
             [
-              77.27575,
-              28.67025
+              77.2765,
+              28.6716
             ],
             [
-              77.27592,
-              28.6712
+              77.276779,
+              28.672444
             ],
             [
-              77.276082,
-              28.672252
+              77.2771,
+              28.6733
             ],
             [
-              77.27625,
-              28.6734
+              77.2774,
+              28.6742
             ],
             [
-              77.27648,
-              28.67465
-            ],
-            [
-              77.2767,
-              28.6758
-            ],
-            [
-              77.27702,
-              28.6771
+              77.2778,
+              28.6752
             ]
           ]
+        }
+      ],
+      "links": [
+        {
+          "kind": "skywalk",
+          "name": "Welcome Elevated Transfer Skywalk over Shahdara Flyover",
+          "fromLngLat": [
+            77.277815,
+            28.671862
+          ],
+          "fromY": 10.5,
+          "toLngLat": [
+            77.276779,
+            28.672444
+          ],
+          "toY": 15.5,
+          "width": 6.2,
+          "color": "#EC4899"
         }
       ]
     },
@@ -3038,8 +3104,8 @@
       "primaryLine": "Red Line",
       "primaryStructure": "elevated",
       "primaryCenter": [
-        77.1528,
-        28.6961
+        77.152655,
+        28.69603
       ],
       "primaryTangent": [
         -0.642,
@@ -3054,8 +3120,8 @@
           "tier": "underground",
           "deckY": 0.28,
           "platformType": "side",
-          "stationLen": 130,
-          "platformWidth": 19.0,
+          "stationLen": 120,
+          "platformWidth": 18.0,
           "isTerminus": false,
           "terminusEnd": null,
           "center": [
@@ -3104,6 +3170,24 @@
               28.6974
             ]
           ]
+        }
+      ],
+      "links": [
+        {
+          "kind": "subsurface_passage",
+          "name": "Pacific Mall Covered Transit Walkway (Way 1209274129)",
+          "fromLngLat": [
+            77.152655,
+            28.69603
+          ],
+          "fromY": 1.0,
+          "toLngLat": [
+            77.15395,
+            28.6949
+          ],
+          "toY": 0.28,
+          "width": 8.0,
+          "color": "#EC4899"
         }
       ]
     }

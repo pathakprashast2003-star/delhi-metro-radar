@@ -78,6 +78,20 @@ async def main():
         await page.screenshot(path=os.path.join(ARTIFACT_DIR, "verified_nsp_pink_cross.png"))
         print("Captured verified_nsp_pink_cross.png!")
 
+        # 4. KASHMERE GATE - Elevated Red Line over Yellow & Violet Underground Lines
+        print("Viewing Kashmere Gate Mega Hub...")
+        await page.evaluate("""() => {
+            window.map.jumpTo({
+                center: [77.2282, 28.6675],
+                zoom: 17.5,
+                pitch: 56,
+                bearing: -20
+            });
+        }""")
+        await asyncio.sleep(4)
+        await page.screenshot(path=os.path.join(ARTIFACT_DIR, "verified_red_line_kashmere_gate_hub.png"))
+        print("Captured verified_red_line_kashmere_gate_hub.png!")
+
         await browser.close()
         print("All interchange screenshots captured!")
 

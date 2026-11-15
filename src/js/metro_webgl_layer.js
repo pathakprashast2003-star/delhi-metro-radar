@@ -9069,11 +9069,13 @@ window.MetroWebGLLayer = (function () {
       const isPrimary = (hubSpec.primaryLine === 'Blue Line' && st.isBlue) ||
                         (hubSpec.primaryLine === 'Yellow Line' && st.isYellow) ||
                         (hubSpec.primaryLine === 'Airport Express' && st.isOrange) ||
-                        (hubSpec.primaryLine === 'Magenta Line' && st.isMagenta);
+                        (hubSpec.primaryLine === 'Magenta Line' && st.isMagenta) ||
+                        (hubSpec.primaryLine === 'Red Line' && st.isRed);
       if (!isPrimary && (
         (hubSpec.primaryLine === 'Blue Line' && blueCorridor) ||
         (hubSpec.primaryLine === 'Yellow Line' && yellowCorridor) ||
-        (hubSpec.primaryLine === 'Airport Express' && orangeCorridor)
+        (hubSpec.primaryLine === 'Airport Express' && orangeCorridor) ||
+        (hubSpec.primaryLine === 'Red Line' && redCorridor)
       )) {
         return;
       }
@@ -9128,7 +9130,7 @@ window.MetroWebGLLayer = (function () {
       lnkGrp.rotation.z = pitchZ;
       root.add(lnkGrp);
 
-      if (lnk.kind === 'skywalk' || lnk.kind === 'escalator_bridge') {
+      if (lnk.kind === 'skywalk' || lnk.kind === 'escalator_bridge' || lnk.kind === 'concourse_bridge') {
         const tubeLen = Math.max(8, spanLen - 2.0);
         addBox(lnkGrp, tubeLen, 0.55, w, m.concreteLight, 0, -1.75, 0);
         addBox(lnkGrp, tubeLen, 0.34, w + 0.3, acc.trim, 0, -1.32, 0);
