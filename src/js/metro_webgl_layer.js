@@ -1556,73 +1556,73 @@ window.MetroWebGLLayer = (function () {
       }
     } else if (isPink) {
       // Pink Line (Line 7) 3D elevation profile:
-      // 59 km Ring Corridor (Majlis Park ⇄ Shiv Vihar):
-      // - Node 0..10: Majlis Park elevated terminal (VIADUCT_Y = 17.5m)
-      // - Node 10..18: Ramp down north portal to subway tube (17.5m -> 0.28m)
-      // - Node 18..68: Underground cutaway tube: Azadpur, Shalimar Bagh, Netaji Subhash Place (SUBWAY_Y = 0.28m)
-      // - Node 68..74: Ramp up south of NSP to elevated viaduct (0.28m -> 17.5m)
-      // - Node 74..160: Elevated Ring Road viaduct: Shakurpur, Punjabi Bagh West, ESI, Rajouri Garden (+21m over Blue Line), Mayapuri
-      // - Node 160..166: Ramp down to Naraina Vihar subway (17.5m -> 0.28m)
-      // - Node 166..178: Naraina Vihar underground cutaway (SUBWAY_Y = 0.28m)
-      // - Node 178..186: Ramp up to Delhi Cantt elevated viaduct (0.28m -> 17.5m)
-      // - Node 186..260: Elevated viaduct: Delhi Cantt, South Campus (+23.6m over Dhaula Kuan grade separator), Moti Bagh
-      // - Node 260..268: Ramp down south of Moti Bagh to continuous South Delhi tube (17.5m -> 0.28m)
-      // - Node 268..405: Continuous underground subway tube: Bhikaji Cama, Sarojini Nagar, INA, South Ext, Lajpat Nagar, Vinobapuri, Ashram (151m compact), Sarai Kale Khan - Nizamuddin (SUBWAY_Y = 0.28m)
-      // - Node 405..422: Ramp up from Nizamuddin across Yamuna River crossing viaduct to Mayur Vihar-I
-      // - Node 422..680: Elevated East Delhi corridor: Mayur Vihar-I (+24.5m over Blue Line), Pocket-1, Trilokpuri, Vinod Nagar, IP Extension, Anand Vihar, Karkarduma (+24.5m over Blue Line), Karkarduma Court, Krishna Nagar, East Azad Nagar, Welcome (+18.5m over Red Line), Jaffrabad, Maujpur-Babarpur (+18m junction), Gokulpuri, Johri Enclave, Shiv Vihar (+17.5m terminus)
+      // 57.6 km Ring Corridor (Majlis Park ⇄ Shiv Vihar, 1126 nodes):
+      // - Node 0..16: Majlis Park elevated terminal (VIADUCT_Y = 17.5m)
+      // - Node 16..28: Ramp down north portal to subway tube (17.5m -> 0.28m)
+      // - Node 28..98: Underground cutaway tube: Azadpur (44), Shalimar Bagh (68), Netaji Subhash Place (90) (SUBWAY_Y = 0.28m)
+      // - Node 98..108: Ramp up south of NSP to elevated viaduct (0.28m -> 17.5m)
+      // - Node 108..238: Elevated Ring Road viaduct: Shakurpur (115), Punjabi Bagh West (161), ESI (193), Rajouri Garden (+21m over Blue Line at 206), Mayapuri (231)
+      // - Node 238..248: Ramp down to Naraina Vihar subway (17.5m -> 0.28m)
+      // - Node 248..268: Naraina Vihar underground cutaway (SUBWAY_Y = 0.28m, station at 258)
+      // - Node 268..278: Ramp up to Delhi Cantt elevated viaduct (0.28m -> 17.5m)
+      // - Node 278..382: Elevated viaduct: Delhi Cantt (289), South Campus (+23.6m over Dhaula Kuan grade separator at 350), Moti Bagh (376)
+      // - Node 382..396: Ramp down south of Moti Bagh to continuous South Delhi tube (17.5m -> 0.28m)
+      // - Node 396..570: Continuous underground subway tube: Bhikaji Cama (405), Sarojini Nagar (425), INA (440), South Ext (462), Lajpat Nagar (490), Vinobapuri (508), Ashram (526), Sarai Kale Khan - Nizamuddin (556) (SUBWAY_Y = 0.28m)
+      // - Node 570..600: Ramp up from Nizamuddin across Yamuna River crossing viaduct to Mayur Vihar-I
+      // - Node 600..1125: Elevated East Delhi corridor: Mayur Vihar-I (+24.5m over Blue Line at 632), Pocket-1 (648), Trilokpuri (677), Vinod Nagar (712), Mandawali (755), IP Extension (801), Anand Vihar (871), Karkarduma (+24.5m over Blue Line at 914), Karkarduma Court (941), Krishna Nagar (962), East Azad Nagar (976), Welcome (+18.5m over Red Line at 1003), Jaffrabad (1033), Maujpur-Babarpur (+18m junction at 1059), Gokulpuri (1085), Johri Enclave (1105), Shiv Vihar (+17.5m terminus at 1119)
       const pinkElevAt = (idxF) => {
-        if (idxF <= 10) return VIADUCT_Y;
-        if (idxF <= 18) {
-          const u = (idxF - 10) / 8;
+        if (idxF <= 16) return VIADUCT_Y;
+        if (idxF <= 28) {
+          const u = (idxF - 16) / 12;
           return VIADUCT_Y + (SUBWAY_Y - VIADUCT_Y) * hermiteSmooth(u);
         }
-        if (idxF <= 68) return SUBWAY_Y;
-        if (idxF <= 74) {
-          const u = (idxF - 68) / 6;
+        if (idxF <= 98) return SUBWAY_Y;
+        if (idxF <= 108) {
+          const u = (idxF - 98) / 10;
           return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth(u);
         }
-        if (idxF <= 160) {
-          if (idxF >= 130 && idxF <= 140) {
-            const u = 1.0 - Math.abs(idxF - 135) / 5;
+        if (idxF <= 238) {
+          if (idxF >= 200 && idxF <= 212) {
+            const u = 1.0 - Math.abs(idxF - 206) / 6;
             return VIADUCT_Y + (21.0 - VIADUCT_Y) * hermiteSmooth(u);
           }
           return VIADUCT_Y;
         }
-        if (idxF <= 166) {
-          const u = (idxF - 160) / 6;
+        if (idxF <= 248) {
+          const u = (idxF - 238) / 10;
           return VIADUCT_Y + (SUBWAY_Y - VIADUCT_Y) * hermiteSmooth(u);
         }
-        if (idxF <= 178) return SUBWAY_Y;
-        if (idxF <= 186) {
-          const u = (idxF - 178) / 8;
+        if (idxF <= 268) return SUBWAY_Y;
+        if (idxF <= 278) {
+          const u = (idxF - 268) / 10;
           return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth(u);
         }
-        if (idxF <= 260) {
-          if (idxF >= 230 && idxF <= 246) {
-            const u = 1.0 - Math.abs(idxF - 238) / 8;
+        if (idxF <= 382) {
+          if (idxF >= 342 && idxF <= 358) {
+            const u = 1.0 - Math.abs(idxF - 350) / 8;
             return VIADUCT_Y + (23.6 - VIADUCT_Y) * hermiteSmooth(u);
           }
           return VIADUCT_Y;
         }
-        if (idxF <= 268) {
-          const u = (idxF - 260) / 8;
+        if (idxF <= 396) {
+          const u = (idxF - 382) / 14;
           return VIADUCT_Y + (SUBWAY_Y - VIADUCT_Y) * hermiteSmooth(u);
         }
-        if (idxF <= 405) return SUBWAY_Y;
-        if (idxF <= 422) {
-          const u = (idxF - 405) / 17;
+        if (idxF <= 570) return SUBWAY_Y;
+        if (idxF <= 600) {
+          const u = (idxF - 570) / 30;
           return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth(u);
         }
-        if (idxF >= 432 && idxF <= 446) {
-          const u = 1.0 - Math.abs(idxF - 439) / 7;
+        if (idxF >= 624 && idxF <= 640) {
+          const u = 1.0 - Math.abs(idxF - 632) / 8;
           return VIADUCT_Y + (24.5 - VIADUCT_Y) * hermiteSmooth(u);
         }
-        if (idxF >= 536 && idxF <= 550) {
-          const u = 1.0 - Math.abs(idxF - 543) / 7;
+        if (idxF >= 906 && idxF <= 922) {
+          const u = 1.0 - Math.abs(idxF - 914) / 8;
           return VIADUCT_Y + (24.5 - VIADUCT_Y) * hermiteSmooth(u);
         }
-        if (idxF >= 597 && idxF <= 607) {
-          const u = 1.0 - Math.abs(idxF - 602) / 5;
+        if (idxF >= 996 && idxF <= 1010) {
+          const u = 1.0 - Math.abs(idxF - 1003) / 7;
           return VIADUCT_Y + (18.5 - VIADUCT_Y) * hermiteSmooth(u);
         }
         return VIADUCT_Y;
@@ -1636,7 +1636,7 @@ window.MetroWebGLLayer = (function () {
         if (densePts.length > 0 && i > 0) {
           const prev3D = densePts[densePts.length - 1];
           const segD = prev3D.distanceTo(cur3D);
-          const inGradeZone = (i >= 8 && i <= 20) || (i >= 66 && i <= 76) || (i >= 158 && i <= 188) || (i >= 258 && i <= 270) || (i >= 402 && i <= 425);
+          const inGradeZone = (i >= 14 && i <= 30) || (i >= 96 && i <= 110) || (i >= 236 && i <= 250) || (i >= 266 && i <= 280) || (i >= 380 && i <= 398) || (i >= 568 && i <= 602);
           if (segD > 85 || inGradeZone) {
             const steps = inGradeZone ? 10 : Math.min(8, Math.ceil(segD / 70));
             for (let s = 1; s < steps; s++) {
@@ -2147,11 +2147,18 @@ window.MetroWebGLLayer = (function () {
       });
     });
 
+    const isNearElevatedStation = (s) => Boolean(
+      cStations && cStations.some((st) => (st.structure === 'elevated' || st.structure === 'at-grade') && Math.abs(st.dist - s.dist) <= 44.0)
+    );
+    const elevatedParapetSpans = extractSpans(
+      (s) => s.elev > 1.85 && !isNearRajivBlueApproach(s) && !isNearElevatedStation(s),
+      true,
+      cSamples
+    );
+
     elevatedAndRampSpans.forEach((span) => {
       [
         buildRibbonFromSamples(span, viaductDeckProf, m.concreteLight),
-        buildRibbonFromSamples(span, parapetLProf, m.concreteWeb),
-        buildRibbonFromSamples(span, parapetRProf, m.concreteWeb),
         buildRibbonFromSamples(span, lineSpineProf, spineMat)
       ].forEach((mesh) => mesh && lineTrackGroup.add(mesh));
 
@@ -2161,6 +2168,13 @@ window.MetroWebGLLayer = (function () {
         const wireM = buildRibbonFromSamples(span, wireProf, m.steelDark);
         if (wireM) lineTrackGroup.add(wireM);
       });
+    });
+
+    elevatedParapetSpans.forEach((span) => {
+      [
+        buildRibbonFromSamples(span, parapetLProf, m.concreteWeb),
+        buildRibbonFromSamples(span, parapetRProf, m.concreteWeb)
+      ].forEach((mesh) => mesh && lineTrackGroup.add(mesh));
     });
 
     // 2. Subterranean Subway Cutaway Tunnels Between Stations (shown by default with rails; toggleable via Rails or X-Ray)
@@ -8608,30 +8622,30 @@ window.MetroWebGLLayer = (function () {
         [-22, yV + 2.0, -0.95, 0], [-8, yV + 2.0, 1.0, 1], [6, yV + 2.0, -0.95, 2], [22, yV + 2.0, 0.95, 3]
       ]);
     } else {
-      [-10.4, 10.4].forEach((pz, sIdx) => {
+      [-9.1, 9.1].forEach((pz, sIdx) => {
         const sgn = Math.sign(pz);
-        addBox(root, 82, 2.0, 6.8, m.terrazzoDeck, 0, yV + 1.0, pz);
-        addBox(detail, 82, 0.12, 0.50, m.tactileYellow, 0, yV + 2.05, pz - sgn * 2.95);
-        addBox(detail, 70, 1.55, 0.14, m.glassBarrier, 0, yV + 2.82, pz - sgn * 3.15);
-        addBox(detail, 70, 0.20, 0.18, primaryAccentMat, 0, yV + 3.68, pz - sgn * 3.15);
+        addBox(root, 82, 2.0, 5.7, m.terrazzoDeck, 0, yV + 1.0, pz);
+        addBox(detail, 82, 0.12, 0.48, m.tactileYellow, 0, yV + 2.05, pz - sgn * 2.55);
+        addBox(detail, 70, 1.55, 0.14, m.glassBarrier, 0, yV + 2.82, pz - sgn * 2.70);
+        addBox(detail, 70, 0.20, 0.18, primaryAccentMat, 0, yV + 3.68, pz - sgn * 2.70);
         const isBotanicalInner = (st.name === 'Botanical Garden' && pz > 0);
         if (!isBotanicalInner) {
-          addBox(detail, 82, 1.65, 0.16, m.glassBarrier, 0, yV + 2.95, pz + sgn * 3.15);
-          addBox(root, 82, 0.62, 0.34, isHeritageRidge ? m.qutabRedStone : (isCyberCorridor ? m.cyberTeal : primaryAccentMat), 0, yV + 1.25, pz + sgn * 3.35);
+          addBox(detail, 82, 1.65, 0.16, m.glassBarrier, 0, yV + 2.95, pz + sgn * 2.75);
+          addBox(root, 82, 0.62, 0.34, isHeritageRidge ? m.qutabRedStone : (isCyberCorridor ? m.cyberTeal : primaryAccentMat), 0, yV + 1.25, pz + sgn * 2.80);
         } else {
           // Botanical Garden inner platform facing the interchange concourse deck:
           // Keep the central 56m open so passengers step directly onto the connected platform deck!
           [-35, 35].forEach((ex) => {
-            addBox(detail, 12, 1.65, 0.16, m.glassBarrier, ex, yV + 2.95, pz + sgn * 3.15);
-            addBox(root, 12, 0.62, 0.34, primaryAccentMat, ex, yV + 1.25, pz + sgn * 3.35);
+            addBox(detail, 12, 1.65, 0.16, m.glassBarrier, ex, yV + 2.95, pz + sgn * 2.75);
+            addBox(root, 12, 0.62, 0.34, primaryAccentMat, ex, yV + 1.25, pz + sgn * 2.80);
           });
         }
-        addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, -16, yV + 2.30, pz + sgn * 1.3);
-        addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, 16, yV + 2.30, pz + sgn * 1.3);
+        addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, -16, yV + 2.30, pz + sgn * 1.2);
+        addBox(detail, 4.4, 0.65, 1.2, m.steelChrome, 16, yV + 2.30, pz + sgn * 1.2);
         addCommuters(detail, [
-          [-26, yV + 2.0, pz - sgn * 1.6, sIdx * 2],
-          [-4, yV + 2.0, pz - sgn * 1.6, sIdx * 2 + 1],
-          [18, yV + 2.0, pz - sgn * 1.6, sIdx + 3]
+          [-26, yV + 2.0, pz - sgn * 1.2, sIdx * 2],
+          [-4, yV + 2.0, pz - sgn * 1.2, sIdx * 2 + 1],
+          [18, yV + 2.0, pz - sgn * 1.2, sIdx + 3]
         ]);
       });
     }
@@ -8667,7 +8681,7 @@ window.MetroWebGLLayer = (function () {
       sky.frustumCulled = false;
       root.add(sky);
 
-      [-32.0, 0, 32.0].forEach((bx) => {
+      [-32.0, 32.0].forEach((bx) => {
         const bay = new THREE.Mesh(g.canopyBay, roofMat);
         bay.position.set(bx, archCenterY, 0);
         bay.rotation.z = Math.PI / 2;
@@ -8851,12 +8865,14 @@ window.MetroWebGLLayer = (function () {
     const rafterD = isSide ? 25.8 : 22.0;
 
     // Trimmed station promenade apron + narrow median planting (respects adjacent real streets!)
-    addBox(root, 88, 0.20, apronD, m.plazaPave, 0, 0.24, 0);
+    [-parkZ, parkZ].forEach((pz) => {
+      addBox(root, 88, 0.20, 5.4, m.plazaPave, 0, 0.24, pz);
+    });
     addBox(root, 86, 0.24, 2.4, m.sagePark, 0, 0.27, -parkZ);
     addBox(root, 86, 0.24, 2.2, m.sagePark, 0, 0.27, parkZ);
 
     // 1. Deep Architectural Cutaway Trench Floor + Stepped Slate Walls + Subway Tile Back Wall
-    addBox(root, 88, 0.32, floorD, m.trenchFloor, 0, 0.36, 0);
+    addBox(root, 88, 0.24, floorD, m.trenchFloor, 0, 0.16, 0);
     addBox(root, 88, isDeepCofferdam ? 9.6 : 7.6, 2.4, m.slateCut, 0, isDeepCofferdam ? 4.9 : 3.9, rearWallZ);
     addBox(root, 82, isDeepCofferdam ? 8.0 : 6.4, 0.45, m.tileWall, 0, isDeepCofferdam ? 4.5 : 3.7, tileWallZ);
     addBox(root, 82, 0.72, 0.50, ugAccentMat, 0, 4.4, friezeZ);

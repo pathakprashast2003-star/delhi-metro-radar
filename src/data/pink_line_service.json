@@ -1,27 +1,17 @@
 {
-  "meta": {
-    "lineId": "pink",
-    "lineName": "Pink Line (Line 7)",
-    "lineColor": "#EC4899",
-    "fleetType": "Hyundai Rotem RS-10 / Alstom Metropolis 6-car",
-    "carsPerTrain": 6,
-    "operationalSpeedKmh": 80,
-    "totalLengthKm": 59.82,
-    "stationsCount": 38,
-    "headwayPeakMinutes": 4.5,
-    "headwayRegularMinutes": 6.5,
-    "firstTrain": "05:30",
-    "lastTrain": "23:30"
-  },
+  "line": "pink",
+  "name": "Pink Line (Majlis Park ↔ Shiv Vihar)",
+  "color": "#EC4899",
+  "corridor": "pink",
   "stations": [
     {
       "id": "majlis_park",
       "name": "Majlis Park",
       "coords": [
-        77.18207,
-        28.72416
+        77.182109,
+        28.724086
       ],
-      "trackNodeIndex": 0,
+      "trackNodeIndex": 2,
       "elevM": 16.5,
       "structure": "elevated",
       "major": true,
@@ -30,10 +20,10 @@
         "Magenta Line (Phase IV)"
       ],
       "interchange": "Phase IV",
-      "distanceMeters": 0.0,
-      "index": 0,
+      "distanceMeters": 92.8,
       "code": "MJPK",
-      "hindi": "\u092e\u091c\u0932\u093f\u0938 \u092a\u093e\u0930\u094d\u0915",
+      "hindi": "मजलिस पार्क",
+      "index": 0,
       "isTerminal": true,
       "isShortTurnTerminal": false,
       "dwellSeconds": 90
@@ -42,10 +32,10 @@
       "id": "azadpur_pink",
       "name": "Azadpur",
       "coords": [
-        77.179974,
-        28.707273
+        77.181994,
+        28.705776
       ],
-      "trackNodeIndex": 26,
+      "trackNodeIndex": 44,
       "elevM": -16.0,
       "structure": "underground",
       "major": true,
@@ -54,10 +44,10 @@
         "Yellow Line"
       ],
       "interchange": "Yellow Line",
-      "distanceMeters": 2388.9,
-      "index": 1,
+      "distanceMeters": 2303.3,
       "code": "AZP",
-      "hindi": "\u0906\u091c\u093c\u093e\u0926\u092a\u0941\u0930",
+      "hindi": "आज़ादपुर",
+      "index": 1,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45
@@ -66,20 +56,20 @@
       "id": "shalimar_bagh",
       "name": "Shalimar Bagh",
       "coords": [
-        77.165191,
-        28.701819
+        77.165455,
+        28.701931
       ],
-      "trackNodeIndex": 47,
+      "trackNodeIndex": 68,
       "elevM": -15.0,
       "structure": "underground",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 4317.3,
-      "index": 2,
+      "distanceMeters": 4027.4,
       "code": "SHMB",
-      "hindi": "\u0936\u093e\u0932\u0940\u092e\u093e\u0930 \u092c\u093e\u0917\u093c",
+      "hindi": "शालीमार बाग़",
+      "index": 2,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -88,10 +78,10 @@
       "id": "netaji_subhash_place_pink",
       "name": "Netaji Subhash Place",
       "coords": [
-        77.15245,
-        28.695886
+        77.154302,
+        28.694703
       ],
-      "trackNodeIndex": 63,
+      "trackNodeIndex": 90,
       "elevM": -16.0,
       "structure": "underground",
       "major": true,
@@ -100,10 +90,10 @@
         "Red Line"
       ],
       "interchange": "Red Line",
-      "distanceMeters": 5724.7,
-      "index": 3,
+      "distanceMeters": 5510.9,
       "code": "NSP",
-      "hindi": "\u0928\u0947\u0924\u093e\u091c\u0940 \u0938\u0941\u092d\u093e\u0937 \u092a\u094d\u0932\u0947\u0938",
+      "hindi": "नेताजी सुभाष प्लेस",
+      "index": 3,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45
@@ -112,20 +102,20 @@
       "id": "shakurpur",
       "name": "Shakurpur",
       "coords": [
-        77.149626,
-        28.685779
+        77.149664,
+        28.685676
       ],
-      "trackNodeIndex": 77,
+      "trackNodeIndex": 115,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 6881.9,
-      "index": 4,
+      "distanceMeters": 6648.8,
       "code": "SHKP",
-      "hindi": "\u0936\u0915\u0942\u0930\u092a\u0941\u0930",
+      "hindi": "शकूरपुर",
+      "index": 4,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -134,10 +124,10 @@
       "id": "punjabi_bagh_west",
       "name": "Punjabi Bagh West",
       "coords": [
-        77.139256,
-        28.672826
+        77.139222,
+        28.672763
       ],
-      "trackNodeIndex": 98,
+      "trackNodeIndex": 161,
       "elevM": 17.5,
       "structure": "elevated",
       "major": true,
@@ -146,32 +136,32 @@
         "Green Line"
       ],
       "interchange": "Green Line",
-      "distanceMeters": 8713.7,
-      "index": 5,
+      "distanceMeters": 8482.7,
       "code": "PBGW",
-      "hindi": "\u092a\u0902\u091c\u093e\u092c\u0940 \u092c\u093e\u0917\u093c \u092a\u0936\u094d\u091a\u093f\u092e",
+      "hindi": "पंजाबी बाग़ पश्चिम",
+      "index": 5,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 40
     },
     {
       "id": "esi_basaidarapur",
       "name": "ESI - Basaidarapur",
       "coords": [
-        77.127391,
-        28.658271
+        77.12729,
+        28.658049
       ],
-      "trackNodeIndex": 122,
+      "trackNodeIndex": 193,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 10744.0,
-      "index": 6,
+      "distanceMeters": 10527.8,
       "code": "ESIB",
-      "hindi": "\u0908\u090f\u0938\u0906\u0908 - \u092c\u0938\u0908\u0926\u093e\u0930\u093e\u092a\u0941\u0930",
+      "hindi": "ईएसआई - बसईदारापुर",
+      "index": 6,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -180,10 +170,10 @@
       "id": "rajouri_garden_pink",
       "name": "Rajouri Garden",
       "coords": [
-        77.122634,
-        28.649004
+        77.124287,
+        28.6512
       ],
-      "trackNodeIndex": 135,
+      "trackNodeIndex": 206,
       "elevM": 21.0,
       "structure": "elevated",
       "major": true,
@@ -192,32 +182,32 @@
         "Blue Line"
       ],
       "interchange": "Blue Line",
-      "distanceMeters": 11985.7,
-      "index": 7,
+      "distanceMeters": 11407.1,
       "code": "RJGD",
-      "hindi": "\u0930\u093e\u091c\u094c\u0930\u0940 \u0917\u093e\u0930\u094d\u0921\u0928",
+      "hindi": "राजौरी गार्डन",
+      "index": 7,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "mayapuri",
       "name": "Mayapuri",
       "coords": [
-        77.129741,
-        28.637099
+        77.129769,
+        28.637181
       ],
-      "trackNodeIndex": 153,
+      "trackNodeIndex": 231,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 13655.0,
-      "index": 8,
+      "distanceMeters": 13049.1,
       "code": "MYPR",
-      "hindi": "\u092e\u093e\u092f\u093e\u092a\u0941\u0930\u0940",
+      "hindi": "मायापुरी",
+      "index": 8,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -226,20 +216,20 @@
       "id": "naraina_vihar",
       "name": "Naraina Vihar",
       "coords": [
-        77.136488,
-        28.624125
+        77.136478,
+        28.624397
       ],
-      "trackNodeIndex": 171,
+      "trackNodeIndex": 258,
       "elevM": -16.0,
       "structure": "underground",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 15254.4,
-      "index": 9,
+      "distanceMeters": 14625.9,
       "code": "NRVR",
-      "hindi": "\u0928\u093e\u0930\u093e\u092f\u0923\u093e \u0935\u093f\u0939\u093e\u0930",
+      "hindi": "नारायणा विहार",
+      "index": 9,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -248,10 +238,10 @@
       "id": "delhi_cantt",
       "name": "Delhi Cantt.",
       "coords": [
-        77.140423,
-        28.60871
+        77.140446,
+        28.608643
       ],
-      "trackNodeIndex": 193,
+      "trackNodeIndex": 289,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
@@ -260,22 +250,22 @@
         "Delhi Cantt. Railway Station feeder"
       ],
       "interchange": null,
-      "distanceMeters": 17093.4,
-      "index": 10,
+      "distanceMeters": 16496.9,
       "code": "DLCN",
-      "hindi": "\u0926\u093f\u0932\u094d\u0932\u0940 \u0915\u0948\u0928\u094d\u091f.",
+      "hindi": "दिल्ली कैन्ट.",
+      "index": 10,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 25
+      "dwellSeconds": 30
     },
     {
       "id": "durgabai_deshmukh_south_campus",
       "name": "Durgabai Deshmukh South Campus",
       "coords": [
-        77.169475,
-        28.589441
+        77.169477,
+        28.589301
       ],
-      "trackNodeIndex": 238,
+      "trackNodeIndex": 350,
       "elevM": 23.6,
       "structure": "elevated",
       "major": true,
@@ -284,32 +274,32 @@
         "Airport Express via Dhaula Kuan Travelator"
       ],
       "interchange": "Airport Express",
-      "distanceMeters": 20870.4,
-      "index": 11,
+      "distanceMeters": 20280.0,
       "code": "DDSC",
-      "hindi": "\u0926\u0941\u0930\u094d\u0917\u093e\u092c\u093e\u0908 \u0926\u0947\u0936\u092e\u0941\u0916 \u0938\u093e\u0909\u0925 \u0915\u0948\u092e\u094d\u092a\u0938",
+      "hindi": "दुर्गाबाई देशमुख साउथ कैम्पस",
+      "index": 11,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "sir_m_vishweshwaraiah_moti_bagh",
       "name": "Sir M. Vishweshwaraiah Moti Bagh",
       "coords": [
-        77.175726,
-        28.578504
+        77.175752,
+        28.578543
       ],
-      "trackNodeIndex": 254,
+      "trackNodeIndex": 376,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 22234.1,
-      "index": 12,
+      "distanceMeters": 21620.8,
       "code": "SMVM",
-      "hindi": "\u0938\u0930 \u090f\u092e. \u0935\u093f\u0936\u094d\u0935\u0947\u0936\u094d\u0935\u0930\u092f\u094d\u092f\u093e \u092e\u094b\u0924\u0940 \u092c\u093e\u0917",
+      "hindi": "सर एम. विश्वेश्वरय्या मोती बाग",
+      "index": 12,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -318,20 +308,20 @@
       "id": "bhikaji_cama_place",
       "name": "Bhikaji Cama Place",
       "coords": [
-        77.187888,
-        28.570211
+        77.187872,
+        28.570281
       ],
-      "trackNodeIndex": 273,
+      "trackNodeIndex": 405,
       "elevM": -16.0,
       "structure": "underground",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 23864.9,
-      "index": 13,
+      "distanceMeters": 23253.0,
       "code": "BKCP",
-      "hindi": "\u092d\u0940\u0915\u093e\u091c\u0940 \u0915\u093e\u092e\u093e \u092a\u094d\u0932\u0947\u0938",
+      "hindi": "भीकाजी कामा प्लेस",
+      "index": 13,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -340,32 +330,32 @@
       "id": "sarojini_nagar",
       "name": "Sarojini Nagar",
       "coords": [
-        77.198571,
-        28.575807
+        77.198082,
+        28.575836
       ],
-      "trackNodeIndex": 289,
+      "trackNodeIndex": 425,
       "elevM": -16.0,
       "structure": "underground",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 25257.8,
-      "index": 14,
+      "distanceMeters": 24609.6,
       "code": "SJNR",
-      "hindi": "\u0938\u0930\u094b\u091c\u093f\u0928\u0940 \u0928\u0917\u0930",
+      "hindi": "सरोजिनी नगर",
+      "index": 14,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 25
+      "dwellSeconds": 30
     },
     {
       "id": "dilli_haat_ina_pink",
       "name": "Dilli Haat - INA",
       "coords": [
-        77.207311,
-        28.575224
+        77.207599,
+        28.573669
       ],
-      "trackNodeIndex": 300,
+      "trackNodeIndex": 440,
       "elevM": -18.0,
       "structure": "underground",
       "major": true,
@@ -374,44 +364,44 @@
         "Yellow Line"
       ],
       "interchange": "Yellow Line",
-      "distanceMeters": 26253.4,
-      "index": 15,
+      "distanceMeters": 25590.0,
       "code": "INA",
-      "hindi": "\u0926\u093f\u0932\u094d\u0932\u0940 \u0939\u093e\u091f - \u0906\u0908\u090f\u0928\u090f",
+      "hindi": "दिल्ली हाट - आईएनए",
+      "index": 15,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "south_extension",
       "name": "South Extension",
       "coords": [
-        77.220265,
-        28.568611
+        77.220572,
+        28.568586
       ],
-      "trackNodeIndex": 317,
+      "trackNodeIndex": 462,
       "elevM": -16.0,
       "structure": "underground",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 27851.7,
-      "index": 16,
+      "distanceMeters": 27078.7,
       "code": "SXNT",
-      "hindi": "\u0938\u093e\u0909\u0925 \u090f\u0915\u094d\u0938\u091f\u0947\u0902\u0936\u0928",
+      "hindi": "साउथ एक्सटेंशन",
+      "index": 16,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 25
+      "dwellSeconds": 30
     },
     {
       "id": "lajpat_nagar_pink",
       "name": "Lajpat Nagar",
       "coords": [
-        77.23646,
-        28.570566
+        77.238879,
+        28.569484
       ],
-      "trackNodeIndex": 337,
+      "trackNodeIndex": 490,
       "elevM": -18.0,
       "structure": "underground",
       "major": true,
@@ -420,32 +410,32 @@
         "Violet Line"
       ],
       "interchange": "Violet Line",
-      "distanceMeters": 29489.2,
-      "index": 17,
+      "distanceMeters": 28951.0,
       "code": "LJNR",
-      "hindi": "\u0932\u093e\u091c\u092a\u0924 \u0928\u0917\u0930",
+      "hindi": "लाजपत नगर",
+      "index": 17,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "vinobapuri",
       "name": "Vinobapuri",
       "coords": [
-        77.250502,
-        28.565944
+        77.249811,
+        28.565935
       ],
-      "trackNodeIndex": 354,
+      "trackNodeIndex": 508,
       "elevM": -16.0,
       "structure": "underground",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 30979.3,
-      "index": 18,
+      "distanceMeters": 30110.2,
       "code": "VNBP",
-      "hindi": "\u0935\u093f\u0928\u094b\u092c\u093e\u092a\u0941\u0930\u0940",
+      "hindi": "विनोबापुरी",
+      "index": 18,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -454,10 +444,10 @@
       "id": "ashram",
       "name": "Ashram",
       "coords": [
-        77.258475,
-        28.572208
+        77.258824,
+        28.572621
       ],
-      "trackNodeIndex": 366,
+      "trackNodeIndex": 526,
       "elevM": -16.0,
       "structure": "underground",
       "major": false,
@@ -466,22 +456,22 @@
         "Ashram Chowk Underpass"
       ],
       "interchange": null,
-      "distanceMeters": 32257.9,
-      "index": 19,
+      "distanceMeters": 31292.7,
       "code": "ASHR",
-      "hindi": "\u0906\u0936\u094d\u0930\u092e",
+      "hindi": "आश्रम",
+      "index": 19,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 25
+      "dwellSeconds": 30
     },
     {
       "id": "sarai_kale_khan_nizamuddin",
       "name": "Sarai Kale Khan - Nizamuddin",
       "coords": [
-        77.257128,
-        28.589356
+        77.257047,
+        28.589827
       ],
-      "trackNodeIndex": 390,
+      "trackNodeIndex": 556,
       "elevM": -16.0,
       "structure": "underground",
       "major": true,
@@ -492,22 +482,22 @@
         "ISBT Sarai Kale Khan"
       ],
       "interchange": "Nizamuddin Hub",
-      "distanceMeters": 34764.8,
-      "index": 20,
+      "distanceMeters": 33293.7,
       "code": "SKKN",
-      "hindi": "\u0938\u0930\u093e\u092f \u0915\u093e\u0932\u0947 \u0916\u093c\u093e\u0928 - \u0928\u093f\u091c\u093c\u093e\u092e\u0941\u0926\u094d\u0926\u0940\u0928",
+      "hindi": "सराय काले ख़ान - निज़ामुद्दीन",
+      "index": 20,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "mayur_vihar_1_pink",
       "name": "Mayur Vihar-I",
       "coords": [
-        77.289526,
-        28.604134
+        77.291286,
+        28.603814
       ],
-      "trackNodeIndex": 439,
+      "trackNodeIndex": 632,
       "elevM": 24.5,
       "structure": "elevated",
       "major": true,
@@ -516,22 +506,22 @@
         "Blue Line"
       ],
       "interchange": "Blue Line",
-      "distanceMeters": 39235.9,
-      "index": 21,
+      "distanceMeters": 37666.3,
       "code": "MV1",
-      "hindi": "\u092e\u092f\u0942\u0930 \u0935\u093f\u0939\u093e\u0930-I",
+      "hindi": "मयूर विहार-I",
+      "index": 21,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "mayur_vihar_pocket_1",
       "name": "Mayur Vihar Pocket-1",
       "coords": [
-        77.298042,
-        28.605631
+        77.299253,
+        28.606063
       ],
-      "trackNodeIndex": 449,
+      "trackNodeIndex": 648,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
@@ -540,22 +530,22 @@
         "Shree Ram Mandir"
       ],
       "interchange": null,
-      "distanceMeters": 40126.2,
-      "index": 22,
+      "distanceMeters": 38485.4,
       "code": "MVP1",
-      "hindi": "\u092e\u092f\u0942\u0930 \u0935\u093f\u0939\u093e\u0930 \u092a\u0949\u0915\u0947\u091f-\u0967",
+      "hindi": "मयूर विहार पॉकेट-१",
+      "index": 22,
       "isTerminal": false,
-      "isShortTurnTerminal": true,
+      "isShortTurnTerminal": false,
       "dwellSeconds": 25
     },
     {
       "id": "trilokpuri_sanjay_lake",
       "name": "Trilokpuri - Sanjay Lake",
       "coords": [
-        77.308849,
-        28.613678
+        77.308812,
+        28.613449
       ],
-      "trackNodeIndex": 468,
+      "trackNodeIndex": 677,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
@@ -564,10 +554,10 @@
         "Sanjay Lake Park"
       ],
       "interchange": null,
-      "distanceMeters": 41734.1,
-      "index": 23,
+      "distanceMeters": 39939.4,
       "code": "TKSJ",
-      "hindi": "\u0924\u094d\u0930\u093f\u0932\u094b\u0915\u092a\u0941\u0930\u0940 - \u0938\u0902\u091c\u092f \u0932\u0947\u0915",
+      "hindi": "त्रिलोकपुरी - संजय लेक",
+      "index": 23,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -576,20 +566,20 @@
       "id": "east_vinod_nagar_mayur_vihar_2",
       "name": "East Vinod Nagar - Mayur Vihar-II",
       "coords": [
-        77.305266,
-        28.620039
+        77.305416,
+        28.62007
       ],
-      "trackNodeIndex": 480,
+      "trackNodeIndex": 712,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 42733.4,
-      "index": 24,
+      "distanceMeters": 40945.5,
       "code": "EVN2",
-      "hindi": "\u0908\u0938\u094d\u091f \u0935\u093f\u0928\u094b\u0926 \u0928\u0917\u0930 - \u092e\u092f\u0942\u0930 \u0935\u093f\u0939\u093e\u0930-II",
+      "hindi": "ईस्ट विनोद नगर - मयूर विहार-II",
+      "index": 24,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -598,20 +588,20 @@
       "id": "mandawali_west_vinod_nagar",
       "name": "Mandawali - West Vinod Nagar",
       "coords": [
-        77.304583,
-        28.624977
+        77.304455,
+        28.625018
       ],
-      "trackNodeIndex": 490,
+      "trackNodeIndex": 755,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 43618.7,
-      "index": 25,
+      "distanceMeters": 41865.0,
       "code": "MWVN",
-      "hindi": "\u092e\u0923\u094d\u0921\u093e\u0935\u0932\u0940 - \u0935\u0947\u0938\u094d\u091f \u0935\u093f\u0928\u094b\u0926 \u0928\u0917\u0930",
+      "hindi": "मण्डावली - वेस्ट विनोद नगर",
+      "index": 25,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -620,10 +610,10 @@
       "id": "ip_extension",
       "name": "IP Extension",
       "coords": [
-        77.3109,
-        28.631898
+        77.310699,
+        28.631884
       ],
-      "trackNodeIndex": 506,
+      "trackNodeIndex": 801,
       "elevM": 16.5,
       "structure": "elevated",
       "major": true,
@@ -632,22 +622,22 @@
         "Vinod Nagar Depot feeder"
       ],
       "interchange": "Depot",
-      "distanceMeters": 44949.5,
-      "index": 26,
+      "distanceMeters": 43203.4,
       "code": "IPEX",
-      "hindi": "\u0907\u0928\u094d\u0926\u094d\u0930\u092a\u094d\u0930\u0938\u094d\u0925 \u090f\u0915\u094d\u0938\u091f\u0947\u0902\u0936\u0928",
+      "hindi": "इन्द्रप्रस्थ एक्सटेंशन",
+      "index": 26,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 35
     },
     {
       "id": "anand_vihar_pink",
       "name": "Anand Vihar",
       "coords": [
-        77.315878,
-        28.646886
+        77.315375,
+        28.646659
       ],
-      "trackNodeIndex": 530,
+      "trackNodeIndex": 871,
       "elevM": 17.5,
       "structure": "elevated",
       "major": true,
@@ -659,22 +649,22 @@
         "ISBT Anand Vihar"
       ],
       "interchange": "Blue Line",
-      "distanceMeters": 47031.7,
-      "index": 27,
+      "distanceMeters": 45318.3,
       "code": "ANVR",
-      "hindi": "\u0906\u0928\u0902\u0926 \u0935\u093f\u0939\u093e\u0930",
+      "hindi": "आनंद विहार",
+      "index": 27,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 60
     },
     {
       "id": "karkarduma_pink",
       "name": "Karkarduma",
       "coords": [
-        77.30556,
-        28.648539
+        77.30608,
+        28.649269
       ],
-      "trackNodeIndex": 543,
+      "trackNodeIndex": 914,
       "elevM": 24.5,
       "structure": "elevated",
       "major": true,
@@ -683,22 +673,22 @@
         "Blue Line"
       ],
       "interchange": "Blue Line",
-      "distanceMeters": 48124.8,
-      "index": 28,
+      "distanceMeters": 46359.9,
       "code": "KKDM",
-      "hindi": "\u0915\u0921\u093c\u0915\u0921\u093c\u0921\u0942\u092e\u093e",
+      "hindi": "कड़कड़डूमा",
+      "index": 28,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "karkarduma_court",
       "name": "Karkarduma Court",
       "coords": [
-        77.295787,
-        28.653685
+        77.295802,
+        28.653586
       ],
-      "trackNodeIndex": 558,
+      "trackNodeIndex": 941,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
@@ -707,10 +697,10 @@
         "District Courts"
       ],
       "interchange": null,
-      "distanceMeters": 49506.1,
-      "index": 29,
+      "distanceMeters": 47673.0,
       "code": "KKCT",
-      "hindi": "\u0915\u0921\u093c\u0915\u0921\u093c\u0921\u0942\u092e\u093e \u0915\u094b\u0930\u094d\u091f",
+      "hindi": "कड़कड़डूमा कोर्ट",
+      "index": 29,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -719,20 +709,20 @@
       "id": "krishna_nagar",
       "name": "Krishna Nagar",
       "coords": [
-        77.290276,
-        28.657855
+        77.290128,
+        28.657775
       ],
-      "trackNodeIndex": 577,
+      "trackNodeIndex": 962,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 51060.1,
-      "index": 30,
+      "distanceMeters": 48491.3,
       "code": "KSNA",
-      "hindi": "\u0915\u0943\u0937\u094d\u0923\u093e \u0928\u0917\u0930",
+      "hindi": "कृष्णा नगर",
+      "index": 30,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -741,20 +731,20 @@
       "id": "east_azad_nagar",
       "name": "East Azad Nagar",
       "coords": [
-        77.285,
-        28.664722
+        77.284823,
+        28.664667
       ],
-      "trackNodeIndex": 588,
+      "trackNodeIndex": 976,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 51982.7,
-      "index": 31,
+      "distanceMeters": 49412.9,
       "code": "EAZN",
-      "hindi": "\u0908\u0938\u094d\u091f \u0906\u091c\u093c\u093e\u0926 \u0928\u0917\u0930",
+      "hindi": "ईस्ट आज़ाद नगर",
+      "index": 31,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -763,10 +753,10 @@
       "id": "welcome_pink",
       "name": "Welcome",
       "coords": [
-        77.277934,
-        28.67205
+        77.276949,
+        28.672348
       ],
-      "trackNodeIndex": 602,
+      "trackNodeIndex": 1003,
       "elevM": 17.5,
       "structure": "elevated",
       "major": true,
@@ -775,32 +765,32 @@
         "Red Line"
       ],
       "interchange": "Red Line",
-      "distanceMeters": 53167.4,
-      "index": 32,
+      "distanceMeters": 50681.1,
       "code": "WEL",
-      "hindi": "\u0935\u0947\u0932\u0915\u092e",
+      "hindi": "वेलकम",
+      "index": 32,
       "isTerminal": false,
       "isShortTurnTerminal": false,
-      "dwellSeconds": 45
+      "dwellSeconds": 50
     },
     {
       "id": "jaffrabad",
       "name": "Jaffrabad",
       "coords": [
-        77.274748,
-        28.682759
+        77.274806,
+        28.682729
       ],
-      "trackNodeIndex": 625,
+      "trackNodeIndex": 1033,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 55106.5,
-      "index": 33,
+      "distanceMeters": 52520.9,
       "code": "JFBD",
-      "hindi": "\u091c\u093e\u092b\u093c\u0930\u093e\u092c\u093e\u0926",
+      "hindi": "जाफ़राबाद",
+      "index": 33,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -809,10 +799,10 @@
       "id": "maujpur_babarpur",
       "name": "Maujpur - Babarpur",
       "coords": [
-        77.279585,
-        28.692073
+        77.279644,
+        28.692113
       ],
-      "trackNodeIndex": 638,
+      "trackNodeIndex": 1059,
       "elevM": 18.0,
       "structure": "elevated",
       "major": true,
@@ -821,32 +811,32 @@
         "Pink Line Ring & Branch Junction"
       ],
       "interchange": "Junction",
-      "distanceMeters": 56247.3,
-      "index": 34,
+      "distanceMeters": 53664.2,
       "code": "MJPR",
-      "hindi": "\u092e\u094c\u091c\u092a\u0941\u0930 - \u092c\u093e\u092c\u0930\u092a\u0941\u0930",
+      "hindi": "मौजपुर - बाबरपुर",
+      "index": 34,
       "isTerminal": false,
-      "isShortTurnTerminal": true,
+      "isShortTurnTerminal": false,
       "dwellSeconds": 45
     },
     {
       "id": "gokulpuri",
       "name": "Gokulpuri",
       "coords": [
-        77.286111,
-        28.7025
+        77.286071,
+        28.702454
       ],
-      "trackNodeIndex": 654,
+      "trackNodeIndex": 1085,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 57573.7,
-      "index": 35,
+      "distanceMeters": 54971.9,
       "code": "GKPR",
-      "hindi": "\u0917\u094b\u0915\u0941\u0932\u092a\u0941\u0930\u0940",
+      "hindi": "गोकुलपुरी",
+      "index": 35,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -855,20 +845,20 @@
       "id": "johri_enclave",
       "name": "Johri Enclave",
       "coords": [
-        77.290107,
-        28.713167
+        77.290088,
+        28.712872
       ],
-      "trackNodeIndex": 669,
+      "trackNodeIndex": 1105,
       "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 58875.8,
-      "index": 36,
+      "distanceMeters": 56246.7,
       "code": "JHEN",
-      "hindi": "\u091c\u094b\u0939\u0930\u0940 \u090f\u0928\u094d\u0915\u094d\u0932\u0947\u0935",
+      "hindi": "जोहरी एन्क्लेव",
+      "index": 36,
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25
@@ -877,10 +867,10 @@
       "id": "shiv_vihar",
       "name": "Shiv Vihar",
       "coords": [
-        77.289494,
-        28.721612
+        77.289414,
+        28.721428
       ],
-      "trackNodeIndex": 680,
+      "trackNodeIndex": 1119,
       "elevM": 16.5,
       "structure": "elevated",
       "major": true,
@@ -889,10 +879,10 @@
         "Loni Border feeder"
       ],
       "interchange": "Loni Border",
-      "distanceMeters": 59818.3,
-      "index": 37,
+      "distanceMeters": 57195.3,
       "code": "SHVR",
-      "hindi": "\u0936\u093f\u0935 \u0935\u093f\u0939\u093e\u0930",
+      "hindi": "शिव विहार",
+      "index": 37,
       "isTerminal": true,
       "isShortTurnTerminal": false,
       "dwellSeconds": 90
