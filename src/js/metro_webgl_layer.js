@@ -11587,8 +11587,12 @@ window.MetroWebGLLayer = (function () {
     }
     if (!map) return;
     const key = normalizeStationName(name);
+    let targetName = key;
+    if (key.includes('shastri park depot') || key.includes('shastri depot')) {
+      targetName = 'shastri park';
+    }
     const stList = allStationsData.length ? allStationsData : stationsData;
-    const st = stList.find((s) => normalizeStationName(s.name) === key || s.id === name);
+    const st = stList.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key);
     if (!st) {
       pendingFlyStation = name;
       return;
@@ -11702,7 +11706,7 @@ window.MetroWebGLLayer = (function () {
         bearing: -26,
         duration: 950
       });
-    } else if (normName.includes('shastri park depot') || normName.includes('shastri depot')) {
+    } else if (normName.includes('shastri park depot') || normName.includes('shastri depot') || key.includes('shastri park depot') || key.includes('shastri depot')) {
       map.flyTo({
         center: [77.2450, 28.6708],
         zoom: 17.6,
@@ -11723,8 +11727,12 @@ window.MetroWebGLLayer = (function () {
 
   function anchorTrackToStation(name) {
     const key = normalizeStationName(name);
+    let targetName = key;
+    if (key.includes('shastri park depot') || key.includes('shastri depot')) {
+      targetName = 'shastri park';
+    }
     const stList = allStationsData.length ? allStationsData : stationsData;
-    const st = stList.find((s) => normalizeStationName(s.name) === key || s.id === name);
+    const st = stList.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key);
     if (!st) return false;
     if (st.corridor) {
       activeWalkCorridor = st.corridor;
