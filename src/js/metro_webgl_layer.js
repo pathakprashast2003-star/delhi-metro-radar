@@ -1474,10 +1474,10 @@ window.MetroWebGLLayer = (function () {
     } else if (isRed) {
       // Red Line (Line 1) 3D elevation profile:
       // Node 0..147: Rithala -> Rohini -> Pitampura -> NSP -> Inderlok (+17.5m) -> Pul Bangash -> Tis Hazari -> Kashmere Gate (+16.8m)
-      // Node 147..158: Ramp down from Kashmere Gate to Yamuna River Bridge (+16.8m -> +11.0m)
-      // Node 158..165: Historic Yamuna River Bridge viaduct span (+11.0m)
-      // Node 165..170: Ramp down from Yamuna Bridge east bank into Shastri Park ground level (+11.0m -> +1.35m)
-      // Node 170..175: Shastri Park At-Grade Station & Depot throat (+1.35m)
+      // Node 147..152: Ramp down from Kashmere Gate to Yamuna River Bridge (+16.8m -> +11.0m)
+      // Node 152..157: Historic Yamuna River Bridge viaduct span (+11.0m)
+      // Node 157..161: Ramp down east bank to at-grade (394m @ 2.45% grade) (+11.0m -> +1.35m)
+      // Node 161..175: Shastri Park At-Grade Station & Depot throat (+1.35m)
       // Node 175..184: Ramp up from Shastri Park to Seelampur elevated viaduct (+1.35m -> +16.5m)
       // Node 184..334: Seelampur -> Welcome (+16.5m) -> Shahdara -> Dilshad Garden -> Hindon River (+17.5m) -> Shaheed Sthal
       const redElevAt = (idxF) => {
@@ -1486,23 +1486,23 @@ window.MetroWebGLLayer = (function () {
           if (idxF >= 143) return 16.8; // Kashmere Gate elevated tier
           return VIADUCT_Y;
         }
-        if (idxF <= 158) {
-          const u = (idxF - 147) / 11;
+        if (idxF <= 152) {
+          const u = (idxF - 147) / 5;
           return 16.8 + (11.0 - 16.8) * hermiteSmooth(u);
         }
-        if (idxF <= 165) {
-          return 11.0; // Yamuna River crossing span
+        if (idxF <= 157) {
+          return 11.0; // Yamuna River crossing span (+11.0m)
         }
-        if (idxF <= 170) {
-          const u = (idxF - 165) / 5;
-          return 11.0 + (1.35 - 11.0) * hermiteSmooth(u);
+        if (idxF <= 161) {
+          const u = (idxF - 157) / 4;
+          return 11.0 + (1.35 - 11.0) * hermiteSmooth(u); // Ramp down east bank to at-grade (394m @ 2.45% grade)
         }
         if (idxF <= 175) {
-          return 1.35; // Shastri Park at-grade station
+          return 1.35; // Shastri Park at-grade ground level (entire depot, workshops, yard & station)
         }
         if (idxF <= 184) {
           const u = (idxF - 175) / 9;
-          return 1.35 + (VIADUCT_Y - 1.35) * hermiteSmooth(u);
+          return 1.35 + (VIADUCT_Y - 1.35) * hermiteSmooth(u); // Ramp up to Seelampur elevated viaduct
         }
         if (idxF >= 320 && idxF <= 328) {
           return 17.5; // Hindon River crossing
