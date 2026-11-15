@@ -10878,7 +10878,10 @@ window.MetroWebGLLayer = (function () {
                         (activeLineId === 'orange' && stLineKey === 'orange') ||
                         (activeLineId === 'magenta' && stLineKey === 'magenta') ||
                         (activeLineId === 'red' && stLineKey === 'red');
-        if (!matches) {
+        const dxCenter = st.pos.x - focusX;
+        const dzCenter = st.pos.z - focusZ;
+        const isFocusStation = (selectedStationName === st.name) || (dxCenter * dxCenter + dzCenter * dzCenter < 562500); // 750m
+        if (!matches && !isFocusStation) {
           if (st._group && st._group.visible) st._group.visible = false;
           if (st._ring && st._ring.visible) st._ring.visible = false;
           continue;
@@ -11090,6 +11093,11 @@ window.MetroWebGLLayer = (function () {
     scene.add(infraGroup);
     updateVisibilityAndCulling(performance.now(), 0, true);
     isReady = true;
+    if (pendingFlyStation) {
+      const pSt = pendingFlyStation;
+      pendingFlyStation = null;
+      setTimeout(() => flyToStation(pSt), 60);
+    }
 
     configureMapLibreVisualHarmony();
     startAnimationLoop();
@@ -11326,12 +11334,22 @@ window.MetroWebGLLayer = (function () {
     return best;
   }
 
+  let pendingFlyStation = null;
+
   function flyToStation(name) {
+    if (!name) return;
+    if (!isReady) {
+      pendingFlyStation = name;
+      return;
+    }
     if (!map) return;
     const key = normalizeStationName(name);
     const stList = allStationsData.length ? allStationsData : stationsData;
     const st = stList.find((s) => normalizeStationName(s.name) === key || s.id === name);
-    if (!st) return;
+    if (!st) {
+      pendingFlyStation = name;
+      return;
+    }
     selectedStationName = st.name;
     if (st.corridor) {
       activeWalkCorridor = st.corridor;
@@ -11362,7 +11380,14 @@ window.MetroWebGLLayer = (function () {
       'yashobhoomi dwarka sector 25': 'yashobhoomi',
       'janakpuri west': 'janakpuri',
       'jasola vihar shaheen bagh': 'jasolavihar',
-      'botanical garden': 'botanical'
+      'botanical garden': 'botanical',
+      'rithala': 'rithala',
+      'inderlok': 'inderlok',
+      'netaji subhash place': 'nsp',
+      'welcome': 'welcome',
+      'dilshad garden': 'dilshad',
+      'shaheed sthal': 'shaheed',
+      'shaheed sthal new bus adda': 'shaheed'
     };
     const matchLoc = locMap[normalizeStationName(st.name)];
     document.querySelectorAll('.bookmark-chip').forEach((chip) => {
@@ -11406,6 +11431,30 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.1,
         pitch: 60,
         bearing: 38,
+        duration: 950
+      });
+    } else if (normName === 'inderlok') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 18.25,
+        pitch: 56,
+        bearing: -28,
+        duration: 950
+      });
+    } else if (normName === 'welcome') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 18.25,
+        pitch: 56,
+        bearing: -24,
+        duration: 950
+      });
+    } else if (normName === 'netaji subhash place') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 18.25,
+        pitch: 56,
+        bearing: -26,
         duration: 950
       });
     } else {
@@ -11965,10 +12014,11 @@ window.MetroWebGLLayer = (function () {
       const seenStationPills = new Set();
       targetStations.forEach((st) => {
         if (!st.major || !st.coords) return;
+        const isRedSt = st.lineId === 'red' || st.lineKey === 'red' || st.isRed;
         const isOrangeSt = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
         const isBlueSt = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.lineKey === 'blue' || st.isBlue;
         const isMagentaSt = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
-        const lineKey = isOrangeSt ? 'orange' : (isBlueSt ? 'blue' : (isMagentaSt ? 'magenta' : 'yellow'));
+        const lineKey = isRedSt ? 'red' : (isOrangeSt ? 'orange' : (isBlueSt ? 'blue' : (isMagentaSt ? 'magenta' : 'yellow')));
         const pillKey = (st.name === 'New Delhi') ? `${st.name}_${lineKey}` : st.name;
         if (seenStationPills.has(pillKey)) return;
         seenStationPills.add(pillKey);
@@ -12513,4 +12563,18 @@ window.MetroWebGLLayer = (function () {
     getScene() { return scene; },
     getInfraGroup() { return infraGroup; }
   };
+
+  if (typeof window !== 'undefined') {
+    window.MetroWebGLLayer = api;
+    // Bi-directional handshake: auto-install if map is already instantiated
+    if (window.__metroMap && typeof window.__metroMap.getLayer === 'function') {
+      try {
+        if (!window.__metroMap.getLayer('metro-webgl-3d-layer')) {
+          api.install(window.__metroMap);
+        }
+      } catch (e) { }
+    }
+  }
+
+  return api;
 })();

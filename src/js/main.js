@@ -303,6 +303,7 @@
     });
     window.map = map;
     window.mapInstance = map;
+    window.__metroMap = map;
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), 'top-right');
     map.addControl(new maplibregl.AttributionControl({
@@ -363,7 +364,18 @@
       });
     }
 
-    map.on('style.load', () => {
+    function ensureMetroWebGLLayerInstalled() {
+      if (!map) return;
+      if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.install === 'function') {
+        if (!map.getLayer('metro-webgl-3d-layer')) {
+          window.MetroWebGLLayer.install(map);
+          console.log('[main.js] MetroWebGLLayer installed successfully');
+        }
+      }
+    }
+
+    function onMapStyleReady() {
+      if (styleLoaded) return;
       styleLoaded = true;
       suppressMapClutter();
       enhanceMapColors();
@@ -388,11 +400,23 @@
       updateMarkerScale();
       tryRenderGeoJson();
 
-      if (window.MetroWebGLLayer) {
-        window.MetroWebGLLayer.install(map);
-        console.log('[main.js] MetroWebGLLayer installed on MapLibre style.load');
+      ensureMetroWebGLLayerInstalled();
+    }
+
+    map.on('style.load', onMapStyleReady);
+    map.on('load', onMapStyleReady);
+    if (map.isStyleLoaded()) {
+      onMapStyleReady();
+    }
+
+    let installPollCount = 0;
+    const installPoll = setInterval(() => {
+      installPollCount++;
+      ensureMetroWebGLLayerInstalled();
+      if ((map && map.getLayer('metro-webgl-3d-layer')) || installPollCount > 50) {
+        clearInterval(installPoll);
       }
-    });
+    }, 80);
   }
 
   function suppressMapClutter() {
@@ -2032,7 +2056,13 @@
       krishnapark: { center: [77.08431, 28.647802], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
       janakpuri: { center: [77.0779, 28.6289], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
       jasolavihar: { center: [77.296635, 28.545819], zoom: 17.1, pitch: 60, bearing: 38, duration: 1100 },
-      botanical: { center: [77.3338, 28.5639], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 }
+      botanical: { center: [77.3338, 28.5639], zoom: 18.0, pitch: 55, bearing: -20, duration: 1100 },
+      rithala: { center: [77.107161, 28.720788], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 },
+      inderlok: { center: [77.170347, 28.673589], zoom: 18.3, pitch: 56, bearing: -28, duration: 1100 },
+      nsp: { center: [77.152467, 28.696076], zoom: 18.3, pitch: 56, bearing: -26, duration: 1100 },
+      welcome: { center: [77.277815, 28.671862], zoom: 18.3, pitch: 56, bearing: -24, duration: 1100 },
+      dilshad: { center: [77.321513, 28.675885], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 },
+      shaheed: { center: [77.41539, 28.670706], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 }
     };
 
     const BOOKMARK_STATION_NAMES = {
@@ -2053,7 +2083,40 @@
       krishnapark: 'Krishna Park Extension',
       janakpuri: 'Janakpuri West',
       jasolavihar: 'Jasola Vihar Shaheen Bagh',
-      botanical: 'Botanical Garden'
+      botanical: 'Botanical Garden',
+      rithala: 'Rithala',
+      inderlok: 'Inderlok',
+      nsp: 'Netaji Subhash Place',
+      welcome: 'Welcome',
+      dilshad: 'Dilshad Garden',
+      shaheed: 'Shaheed Sthal'
+    };
+
+    const BOOKMARK_LINE_MAP = {
+      samaypur: 'yellow',
+      greenpark: 'yellow',
+      qutab: 'yellow',
+      gurgaon: 'yellow',
+      dwarka: 'blue',
+      akshardham: 'blue',
+      noida: 'blue',
+      dhaulakuan: 'orange',
+      igiairport: 'orange',
+      yashobhoomi: 'orange',
+      krishnapark: 'magenta',
+      jasolavihar: 'magenta',
+      rithala: 'red',
+      inderlok: 'red',
+      nsp: 'red',
+      welcome: 'red',
+      dilshad: 'red',
+      shaheed: 'red',
+      kashmere: ['yellow', 'red'],
+      rajiv: ['yellow', 'blue'],
+      hauzkhas: ['yellow', 'magenta'],
+      centralsec: ['yellow'],
+      janakpuri: ['blue', 'magenta'],
+      botanical: ['blue', 'magenta']
     };
 
     let currentStepperIndex = 0;
@@ -2086,6 +2149,21 @@
       } else if (indexOrName) {
         const norm = normalizeStationName(indexOrName);
         idx = stations.findIndex((s) => normalizeStationName(s.name) === norm);
+        if (idx < 0) {
+          // If station not in current line's stations, check across all lines
+          const allSts = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getStations === 'function')
+            ? window.MetroWebGLLayer.getStations()
+            : [];
+          const found = allSts.find((s) => normalizeStationName(s.name) === norm);
+          if (found) {
+            const stLine = found.lineId || found.lineKey || (found.isBlue ? 'blue' : (found.isOrange ? 'orange' : (found.isMagenta ? 'magenta' : (found.isRed ? 'red' : 'yellow'))));
+            const targetBtn = document.getElementById('btn-line-' + stLine);
+            if (targetBtn && !targetBtn.classList.contains('active')) {
+              targetBtn.click();
+              return -1;
+            }
+          }
+        }
       } else {
         idx = Math.max(0, Math.min(stations.length - 1, currentStepperIndex));
       }
@@ -2464,6 +2542,23 @@
         btn.classList.add('active');
         const loc = btn.getAttribute('data-loc');
         followTrainId = null;
+
+        // Auto-synchronize corridor line filter if bookmark belongs to another line
+        const lineTarget = BOOKMARK_LINE_MAP[loc];
+        if (lineTarget) {
+          const curLine = (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.getActiveLine === 'function')
+            ? window.MetroWebGLLayer.getActiveLine()
+            : 'all';
+          if (curLine !== 'all') {
+            const matchesCurrent = Array.isArray(lineTarget) ? lineTarget.includes(curLine) : lineTarget === curLine;
+            if (!matchesCurrent) {
+              const targetId = 'btn-line-' + (Array.isArray(lineTarget) ? lineTarget[0] : lineTarget);
+              const b = document.getElementById(targetId);
+              if (b) b.click();
+            }
+          }
+        }
+
         if (BOOKMARK_STATION_NAMES[loc]) {
           syncStationStepper(BOOKMARK_STATION_NAMES[loc]);
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.anchorTrackToStation === 'function') {
