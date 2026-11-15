@@ -4153,6 +4153,164 @@ window.MetroWebGLLayer = (function () {
   }
 
   /* ───────────────────────────────────────────────────────────
+   * 3C-i-c. Rithala (Red Line West Terminus) Overrun Viaduct, Scissor Crossover & Phase 4 Narela Stubs
+   * ─────────────────────────────────────────────────────────── */
+  function buildRithalaTurnaround(root, detail, m, g, yV) {
+    const extLen = 240;
+    const extStart = -43; // West platform throat
+    const extEnd = extStart - extLen; // -283
+    const extMidX = extStart - extLen * 0.5;
+
+    // 1. Extended Viaduct Deck Slab & Box Spine spanning westward over Sector 10/11 Rohini
+    addBox(root, extLen, 1.0, 14.2, m.concreteLight, extMidX, yV - 0.50, 0);
+    addBox(root, extLen, 2.0, 9.6, m.concreteWeb, extMidX, yV - 1.95, 0);
+    // Continuous Parapets
+    addBox(root, extLen, 1.1, 0.45, m.concreteWeb, extMidX, yV + 0.55, -6.8);
+    addBox(root, extLen, 1.1, 0.45, m.concreteWeb, extMidX, yV + 0.55, 6.8);
+    // Red tactical line spine
+    addBox(root, extLen, 0.45, 0.55, m.roundelRed, extMidX, yV + 0.22, 0);
+
+    // 2. Viaduct Support Piers Spaced along Extension
+    const pierSpacing = 38;
+    for (let px = extStart - 30; px >= extEnd + 20; px -= pierSpacing) {
+      addBox(root, 5.2, 0.9, 5.6, m.concreteWeb, px, 0.45, 0);
+      const shaft = new THREE.Mesh(g.pierShaft, m.pierCream);
+      shaft.scale.set(1.25, yV - 3.6, 1.25);
+      shaft.position.set(px, (yV - 3.6) * 0.5 + 0.75, 0);
+      shaft.frustumCulled = false;
+      root.add(shaft);
+      addBox(root, 3.8, 2.5, 16.5, m.concreteLight, px, yV - 2.9, 0);
+    }
+
+    // 3. Twin Turnaround Siding Tracks & Sleepers
+    const trackEnd = extStart - 185;
+    const trackMid = extStart + (trackEnd - extStart) * 0.5;
+    const trackLen = Math.abs(trackEnd - extStart);
+    [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+      addBox(root, trackLen, 0.22, 3.4, m.slateCut, trackMid, yV + 0.11, tz);
+      addBox(root, trackLen, 0.18, 0.08, m.railCrown, trackMid, yV + 0.32, tz - 0.71);
+      addBox(root, trackLen, 0.18, 0.08, m.railCrown, trackMid, yV + 0.32, tz + 0.71);
+    });
+
+    for (let sx = extStart - 2; sx >= trackEnd; sx -= 1.8) {
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        addBox(detail, 0.24, 0.12, 2.4, m.concreteWeb, sx, yV + 0.22, tz);
+      });
+    }
+
+    // 4. Diamond Scissors Crossover (X-Crossover) with Electro-Pneumatic Point Actuators
+    const xMid = extStart - 55;
+    const xSpan = 38;
+    const diagLen = Math.hypot(xSpan, TRACK_HALF_SEP * 2);
+    const diagAngle = Math.atan2(TRACK_HALF_SEP * 2, xSpan);
+
+    const crossA = addBox(detail, diagLen, 0.18, 0.08, m.railCrown, xMid, yV + 0.32, 0);
+    crossA.rotation.y = -diagAngle;
+    const crossB = addBox(detail, diagLen, 0.18, 0.08, m.railCrown, xMid, yV + 0.32, 0);
+    crossB.rotation.y = diagAngle;
+
+    [xMid - xSpan * 0.45, xMid + xSpan * 0.45].forEach((swX) => {
+      [-TRACK_HALF_SEP - 1.8, TRACK_HALF_SEP + 1.8].forEach((swZ) => {
+        addBox(detail, 1.4, 0.55, 0.9, m.yellowAccent, swX, yV + 0.30, swZ);
+      });
+    });
+
+    // 5. Dual Heavy-Duty Hydraulic Friction Buffer Stops
+    [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+      const bx = trackEnd - 1.5;
+      addBox(detail, 3.8, 1.9, 2.6, m.steelDark, bx, yV + 1.05, tz);
+      addBox(detail, 0.8, 0.4, 0.4, m.bufferRed, bx + 2.1, yV + 1.05, tz - 0.71);
+      addBox(detail, 0.8, 0.4, 0.4, m.bufferRed, bx + 2.1, yV + 1.05, tz + 0.71);
+      addBox(detail, 0.22, 1.4, 2.2, m.yellowAccent, bx + 1.8, yV + 1.15, tz);
+      addBox(detail, 0.3, 0.4, 0.3, m.bufferRed, bx, yV + 2.2, tz);
+    });
+
+    // Terminal overrun concrete end wall
+    addBox(root, 1.6, 2.4, 14.2, m.concreteLight, trackEnd - 6.0, yV + 1.2, 0);
+
+    // 6. Phase 4 Extension Starter Piers toward Narela / Bawana / Kundli
+    const futureStartX = extEnd - 25;
+    [futureStartX, futureStartX - 40, futureStartX - 80].forEach((fpx) => {
+      addBox(root, 5.2, 0.9, 5.6, m.concreteWeb, fpx, 0.45, 0);
+      const fShaft = new THREE.Mesh(g.pierShaft, m.pierCream);
+      fShaft.scale.set(1.25, yV - 3.6, 1.25);
+      fShaft.position.set(fpx, (yV - 3.6) * 0.5 + 0.75, 0);
+      fShaft.frustumCulled = false;
+      root.add(fShaft);
+      addBox(root, 3.8, 2.5, 15.5, m.concreteLight, fpx, yV - 2.9, 0);
+      addBox(detail, 1.8, 0.8, 11.2, m.steelDark, fpx, yV - 1.25, 0);
+    });
+  }
+
+  /* ───────────────────────────────────────────────────────────
+   * 3C-i-d. Shaheed Sthal (Red Line East Terminus) Overrun Viaduct & Buffer Terminal
+   * ─────────────────────────────────────────────────────────── */
+  function buildShaheedSthalTurnaround(root, detail, m, g, yV) {
+    const extLen = 220;
+    const extStart = 43; // East platform end
+    const extEnd = extStart + extLen;
+    const extMidX = extStart + extLen * 0.5;
+
+    // 1. Overrun Viaduct Deck along GT Road / Meerut Road Trisection
+    addBox(root, extLen, 1.0, 14.2, m.concreteLight, extMidX, yV - 0.50, 0);
+    addBox(root, extLen, 2.0, 9.6, m.concreteWeb, extMidX, yV - 1.95, 0);
+    addBox(root, extLen, 1.1, 0.45, m.concreteWeb, extMidX, yV + 0.55, -6.8);
+    addBox(root, extLen, 1.1, 0.45, m.concreteWeb, extMidX, yV + 0.55, 6.8);
+    addBox(root, extLen, 0.45, 0.55, m.roundelRed, extMidX, yV + 0.22, 0);
+
+    // 2. Viaduct Support Piers
+    const pierSpacing = 38;
+    for (let px = extStart + 30; px <= extEnd - 20; px += pierSpacing) {
+      addBox(root, 5.2, 0.9, 5.6, m.concreteWeb, px, 0.45, 0);
+      const shaft = new THREE.Mesh(g.pierShaft, m.pierCream);
+      shaft.scale.set(1.25, yV - 3.6, 1.25);
+      shaft.position.set(px, (yV - 3.6) * 0.5 + 0.75, 0);
+      shaft.frustumCulled = false;
+      root.add(shaft);
+      addBox(root, 3.8, 2.5, 16.5, m.concreteLight, px, yV - 2.9, 0);
+    }
+
+    // 3. Turnaround Siding Tracks
+    const trackEnd = extStart + 175;
+    const trackMid = extStart + (trackEnd - extStart) * 0.5;
+    const trackLen = trackEnd - extStart;
+    [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+      addBox(root, trackLen, 0.22, 3.4, m.slateCut, trackMid, yV + 0.11, tz);
+      addBox(root, trackLen, 0.18, 0.08, m.railCrown, trackMid, yV + 0.32, tz - 0.71);
+      addBox(root, trackLen, 0.18, 0.08, m.railCrown, trackMid, yV + 0.32, tz + 0.71);
+    });
+
+    for (let sx = extStart + 2; sx <= trackEnd; sx += 1.8) {
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        addBox(detail, 0.24, 0.12, 2.4, m.concreteWeb, sx, yV + 0.22, tz);
+      });
+    }
+
+    // 4. Diamond Scissors Crossover
+    const xMid = extStart + 50;
+    const xSpan = 38;
+    const diagLen = Math.hypot(xSpan, TRACK_HALF_SEP * 2);
+    const diagAngle = Math.atan2(TRACK_HALF_SEP * 2, xSpan);
+
+    const crossA = addBox(detail, diagLen, 0.18, 0.08, m.railCrown, xMid, yV + 0.32, 0);
+    crossA.rotation.y = -diagAngle;
+    const crossB = addBox(detail, diagLen, 0.18, 0.08, m.railCrown, xMid, yV + 0.32, 0);
+    crossB.rotation.y = diagAngle;
+
+    // 5. Heavy-Duty Hydraulic Buffer Stops
+    [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+      const bx = trackEnd + 1.5;
+      addBox(detail, 3.8, 1.9, 2.6, m.steelDark, bx, yV + 1.05, tz);
+      addBox(detail, 0.8, 0.4, 0.4, m.bufferRed, bx - 2.1, yV + 1.05, tz - 0.71);
+      addBox(detail, 0.8, 0.4, 0.4, m.bufferRed, bx - 2.1, yV + 1.05, tz + 0.71);
+      addBox(detail, 0.22, 1.4, 2.2, m.yellowAccent, bx - 1.8, yV + 1.15, tz);
+      addBox(detail, 0.3, 0.4, 0.3, m.bufferRed, bx, yV + 2.2, tz);
+    });
+
+    addBox(root, 1.6, 2.4, 14.2, m.concreteLight, trackEnd + 6.0, yV + 1.2, 0);
+  }
+
+  /* ───────────────────────────────────────────────────────────
    * 3C-ii. Airport Express (Orange Line) Dedicated Architectural Vocabulary
    * ─────────────────────────────────────────────────────────── */
   function addAirportPSDs(target, length, yBase, zPos, facingSign = 1) {
@@ -7579,6 +7737,87 @@ window.MetroWebGLLayer = (function () {
       grp.add(wsGroup);
     });
 
+    const anc = depotData.anchors || {};
+
+    // 4. Stabled Fleet of Red Line Trains in Yard
+    const buildRedYardTrain = (lonLat, nCars, bearingDeg, isHeadlightsOn = false, elev = 1.35) => {
+      const trainPos = toLocalMeters(lonLat, elev);
+      const tGrp = new THREE.Group();
+      tGrp.position.set(trainPos.x, trainPos.y + 0.28, trainPos.z);
+      tGrp.rotation.y = Math.PI * 0.5 - (bearingDeg * Math.PI) / 180;
+      const carLen = 17.5;
+      for (let c = 0; c < nCars; c++) {
+        const cx = (c - (nCars - 1) * 0.5) * (carLen + 0.5);
+        const isLeading = (c === nCars - 1);
+        const isTrailing = (c === 0);
+        const car = new THREE.Group();
+        car.position.x = cx;
+        // Stainless-steel body
+        addBox(car, carLen, 2.65, 2.88, m.steelChrome, 0, 1.55, 0);
+        // Vibrant Red waist livery stripe & roofline
+        addBox(car, carLen + 0.1, 0.42, 2.92, m.redAccent, 0, 1.1, 0);
+        addBox(car, carLen + 0.1, 0.20, 2.92, m.redAccent, 0, 2.68, 0);
+        // Glazed windows
+        for (let wx = -5.8; wx <= 5.8; wx += 2.4) {
+          addBox(car, 1.8, 0.95, 2.94, m.concourseGlass, wx, 1.85, 0);
+        }
+        if (isLeading) {
+          addBox(car, 2.2, 2.3, 2.80, m.steelChrome, carLen * 0.5 + 1.0, 1.45, 0);
+          addBox(car, 2.22, 0.55, 2.84, m.redAccent, carLen * 0.5 + 1.0, 1.1, 0);
+          const headMat = isHeadlightsOn ? m.luminaireGlow : m.lampGlow;
+          addBox(car, 0.2, 0.32, 0.45, headMat, carLen * 0.5 + 2.1, 1.1, 0.82);
+          addBox(car, 0.2, 0.32, 0.45, headMat, carLen * 0.5 + 2.1, 1.1, -0.82);
+          addBox(car, 1.2, 1.05, 2.5, m.slateDark, carLen * 0.5 + 1.25, 1.95, 0);
+        }
+        if (isTrailing) {
+          addBox(car, 1.6, 2.3, 2.80, m.steelChrome, -carLen * 0.5 - 0.7, 1.45, 0);
+          addBox(car, 0.2, 0.26, 0.40, m.bufferRed, -carLen * 0.5 - 1.5, 1.1, 0.82);
+          addBox(car, 0.2, 0.26, 0.40, m.bufferRed, -carLen * 0.5 - 1.5, 1.1, -0.82);
+        }
+        // Rooftop HVAC pods & pantograph
+        addBox(car, 5.2, 0.38, 1.8, m.aeroTitanium, 0, 3.05, 0);
+        if (c === 1 || c === nCars - 2) {
+          addBox(car, 2.4, 0.85, 1.6, m.steelDark, 0, 3.5, 0);
+        }
+        // Bogies
+        [-5.2, 5.2].forEach((bx) => addBox(car, 3.0, 0.60, 2.4, m.steelDark, bx, 0.32, 0));
+        tGrp.add(car);
+      }
+      grp.add(tGrp);
+    };
+
+    (anc.stabled_rakes || []).forEach((r) => {
+      buildRedYardTrain(r.centerLL, r.cars || 6, r.bearing || 114.7, r.headlights, r.elev || 1.35);
+    });
+
+    // 5. High-Mast Yard Floodlight Towers (25m tall)
+    (anc.floodlight_masts || []).forEach((mPos) => {
+      const fPos = toLocalMeters([mPos[0], mPos[1]], mPos[2] || 1.35);
+      const mastH = 25.0;
+      addBox(grp, 0.8, mastH, 0.8, m.catenarySteel, fPos.x, fPos.y + mastH * 0.5, fPos.z);
+      addBox(grp, 3.2, 0.5, 2.4, m.steelDark, fPos.x, fPos.y + mastH + 0.3, fPos.z);
+      [-1.1, 1.1].forEach((fx) => {
+        addBox(grp, 0.9, 0.3, 0.9, m.luminaireGlow, fPos.x + fx, fPos.y + mastH - 0.25, fPos.z);
+      });
+    });
+
+    // 6. Illuminated 3D DMRC Signboards
+    const mohPos = toLocalMeters([77.2442, 28.6712], 1.35);
+    const dmraPos = toLocalMeters([77.2482, 28.6715], 1.35);
+    const throatPos = toLocalMeters([77.2466, 28.6698], 1.35);
+
+    addDwarkaLocalitySign(grp, throatPos.x, throatPos.y + 7.5, throatPos.z, 56, 3.2,
+      'DMRC SHASTRI PARK DEPOT · PRIMARY MAINTENANCE & STABLING YARD',
+      'INAUGURATED 2002 · FIRST METRO DEPOT OF INDIA · RED LINE FLEET HQ', '#DC2626', -0.58);
+
+    addDwarkaLocalitySign(grp, dmraPos.x, dmraPos.y + 16.5, dmraPos.z, 50, 3.0,
+      'DELHI METRO RAIL ACADEMY (DMRA)',
+      'ISO 9001:2015 CERTIFIED CENTRE OF EXCELLENCE · OPERATOR & CBTC SIMULATION', '#1E3A8A', 0.44);
+
+    addDwarkaLocalitySign(grp, mohPos.x, mohPos.y + 10.5, mohPos.z, 46, 2.8,
+      'MAJOR OVERHAUL WORKSHOP (MOH) & WHEEL LATHE FACILITY',
+      'PERIODIC HEAVY OVERHAUL · CNC UNDERFLOOR WHEEL PROFILE RESTORATION', '#991B1B', -0.58);
+
     parent.add(grp);
     return grp;
   }
@@ -7875,6 +8114,10 @@ window.MetroWebGLLayer = (function () {
     } else if (st.name === 'Botanical Garden' && (st.isMagenta || st.lineId === 'magenta' || st.lineKey === 'magenta')) {
       buildBotanicalGardenMagentaTurnaround(root, detail, m, g, yV);
       buildBotanicalGardenPlatformInterchange(root, detail, m, g, yV);
+    } else if (st.name === 'Rithala') {
+      buildRithalaTurnaround(root, detail, m, g, yV);
+    } else if (st.name === 'Shaheed Sthal' || st.name.includes('Shaheed Sthal')) {
+      buildShaheedSthalTurnaround(root, detail, m, g, yV);
     }
 
     [-34, -12, 11, 35].forEach((tx, idx) => {
@@ -11387,7 +11630,9 @@ window.MetroWebGLLayer = (function () {
       'welcome': 'welcome',
       'dilshad garden': 'dilshad',
       'shaheed sthal': 'shaheed',
-      'shaheed sthal new bus adda': 'shaheed'
+      'shaheed sthal new bus adda': 'shaheed',
+      'shastri park depot': 'shastridepot',
+      'shastri depot': 'shastridepot'
     };
     const matchLoc = locMap[normalizeStationName(st.name)];
     document.querySelectorAll('.bookmark-chip').forEach((chip) => {
@@ -11455,6 +11700,14 @@ window.MetroWebGLLayer = (function () {
         zoom: 18.25,
         pitch: 56,
         bearing: -26,
+        duration: 950
+      });
+    } else if (normName.includes('shastri park depot') || normName.includes('shastri depot')) {
+      map.flyTo({
+        center: [77.2450, 28.6708],
+        zoom: 17.6,
+        pitch: 58,
+        bearing: -34,
         duration: 950
       });
     } else {

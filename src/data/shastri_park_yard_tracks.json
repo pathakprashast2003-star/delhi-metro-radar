@@ -310,6 +310,23 @@
       77.250538,
       28.668455,
       1.35
+    ],
+    "stabled_rakes": [
+      { "id": "red_rake_shastri_1", "centerLL": [77.244962, 28.66995], "cars": 6, "bearing": 114.7, "headlights": false },
+      { "id": "red_rake_shastri_2", "centerLL": [77.244762, 28.67031], "cars": 6, "bearing": 114.7, "headlights": false },
+      { "id": "red_rake_shastri_3", "centerLL": [77.244562, 28.67067], "cars": 8, "bearing": 114.7, "headlights": true },
+      { "id": "red_rake_shastri_4", "centerLL": [77.244362, 28.67103], "cars": 6, "bearing": 114.7, "headlights": false },
+      { "id": "red_rake_shastri_5", "centerLL": [77.244162, 28.67139], "cars": 4, "bearing": 114.7, "headlights": false }
+    ],
+    "floodlight_masts": [
+      [77.2472, 28.6690, 1.35],
+      [77.2465, 28.6710, 1.35],
+      [77.2450, 28.6692, 1.35],
+      [77.2435, 28.6700, 1.35],
+      [77.2425, 28.6710, 1.35],
+      [77.2418, 28.6725, 1.35],
+      [77.2445, 28.6728, 1.35],
+      [77.2460, 28.6722, 1.35]
     ]
   }
 }

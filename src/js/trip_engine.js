@@ -132,7 +132,7 @@ window.TripEngine = (function() {
     const c1 = [p[0] - tx * HALF_LEN - nx * HALF_WID, p[1] - ty * HALF_LEN - ny * HALF_WID];
     const c2 = [p[0] + tx * HALF_LEN - nx * HALF_WID, p[1] + ty * HALF_LEN - ny * HALF_WID];
     const c3 = [p[0] + tx * HALF_LEN + nx * HALF_WID, p[1] + ty * HALF_LEN + ny * HALF_WID];
-    const c4 = [p[0] - tx * HALF_LEN + nx * HALF_WID, p[1] - ty * HALF_LEN - ny * HALF_WID];
+    const c4 = [p[0] - tx * HALF_LEN + nx * HALF_WID, p[1] - ty * HALF_LEN + ny * HALF_WID];
 
     return [[c1, c2, c3, c4, c1]];
   }
@@ -149,7 +149,7 @@ window.TripEngine = (function() {
 
     const c1 = [p[0] - tx * lenM - nx * widM, p[1] - ty * lenM - ny * widM];
     const c2 = [p[0] + tx * lenM - nx * widM, p[1] + ty * lenM - ny * widM];
-    const c3 = [p[0] + tx * lenM + nx * widM, p[1] + ty * lenM - ny * widM];
+    const c3 = [p[0] + tx * lenM + nx * widM, p[1] + ty * lenM + ny * widM];
     const c4 = [p[0] - tx * lenM + nx * widM, p[1] - ty * lenM + ny * widM];
 
     return [[c1, c2, c3, c4, c1]];

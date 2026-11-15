@@ -365,7 +365,7 @@
     }
 
     function ensureMetroWebGLLayerInstalled() {
-      if (!map) return;
+      if (!map || !map.isStyleLoaded()) return;
       if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.install === 'function') {
         if (!map.getLayer('metro-webgl-3d-layer')) {
           window.MetroWebGLLayer.install(map);
@@ -413,7 +413,7 @@
     const installPoll = setInterval(() => {
       installPollCount++;
       ensureMetroWebGLLayerInstalled();
-      if ((map && map.getLayer('metro-webgl-3d-layer')) || installPollCount > 50) {
+      if ((map && map.isStyleLoaded() && map.getLayer('metro-webgl-3d-layer')) || installPollCount > 50) {
         clearInterval(installPoll);
       }
     }, 80);
@@ -2062,7 +2062,8 @@
       nsp: { center: [77.152467, 28.696076], zoom: 18.3, pitch: 56, bearing: -26, duration: 1100 },
       welcome: { center: [77.277815, 28.671862], zoom: 18.3, pitch: 56, bearing: -24, duration: 1100 },
       dilshad: { center: [77.321513, 28.675885], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 },
-      shaheed: { center: [77.41539, 28.670706], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 }
+      shaheed: { center: [77.41539, 28.670706], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 },
+      shastridepot: { center: [77.2450, 28.6708], zoom: 17.6, pitch: 58, bearing: -34, duration: 1100 }
     };
 
     const BOOKMARK_STATION_NAMES = {
@@ -2089,7 +2090,8 @@
       nsp: 'Netaji Subhash Place',
       welcome: 'Welcome',
       dilshad: 'Dilshad Garden',
-      shaheed: 'Shaheed Sthal'
+      shaheed: 'Shaheed Sthal',
+      shastridepot: 'Shastri Park Depot'
     };
 
     const BOOKMARK_LINE_MAP = {
@@ -2111,6 +2113,7 @@
       welcome: 'red',
       dilshad: 'red',
       shaheed: 'red',
+      shastridepot: 'red',
       kashmere: ['yellow', 'red'],
       rajiv: ['yellow', 'blue'],
       hauzkhas: ['yellow', 'magenta'],
