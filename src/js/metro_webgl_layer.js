@@ -8265,7 +8265,56 @@ window.MetroWebGLLayer = (function () {
       return out.length >= 2 ? out : null;
     };
 
-    const turnoutSpans = (tr.turnouts || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    const flyoverSpans = (tr.flyover_spurs || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    if (flyoverSpans.length) {
+      // 1. Viaduct concrete deck ribbon
+      const deckProf = [[-2.4, -0.75], [2.4, -0.75], [2.2, 0.0], [-2.2, 0.0]];
+      const dM = buildRibbonFromSpans(flyoverSpans, deckProf, m.viaductConcrete, 1.2, false);
+      if (dM) grp.add(dM);
+
+      // 2. Concrete parapets on both sides
+      const parapetLeft = [[-2.4, 0.0], [-2.15, 0.0], [-2.15, 1.1], [-2.4, 1.1]];
+      const parapetRight = [[2.15, 0.0], [2.4, 0.0], [2.4, 1.1], [2.15, 1.1]];
+      const pLM = buildRibbonFromSpans(flyoverSpans, parapetLeft, m.concreteLight, 1.2, false);
+      if (pLM) grp.add(pLM);
+      const pRM = buildRibbonFromSpans(flyoverSpans, parapetRight, m.concreteLight, 1.2, false);
+      if (pRM) grp.add(pRM);
+
+      // 3. Ballast ribbon on deck
+      const ballastProf = [[-1.9, 0.0], [1.9, 0.0], [1.7, 0.18], [-1.7, 0.18]];
+      const bM = buildRibbonFromSpans(flyoverSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+
+      // 4. Twin steel rails
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.18], [lat + 0.035, 0.18], [lat + 0.035, 0.34], [lat - 0.035, 0.34]];
+        const rM = buildRibbonFromSpans(flyoverSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+
+      // 5. Catenary wire
+      const wireProf = [[-0.08, 5.2], [0.08, 5.2], [0.08, 5.35], [-0.08, 5.35]];
+      const wM = buildRibbonFromSpans(flyoverSpans, wireProf, m.steelDark, 1.2, false);
+      if (wM) grp.add(wM);
+
+      // 6. Concrete viaduct piers down to ground level (y = 0) wherever elevated
+      flyoverSpans.forEach((spList) => {
+        let lastPierDist = -999;
+        for (let i = 0; i < spList.length; i++) {
+          const pt = spList[i];
+          if (pt.elev > 2.8 && (pt.dist - lastPierDist >= 26.0 || (i === 0 && pt.elev > 4.0))) {
+            const pierH = pt.elev - 0.75;
+            if (pierH > 1.0) {
+              addBox(grp, 1.9, pierH, 1.9, m.viaductConcrete, pt.pos.x, pierH * 0.5, pt.pos.z);
+              addBox(grp, 3.6, 0.6, 2.4, m.concreteLight, pt.pos.x, pierH - 0.3, pt.pos.z);
+            }
+            lastPierDist = pt.dist;
+          }
+        }
+      });
+    }
+
+    const turnoutSpans = (tr.turnouts || []).concat(tr.workshop_tracks || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
     if (turnoutSpans.length) {
       const ballastProf = [[-2.4, 0.0], [2.4, 0.0], [2.2, 0.22], [-2.2, 0.22]];
       const bM = buildRibbonFromSpans(turnoutSpans, ballastProf, m.ballastSleeper, 1.2, false);
@@ -8404,7 +8453,56 @@ window.MetroWebGLLayer = (function () {
       return out.length >= 2 ? out : null;
     };
 
-    const turnoutSpans = (tr.turnouts || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    const flyoverSpans = (tr.flyover_spurs || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    if (flyoverSpans.length) {
+      // 1. Viaduct concrete deck ribbon
+      const deckProf = [[-2.4, -0.75], [2.4, -0.75], [2.2, 0.0], [-2.2, 0.0]];
+      const dM = buildRibbonFromSpans(flyoverSpans, deckProf, m.viaductConcrete, 1.2, false);
+      if (dM) grp.add(dM);
+
+      // 2. Concrete parapets on both sides
+      const parapetLeft = [[-2.4, 0.0], [-2.15, 0.0], [-2.15, 1.1], [-2.4, 1.1]];
+      const parapetRight = [[2.15, 0.0], [2.4, 0.0], [2.4, 1.1], [2.15, 1.1]];
+      const pLM = buildRibbonFromSpans(flyoverSpans, parapetLeft, m.concreteLight, 1.2, false);
+      if (pLM) grp.add(pLM);
+      const pRM = buildRibbonFromSpans(flyoverSpans, parapetRight, m.concreteLight, 1.2, false);
+      if (pRM) grp.add(pRM);
+
+      // 3. Ballast ribbon on deck
+      const ballastProf = [[-1.9, 0.0], [1.9, 0.0], [1.7, 0.18], [-1.7, 0.18]];
+      const bM = buildRibbonFromSpans(flyoverSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+
+      // 4. Twin steel rails
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.18], [lat + 0.035, 0.18], [lat + 0.035, 0.34], [lat - 0.035, 0.34]];
+        const rM = buildRibbonFromSpans(flyoverSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+
+      // 5. Catenary wire
+      const wireProf = [[-0.08, 5.2], [0.08, 5.2], [0.08, 5.35], [-0.08, 5.35]];
+      const wM = buildRibbonFromSpans(flyoverSpans, wireProf, m.steelDark, 1.2, false);
+      if (wM) grp.add(wM);
+
+      // 6. Concrete viaduct piers down to ground level (y = 0) wherever elevated
+      flyoverSpans.forEach((spList) => {
+        let lastPierDist = -999;
+        for (let i = 0; i < spList.length; i++) {
+          const pt = spList[i];
+          if (pt.elev > 2.8 && (pt.dist - lastPierDist >= 26.0 || (i === 0 && pt.elev > 4.0))) {
+            const pierH = pt.elev - 0.75;
+            if (pierH > 1.0) {
+              addBox(grp, 1.9, pierH, 1.9, m.viaductConcrete, pt.pos.x, pierH * 0.5, pt.pos.z);
+              addBox(grp, 3.6, 0.6, 2.4, m.concreteLight, pt.pos.x, pierH - 0.3, pt.pos.z);
+            }
+            lastPierDist = pt.dist;
+          }
+        }
+      });
+    }
+
+    const turnoutSpans = (tr.turnouts || []).concat(tr.workshop_tracks || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
     if (turnoutSpans.length) {
       const ballastProf = [[-2.4, 0.0], [2.4, 0.0], [2.2, 0.22], [-2.2, 0.22]];
       const bM = buildRibbonFromSpans(turnoutSpans, ballastProf, m.ballastSleeper, 1.2, false);
@@ -11824,9 +11922,13 @@ window.MetroWebGLLayer = (function () {
     }
     if (mukundpurYardGroup && pinkCorridor && pinkCorridor.stationsData) {
       const mpSt = pinkCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('majlis'));
-      const mpD2 = mpSt ? ((mpSt.pos.x - focusX) * (mpSt.pos.x - focusX) + (mpSt.pos.z - focusZ) * (mpSt.pos.z - focusZ)) : 0;
-      const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('majlis');
-      mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (mpD2 <= depotVisR2);
+      const mpPos = mpSt ? mpSt.pos : toLocalMeters([77.1870, 28.7230], 1.35);
+      const depotCenter = toLocalMeters([77.1870, 28.7230], 1.35);
+      const d1 = (mpPos.x - focusX) * (mpPos.x - focusX) + (mpPos.z - focusZ) * (mpPos.z - focusZ);
+      const d2 = (depotCenter.x - focusX) * (depotCenter.x - focusX) + (depotCenter.z - focusZ) * (depotCenter.z - focusZ);
+      const minD2 = Math.min(d1, d2);
+      const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('majlis') || selectedStationName.toLowerCase().includes('mukundpur'));
+      mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || activeLineId === 'yellow' || activeLineId === 'yellow-line' || isDepotFocused) && (minD2 <= depotVisR2);
     }
     if (vinodNagarYardGroup && pinkCorridor && pinkCorridor.stationsData) {
       const vnSt = pinkCorridor.stationsData.find((s) => s.name && (s.name.toLowerCase().includes('vinod') || s.name.toLowerCase().includes('ip extension')));
