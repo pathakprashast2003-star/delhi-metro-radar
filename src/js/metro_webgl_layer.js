@@ -11108,7 +11108,8 @@ window.MetroWebGLLayer = (function () {
       const spSt = redCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('shastri park'));
       const spD2 = spSt ? ((spSt.pos.x - focusX) * (spSt.pos.x - focusX) + (spSt.pos.z - focusZ) * (spSt.pos.z - focusZ)) : 0;
       const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
-      shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red') && (spD2 <= yardR2);
+      const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('shastri');
+      shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red' || isDepotFocused) && (spD2 <= yardR2);
     }
 
     const list = allStationsData.length ? allStationsData : stationsData;
@@ -12343,12 +12344,17 @@ window.MetroWebGLLayer = (function () {
         } else if (st.name && st.name.toLowerCase().includes('jasola')) {
           tag = 'ELEVATED STABLING DEPOT (+14m)';
           dotColor = '#D946EF';
+        } else if (st.name === 'Shastri Park') {
+          tag = 'AT-GRADE · DMRC DEPOT HQ & ACADEMY';
+          dotColor = '#DC2626';
         } else if (st.terminus) {
           tag = 'TERMINUS';
         } else if (st._isSharedDualHub) {
           tag = 'INTERCHANGE HUB';
         } else if (st.structure === 'elevated') {
           tag = `+${st.elevM || 15}m`;
+        } else if (st.structure === 'at-grade') {
+          tag = 'AT-GRADE';
         } else {
           tag = `${st.elevM || -16}m TUBE`;
         }
