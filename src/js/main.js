@@ -2182,11 +2182,15 @@
       const isOrange = Boolean(st && (st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange || (activeLine === 'orange' && !st.lineId)));
       const isMagenta = Boolean(st && (st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta || (activeLine === 'magenta' && !st.lineId)));
       const isRed = Boolean(st && (st.lineId === 'red' || st.lineKey === 'red' || st.isRed || (activeLine === 'red' && !st.lineId)));
+      const isPink = Boolean(st && (st.lineId === 'pink' || st.lineKey === 'pink' || st.isPink || (activeLine === 'pink' && !st.lineId)));
       const isVaishali = Boolean(st && (st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali')));
-      const isBlue = Boolean(!isOrange && !isMagenta && !isRed && st && (st.isBlue || st.lineId === 'blue' || isVaishali || (activeLine === 'blue' && !st.lineId)));
+      const isBlue = Boolean(!isOrange && !isMagenta && !isRed && !isPink && st && (st.isBlue || st.lineId === 'blue' || isVaishali || (activeLine === 'blue' && !st.lineId)));
 
       if (lineTag) {
-        if (isOrange) {
+        if (isPink) {
+          lineTag.textContent = 'PL';
+          lineTag.className = 'station-step-line-tag line-pink';
+        } else if (isOrange) {
           lineTag.textContent = 'OE';
           lineTag.className = 'station-step-line-tag line-orange';
         } else if (isMagenta) {
@@ -2207,7 +2211,7 @@
         }
       }
 
-      const totalLineCount = isRed ? 29 : (isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isBlue ? 50 : 37))));
+      const totalLineCount = isPink ? 38 : (isRed ? 29 : (isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isBlue ? 50 : 37)))));
       const lineSeq = (st && st.seqIndex !== undefined) ? (st.seqIndex + 1) : (idx + 1);
       if (countEl) {
         if (activeLine !== 'all') {
@@ -2345,7 +2349,7 @@
         : (window.TripEngine ? TripEngine.getStations() : []);
 
       if (tab === 'yellow') {
-        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && !s.isOrange && !s.isMagenta && !s.isRed && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali' && s.lineId !== 'orange' && s.lineId !== 'magenta' && s.lineId !== 'red'));
+        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && !s.isOrange && !s.isMagenta && !s.isRed && !s.isPink && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali' && s.lineId !== 'orange' && s.lineId !== 'magenta' && s.lineId !== 'red' && s.lineId !== 'pink'));
       }
       if (tab === 'blue') {
         return allStations.filter(s => s.lineId === 'blue' || s.lineId === 'blue-vaishali' || s.isBlue);
@@ -2358,6 +2362,9 @@
       }
       if (tab === 'red') {
         return allStations.filter(s => s.lineId === 'red' || s.lineKey === 'red' || s.isRed);
+      }
+      if (tab === 'pink') {
+        return allStations.filter(s => s.lineId === 'pink' || s.lineKey === 'pink' || s.isPink);
       }
       if (tab === 'all') {
         return allStations;
@@ -2372,11 +2379,14 @@
       if (activeLine === 'red') {
         return allStations.filter(s => s.lineId === 'red' || s.lineKey === 'red' || s.isRed);
       }
+      if (activeLine === 'pink') {
+        return allStations.filter(s => s.lineId === 'pink' || s.lineKey === 'pink' || s.isPink);
+      }
       if (activeLine === 'blue') {
         return allStations.filter(s => s.lineId === 'blue' || s.lineId === 'blue-vaishali' || s.isBlue);
       }
       if (activeLine === 'yellow') {
-        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && !s.isOrange && !s.isMagenta && !s.isRed && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali' && s.lineId !== 'orange' && s.lineId !== 'magenta' && s.lineId !== 'red'));
+        return allStations.filter(s => s.lineId === 'yellow' || s.isYellow || (!s.isBlue && !s.isOrange && !s.isMagenta && !s.isRed && !s.isPink && s.lineId !== 'blue' && s.lineId !== 'blue-vaishali' && s.lineId !== 'orange' && s.lineId !== 'magenta' && s.lineId !== 'red' && s.lineId !== 'pink'));
       }
       return allStations;
     }
@@ -2412,11 +2422,12 @@
         const isOrange = Boolean(st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange);
         const isMagenta = Boolean(st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta);
         const isRed = Boolean(st.lineId === 'red' || st.lineKey === 'red' || st.isRed);
+        const isPink = Boolean(st.lineId === 'pink' || st.lineKey === 'pink' || st.isPink);
         const isVaishali = Boolean(st.lineId === 'blue-vaishali' || (st.corridor && st.corridor.lineId === 'blue-vaishali'));
-        const isB = Boolean(!isOrange && !isMagenta && !isRed && (st.isBlue || st.lineId === 'blue' || isVaishali));
-        const lineTag = isOrange ? 'OE' : (isMagenta ? 'ML' : (isRed ? 'RL' : (isVaishali ? 'BV' : (isB ? 'BL' : 'YL'))));
-        const lineClass = isOrange ? 'line-orange' : (isMagenta ? 'line-magenta' : (isRed ? 'line-red' : (isB ? 'line-blue' : 'line-yellow')));
-        const lineAttr = isOrange ? 'orange' : (isMagenta ? 'magenta' : (isRed ? 'red' : (isB ? 'blue' : 'yellow')));
+        const isB = Boolean(!isOrange && !isMagenta && !isRed && !isPink && (st.isBlue || st.lineId === 'blue' || isVaishali));
+        const lineTag = isPink ? 'PL' : (isOrange ? 'OE' : (isMagenta ? 'ML' : (isRed ? 'RL' : (isVaishali ? 'BV' : (isB ? 'BL' : 'YL')))));
+        const lineClass = isPink ? 'line-pink' : (isOrange ? 'line-orange' : (isMagenta ? 'line-magenta' : (isRed ? 'line-red' : (isB ? 'line-blue' : 'line-yellow'))));
+        const lineAttr = isPink ? 'pink' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isRed ? 'red' : (isB ? 'blue' : 'yellow'))));
         const stNameNorm = normalizeStationName(st.name);
         const isActive = curNameNorm && stNameNorm === curNameNorm;
         const totalLineCount = isRed ? 29 : (isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isB ? 50 : 37))));
@@ -2509,13 +2520,15 @@
         ? window.MetroWebGLLayer.getActiveLine()
         : 'all';
       if (activeLine !== 'all' && activeLine !== stLine) {
-        const btnId = stLine === 'orange'
-          ? 'btn-line-orange'
-          : (stLine === 'magenta'
-            ? 'btn-line-magenta'
-            : (stLine === 'red'
-              ? 'btn-line-red'
-              : (stLine === 'blue' ? 'btn-line-blue' : 'btn-line-yellow')));
+        const btnId = stLine === 'pink'
+          ? 'btn-line-pink'
+          : (stLine === 'orange'
+            ? 'btn-line-orange'
+            : (stLine === 'magenta'
+              ? 'btn-line-magenta'
+              : (stLine === 'red'
+                ? 'btn-line-red'
+                : (stLine === 'blue' ? 'btn-line-blue' : 'btn-line-yellow'))));
         document.getElementById(btnId)?.click();
       }
 
@@ -2622,9 +2635,9 @@
       });
     }
 
-    ['btn-line-all', 'btn-line-yellow', 'btn-line-blue', 'btn-line-orange', 'btn-line-magenta', 'btn-line-red'].forEach((id) => {
+    ['btn-line-all', 'btn-line-yellow', 'btn-line-blue', 'btn-line-orange', 'btn-line-magenta', 'btn-line-red', 'btn-line-pink'].forEach((id) => {
       document.getElementById(id)?.addEventListener('click', (e) => {
-        ['btn-line-all', 'btn-line-yellow', 'btn-line-blue', 'btn-line-orange', 'btn-line-magenta', 'btn-line-red'].forEach((bId) => {
+        ['btn-line-all', 'btn-line-yellow', 'btn-line-blue', 'btn-line-orange', 'btn-line-magenta', 'btn-line-red', 'btn-line-pink'].forEach((bId) => {
           document.getElementById(bId)?.classList.remove('active');
         });
         e.currentTarget.classList.add('active');
@@ -2636,7 +2649,7 @@
               ? 'orange'
               : (id === 'btn-line-magenta'
                 ? 'magenta'
-                : (id === 'btn-line-red' ? 'red' : 'all'))));
+                : (id === 'btn-line-red' ? 'red' : (id === 'btn-line-pink' ? 'pink' : 'all')))));
         if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.setLineFilter === 'function') {
           window.MetroWebGLLayer.setLineFilter(lineId);
         }
@@ -2660,6 +2673,10 @@
         } else if (lineId === 'red') {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
             window.MetroWebGLLayer.flyToStation('Rithala');
+          }
+        } else if (lineId === 'pink') {
+          if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
+            window.MetroWebGLLayer.flyToStation('Majlis Park');
           }
         } else {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
