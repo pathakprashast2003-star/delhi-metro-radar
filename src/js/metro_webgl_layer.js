@@ -8243,6 +8243,8 @@ window.MetroWebGLLayer = (function () {
       addBox(detail, 0.55, 0.85, 10.6, m.tactileYellow, 38.0, yV + 5.1, 0);
     } else if (st.name === 'Noida Electronic City') {
       buildNoidaElectronicCityTurnaround(root, detail, m, g, yV);
+    } else if (st.name === 'Vaishali') {
+      addTerminusBufferAndCrossover(root, detail, 41.5, 33.5, yV + 0.2);
     } else if (st.name === 'Botanical Garden' && (st.isMagenta || st.lineId === 'magenta' || st.lineKey === 'magenta')) {
       buildBotanicalGardenMagentaTurnaround(root, detail, m, g, yV);
       buildBotanicalGardenPlatformInterchange(root, detail, m, g, yV);
@@ -8587,6 +8589,23 @@ window.MetroWebGLLayer = (function () {
       // Dock compact transverse interchange bay strictly inside the station promenade apron
       addBox(root, 13.2, 2.1, isSide ? 28.0 : 24.4, m.slateCut, 0, 1.15, 0);
       addBox(root, 2.2, 0.34, isSide ? 28.4 : 24.8, secMat, 0, 2.28, 0);
+    }
+
+    // Terminal overrun hydraulic buffers & end bulkhead for subterranean terminus stations (e.g. Krishna Park Extension)
+    if (st.terminus || (st.name && st.name.includes('Krishna Park'))) {
+      const termX = -41.5;
+      const sgn = Math.sign(termX);
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        addBox(detail, 2.4, 1.35, 2.4, m.steelDark, termX, SUBWAY_Y + 0.65, tz);
+        addBox(detail, 0.45, 0.95, 2.8, m.bufferRed, termX - sgn * 1.15, SUBWAY_Y + 0.72, tz);
+        addBox(detail, 0.25, 0.25, 2.7, m.tactileYellow, termX - sgn * 1.25, SUBWAY_Y + 1.05, tz);
+      });
+      // Concrete terminal bulkhead wall capping the subterranean cutaway trench
+      addBox(root, 2.8, 7.8, floorD, m.slateCut, termX + sgn * 1.2, 4.0, 0);
+      addBox(root, 3.2, 0.55, floorD + 0.4, m.concreteLight, termX + sgn * 1.2, 7.9, 0);
+      // Scissors crossover track linking Track 1 & Track 2
+      const crossBar = addBox(detail, 14.5, 0.18, 0.45, m.steelDark, termX + sgn * 8.0, SUBWAY_Y + 0.38, 0);
+      crossBar.rotation.y = sgn * 0.48;
     }
 
     const treeZ = isSide ? 15.2 : 13.1;
@@ -9700,7 +9719,13 @@ window.MetroWebGLLayer = (function () {
       const isIgiAirport = st.name === 'IGI Airport';
       const isNewDelhiAirport = st.name === 'New Delhi' && isOrange;
 
-      const hubSpec = interchangeHubsData && interchangeHubsData.hubs && interchangeHubsData.hubs[st.name];
+      const hubSpec = interchangeHubsData && interchangeHubsData.hubs && (
+        interchangeHubsData.hubs[st.name] ||
+        (st.name === 'Janakpuri West' ? interchangeHubsData.hubs['Janak Puri West'] : null) ||
+        (st.name === 'Janak Puri West' ? interchangeHubsData.hubs['Janak Puri West'] : null) ||
+        (st.name === 'Dwarka Sector 21' ? interchangeHubsData.hubs['Dwarka Sector - 21'] : null) ||
+        (st.name === 'Dwarka Sector - 21' ? interchangeHubsData.hubs['Dwarka Sector - 21'] : null)
+      );
       if (hubSpec && st.name === 'Dwarka') {
         subtitle = 'BLUE × GREY INTERCHANGE · NAJAFGARH BRANCH';
       }
