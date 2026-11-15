@@ -113,6 +113,19 @@ window.MetroWebGLLayer = (function () {
       cam: { pitch: 58, bearing: -32, zoom: 17.2 }
     },
     {
+      id: 'pitampura_tv_tower',
+      name: 'Pitampura TV Tower',
+      era: 'Modern Landmark · 1988',
+      coords: [77.1495, 28.6980],
+      img: 'public/monuments/pitampura_tv_tower.jpg',
+      station: 'Netaji Subhash Place',
+      tier: 1,
+      featured: true,
+      has3d: true,
+      desc: '235-metre iconic broadcast tower and observation pod dominating the North-West Delhi skyline beside Netaji Subhash Place.',
+      cam: { pitch: 56, bearing: -32, zoom: 16.8 }
+    },
+    {
       id: 'jama_masjid',
       name: 'Jama Masjid',
       era: 'Mughal · 1656',
@@ -3242,6 +3255,55 @@ window.MetroWebGLLayer = (function () {
     addBox(rfGroup, 0.16, 0.65, 3.4, new THREE.MeshBasicMaterial({ color: 0xFF9933 }), -3.5, 26.8, 1.8);
     addBox(rfGroup, 0.16, 0.65, 3.4, m.whiteMarble, -3.5, 26.15, 1.8);
     addBox(rfGroup, 0.16, 0.65, 3.4, new THREE.MeshBasicMaterial({ color: 0x138808 }), -3.5, 25.5, 1.8);
+    registerMonument('Red Fort', rfGroup, rfPos, 5000);
+
+    // 4F. Pitampura TV Tower (235m landmark broadcast minaret at [77.1495, 28.6980])
+    const tvPos = toLocalMeters([77.1495, 28.6980], 0);
+    const tvGroup = new THREE.Group();
+    tvGroup.position.set(tvPos.x, 0, tvPos.z);
+    const tvBase = new THREE.Mesh(new THREE.CylinderGeometry(15.0, 17.5, 3.2, 24), m.concreteLight);
+    tvBase.position.y = 1.6;
+    tvGroup.add(tvBase);
+    const tvShaft1 = new THREE.Mesh(new THREE.CylinderGeometry(8.2, 11.5, 45, 24), m.concreteWeb);
+    tvShaft1.position.y = 3.2 + 22.5;
+    const tvShaft2 = new THREE.Mesh(new THREE.CylinderGeometry(6.4, 8.2, 50, 24), m.concreteLight);
+    tvShaft2.position.y = 48.2 + 25;
+    const tvShaft3 = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 6.4, 54, 24), m.concreteLight);
+    tvShaft3.position.y = 98.2 + 27;
+    tvGroup.add(tvShaft1, tvShaft2, tvShaft3);
+    for (let i = 0; i < 8; i++) {
+      const ang = (i / 8) * Math.PI * 2;
+      const rx = Math.cos(ang) * 9.8;
+      const rz = Math.sin(ang) * 9.8;
+      addBox(tvGroup, 1.4, 42, 1.4, m.concreteWeb, rx, 24, rz);
+    }
+    const tvPodSupport = new THREE.Mesh(new THREE.CylinderGeometry(14.8, 5.2, 6.0, 24), m.concreteLight);
+    tvPodSupport.position.y = 155.2;
+    const tvPodLower = new THREE.Mesh(new THREE.CylinderGeometry(18.2, 16.5, 4.2, 24), m.steelDark);
+    tvPodLower.position.y = 160.3;
+    const tvPodGlass = new THREE.Mesh(new THREE.CylinderGeometry(18.4, 18.2, 3.2, 24), m.skylightGlass);
+    tvPodGlass.position.y = 164.0;
+    const tvPodRoof = new THREE.Mesh(new THREE.CylinderGeometry(15.2, 18.4, 2.8, 24), m.concreteLight);
+    tvPodRoof.position.y = 167.0;
+    [-17.2, 17.2].forEach((dx) => {
+      const dish = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 0.4, 1.2, 16), m.steelChrome);
+      dish.rotation.z = Math.PI / 2;
+      dish.position.set(dx, 168.5, 0);
+      tvGroup.add(dish);
+    });
+    tvGroup.add(tvPodSupport, tvPodLower, tvPodGlass, tvPodRoof);
+    const tvMastBase = new THREE.Mesh(new THREE.CylinderGeometry(2.8, 4.2, 16, 8), m.redAccent);
+    tvMastBase.position.y = 178;
+    const tvMast2 = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.8, 16, 8), m.concreteLight);
+    tvMast2.position.y = 194;
+    const tvMast3 = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.2, 16, 8), m.redAccent);
+    tvMast3.position.y = 210;
+    const tvMastSpire = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 1.6, 17, 8), m.concreteLight);
+    tvMastSpire.position.y = 226.5;
+    const tvBeacon = new THREE.Mesh(new THREE.SphereGeometry(1.2, 12, 8), m.luminaireGlow);
+    tvBeacon.position.y = 235.2;
+    tvGroup.add(tvMastBase, tvMast2, tvMast3, tvMastSpire, tvBeacon);
+    registerMonument('Pitampura TV Tower', tvGroup, tvPos, 7000);
     // 4E. Indian Railways Terminal Hubs: New Delhi Railway Station (NDLS) & Old Delhi Junction (DLI + Lothian Rail Bridge)
     const buildIndianRailwaysHubs = () => {
       const irBlueRoof = new THREE.MeshStandardMaterial({ color: 0x1D4ED8, roughness: 0.44, metalness: 0.24, side: THREE.DoubleSide });
@@ -6399,6 +6461,252 @@ window.MetroWebGLLayer = (function () {
     return root;
   }
 
+
+  function buildNetajiSubhashPlaceInterchangeHub(st, secColor, isPink) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+
+    const pinkAccent = m.pinkAccent;
+    const redAccent = m.redAccent;
+
+    // 1. Unified Pedestrian Ground Plaza & Ring Road Carriageway (Eliminating the black void!)
+    addBox(root, 180, 0.32, 240, m.plazaPave, -50, 0.16, 95);
+    addBox(root, 220, 0.08, 16.0, m.asphaltRoad, -40, 0.34, -28);
+    addBox(root, 220, 0.08, 16.0, m.asphaltRoad, -40, 0.34, 42);
+    for (let rx = -140; rx <= 60; rx += 11) {
+      addBox(root, 5.2, 0.04, 0.22, m.roadStripeWhite, rx, 0.39, -28);
+      addBox(root, 5.2, 0.04, 0.22, m.roadStripeWhite, rx, 0.39, 42);
+    }
+    addBox(root, 220, 0.24, 0.55, m.concreteLight, -40, 0.42, -36.2);
+    addBox(root, 220, 0.24, 0.55, m.concreteLight, -40, 0.42, -19.8);
+    addBox(root, 220, 0.24, 0.55, m.concreteLight, -40, 0.42, 33.8);
+    addBox(root, 220, 0.24, 0.55, m.concreteLight, -40, 0.42, 50.2);
+    addBox(root, 210, 0.26, 3.8, m.sagePark, -40, 0.36, -23.8);
+    addBox(root, 210, 0.26, 3.8, m.sagePark, -40, 0.36, 29.8);
+
+    [-110, -75, -40, -5, 30].forEach((tx, idx) => {
+      addStreetTree(detail, tx, 0, -38, idx % 2 === 0, 0.95 + (idx % 3) * 0.12, idx * 1.5);
+      addStreetTree(detail, tx + 8, 0, 52, idx % 2 === 1, 0.92 + ((idx + 1) % 3) * 0.14, idx * 2.1);
+    });
+
+    addDelhiVehicles(detail, [
+      { type: 'bus', color: 'red', x: -65, y: 0.34, z: -28, rotY: 0 },
+      { type: 'cab', x: -20, y: 0.34, z: -28, rotY: 0 },
+      { type: 'auto', x: 15, y: 0.34, z: -28, rotY: 0 },
+      { type: 'bus', color: 'green', x: -10, y: 0.34, z: 42, rotY: Math.PI },
+      { type: 'cab', x: -55, y: 0.34, z: 42, rotY: Math.PI },
+      { type: 'auto', x: 25, y: 0.34, z: 42, rotY: Math.PI }
+    ]);
+
+    // 2. Pink Line Underground Cutaway Station (Origin: 0, 0, 0)
+    addBox(root, 96, 7.8, 1.4, m.slateCut, 0, 4.0, -11.8);
+    addBox(root, 96, 7.8, 1.4, m.slateCut, 0, 4.0, 11.8);
+    addBox(root, 92, 6.4, 0.35, m.tileWall, 0, 3.8, -11.0);
+    addBox(root, 92, 6.4, 0.35, m.tileWall, 0, 3.8, 11.0);
+    addBox(root, 92, 0.65, 0.42, pinkAccent, 0, 4.8, -10.95);
+    addBox(root, 92, 0.65, 0.42, pinkAccent, 0, 4.8, 10.95);
+
+    addBox(root, 92, 1.25, 6.4, m.terrazzoDeck, 0, 0.65, 0);
+    [-3.05, 3.05].forEach((tz) => {
+      addBox(root, 90, 0.08, 0.35, m.tactileYellow, 0, 1.30, tz);
+    });
+
+    [-3.15, 3.15].forEach((pz) => {
+      addBox(detail, 88, 2.2, 0.12, m.glassBarrier, 0, 2.38, pz);
+      addBox(detail, 88, 0.32, 0.34, m.steelDark, 0, 3.48, pz);
+      addBox(detail, 88, 0.22, 0.36, pinkAccent, 0, 3.75, pz);
+      for (let mx = -40; mx <= 40; mx += 6.8) {
+        addBox(detail, 0.28, 2.4, 0.28, m.steelChrome, mx, 2.48, pz);
+      }
+    });
+
+    addBox(detail, 9.8, 2.2, 0.42, m.pidsHousing, 0, 4.8, 0);
+    const pFront = addBox(detail, 9.2, 1.85, 0.48, m.placeholderSign, 0, 4.8, 0);
+    pFront.frustumCulled = false;
+
+    addBox(detail, 34, 0.65, 8.2, m.concreteLight, -4.0, 4.5, 0);
+    addAFCTurnstiles(detail, -4.0, 4.85, 2.5, 5);
+    addBox(detail, 34, 0.85, 0.12, m.glassBarrier, -4.0, 5.25, 3.8);
+    addBox(detail, 34, 0.85, 0.12, m.glassBarrier, -4.0, 5.25, -3.8);
+    [-8.0, 0.0].forEach((ex) => {
+      const esc = addBox(detail, 2.1, 0.65, 8.5, m.escStep, ex, 2.8, -1.8);
+      esc.rotation.x = 0.45;
+      const eGlass = addBox(detail, 2.25, 1.1, 8.5, m.escGlass, ex, 3.25, -1.8);
+      eGlass.rotation.x = 0.45;
+    });
+
+    [-48.0, 48.0].forEach((xP) => {
+      const sgn = Math.sign(xP);
+      addBox(root, 3.2, 7.8, 24.5, m.concreteWeb, xP, 4.0, 0);
+      [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((tz) => {
+        const arch = new THREE.Mesh(g.tbmArch, m.concreteLight);
+        arch.rotation.z = Math.PI / 2;
+        arch.position.set(xP - sgn * 0.2, SUBWAY_Y + 2.0, tz);
+        arch.scale.set(1.22, 2.35, 1.0);
+        arch.frustumCulled = false;
+        root.add(arch);
+
+        const bore = new THREE.Mesh(g.tbmBore, m.slateDark);
+        bore.rotation.z = Math.PI / 2;
+        bore.position.set(xP - sgn * 0.1, SUBWAY_Y + 2.0, tz);
+        bore.scale.set(1.16, 2.38, 0.95);
+        bore.frustumCulled = false;
+        root.add(bore);
+      });
+      addBox(detail, 0.35, 0.85, 24.2, m.hazardYellow, xP - sgn * 0.4, 6.2, 0);
+    });
+
+    // 3. Surface Entrance Pavilions (Gate 1 & Gate 2)
+    const g1Grp = new THREE.Group();
+    g1Grp.position.set(-14, 0.28, 15.5);
+    const g1Canopy = addBox(g1Grp, 18, 0.35, 10.5, m.concourseGlass, 0, 5.2, 0);
+    g1Canopy.rotation.z = -0.08;
+    addBox(g1Grp, 18.2, 0.42, 0.45, m.steelDark, 0, 5.3, -5.2);
+    addBox(g1Grp, 18.2, 0.42, 0.45, m.steelDark, 0, 5.1, 5.2);
+    [-8, 0, 8].forEach((gx) => {
+      addBox(g1Grp, 0.42, 5.0, 0.42, m.steelDark, gx, 2.6, 5.0);
+    });
+    addBox(g1Grp, 0.95, 5.4, 0.95, m.slateDark, -9.5, 2.7, 5.5);
+    addBox(g1Grp, 1.35, 1.35, 1.35, m.roundelRed, -9.5, 5.5, 5.5);
+    addBox(g1Grp, 0.95, 0.45, 0.95, m.luminaireGlow, -9.5, 5.5, 5.5);
+    const sbGate1 = addBox(g1Grp, 4.2, 1.4, 0.28, m.placeholderSign, -9.5, 3.8, 5.8);
+    addBox(g1Grp, 14, 1.1, 0.12, m.glassBarrier, 0, 1.2, 4.8);
+    root.add(g1Grp);
+
+    const g2Grp = new THREE.Group();
+    g2Grp.position.set(18, 0.28, -15.5);
+    const g2Canopy = addBox(g2Grp, 18, 0.35, 10.5, m.concourseGlass, 0, 5.2, 0);
+    g2Canopy.rotation.z = 0.08;
+    addBox(g2Grp, 18.2, 0.42, 0.45, m.steelDark, 0, 5.3, -5.2);
+    addBox(g2Grp, 18.2, 0.42, 0.45, m.steelDark, 0, 5.1, 5.2);
+    [-8, 0, 8].forEach((gx) => {
+      addBox(g2Grp, 0.42, 5.0, 0.42, m.steelDark, gx, 2.6, -5.0);
+    });
+    addBox(g2Grp, 0.95, 5.4, 0.95, m.slateDark, 9.5, 2.7, -5.5);
+    addBox(g2Grp, 1.35, 1.35, 1.35, m.roundelRed, 9.5, 5.5, -5.5);
+    const sbGate2 = addBox(g2Grp, 4.2, 1.4, 0.28, m.placeholderSign, 9.5, 3.8, -5.8);
+    root.add(g2Grp);
+
+    // 4. Pacific Mall Netaji Subhash Place
+    const mallGrp = new THREE.Group();
+    mallGrp.position.set(-48, 0.28, 110);
+    addBox(mallGrp, 76, 1.2, 46, m.slateCut, 0, 0.6, 0);
+    addBox(mallGrp, 74, 9.5, 42, m.concreteLight, 0, 5.8, 0);
+    addBox(mallGrp, 72, 12.0, 40, m.slateCut, 0, 16.5, 0);
+    [-20.8, 20.8].forEach((mz) => {
+      addBox(mallGrp, 70, 16.5, 0.45, m.concourseGlass, 0, 11.2, mz);
+      for (let mx = -32; mx <= 32; mx += 7) {
+        addBox(mallGrp, 0.45, 18.0, 0.65, m.steelDark, mx, 11.0, mz);
+      }
+    });
+    const skylight = new THREE.Mesh(new THREE.CylinderGeometry(8.5, 8.5, 48, 16, 1, false, 0, Math.PI), m.skylightGlass);
+    skylight.rotation.z = Math.PI / 2;
+    skylight.position.set(0, 22.8, 0);
+    mallGrp.add(skylight);
+    const sbMall1 = addBox(mallGrp, 32.0, 3.2, 0.35, m.placeholderSign, 0, 24.2, -20.8);
+    const sbMall2 = addBox(mallGrp, 32.0, 3.2, 0.35, m.placeholderSign, 0, 24.2, 20.8);
+    [-18, -6, 6, 18].forEach((cx) => {
+      const umb = new THREE.Mesh(new THREE.ConeGeometry(2.4, 1.2, 8), pinkAccent);
+      umb.position.set(cx, 3.2, -25.5);
+      const pole = new THREE.Mesh(g.cyl1, m.steelDark);
+      pole.scale.set(0.08, 2.4, 0.08);
+      pole.position.set(cx, 1.8, -25.5);
+      mallGrp.add(umb, pole);
+      addBox(mallGrp, 2.2, 0.85, 1.2, m.concreteWeb, cx, 0.9, -23.5);
+      const bush = new THREE.Mesh(g.sphere, m.treeFoliage);
+      bush.scale.set(1.1, 0.75, 0.75);
+      bush.position.set(cx, 1.6, -23.5);
+      mallGrp.add(bush);
+    });
+    root.add(mallGrp);
+
+    // 5. Enclosed Pedestrian Interchange Skywalk (Pacific Mall to Red Line Concourse)
+    const swGrp = new THREE.Group();
+    const redLocalX = -84.6;
+    const redLocalZ = 216.7;
+    const redConcY = 9.8;
+
+    const swA_dx = redLocalX - (-48);
+    const swA_dz = redLocalZ - 110;
+    const swA_len = Math.hypot(swA_dx, swA_dz);
+    const swA_yaw = Math.atan2(-swA_dz, swA_dx);
+    const swA_midX = (-48 + redLocalX) * 0.5;
+    const swA_midZ = (110 + redLocalZ) * 0.5;
+    const swA_midY = (8.5 + redConcY) * 0.5;
+
+    const tubeA = new THREE.Group();
+    tubeA.position.set(swA_midX, swA_midY, swA_midZ);
+    tubeA.rotation.order = 'YXZ';
+    tubeA.rotation.y = swA_yaw;
+    tubeA.rotation.z = Math.atan2(redConcY - 8.5, swA_len);
+    addBox(tubeA, swA_len, 0.55, 6.4, m.concreteLight, 0, -1.8, 0);
+    addBox(tubeA, swA_len, 3.4, 5.8, m.concourseGlass, 0, 0.15, 0);
+    addBox(tubeA, swA_len, 0.45, 6.6, m.steelDark, 0, 1.95, 0);
+    addBox(tubeA, swA_len, 0.22, 6.7, redAccent, 0, 2.25, 0);
+    addTravelator(tubeA, swA_len - 12, 1.6, 0, -1.5, -1.2);
+    addTravelator(tubeA, swA_len - 12, 1.6, 0, -1.5, 1.2);
+    for (let rx = -swA_len * 0.42; rx <= swA_len * 0.42; rx += 14) {
+      addBox(tubeA, 0.45, 3.8, 6.8, m.steelDark, rx, 0.15, 0);
+    }
+    [-swA_len * 0.28, swA_len * 0.28].forEach((px) => {
+      const pTopY = swA_midY - 1.8;
+      addBox(tubeA, 2.4, pTopY, 2.4, m.pierCream, px, -pTopY * 0.5 - 1.8, 0);
+      addBox(tubeA, 3.2, 0.95, 6.8, m.concreteLight, px, -2.1, 0);
+    });
+    swGrp.add(tubeA);
+
+    const swB_dx = -14 - (-48);
+    const swB_dz = 16 - 110;
+    const swB_len = Math.hypot(swB_dx, swB_dz);
+    const swB_yaw = Math.atan2(-swB_dz, swB_dx);
+    const swB_midX = (-48 + -14) * 0.5;
+    const swB_midZ = (110 + 16) * 0.5;
+    const swB_midY = (8.5 + 1.2) * 0.5;
+
+    const tubeB = new THREE.Group();
+    tubeB.position.set(swB_midX, swB_midY, swB_midZ);
+    tubeB.rotation.order = 'YXZ';
+    tubeB.rotation.y = swB_yaw;
+    tubeB.rotation.z = Math.atan2(1.2 - 8.5, swB_len);
+    addBox(tubeB, swB_len, 0.55, 6.4, m.concreteLight, 0, -1.8, 0);
+    addBox(tubeB, swB_len, 3.4, 5.8, m.concourseGlass, 0, 0.15, 0);
+    addBox(tubeB, swB_len, 0.45, 6.6, m.steelDark, 0, 1.95, 0);
+    addBox(tubeB, swB_len, 0.22, 6.7, pinkAccent, 0, 2.25, 0);
+    addTravelator(tubeB, swB_len - 10, 1.6, 0, -1.5, -1.2);
+    addTravelator(tubeB, swB_len - 10, 1.6, 0, -1.5, 1.2);
+    for (let rx = -swB_len * 0.42; rx <= swB_len * 0.42; rx += 14) {
+      addBox(tubeB, 0.45, 3.8, 6.8, m.steelDark, rx, 0.15, 0);
+    }
+    [-swB_len * 0.25, swB_len * 0.25].forEach((px) => {
+      const pTopY = swB_midY - 1.8;
+      addBox(tubeB, 2.2, pTopY, 2.2, m.pierCream, px, -pTopY * 0.5 - 1.8, 0);
+    });
+    swGrp.add(tubeB);
+
+    addBox(swGrp, 6.2, 16.5, 6.2, m.concourseGlass, -48, 8.25, 110);
+    addBox(swGrp, 6.6, 0.65, 6.6, m.steelDark, -48, 16.8, 110);
+    addBox(swGrp, 6.8, 0.35, 6.8, pinkAccent, -48, 17.2, 110);
+
+    // Glazed Skywalk Reception Portal directly interfacing into the Red Line Concourse Hall
+    addBox(swGrp, 8.2, 4.8, 7.2, m.concourseGlass, redLocalX, redConcY, redLocalZ);
+    addBox(swGrp, 8.6, 0.55, 7.6, m.steelDark, redLocalX, redConcY + 2.5, redLocalZ);
+    addBox(swGrp, 8.8, 0.35, 7.8, redAccent, redLocalX, redConcY + 2.8, redLocalZ);
+
+    root.add(swGrp);
+
+    const sbWall = addBox(root, 22.0, 2.4, 0.25, m.placeholderSign, 0, 4.4, -11.6);
+    sbWall.frustumCulled = false;
+
+    root.add(detail);
+    return {
+      root,
+      detail,
+      signMeshes: [sbWall, sbGate1, sbGate2, sbMall1, sbMall2],
+      pidsMesh: pFront
+    };
+  }
 
   function buildDwarkaSector21DualHub(blueSt, orangeSt, secColor) {
     const m = getMaterials();
@@ -10505,7 +10813,7 @@ window.MetroWebGLLayer = (function () {
       if (isPink) {
         if (st.name === 'Majlis Park') subtitle = 'PINK LINE · NORTH TERMINUS · RING CORRIDOR START';
         else if (st.name === 'Azadpur') subtitle = 'PINK × YELLOW INTERCHANGE · SUBWAY CUTAWAY';
-        else if (st.name === 'Netaji Subhash Place') subtitle = 'PINK × RED INTERCHANGE · SUBWAY BOX UNDER RED VIADUCT';
+        else if (st.name === 'Netaji Subhash Place') subtitle = 'PINK × RED INTERCHANGE · PACIFIC MALL & SKYWALK HUB';
         else if (st.name === 'Punjabi Bagh West') subtitle = 'PINK × GREEN INTERCHANGE · VIADUCT HALT';
         else if (st.name === 'Rajouri Garden') subtitle = 'PINK × BLUE INTERCHANGE · UPPER VIADUCT +21M';
         else if (st.name === 'Durgabai Deshmukh South Campus') subtitle = 'PINK × AIRPORT EXPRESS · RECORD VIADUCT +23.6M';
@@ -10524,7 +10832,7 @@ window.MetroWebGLLayer = (function () {
       } else if (isRed) {
         if (st.name === 'Kashmere Gate') subtitle = 'RED × YELLOW × VIOLET MEGA HUB · +16.8M ELEVATED';
         else if (st.name === 'Inderlok') subtitle = 'RED × GREEN INTERCHANGE · UPPER VIADUCT +17.5M';
-        else if (st.name === 'Netaji Subhash Place') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED';
+        else if (st.name === 'Netaji Subhash Place') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED & SKYWALK';
         else if (st.name === 'Welcome') subtitle = 'RED × PINK INTERCHANGE · +16.5M ELEVATED';
         else if (st.name === 'Shastri Park') subtitle = 'RED LINE · AT-GRADE STATION & FIRST DMRC DEPOT';
         else subtitle = `YELLOW LINE · ${st.structure === 'elevated' ? '+15M ELEVATED SIDE' : `${st.elevM || -16}M UNDERGROUND ${isUgSide ? 'SIDE' : 'ISLAND'}`}`;
@@ -10597,19 +10905,21 @@ window.MetroWebGLLayer = (function () {
                 ? buildRajivChowkCruciformHub(st, blueRajivSt, secColor)
                 : (isDhaulaKuan
                     ? buildDhaulaKuanAeroHub(st, secColor)
-                    : (isSharedDwarka21
-                        ? buildDwarkaSector21DualHub(blueD21St, st, secColor)
-                        : (isIgiAirport
-                            ? buildIgiAirportT3Station(st, secColor)
-                            : (isNewDelhiAirport
-                                ? buildNewDelhiAirportHub(st, secColor)
-                                : (isOrange
-                                    ? buildAirportExpressStation(st, secColor)
-                                    : ((st.structure === 'elevated' || st.structure === 'at-grade')
-                                        ? buildElevatedStation(st, secColor)
-                                        : buildUndergroundCutawayStation(st, secColor)))))))));
+                    : ((st.name === 'Netaji Subhash Place' && isPink)
+                        ? buildNetajiSubhashPlaceInterchangeHub(st, secColor, isPink)
+                        : (isSharedDwarka21
+                            ? buildDwarkaSector21DualHub(blueD21St, st, secColor)
+                            : (isIgiAirport
+                                ? buildIgiAirportT3Station(st, secColor)
+                                : (isNewDelhiAirport
+                                    ? buildNewDelhiAirportHub(st, secColor)
+                                    : (isOrange
+                                        ? buildAirportExpressStation(st, secColor)
+                                        : ((st.structure === 'elevated' || st.structure === 'at-grade')
+                                            ? buildElevatedStation(st, secColor)
+                                            : buildUndergroundCutawayStation(st, secColor))))))))));
 
-      if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank' && !isSharedDwarka21 && st.name !== 'New Delhi' && st.name !== 'Janakpuri West' && st.name !== 'Janak Puri West' && st.name !== 'Botanical Garden') {
+      if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank' && !isSharedDwarka21 && st.name !== 'New Delhi' && st.name !== 'Janakpuri West' && st.name !== 'Janak Puri West' && st.name !== 'Botanical Garden' && st.name !== 'Netaji Subhash Place') {
         attachGenuineInterchangeGeometry(built, st, hubSpec, m, g);
       }
 
@@ -11622,7 +11932,7 @@ window.MetroWebGLLayer = (function () {
           layout: {
             'symbol-placement': 'line',
             'symbol-spacing': 340,
-            'text-field': '⬇ UNDERGROUND TUBE (-16m)',
+            'text-field': '',
             'text-font': ['Noto Sans Bold'],
             'text-size': 10.5,
             'text-offset': [0, 1.4],
