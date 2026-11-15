@@ -1741,7 +1741,7 @@ window.MetroWebGLLayer = (function () {
 
     const curve = new THREE.CatmullRomCurve3(densePts, false, 'centripetal', 0.25);
     const approxLen = curve.getLength();
-    const numSamples = Math.max(2400, Math.ceil(approxLen / 10));
+    const numSamples = Math.max(1400, Math.ceil(approxLen / 18));
     const spaced = curve.getSpacedPoints(numSamples);
 
     const cSamples = [];
@@ -2030,8 +2030,9 @@ window.MetroWebGLLayer = (function () {
     geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
     geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
     geo.setIndex(indices);
+    geo.computeBoundingSphere();
     const mesh = new THREE.Mesh(geo, material);
-    mesh.frustumCulled = false;
+    mesh.frustumCulled = true;
     mesh.castShadow = castShadow;
     mesh.receiveShadow = true;
     return mesh;
@@ -2075,6 +2076,11 @@ window.MetroWebGLLayer = (function () {
     const spineMat = isPink ? m.tactilePink : (isRed ? m.roundelRed : (isOrange ? m.tactileOrange : (isMagenta ? m.tactileMagenta : (isBlue ? m.tactileBlue : m.tactileYellow))));
     const guideMat = isPink ? m.pinkAccent : (isRed ? m.redAccent : (isOrange ? m.orangeAccent : (isMagenta ? m.magentaAccent : (isBlue ? m.blueAccent : m.yellowAccent))));
 
+    const lineTrackGroup = new THREE.Group();
+    lineTrackGroup.name = 'trackGroup_' + (c ? (c.lineId || c.lineKey) : 'yellow');
+    if (c) c._trackGroup = lineTrackGroup;
+    parent.add(lineTrackGroup);
+
     // 1. Elevated Box-Girder Viaduct & Transition Ramps (smooth watertight bridge spans)
     const viaductDeckProf = [
       [-6.8, 0.0], [-6.8, -0.85], [-3.6, -2.55], [3.6, -2.55], [6.8, -0.85], [6.8, 0.0]
@@ -2104,11 +2110,11 @@ window.MetroWebGLLayer = (function () {
       groundBedMat.color.setHex(0x363D47);
       const groundBedProf = [[-6.8, -0.22], [6.8, -0.22], [6.2, 0.01], [-6.2, 0.01]];
       const bedMesh = buildRibbonFromSamples(span, groundBedProf, groundBedMat);
-      if (bedMesh) parent.add(bedMesh);
+      if (bedMesh) lineTrackGroup.add(bedMesh);
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((lat) => {
         const wireProf = [[lat - 0.08, 5.8], [lat + 0.08, 5.8], [lat + 0.08, 5.95], [lat - 0.08, 5.95]];
         const wireM = buildRibbonFromSamples(span, wireProf, m.steelDark);
-        if (wireM) parent.add(wireM);
+        if (wireM) lineTrackGroup.add(wireM);
       });
     });
 
@@ -2126,18 +2132,18 @@ window.MetroWebGLLayer = (function () {
         buildRibbonFromSamples(span, rcCapL, m.concreteLight),
         buildRibbonFromSamples(span, rcCapR, m.concreteLight),
         buildRibbonFromSamples(span, lineSpineProf, spineMat)
-      ].forEach((mesh) => mesh && parent.add(mesh));
+      ].forEach((mesh) => mesh && lineTrackGroup.add(mesh));
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((lat) => {
         const wireProf = [[lat - 0.08, 5.8], [lat + 0.08, 5.8], [lat + 0.08, 5.95], [lat - 0.08, 5.95]];
         const wireM = buildRibbonFromSamples(span, wireProf, m.steelDark);
-        if (wireM) parent.add(wireM);
+        if (wireM) lineTrackGroup.add(wireM);
       });
     });
     rajivBridgeWireSpans.forEach((span) => {
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((lat) => {
         const wireProf = [[lat - 0.08, 5.8], [lat + 0.08, 5.8], [lat + 0.08, 5.95], [lat - 0.08, 5.95]];
         const wireM = buildRibbonFromSamples(span, wireProf, m.steelDark);
-        if (wireM) parent.add(wireM);
+        if (wireM) lineTrackGroup.add(wireM);
       });
     });
 
@@ -2147,13 +2153,13 @@ window.MetroWebGLLayer = (function () {
         buildRibbonFromSamples(span, parapetLProf, m.concreteWeb),
         buildRibbonFromSamples(span, parapetRProf, m.concreteWeb),
         buildRibbonFromSamples(span, lineSpineProf, spineMat)
-      ].forEach((mesh) => mesh && parent.add(mesh));
+      ].forEach((mesh) => mesh && lineTrackGroup.add(mesh));
 
       // Overhead OHE Catenary Wire along elevated spans
       [-TRACK_HALF_SEP, TRACK_HALF_SEP].forEach((lat) => {
         const wireProf = [[lat - 0.08, 5.8], [lat + 0.08, 5.8], [lat + 0.08, 5.95], [lat - 0.08, 5.95]];
         const wireM = buildRibbonFromSamples(span, wireProf, m.steelDark);
-        if (wireM) parent.add(wireM);
+        if (wireM) lineTrackGroup.add(wireM);
       });
     });
 
@@ -2164,6 +2170,8 @@ window.MetroWebGLLayer = (function () {
       parent.add(buriedSubwayGroup);
     }
     const lineSubwayGroup = new THREE.Group();
+    lineSubwayGroup.name = 'subwayGroup_' + (c ? (c.lineId || c.lineKey) : 'yellow');
+    if (c) c._subwayGroup = lineSubwayGroup;
     buriedSubwayGroup.add(lineSubwayGroup);
 
     const rajivStInCorridor = cStations ? cStations.find((st) => st.name === 'Rajiv Chowk') : null;
@@ -2260,7 +2268,7 @@ window.MetroWebGLLayer = (function () {
         if (guideM) targetParent.add(guideM);
       });
     };
-    addTrackRibbons(parent, surfaceTrackSpans);
+    addTrackRibbons(lineTrackGroup, surfaceTrackSpans);
     addTrackRibbons(lineSubwayGroup, buriedTrackSpans);
 
     // 4. Instanced 3D Raised Cross-Sleepers, Piers, OHE & Cutaway Cross Beams
@@ -2304,7 +2312,7 @@ window.MetroWebGLLayer = (function () {
       const capInst = new THREE.InstancedMesh(g.box1, m.concreteLight, pierLocations.length);
       const plinthInst = new THREE.InstancedMesh(g.box1, m.concreteWeb, pierLocations.length);
       const pierAoInst = new THREE.InstancedMesh(g.shadowQuad, m.shadowDisc, pierLocations.length);
-      shaftInst.frustumCulled = capInst.frustumCulled = plinthInst.frustumCulled = pierAoInst.frustumCulled = false;
+      shaftInst.frustumCulled = capInst.frustumCulled = plinthInst.frustumCulled = pierAoInst.frustumCulled = true;
       shaftInst.castShadow = capInst.castShadow = plinthInst.castShadow = true;
       shaftInst.receiveShadow = capInst.receiveShadow = plinthInst.receiveShadow = true;
 
@@ -2338,13 +2346,13 @@ window.MetroWebGLLayer = (function () {
         dummy.updateMatrix();
         capInst.setMatrixAt(idx, dummy.matrix);
       });
-      parent.add(pierAoInst, plinthInst, shaftInst, capInst);
+      lineTrackGroup.add(pierAoInst, plinthInst, shaftInst, capInst);
     }
 
     if (oheLocations.length) {
       const mastInst = new THREE.InstancedMesh(g.box1, m.steelDark, oheLocations.length * 2);
       const beamInst = new THREE.InstancedMesh(g.box1, m.steelDark, oheLocations.length);
-      mastInst.frustumCulled = beamInst.frustumCulled = false;
+      mastInst.frustumCulled = beamInst.frustumCulled = true;
 
       oheLocations.forEach((smp, idx) => {
         const yaw = Math.atan2(-smp.tan.z, smp.tan.x);
@@ -2364,12 +2372,12 @@ window.MetroWebGLLayer = (function () {
         dummy.updateMatrix();
         beamInst.setMatrixAt(idx, dummy.matrix);
       });
-      parent.add(mastInst, beamInst);
+      lineTrackGroup.add(mastInst, beamInst);
     }
 
     if (trenchBeamLocations.length) {
       const braceInst = new THREE.InstancedMesh(g.box1, m.steelDark, trenchBeamLocations.length);
-      braceInst.frustumCulled = false;
+      braceInst.frustumCulled = true;
       trenchBeamLocations.forEach((smp, idx) => {
         const yaw = Math.atan2(-smp.tan.z, smp.tan.x);
         dummy.position.set(smp.pos.x, SUBWAY_Y + 1.25, smp.pos.z);
@@ -2384,7 +2392,7 @@ window.MetroWebGLLayer = (function () {
     const addSleeperInsts = (targetParent, list) => {
       if (!list.length) return;
       const tieInst = new THREE.InstancedMesh(g.box1, m.railTieWood, list.length * 2);
-      tieInst.frustumCulled = false;
+      tieInst.frustumCulled = true;
       list.forEach((smp, idx) => {
         const yaw = Math.atan2(-smp.tan.z, smp.tan.x);
         const right = new THREE.Vector3(-smp.tan.z, 0, smp.tan.x).normalize();
@@ -2402,7 +2410,7 @@ window.MetroWebGLLayer = (function () {
       });
       targetParent.add(tieInst);
     };
-    addSleeperInsts(parent, surfaceSleeperLocations);
+    addSleeperInsts(lineTrackGroup, surfaceSleeperLocations);
     addSleeperInsts(lineSubwayGroup, buriedSleeperLocations);
 
     // 5. Ribbed Concrete TBM Portal Gatehouses at portalCoords
@@ -2428,7 +2436,7 @@ window.MetroWebGLLayer = (function () {
           bore.scale.set(1.15, 2.25, 0.95);
           pg.add(bore);
         });
-        parent.add(pg);
+        lineTrackGroup.add(pg);
       });
     }
 
@@ -2439,6 +2447,8 @@ window.MetroWebGLLayer = (function () {
       parent.add(xrayTubeGroup);
     }
     const lineXrayGroup = new THREE.Group();
+    lineXrayGroup.name = 'xrayGroup_' + (c ? (c.lineId || c.lineKey) : 'yellow');
+    if (c) c._xrayGroup = lineXrayGroup;
     xrayTubeGroup.add(lineXrayGroup);
 
     const xrayShellProf = [
@@ -10351,6 +10361,7 @@ window.MetroWebGLLayer = (function () {
       built.root.position.set(st.pos.x, 0, st.pos.z);
       built.root.rotation.y = yaw;
       built.root.visible = false; // spatially culled around active camera on first frame
+      if (built.detail) built.detail.visible = false;
       built.root.userData = { station: st, detail: built.detail };
 
       const shadowMeshes = [];
@@ -10720,17 +10731,16 @@ window.MetroWebGLLayer = (function () {
     if (interchangeHubsData && interchangeHubsData.hubs) {
       Object.values(interchangeHubsData.hubs).forEach((hubSpec) => {
         (hubSpec.clearanceBoxes || []).forEach((box) => {
+          if (!box || !box.center) return;
           const wp = toLocalMeters(box.center, 0);
-          allStationRings.push([
-            localMetersToLngLat({ x: wp.x - box.halfX, z: wp.z - box.halfZ }),
-            localMetersToLngLat({ x: wp.x + box.halfX, z: wp.z - box.halfZ }),
-            localMetersToLngLat({ x: wp.x + box.halfX, z: wp.z + box.halfZ }),
-            localMetersToLngLat({ x: wp.x - box.halfX, z: wp.z + box.halfZ }),
-            localMetersToLngLat({ x: wp.x - box.halfX, z: wp.z - box.halfZ })
-          ]);
+          const halfL = (box.length || 60) * 0.5;
+          const halfW = (box.width || 28) * 0.5;
+          const tanX = (box.tangent && box.tangent[0]) || 1;
+          const tanZ = (box.tangent && box.tangent[1]) || 0;
+          allStationRings.push(orientedBoxRing(wp.x, wp.z, tanX, tanZ, halfL, halfW));
         });
         (hubSpec.links || []).forEach((lnk) => {
-          if (lnk.kind === 'skywalk' || lnk.kind === 'escalator_bridge' || lnk.kind === 'subsurface_passage') {
+          if ((lnk.kind === 'skywalk' || lnk.kind === 'escalator_bridge' || lnk.kind === 'subsurface_passage') && lnk.fromLngLat && lnk.toLngLat) {
             const pA = toLocalMeters(lnk.fromLngLat, 0);
             const pB = toLocalMeters(lnk.toLngLat, 0);
             const mid = pA.clone().add(pB).multiplyScalar(0.5);
@@ -10831,7 +10841,8 @@ window.MetroWebGLLayer = (function () {
               }
             };
             if (baseWater.filter) shimDef.filter = baseWater.filter;
-            map.addLayer(shimDef, 'water-bank-line');
+            const beforeWater = map.getLayer('building-3d') ? 'building-3d' : undefined;
+            map.addLayer(shimDef, beforeWater);
           } catch (_) { }
         }
       }
@@ -11751,11 +11762,35 @@ window.MetroWebGLLayer = (function () {
     const detailR2 = detailR * detailR;
     const shadowR2 = 340 * 340;
 
+    // Per-corridor track infrastructure and underground visibility toggling based on activeLineId
+    if (Array.isArray(allCorridors)) {
+      allCorridors.forEach((corr) => {
+        if (!corr) return;
+        const lk = corr.lineKey || corr.lineId;
+        const matches = (activeLineId === 'all') ||
+                        (activeLineId === 'blue' && (lk === 'blue' || lk === 'blue-vaishali')) ||
+                        (activeLineId === 'yellow' && lk === 'yellow') ||
+                        (activeLineId === 'orange' && lk === 'orange') ||
+                        (activeLineId === 'magenta' && lk === 'magenta') ||
+                        (activeLineId === 'red' && lk === 'red') ||
+                        (activeLineId === 'pink' && lk === 'pink');
+        if (corr._trackGroup && corr._trackGroup.visible !== matches) {
+          corr._trackGroup.visible = matches;
+        }
+        if (corr._subwayGroup && corr._subwayGroup.visible !== matches) {
+          corr._subwayGroup.visible = matches;
+        }
+        if (corr._xrayGroup && corr._xrayGroup.visible !== (matches && undergroundXRay)) {
+          corr._xrayGroup.visible = matches && undergroundXRay;
+        }
+      });
+    }
+
+    const depotVisR2 = 2500 * 2500; // 2.5km distance limit for heavy rail maintenance yards
     if (yamunaYardGroup) {
       const ybSt = blueCorridor && blueCorridor.stationsData ? blueCorridor.stationsData.find((s) => s.name === 'Yamuna Bank') : null;
       const ybD2 = ybSt ? ((ybSt.pos.x - focusX) * (ybSt.pos.x - focusX) + (ybSt.pos.z - focusZ) * (ybSt.pos.z - focusZ)) : 0;
-      const yardR2 = Math.max(visR + 900, 2600) * Math.max(visR + 900, 2600);
-      yamunaYardGroup.visible = (activeLineId !== 'yellow') && (ybD2 <= yardR2);
+      yamunaYardGroup.visible = (activeLineId === 'all' || activeLineId === 'blue') && (ybD2 <= depotVisR2);
     }
 
     if (kalindiDepotGroup) {
@@ -11763,29 +11798,25 @@ window.MetroWebGLLayer = (function () {
       const kkSt = magentaCorridor && magentaCorridor.stationsData ? magentaCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('kalindi')) : null;
       const refSt = jkSt || kkSt;
       const kdD2 = refSt ? ((refSt.pos.x - focusX) * (refSt.pos.x - focusX) + (refSt.pos.z - focusZ) * (refSt.pos.z - focusZ)) : 0;
-      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
-      kalindiDepotGroup.visible = (activeLineId !== 'yellow' && activeLineId !== 'blue' && activeLineId !== 'orange' && activeLineId !== 'red') && (kdD2 <= yardR2);
+      kalindiDepotGroup.visible = (activeLineId === 'all' || activeLineId === 'magenta') && (kdD2 <= depotVisR2);
     }
     if (shastriYardGroup && redCorridor && redCorridor.stationsData) {
       const spSt = redCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('shastri park'));
       const spD2 = spSt ? ((spSt.pos.x - focusX) * (spSt.pos.x - focusX) + (spSt.pos.z - focusZ) * (spSt.pos.z - focusZ)) : 0;
-      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
       const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('shastri');
-      shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red' || isDepotFocused) && (spD2 <= yardR2);
+      shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red' || isDepotFocused) && (spD2 <= depotVisR2);
     }
     if (mukundpurYardGroup && pinkCorridor && pinkCorridor.stationsData) {
       const mpSt = pinkCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('majlis'));
       const mpD2 = mpSt ? ((mpSt.pos.x - focusX) * (mpSt.pos.x - focusX) + (mpSt.pos.z - focusZ) * (mpSt.pos.z - focusZ)) : 0;
-      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
       const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('majlis');
-      mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (mpD2 <= yardR2);
+      mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (mpD2 <= depotVisR2);
     }
     if (vinodNagarYardGroup && pinkCorridor && pinkCorridor.stationsData) {
       const vnSt = pinkCorridor.stationsData.find((s) => s.name && (s.name.toLowerCase().includes('vinod') || s.name.toLowerCase().includes('ip extension')));
       const vnD2 = vnSt ? ((vnSt.pos.x - focusX) * (vnSt.pos.x - focusX) + (vnSt.pos.z - focusZ) * (vnSt.pos.z - focusZ)) : 0;
-      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
       const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('vinod') || selectedStationName.toLowerCase().includes('ip extension'));
-      vinodNagarYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (vnD2 <= yardR2);
+      vinodNagarYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (vnD2 <= depotVisR2);
     }
 
     const list = allStationsData.length ? allStationsData : stationsData;
@@ -11804,6 +11835,7 @@ window.MetroWebGLLayer = (function () {
         const isFocusStation = (selectedStationName === st.name) || (dxCenter * dxCenter + dzCenter * dzCenter < 562500); // 750m
         if (!matches && !isFocusStation) {
           if (st._group && st._group.visible) st._group.visible = false;
+          if (st._detail && st._detail.visible) st._detail.visible = false;
           if (st._ring && st._ring.visible) st._ring.visible = false;
           continue;
         }
@@ -11818,8 +11850,8 @@ window.MetroWebGLLayer = (function () {
         st._group.visible = isVis;
       }
       if (isVis) {
-        if (!st._signageReady) ensureStationSignage(st);
         const showDetail = detailR2 > 0 && d2 <= detailR2;
+        if (!st._signageReady && showDetail) ensureStationSignage(st);
         if (st._detail && st._detail.visible !== showDetail) {
           st._detail.visible = showDetail;
         }
@@ -11829,6 +11861,10 @@ window.MetroWebGLLayer = (function () {
           for (let k = 0; k < st._shadowMeshes.length; k++) {
             st._shadowMeshes[k].castShadow = inShadow;
           }
+        }
+      } else {
+        if (st._detail && st._detail.visible) {
+          st._detail.visible = false;
         }
       }
 
@@ -11976,18 +12012,23 @@ window.MetroWebGLLayer = (function () {
     }
     if (yamunaYardData) {
       yamunaYardGroup = buildYamunaYardInfrastructure(infraGroup, yamunaYardData);
+      if (yamunaYardGroup) yamunaYardGroup.visible = false;
     }
     if (kalindiDepotData) {
       kalindiDepotGroup = buildKalindiKunjGroundDepot(infraGroup, kalindiDepotData);
+      if (kalindiDepotGroup) kalindiDepotGroup.visible = false;
     }
     if (shastriYardData) {
       shastriYardGroup = buildShastriParkYardInfrastructure(infraGroup, shastriYardData);
+      if (shastriYardGroup) shastriYardGroup.visible = false;
     }
     if (mukundpurYardData) {
       mukundpurYardGroup = buildMukundpurYardInfrastructure(infraGroup, mukundpurYardData);
+      if (mukundpurYardGroup) mukundpurYardGroup.visible = false;
     }
     if (vinodNagarYardData) {
       vinodNagarYardGroup = buildVinodNagarYardInfrastructure(infraGroup, vinodNagarYardData);
+      if (vinodNagarYardGroup) vinodNagarYardGroup.visible = false;
     }
     buildBeautifulDelhiEnvironment(infraGroup);
     buildAllStations(infraGroup, yellowCorridor);
