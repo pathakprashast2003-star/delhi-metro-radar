@@ -12333,6 +12333,20 @@ window.MetroWebGLLayer = (function () {
 
   let pendingFlyStation = null;
 
+  function getActiveStationsInternal() {
+    if (activeLineId === 'blue') {
+      const main = blueCorridor ? blueCorridor.stationsData : [];
+      const vBranch = vaishaliCorridor ? vaishaliCorridor.stationsData.filter((s) => s.name !== 'Yamuna Bank') : [];
+      return main.concat(vBranch);
+    }
+    if (activeLineId === 'yellow' && yellowCorridor) return yellowCorridor.stationsData;
+    if (activeLineId === 'orange' && orangeCorridor) return orangeCorridor.stationsData;
+    if (activeLineId === 'magenta' && magentaCorridor) return magentaCorridor.stationsData;
+    if (activeLineId === 'red' && redCorridor) return redCorridor.stationsData;
+    if (activeLineId === 'pink' && pinkCorridor) return pinkCorridor.stationsData;
+    return allStationsData.length ? allStationsData : stationsData;
+  }
+
   function flyToStation(name) {
     if (!name) return;
     if (!isReady) {
@@ -12345,8 +12359,14 @@ window.MetroWebGLLayer = (function () {
     if (key.includes('shastri park depot') || key.includes('shastri depot')) {
       targetName = 'shastri park';
     }
-    const stList = allStationsData.length ? allStationsData : stationsData;
-    const st = stList.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key);
+    const activeStations = getActiveStationsInternal();
+    let st = (activeLineId !== 'all' && activeStations && activeStations.length)
+      ? activeStations.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key)
+      : null;
+    if (!st) {
+      const stList = allStationsData.length ? allStationsData : stationsData;
+      st = stList.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key);
+    }
     if (!st) {
       pendingFlyStation = name;
       return;
@@ -12493,8 +12513,14 @@ window.MetroWebGLLayer = (function () {
     if (key.includes('shastri park depot') || key.includes('shastri depot')) {
       targetName = 'shastri park';
     }
-    const stList = allStationsData.length ? allStationsData : stationsData;
-    const st = stList.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key);
+    const activeStations = getActiveStationsInternal();
+    let st = (activeLineId !== 'all' && activeStations && activeStations.length)
+      ? activeStations.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key)
+      : null;
+    if (!st) {
+      const stList = allStationsData.length ? allStationsData : stationsData;
+      st = stList.find((s) => normalizeStationName(s.name) === targetName || s.id === name || normalizeStationName(s.name) === key);
+    }
     if (!st) return false;
     if (st.corridor) {
       activeWalkCorridor = st.corridor;
@@ -13553,19 +13579,7 @@ window.MetroWebGLLayer = (function () {
     },
     getActiveLine() { return activeLineId; },
     getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor, orange: orangeCorridor, magenta: magentaCorridor, red: redCorridor, pink: pinkCorridor }; },
-    getActiveStations() {
-      if (activeLineId === 'blue') {
-        const main = blueCorridor ? blueCorridor.stationsData : [];
-        const vBranch = vaishaliCorridor ? vaishaliCorridor.stationsData.filter((s) => s.name !== 'Yamuna Bank') : [];
-        return main.concat(vBranch);
-      }
-      if (activeLineId === 'yellow' && yellowCorridor) return yellowCorridor.stationsData;
-      if (activeLineId === 'orange' && orangeCorridor) return orangeCorridor.stationsData;
-      if (activeLineId === 'magenta' && magentaCorridor) return magentaCorridor.stationsData;
-      if (activeLineId === 'red' && redCorridor) return redCorridor.stationsData;
-      if (activeLineId === 'pink' && pinkCorridor) return pinkCorridor.stationsData;
-      return allStationsData.length ? allStationsData : stationsData;
-    },
+    getActiveStations: getActiveStationsInternal,
     getStationCount() { return allStationsData.length || stationsData.length; },
     getStations() { return allStationsData.length ? allStationsData : stationsData; },
     getMonuments() { return DELHI_MONUMENTS; },

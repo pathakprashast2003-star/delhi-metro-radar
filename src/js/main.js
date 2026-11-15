@@ -2159,7 +2159,7 @@
             : [];
           const found = allSts.find((s) => normalizeStationName(s.name) === norm);
           if (found) {
-            const stLine = found.lineId || found.lineKey || (found.isBlue ? 'blue' : (found.isOrange ? 'orange' : (found.isMagenta ? 'magenta' : (found.isRed ? 'red' : 'yellow'))));
+            const stLine = found.lineId || found.lineKey || (found.isPink ? 'pink' : (found.isBlue ? 'blue' : (found.isOrange ? 'orange' : (found.isMagenta ? 'magenta' : (found.isRed ? 'red' : 'yellow')))));
             const targetBtn = document.getElementById('btn-line-' + stLine);
             if (targetBtn && !targetBtn.classList.contains('active')) {
               targetBtn.click();
@@ -2430,7 +2430,7 @@
         const lineAttr = isPink ? 'pink' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isRed ? 'red' : (isB ? 'blue' : 'yellow'))));
         const stNameNorm = normalizeStationName(st.name);
         const isActive = curNameNorm && stNameNorm === curNameNorm;
-        const totalLineCount = isRed ? 29 : (isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isB ? 50 : 37))));
+        const totalLineCount = isPink ? 38 : (isRed ? 29 : (isOrange ? 7 : (isMagenta ? 26 : (isVaishali ? 8 : (isB ? 50 : 37)))));
         const seqText = `${(st.seqIndex !== undefined ? st.seqIndex : idx) + 1}/${totalLineCount}`;
 
         let structBadge = '';
@@ -3216,7 +3216,16 @@
 
     if (interchangesEl) {
       if (st.interchange) {
-        interchangesEl.innerHTML = `<span class="interchange-pill interchange-blue">⇄ ${st.interchange}</span>`;
+        let colorClass = 'interchange-blue';
+        const n = String(st.interchange).toLowerCase();
+        if (n.includes('yellow')) colorClass = 'interchange-yellow';
+        else if (n.includes('pink')) colorClass = 'interchange-pink';
+        else if (n.includes('red')) colorClass = 'interchange-red';
+        else if (n.includes('magenta')) colorClass = 'interchange-magenta';
+        else if (n.includes('orange') || n.includes('airport')) colorClass = 'interchange-orange';
+        else if (n.includes('blue')) colorClass = 'interchange-blue';
+        else if (n.includes('violet')) colorClass = 'interchange-violet';
+        interchangesEl.innerHTML = `<span class="interchange-pill ${colorClass}">⇄ ${st.interchange}</span>`;
         interchangesEl.classList.remove('hidden');
       } else {
         interchangesEl.innerHTML = '';
@@ -3318,7 +3327,8 @@
         interchangesEl.innerHTML = st.interchanges.map(name => {
           let colorClass = 'interchange-blue';
           const n = name.toLowerCase();
-          if (n.includes('blue')) colorClass = 'interchange-blue';
+          if (n.includes('yellow')) colorClass = 'interchange-yellow';
+          else if (n.includes('blue')) colorClass = 'interchange-blue';
           else if (n.includes('pink')) colorClass = 'interchange-pink';
           else if (n.includes('magenta')) colorClass = 'interchange-magenta';
           else if (n.includes('red')) colorClass = 'interchange-red';
@@ -3339,7 +3349,8 @@
       const structText = st.structure === 'underground'
         ? `Underground Tube Chamber (${st.elevM || -16}m)`
         : `Elevated Viaduct (+${st.elevM || 15}m)`;
-      subEl.textContent = `${structText} · Station ${stIdx + 1} of ${stations.length}`;
+      const totalInLine = activeList.length || (window.TripEngine ? TripEngine.getStations().length : 37);
+      subEl.textContent = `${structText} · Station ${stIdx + 1} of ${totalInLine}`;
     }
 
     // ── Architectural 3D Diorama Showcase Header ──
