@@ -1,7 +1,7 @@
 {
   "meta": {
     "line": "Delhi Metro Red Line (Line 1)",
-    "corridor": "Rithala \u2b82 Shaheed Sthal (New Bus Adda)",
+    "corridor": "Rithala ⮂ Shaheed Sthal (New Bus Adda)",
     "lineId": "red",
     "lineColor": "#DC2626",
     "totalStations": 29,
@@ -12,7 +12,7 @@
     "benchmarkRuntimeSeconds": 4020,
     "benchmarkRuntimeFormatted": "1:07:00 (67m 00s)",
     "operationalSpeedKmh": 80,
-    "averageCommercialSpeedKmh": 30.0,
+    "averageCommercialSpeedKmh": 30,
     "firstTrain": "05:30",
     "lastTrain": "23:00",
     "headwayPeakMinutes": 3.2,
@@ -27,7 +27,7 @@
         28.720788
       ],
       "trackNodeIndex": 0,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": true,
       "terminus": true,
@@ -35,10 +35,10 @@
         "Bawana Industrial Area feeder"
       ],
       "interchange": null,
-      "distanceMeters": 0.0,
+      "distanceMeters": 0,
       "index": 0,
       "code": "RIT",
-      "hindi": "\u0930\u093f\u0920\u093e\u0932\u093e",
+      "hindi": "रिठाला",
       "isTerminal": true,
       "isShortTurnTerminal": false,
       "dwellSeconds": 90,
@@ -49,11 +49,11 @@
       "id": "rohini_west",
       "name": "Rohini West",
       "coords": [
-        77.115385,
-        28.714957
+        77.115121,
+        28.715137
       ],
       "trackNodeIndex": 10,
-      "elevM": 16.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -62,7 +62,7 @@
       "distanceMeters": 999.1,
       "index": 1,
       "code": "RNW",
-      "hindi": "\u0930\u094b\u0939\u093f\u0923\u0940 \u092a\u0936\u094d\u091a\u093f\u092e",
+      "hindi": "रोहिणी पश्चिम",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -73,11 +73,11 @@
       "id": "rohini_east",
       "name": "Rohini East",
       "coords": [
-        77.126022,
-        28.707597
+        77.12638,
+        28.707344
       ],
       "trackNodeIndex": 24,
-      "elevM": 16.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -86,7 +86,7 @@
       "distanceMeters": 2397.9,
       "index": 2,
       "code": "RNE",
-      "hindi": "\u0930\u094b\u0939\u093f\u0923\u0940 \u092a\u0942\u0930\u094d\u0935",
+      "hindi": "रोहिणी पूर्व",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -97,11 +97,11 @@
       "id": "pitampura",
       "name": "Pitampura",
       "coords": [
-        77.13225,
-        28.703268
+        77.132001,
+        28.70344
       ],
       "trackNodeIndex": 31,
-      "elevM": 16.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -112,7 +112,7 @@
       "distanceMeters": 3097.2,
       "index": 3,
       "code": "PMP",
-      "hindi": "\u092a\u0940\u0924\u092e\u092a\u0941\u0930\u093e",
+      "hindi": "पीतमपुरा",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -123,11 +123,11 @@
       "id": "kohat_enclave",
       "name": "Kohat Enclave",
       "coords": [
-        77.140539,
-        28.698041
+        77.140284,
+        28.698187
       ],
       "trackNodeIndex": 41,
-      "elevM": 16.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -136,7 +136,7 @@
       "distanceMeters": 4096.2,
       "index": 4,
       "code": "KHE",
-      "hindi": "\u0915\u094b\u0939\u093e\u091f \u090f\u0928\u094d\u0915\u094d\u0932\u0947\u0935",
+      "hindi": "कोहाट एन्क्लेव",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -147,8 +147,8 @@
       "id": "netaji_subhash_place_red",
       "name": "Netaji Subhash Place",
       "coords": [
-        77.152467,
-        28.696076
+        77.152462,
+        28.696073
       ],
       "trackNodeIndex": 54,
       "elevM": 16.5,
@@ -162,7 +162,7 @@
       "distanceMeters": 5393.9,
       "index": 5,
       "code": "NSP",
-      "hindi": "\u0928\u0947\u0924\u093e\u091c\u0940 \u0938\u0941\u092d\u093e\u0937 \u092a\u094d\u0932\u0947\u0938",
+      "hindi": "नेताजी सुभाष प्लेस",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -173,11 +173,11 @@
       "id": "keshav_puram",
       "name": "Keshav Puram",
       "coords": [
-        77.161683,
-        28.688926
+        77.161797,
+        28.688767
       ],
       "trackNodeIndex": 69,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -186,7 +186,7 @@
       "distanceMeters": 6889.7,
       "index": 6,
       "code": "KSP",
-      "hindi": "\u0915\u0947\u0936\u0935 \u092a\u0941\u0930\u092e",
+      "hindi": "केशव पुरम",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -197,20 +197,20 @@
       "id": "kanhaiya_nagar",
       "name": "Kanhaiya Nagar",
       "coords": [
-        77.164775,
-        28.682408
+        77.164944,
+        28.68213
       ],
       "trackNodeIndex": 77,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
       "interchanges": [],
       "interchange": null,
-      "distanceMeters": 7689.0,
+      "distanceMeters": 7689,
       "index": 7,
       "code": "KNN",
-      "hindi": "\u0915\u0928\u094d\u0939\u0948\u092f\u093e \u0928\u0917\u0930",
+      "hindi": "कन्हैया नगर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -221,8 +221,8 @@
       "id": "inderlok_red",
       "name": "Inderlok",
       "coords": [
-        77.170347,
-        28.673589
+        77.170413,
+        28.673582
       ],
       "trackNodeIndex": 88,
       "elevM": 17.5,
@@ -236,7 +236,7 @@
       "distanceMeters": 8787.3,
       "index": 8,
       "code": "ILK",
-      "hindi": "\u0907\u0902\u0926\u094d\u0930\u0932\u094b\u0915",
+      "hindi": "इंद्रलोक",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -247,11 +247,11 @@
       "id": "shastri_nagar",
       "name": "Shastri Nagar",
       "coords": [
-        77.181859,
-        28.670088
+        77.181861,
+        28.670119
       ],
       "trackNodeIndex": 100,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -260,7 +260,7 @@
       "distanceMeters": 9985.7,
       "index": 9,
       "code": "SHN",
-      "hindi": "\u0936\u093e\u0938\u094d\u0924\u094d\u0930\u0940 \u0928\u0917\u0930",
+      "hindi": "शास्त्री नगर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -271,11 +271,11 @@
       "id": "pratap_nagar",
       "name": "Pratap Nagar",
       "coords": [
-        77.198897,
-        28.666718
+        77.198754,
+        28.666782
       ],
       "trackNodeIndex": 117,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -286,7 +286,7 @@
       "distanceMeters": 11684.1,
       "index": 10,
       "code": "PRN",
-      "hindi": "\u092a\u094d\u0930\u0924\u093e\u092a \u0928\u0917\u0930",
+      "hindi": "प्रताप नगर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -297,11 +297,11 @@
       "id": "pul_bangash",
       "name": "Pul Bangash",
       "coords": [
-        77.207416,
-        28.666407
+        77.207686,
+        28.666487
       ],
       "trackNodeIndex": 126,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -312,7 +312,7 @@
       "distanceMeters": 12582.3,
       "index": 11,
       "code": "PLB",
-      "hindi": "\u092a\u0941\u0932 \u092c\u0902\u0917\u0936",
+      "hindi": "पुल बंगश",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -323,11 +323,11 @@
       "id": "tis_hazari",
       "name": "Tis Hazari",
       "coords": [
-        77.216631,
-        28.667163
+        77.216532,
+        28.667206
       ],
       "trackNodeIndex": 135,
-      "elevM": 15.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -338,7 +338,7 @@
       "distanceMeters": 13479.8,
       "index": 12,
       "code": "TIH",
-      "hindi": "\u0924\u0940\u0938 \u0939\u091c\u093c\u093e\u0930\u0940",
+      "hindi": "तीस हज़ारी",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -349,8 +349,8 @@
       "id": "kashmere_gate_red",
       "name": "Kashmere Gate",
       "coords": [
-        77.228247,
-        28.667478
+        77.22866,
+        28.667509
       ],
       "trackNodeIndex": 147,
       "elevM": 16.8,
@@ -366,7 +366,7 @@
       "distanceMeters": 14677.7,
       "index": 13,
       "code": "KG",
-      "hindi": "\u0915\u0936\u094d\u092e\u0940\u0930\u0940 \u0917\u0947\u091f",
+      "hindi": "कश्मीरी गेट",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -377,11 +377,11 @@
       "id": "shastri_park",
       "name": "Shastri Park",
       "coords": [
-        77.250539,
-        28.668455
+        77.250379,
+        28.668508
       ],
       "trackNodeIndex": 170,
-      "elevM": 1.5,
+      "elevM": 1.35,
       "structure": "at-grade",
       "major": true,
       "terminus": false,
@@ -392,7 +392,7 @@
       "distanceMeters": 16973.6,
       "index": 14,
       "code": "SHP",
-      "hindi": "\u0936\u093e\u0938\u094d\u0924\u094d\u0930\u0940 \u092a\u093e\u0930\u094d\u0915",
+      "hindi": "शास्त्री पार्क",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -403,11 +403,11 @@
       "id": "seelampur",
       "name": "Seelampur",
       "coords": [
-        77.266763,
-        28.669917
+        77.267077,
+        28.669971
       ],
       "trackNodeIndex": 187,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -416,7 +416,7 @@
       "distanceMeters": 18671.6,
       "index": 15,
       "code": "SLP",
-      "hindi": "\u0938\u0940\u0932\u092e\u092a\u0941\u0930",
+      "hindi": "सीलमपुर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -427,8 +427,8 @@
       "id": "welcome_red",
       "name": "Welcome",
       "coords": [
-        77.277815,
-        28.671862
+        77.278117,
+        28.671907
       ],
       "trackNodeIndex": 198,
       "elevM": 16.5,
@@ -442,7 +442,7 @@
       "distanceMeters": 19770.5,
       "index": 16,
       "code": "WEL",
-      "hindi": "\u0935\u0947\u0932\u0915\u092e",
+      "hindi": "वेलकम",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -453,11 +453,11 @@
       "id": "shahdara",
       "name": "Shahdara",
       "coords": [
-        77.289882,
-        28.67346
+        77.290265,
+        28.673514
       ],
       "trackNodeIndex": 210,
-      "elevM": 16.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": true,
       "terminus": false,
@@ -468,7 +468,7 @@
       "distanceMeters": 20969.4,
       "index": 17,
       "code": "SHD",
-      "hindi": "\u0936\u093e\u0939\u0926\u0930\u093e",
+      "hindi": "शाहदरा",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -479,11 +479,11 @@
       "id": "mansarovar_park",
       "name": "Mansarovar Park",
       "coords": [
-        77.300869,
-        28.675415
+        77.30118,
+        28.675416
       ],
       "trackNodeIndex": 221,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -492,7 +492,7 @@
       "distanceMeters": 22066.9,
       "index": 18,
       "code": "MSP",
-      "hindi": "\u092e\u093e\u0928\u0938\u0930\u094b\u0935\u0930 \u092a\u093e\u0930\u094d\u0915",
+      "hindi": "मानसरोवर पार्क",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -503,11 +503,11 @@
       "id": "jhilmil",
       "name": "Jhilmil",
       "coords": [
-        77.312394,
-        28.67575
+        77.312433,
+        28.675751
       ],
       "trackNodeIndex": 232,
-      "elevM": 15.5,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -516,7 +516,7 @@
       "distanceMeters": 23165.8,
       "index": 19,
       "code": "JLM",
-      "hindi": "\u091d\u093f\u0932\u092e\u093f\u0932",
+      "hindi": "झिलमिल",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -527,11 +527,11 @@
       "id": "dilshad_garden",
       "name": "Dilshad Garden",
       "coords": [
-        77.321513,
-        28.675885
+        77.321628,
+        28.67589
       ],
       "trackNodeIndex": 241,
-      "elevM": 16.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": false,
       "terminus": false,
@@ -542,7 +542,7 @@
       "distanceMeters": 24064.8,
       "index": 20,
       "code": "DLG",
-      "hindi": "\u0926\u093f\u0932\u0936\u093e\u0926 \u0917\u093e\u0930\u094d\u0921\u0928",
+      "hindi": "दिलशाद गार्डन",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -553,8 +553,8 @@
       "id": "shaheed_nagar",
       "name": "Shaheed Nagar",
       "coords": [
-        77.333915,
-        28.676691
+        77.333871,
+        28.67669
       ],
       "trackNodeIndex": 253,
       "elevM": 16.5,
@@ -566,7 +566,7 @@
       "distanceMeters": 25263.6,
       "index": 21,
       "code": "SHN",
-      "hindi": "\u0936\u0939\u0940\u0926 \u0928\u0917\u0930",
+      "hindi": "शहीद नगर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -577,8 +577,8 @@
       "id": "raj_bagh",
       "name": "Raj Bagh",
       "coords": [
-        77.346863,
-        28.677119
+        77.347173,
+        28.677137
       ],
       "trackNodeIndex": 266,
       "elevM": 16.5,
@@ -590,7 +590,7 @@
       "distanceMeters": 26562.3,
       "index": 22,
       "code": "RJB",
-      "hindi": "\u0930\u093e\u091c \u092c\u093e\u0917",
+      "hindi": "राज बाग",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -601,8 +601,8 @@
       "id": "major_mohit_sharma_rajendra_nagar",
       "name": "Major Mohit Sharma Rajendra Nagar",
       "coords": [
-        77.358137,
-        28.67764
+        77.358423,
+        28.677655
       ],
       "trackNodeIndex": 277,
       "elevM": 16.5,
@@ -614,7 +614,7 @@
       "distanceMeters": 27661.3,
       "index": 23,
       "code": "MMS",
-      "hindi": "\u092e\u0947\u091c\u0930 \u092e\u094b\u0939\u093f\u0924 \u0936\u0930\u094d\u092e\u093e \u0930\u093e\u091c\u0947\u0928\u094d\u0926\u094d\u0930 \u0928\u0917\u0930",
+      "hindi": "मेजर मोहित शर्मा राजेन्द्र नगर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -625,8 +625,8 @@
       "id": "shyam_park",
       "name": "Shyam Park",
       "coords": [
-        77.370485,
-        28.678238
+        77.370694,
+        28.678247
       ],
       "trackNodeIndex": 289,
       "elevM": 16.5,
@@ -638,7 +638,7 @@
       "distanceMeters": 28860.2,
       "index": 24,
       "code": "SYP",
-      "hindi": "\u0936\u094d\u092f\u093e\u092e \u092a\u093e\u0930\u094d\u0915",
+      "hindi": "श्याम पार्क",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -649,11 +649,11 @@
       "id": "mohan_nagar",
       "name": "Mohan Nagar",
       "coords": [
-        77.383902,
-        28.678563
+        77.383991,
+        28.678559
       ],
       "trackNodeIndex": 302,
-      "elevM": 17.0,
+      "elevM": 16.5,
       "structure": "elevated",
       "major": true,
       "terminus": false,
@@ -664,7 +664,7 @@
       "distanceMeters": 30159.1,
       "index": 25,
       "code": "MHN",
-      "hindi": "\u092e\u094b\u0939\u0928 \u0928\u0917\u0930",
+      "hindi": "मोहन नगर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 45,
@@ -675,8 +675,8 @@
       "id": "arthala",
       "name": "Arthala",
       "coords": [
-        77.391894,
-        28.677027
+        77.39195,
+        28.677012
       ],
       "trackNodeIndex": 310,
       "elevM": 16.5,
@@ -688,7 +688,7 @@
       "distanceMeters": 30958.3,
       "index": 26,
       "code": "ART",
-      "hindi": "\u0905\u0930\u094d\u0925\u0932\u093e",
+      "hindi": "अर्थला",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -699,8 +699,8 @@
       "id": "hindon_river",
       "name": "Hindon River",
       "coords": [
-        77.406548,
-        28.673456
+        77.406719,
+        28.673398
       ],
       "trackNodeIndex": 325,
       "elevM": 17.5,
@@ -714,7 +714,7 @@
       "distanceMeters": 32456.7,
       "index": 27,
       "code": "HDR",
-      "hindi": "\u0939\u093f\u0902\u0921\u0928 \u0930\u093f\u0935\u0930",
+      "hindi": "हिंडन रिवर",
       "isTerminal": false,
       "isShortTurnTerminal": false,
       "dwellSeconds": 25,
@@ -741,7 +741,7 @@
       "distanceMeters": 33355.4,
       "index": 28,
       "code": "SST",
-      "hindi": "\u0936\u0939\u0940\u0926 \u0938\u094d\u0925\u0932",
+      "hindi": "शहीद स्थल",
       "isTerminal": true,
       "isShortTurnTerminal": false,
       "dwellSeconds": 90,
@@ -822,7 +822,7 @@
       "runtimeSeconds": 2880,
       "runtimeFormatted": "48m 00s",
       "frequencyPeakMinutes": 4.5,
-      "frequencyOffPeakMinutes": 7.0,
+      "frequencyOffPeakMinutes": 7,
       "serviceType": "core_turnaround"
     }
   ],
@@ -868,7 +868,7 @@
       "toIndex": 4,
       "fromName": "Pitampura",
       "toName": "Kohat Enclave",
-      "distanceMeters": 999.0,
+      "distanceMeters": 999,
       "runtimeSeconds": 103,
       "dwellSeconds": 25,
       "dmrcSegmentSeconds": 128,
@@ -1000,7 +1000,7 @@
       "toIndex": 15,
       "fromName": "Shastri Park",
       "toName": "Seelampur",
-      "distanceMeters": 1698.0,
+      "distanceMeters": 1698,
       "runtimeSeconds": 136,
       "dwellSeconds": 25,
       "dmrcSegmentSeconds": 161,
@@ -1060,7 +1060,7 @@
       "toIndex": 20,
       "fromName": "Jhilmil",
       "toName": "Dilshad Garden",
-      "distanceMeters": 899.0,
+      "distanceMeters": 899,
       "runtimeSeconds": 82,
       "dwellSeconds": 25,
       "dmrcSegmentSeconds": 107,
@@ -1096,7 +1096,7 @@
       "toIndex": 23,
       "fromName": "Raj Bagh",
       "toName": "Major Mohit Sharma Rajendra Nagar",
-      "distanceMeters": 1099.0,
+      "distanceMeters": 1099,
       "runtimeSeconds": 110,
       "dwellSeconds": 25,
       "dmrcSegmentSeconds": 135,

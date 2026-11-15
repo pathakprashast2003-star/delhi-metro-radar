@@ -1966,14 +1966,14 @@ window.MetroWebGLLayer = (function () {
     const isInsideRajivBridge = (s) => Boolean(
       rajivStRef && Math.abs(rajivStRef.dist - s.dist) <= 55
     );
-    const elevatedAndRampSpans = extractSpans((s) => s.elev > 1.35 && !isNearRajivBlueApproach(s), true, cSamples);
+    const elevatedAndRampSpans = extractSpans((s) => s.elev > 1.85 && !isNearRajivBlueApproach(s), true, cSamples);
     const rajivApproachShellSpans = extractSpans(
       (s) => rajivStRef && Math.abs(s.dist - rajivStRef.dist) >= 71.0 && Math.abs(s.dist - rajivStRef.dist) <= 118,
       true,
       cSamples
     );
     const rajivBridgeWireSpans = extractSpans((s) => isInsideRajivBridge(s), true, cSamples);
-    const atGradeFormationSpans = extractSpans((s) => s.elev > SUBWAY_Y + 0.35 && s.elev <= 1.35, true, cSamples);
+    const atGradeFormationSpans = extractSpans((s) => s.elev > SUBWAY_Y + 0.35 && s.elev <= 1.85, true, cSamples);
 
     atGradeFormationSpans.forEach((span) => {
       const groundBedMat = m.slateCut.clone();
@@ -7655,6 +7655,136 @@ window.MetroWebGLLayer = (function () {
     return { root, detail, signMeshes, pidsMesh };
   }
 
+  function buildShastriParkAtGradeStation(st, secColor) {
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const root = new THREE.Group();
+    const detail = new THREE.Group();
+    const gY = st.elevM || 1.35; // At-grade ground elevation matching Shastri Park Yamuna east bank
+
+    // 1. Station Foundation Apron & Ballast Subgrade (z = -14.0m to +26.0m)
+    addBox(root, 128, 0.22, 40, m.slateCut, 0, gY - 0.11, 6.0);
+    addBox(root, 124, 0.14, 38, m.plazaPave, 0, gY - 0.04, 6.0);
+
+    const platLen = 112;
+    const platW = 5.2; // 2.30m track centerline to platform edge, platform width 5.2m
+    const platH = 1.15; // Passenger platform deck 1.15m above rail head
+
+    // 2. Dual Side Platforms (North: Platform 1 to Shaheed Sthal, South: Platform 2 to Rithala)
+    // Mainline tracks run through at z = -2.3m and z = +2.3m (centerline at z = 0)
+    // North Platform: z = -5.8m (inner edge at z = -3.20m, leaving clear track envelope)
+    // South Platform: z = +5.8m (inner edge at z = +3.20m, leaving clear track envelope)
+    const platformConfigs = [
+      { pz: -5.8, sgn: -1, name: 'PLATFORM 1 · TO SHAHEED STHAL / GHAZIABAD', pIdx: 0 },
+      { pz: 5.8, sgn: 1, name: 'PLATFORM 2 · TO KASHMERE GATE / RITHALA', pIdx: 1 }
+    ];
+
+    platformConfigs.forEach((cfg) => {
+      const pz = cfg.pz;
+      const sgn = cfg.sgn;
+      // Terrazzo platform deck
+      addBox(root, platLen, platH, platW, m.terrazzoDeck, 0, gY + platH * 0.5, pz);
+
+      // Yellow tactile edge safety strip (faces track)
+      const innerEdgeZ = pz - sgn * (platW * 0.5 - 0.25);
+      const outerEdgeZ = pz + sgn * (platW * 0.5 - 0.10);
+      addBox(detail, platLen, 0.08, 0.45, m.tactileYellow, 0, gY + platH + 0.04, innerEdgeZ);
+
+      // Modern half-height glass Platform Screen Barriers along track edge
+      addBox(detail, platLen - 8, 1.40, 0.10, m.glassBarrier, 0, gY + platH + 0.70, innerEdgeZ - sgn * 0.05);
+      addBox(detail, platLen - 8, 0.14, 0.15, m.roundelRed, 0, gY + platH + 1.42, innerEdgeZ - sgn * 0.05);
+      for (let bx = -48; bx <= 48; bx += 9.6) {
+        addBox(detail, 0.12, 1.48, 0.12, m.steelDark, bx, gY + platH + 0.74, innerEdgeZ - sgn * 0.05);
+      }
+
+      // Outer platform safety railing
+      addBox(detail, platLen, 1.25, 0.12, m.steelDark, 0, gY + platH + 0.62, outerEdgeZ);
+      addBox(detail, platLen, 0.12, 0.16, m.concreteLight, 0, gY + platH + 1.28, outerEdgeZ);
+
+      // Station signage and PIDS boards
+      [-32, 0, 32].forEach((sx) => {
+        addBox(detail, 4.4, 1.2, 0.24, m.roundelRed, sx, gY + platH + 3.2, pz);
+        addBox(detail, 4.0, 0.8, 0.28, m.concreteLight, sx, gY + platH + 3.2, pz);
+        addBox(detail, 4.0, 0.12, 0.30, m.tactileBlue, sx, gY + platH + 3.15, pz);
+      });
+
+      addBox(detail, 6.2, 1.5, 0.35, m.pidsHousing, -16, gY + platH + 3.1, pz);
+      addBox(detail, 6.2, 1.5, 0.35, m.pidsHousing, 16, gY + platH + 3.1, pz);
+
+      // Benches and waiting commuters
+      addBox(detail, 4.8, 0.58, 1.0, m.steelChrome, -24, gY + platH + 0.30, pz + sgn * 0.6);
+      addBox(detail, 4.8, 0.58, 1.0, m.steelChrome, 24, gY + platH + 0.30, pz + sgn * 0.6);
+      addCommuters(detail, [
+        [-34, gY + platH, pz, cfg.pIdx * 2],
+        [-12, gY + platH, pz, cfg.pIdx * 2 + 1],
+        [10, gY + platH, pz, cfg.pIdx + 2],
+        [30, gY + platH, pz, cfg.pIdx + 3]
+      ]);
+
+      // 3. Vaulted Canopies (Sheltering each platform individually; central 5.6m track zone is completely open to the sky!)
+      const canopyW = 6.4;
+      const canopyY = gY + platH + 3.8;
+      const roofMesh = addBox(root, platLen - 4, 0.24, canopyW, m.redRoof, 0, canopyY + 0.45, pz);
+      roofMesh.rotation.x = sgn * 0.06;
+      addBox(detail, platLen - 12, 0.16, 2.0, m.skylightGlass, 0, canopyY + 0.58, pz);
+      for (let cx = -48; cx <= 48; cx += 16) {
+        addBox(detail, 0.36, 4.2, 0.36, m.steelDark, cx, gY + platH + 2.1, outerEdgeZ - sgn * 0.4);
+        addBox(detail, 0.30, 0.32, canopyW * 0.85, m.steelDark, cx, canopyY + 0.2, pz);
+      }
+    });
+
+    // 4. Central Glazed Foot Over Bridge (FOB) connecting South Concourse to Both Platforms
+    // High clearance at y = gY + 7.6m (clearing OHE wires at 5.8m by 1.8m!)
+    const fobY = gY + 7.6;
+    const fobSpanZ = 28.0; // from z = -8.5m (North platform) to z = +19.5m (South concourse)
+    const fobCenterZ = 5.5;
+    addBox(root, 7.2, 3.2, fobSpanZ, m.concourseGlass, 0, fobY + 1.6, fobCenterZ);
+    addBox(root, 7.6, 0.48, fobSpanZ + 0.4, m.concreteLight, 0, fobY, fobCenterZ);
+    addBox(root, 8.0, 0.52, fobSpanZ + 0.8, m.redRoof, 0, fobY + 3.2, fobCenterZ);
+
+    [-5.8, 5.8].forEach((pz) => {
+      addBox(detail, 3.2, fobY - (gY + platH), 3.2, m.concourseGlass, -4.2, (gY + platH + fobY) * 0.5, pz);
+      addBox(detail, 3.4, 0.36, 3.4, m.steelDark, -4.2, fobY, pz);
+      const esc = addBox(detail, 2.4, 0.8, 12.0, m.escStep, 4.2, (gY + platH + fobY) * 0.5, pz);
+      esc.rotation.x = Math.sign(pz) * 0.45;
+    });
+
+    // 5. South Entrance Passenger Booking Concourse (Facing Shastri Park Metro Enclave / GT Road)
+    // Located completely to the south at z = +19.5m (ZERO TRACK COLLISION!)
+    const concZ = 19.5;
+    const concLen = 52;
+    const concW = 16;
+    const concH = 6.4;
+    addBox(root, concLen, concH, concW, m.pierCream, 0, gY + concH * 0.5, concZ);
+    addBox(root, concLen + 2.0, 0.75, concW + 2.0, m.redRoof, 0, gY + concH + 0.35, concZ);
+    addBox(detail, concLen - 8, concH - 1.8, 0.25, m.concourseGlass, 0, gY + concH * 0.5, concZ + concW * 0.5);
+    addBox(root, 28, 0.5, 6.4, m.concreteLight, 0, gY + 4.8, concZ + concW * 0.5 + 3.2);
+    addBox(detail, 22.0, 1.4, 0.25, m.roundelRed, 0, gY + 5.6, concZ + concW * 0.5 + 2.8);
+    addBox(detail, 2.8, 2.8, 0.35, m.roundelRed, -12.5, gY + 5.6, concZ + concW * 0.5 + 2.8);
+
+    // AFC ticket turnstiles inside concourse
+    addAFCTurnstiles(detail, 0, gY + 0.45, concZ, 6);
+
+    // Forecourt Plaza & Greenery Strips
+    addBox(root, concLen + 12, 0.24, 14, m.plazaPave, 0, 0.24, concZ + concW * 0.5 + 7.0);
+    addBox(root, concLen + 8, 0.26, 3.2, m.sagePark, 0, 0.26, concZ + concW * 0.5 + 13.0);
+
+    // Bilingual Illuminated Signboard Meshes
+    const signMeshes = [];
+    [-9.0, 27.5].forEach((sz) => {
+      const sb = new THREE.Mesh(g.box1, m.placeholderSign);
+      sb.scale.set(26.0, 3.6, 0.35);
+      sb.position.set(0, gY + 5.2, sz);
+      if (sz < 0) sb.rotation.y = Math.PI;
+      sb.frustumCulled = false;
+      root.add(sb);
+      signMeshes.push(sb);
+    });
+
+    const pidsMesh = null;
+    return { root, detail, signMeshes, pidsMesh };
+  }
+
   function buildShastriParkYardInfrastructure(parent, depotData) {
     if (!depotData || !depotData.tracks) return null;
     const m = getMaterials();
@@ -7897,12 +8027,13 @@ window.MetroWebGLLayer = (function () {
       const wingGlass = addBox(detail, 3.0, 1.4, 14.2, m.escGlass, 29.5, 5.9, escZ);
       wingGlass.rotation.z = -0.58;
     } else {
-      // Ground-level at-grade concourse entry hall & glass over-track pedestrian bridge
-      addBox(root, 62, 0.5, 24, m.plazaPave, 0, 0.25, 0);
-      addBox(root, 48, 5.0, 18.0, m.concreteLight, 0, 2.5, 0);
-      addBox(detail, 46, 3.8, 0.22, m.concourseGlass, 0, 2.5, 9.1);
-      addBox(detail, 46, 3.8, 0.22, m.concourseGlass, 0, 2.5, -9.1);
-      addBox(root, 50, 0.8, 20.0, m.redRoof, 0, 5.4, 0);
+      // Ground-level at-grade concourse entry hall placed cleanly beside platforms (off-track)
+      const concZ = 18.0;
+      addBox(root, 62, 0.5, 24, m.plazaPave, 0, 0.25, concZ * 0.5);
+      addBox(root, 48, 5.0, 14.0, m.concreteLight, 0, 2.5, concZ);
+      addBox(detail, 46, 3.8, 0.22, m.concourseGlass, 0, 2.5, concZ + 7.0);
+      addBox(detail, 46, 3.8, 0.22, m.concourseGlass, 0, 2.5, concZ - 7.0);
+      addBox(root, 50, 0.8, 15.0, m.redRoof, 0, 5.4, concZ);
     }
 
     const primaryAccentMat = st.isRed ? m.roundelRed : (st.isBlue ? m.blueAccent : m.yellowAccent);
@@ -9575,21 +9706,23 @@ window.MetroWebGLLayer = (function () {
 
       const built = (st.name === 'Yamuna Bank')
         ? buildYamunaBankJunctionStation(st, secColor)
-        : (isSharedRajiv
-            ? buildRajivChowkCruciformHub(st, blueRajivSt, secColor)
-            : (isDhaulaKuan
-                ? buildDhaulaKuanAeroHub(st, secColor)
-                : (isSharedDwarka21
-                    ? buildDwarkaSector21DualHub(blueD21St, st, secColor)
-                    : (isIgiAirport
-                        ? buildIgiAirportT3Station(st, secColor)
-                        : (isNewDelhiAirport
-                            ? buildNewDelhiAirportHub(st, secColor)
-                            : (isOrange
-                                ? buildAirportExpressStation(st, secColor)
-                                : ((st.structure === 'elevated' || st.structure === 'at-grade')
-                                    ? buildElevatedStation(st, secColor)
-                                    : buildUndergroundCutawayStation(st, secColor))))))));
+        : (st.name === 'Shastri Park'
+            ? buildShastriParkAtGradeStation(st, secColor)
+            : (isSharedRajiv
+                ? buildRajivChowkCruciformHub(st, blueRajivSt, secColor)
+                : (isDhaulaKuan
+                    ? buildDhaulaKuanAeroHub(st, secColor)
+                    : (isSharedDwarka21
+                        ? buildDwarkaSector21DualHub(blueD21St, st, secColor)
+                        : (isIgiAirport
+                            ? buildIgiAirportT3Station(st, secColor)
+                            : (isNewDelhiAirport
+                                ? buildNewDelhiAirportHub(st, secColor)
+                                : (isOrange
+                                    ? buildAirportExpressStation(st, secColor)
+                                    : ((st.structure === 'elevated' || st.structure === 'at-grade')
+                                        ? buildElevatedStation(st, secColor)
+                                        : buildUndergroundCutawayStation(st, secColor)))))))));
 
       if (hubSpec && !isSharedRajiv && st.name !== 'Yamuna Bank' && !isSharedDwarka21 && st.name !== 'New Delhi' && st.name !== 'Janakpuri West' && st.name !== 'Janak Puri West' && st.name !== 'Botanical Garden') {
         attachGenuineInterchangeGeometry(built, st, hubSpec, m, g);
@@ -11713,6 +11846,14 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.6,
         pitch: 58,
         bearing: -34,
+        duration: 950
+      });
+    } else if (normName === 'shastri park') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 17.8,
+        pitch: 56,
+        bearing: -24,
         duration: 950
       });
     } else {
