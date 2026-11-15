@@ -93,6 +93,30 @@ def run():
         page.screenshot(path=p5)
         print('Saved:', p5)
 
+        # Fly to Mukundpur Depot (near Majlis Park)
+        print('Flying to Mukundpur Depot...')
+        page.evaluate('() => { const map = window.map; if (map) map.flyTo({ center: [77.1870, 28.7245], zoom: 16.2, pitch: 56, bearing: 25 }); }')
+        time.sleep(2.5)
+        p6 = os.path.join(artifacts_dir, 'verified_mukundpur_depot_yard.png')
+        page.screenshot(path=p6)
+        print('Saved:', p6)
+
+        # Fly to Vinod Nagar Depot (near IP Extension)
+        print('Flying to Vinod Nagar Depot...')
+        page.evaluate('() => { const map = window.map; if (map) map.flyTo({ center: [77.3180, 28.6270], zoom: 16.0, pitch: 54, bearing: 80 }); }')
+        time.sleep(2.5)
+        p7 = os.path.join(artifacts_dir, 'verified_vinod_nagar_depot_yard.png')
+        page.screenshot(path=p7)
+        print('Saved:', p7)
+
+        # Fly to Anand Vihar Interchange
+        print('Flying to Anand Vihar Interchange...')
+        page.evaluate('() => window.MetroWebGLLayer.flyToStation("Anand Vihar")')
+        time.sleep(2.5)
+        p8 = os.path.join(artifacts_dir, 'verified_anand_vihar_interchange.png')
+        page.screenshot(path=p8)
+        print('Saved:', p8)
+
         # Print page errors if any
         real_errors = [e for e in errors if 'favicon' not in e.lower()]
         print(f'Total errors: {len(real_errors)}')

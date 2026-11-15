@@ -292,6 +292,10 @@ window.MetroWebGLLayer = (function () {
   let kalindiDepotGroup = null;
   let shastriYardData = null;
   let shastriYardGroup = null;
+  let mukundpurYardData = null;
+  let mukundpurYardGroup = null;
+  let vinodNagarYardData = null;
+  let vinodNagarYardGroup = null;
   let interchangeHubsData = null;
   let allCorridors = [];
   let allStationsData = [];
@@ -2564,7 +2568,9 @@ window.MetroWebGLLayer = (function () {
       toBox(77.2940, 28.5410, 77.2995, 28.5480), // Jasola Vihar Stabling Yard & Flyover Throat
       toBox(77.2980, 28.5405, 77.3035, 28.5435), // Agra Canal Flyover & Bowstring Bridge Corridor
       toBox(77.3025, 28.5405, 77.3105, 28.5460), // Kalindi Kunj Ground Depot & Incline Ramp
-      toBox(77.2410, 28.6670, 77.2515, 28.6730)  // Shastri Park Maintenance Depot & Training Academy
+      toBox(77.2410, 28.6670, 77.2515, 28.6730), // Shastri Park Maintenance Depot & Training Academy
+      toBox(77.1830, 28.7200, 77.1920, 28.7320), // Mukundpur Pink & Yellow Fleet Depot
+      toBox(77.3120, 28.6220, 77.3260, 28.6300)  // Vinod Nagar Pink Line Maintenance Depot
     );
     INDIA_RAILWAY_HUBS.forEach((hub) => {
       if (!hub.p0 || !hub.p1) return;
@@ -8210,6 +8216,284 @@ window.MetroWebGLLayer = (function () {
     return grp;
   }
 
+  function buildMukundpurYardInfrastructure(parent, depotData) {
+    if (!depotData || !depotData.tracks) return null;
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const grp = new THREE.Group();
+    const tr = depotData.tracks;
+    const defaultElev = depotData.groundElev || 1.35;
+
+    const toYardSpan = (poly, elev) => {
+      if (!Array.isArray(poly) || poly.length < 2) return null;
+      const pts3 = poly.map((c) => toLocalMeters([c[0], c[1]], Number.isFinite(c[2]) ? c[2] : defaultElev));
+      let acc = 0;
+      const out = [];
+      for (let i = 0; i < pts3.length; i++) {
+        if (i > 0) acc += Math.hypot(pts3[i].x - pts3[i - 1].x, pts3[i].z - pts3[i - 1].z);
+        const prev = pts3[Math.max(0, i - 1)];
+        const next = pts3[Math.min(pts3.length - 1, i + 1)];
+        const tan = new THREE.Vector3(next.x - prev.x, 0, next.z - prev.z);
+        if (tan.lengthSq() < 1e-6) tan.set(1, 0, 0);
+        tan.normalize();
+        out.push({ pos: pts3[i], tan, dist: acc, elev: Number.isFinite(poly[i][2]) ? poly[i][2] : defaultElev });
+      }
+      return out.length >= 2 ? out : null;
+    };
+
+    const turnoutSpans = (tr.turnouts || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    if (turnoutSpans.length) {
+      const ballastProf = [[-2.4, 0.0], [2.4, 0.0], [2.2, 0.22], [-2.2, 0.22]];
+      const bM = buildRibbonFromSpans(turnoutSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.22], [lat + 0.035, 0.22], [lat + 0.035, 0.38], [lat - 0.035, 0.38]];
+        const rM = buildRibbonFromSpans(turnoutSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+    }
+
+    const stablingSpans = (tr.stabling_tracks || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    if (stablingSpans.length) {
+      const ballastProf = [[-2.2, 0.0], [2.2, 0.0], [2.0, 0.20], [-2.0, 0.20]];
+      const bM = buildRibbonFromSpans(stablingSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.20], [lat + 0.035, 0.20], [lat + 0.035, 0.36], [lat - 0.035, 0.36]];
+        const rM = buildRibbonFromSpans(stablingSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+      const wireProf = [[-0.08, 5.6], [0.08, 5.6], [0.08, 5.75], [-0.08, 5.75]];
+      const wM = buildRibbonFromSpans(stablingSpans, wireProf, m.steelDark, 1.2, false);
+      if (wM) grp.add(wM);
+    }
+
+    (depotData.workshops || []).forEach((ws) => {
+      const pos = toLocalMeters(ws.coords, ws.coords[2] || defaultElev);
+      const wsGroup = new THREE.Group();
+      wsGroup.position.set(pos.x, defaultElev, pos.z);
+      if (ws.headingDeg) {
+        wsGroup.rotation.y = THREE.MathUtils.degToRad(-ws.headingDeg);
+      }
+      addBox(wsGroup, ws.widthM, ws.heightM, ws.lengthM, m.concreteLight, 0, ws.heightM * 0.5, 0);
+      addBox(wsGroup, ws.widthM + 1.2, 0.8, ws.lengthM + 1.2, m.pinkRoof, 0, ws.heightM + 0.4, 0);
+      for (let sz = -ws.lengthM * 0.4; sz <= ws.lengthM * 0.4; sz += 20) {
+        addBox(wsGroup, ws.widthM * 0.6, 0.25, 8.0, m.skylightGlass, 0, ws.heightM + 0.85, sz);
+      }
+      if (ws.tracksInside > 0) {
+        const spacing = ws.widthM / (ws.tracksInside + 1);
+        for (let t = 1; t <= ws.tracksInside; t++) {
+          const dx = -ws.widthM * 0.5 + t * spacing;
+          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, -ws.lengthM * 0.5);
+        }
+      }
+      grp.add(wsGroup);
+    });
+
+    const anc = depotData.anchors || {};
+    const buildPinkYardTrain = (lonLat, nCars, bearingDeg, isHeadlightsOn = false, elev = defaultElev) => {
+      const trainPos = toLocalMeters(lonLat, elev);
+      const tGrp = new THREE.Group();
+      tGrp.position.set(trainPos.x, trainPos.y + 0.28, trainPos.z);
+      tGrp.rotation.y = Math.PI * 0.5 - (bearingDeg * Math.PI) / 180;
+      const carLen = 17.5;
+      for (let c = 0; c < nCars; c++) {
+        const cx = (c - (nCars - 1) * 0.5) * (carLen + 0.5);
+        const isLeading = (c === nCars - 1);
+        const isTrailing = (c === 0);
+        const car = new THREE.Group();
+        car.position.x = cx;
+        addBox(car, carLen, 2.65, 2.88, m.steelChrome, 0, 1.55, 0);
+        addBox(car, carLen + 0.1, 0.42, 2.92, m.pinkAccent, 0, 1.1, 0);
+        addBox(car, carLen + 0.1, 0.20, 2.92, m.pinkAccent, 0, 2.68, 0);
+        for (let wx = -5.8; wx <= 5.8; wx += 2.4) {
+          addBox(car, 1.8, 0.95, 2.94, m.concourseGlass, wx, 1.85, 0);
+        }
+        if (isLeading) {
+          addBox(car, 2.2, 2.3, 2.80, m.steelChrome, carLen * 0.5 + 1.0, 1.45, 0);
+          addBox(car, 2.22, 0.55, 2.84, m.pinkAccent, carLen * 0.5 + 1.0, 1.1, 0);
+          const headMat = isHeadlightsOn ? m.luminaireGlow : m.lampGlow;
+          addBox(car, 0.2, 0.32, 0.45, headMat, carLen * 0.5 + 2.1, 1.1, 0.82);
+          addBox(car, 0.2, 0.32, 0.45, headMat, carLen * 0.5 + 2.1, 1.1, -0.82);
+          addBox(car, 1.2, 1.05, 2.5, m.slateDark, carLen * 0.5 + 1.25, 1.95, 0);
+        }
+        if (isTrailing) {
+          addBox(car, 2.2, 2.3, 2.80, m.steelChrome, -(carLen * 0.5 + 1.0), 1.45, 0);
+          addBox(car, 2.22, 0.55, 2.84, m.pinkAccent, -(carLen * 0.5 + 1.0), 1.1, 0);
+          addBox(car, 0.2, 0.30, 0.40, m.lampGlow, -(carLen * 0.5 + 2.1), 1.1, 0.82);
+          addBox(car, 0.2, 0.30, 0.40, m.lampGlow, -(carLen * 0.5 + 2.1), 1.1, -0.82);
+        }
+        tGrp.add(car);
+      }
+      grp.add(tGrp);
+    };
+
+    (anc.stabled_rakes || []).forEach((r) => {
+      buildPinkYardTrain(r.centerLL, r.cars || 6, r.bearing || 15.0, r.headlights || false, defaultElev);
+    });
+
+    (anc.floodlight_masts || []).forEach((f) => {
+      const pos = toLocalMeters(f, defaultElev);
+      const mastGrp = new THREE.Group();
+      mastGrp.position.set(pos.x, defaultElev, pos.z);
+      addBox(mastGrp, 0.9, 22.0, 0.9, m.concreteWeb, 0, 11.0, 0);
+      addBox(mastGrp, 4.2, 1.2, 1.8, m.steelDark, 0, 22.2, 0);
+      [-1.4, 0, 1.4].forEach((fx) => {
+        addBox(mastGrp, 0.8, 0.6, 0.4, m.luminaireGlow, fx, 22.2, 0.95);
+        addBox(mastGrp, 0.8, 0.6, 0.4, m.luminaireGlow, fx, 22.2, -0.95);
+      });
+      grp.add(mastGrp);
+    });
+
+    const depotSignPos = toLocalMeters([77.1870, 28.7230], defaultElev);
+    addDwarkaLocalitySign(grp, depotSignPos.x, depotSignPos.y + 12.0, depotSignPos.z, 56, 3.2,
+      'MUKUNDPUR METRO DEPOT & MAINTENANCE COMPLEX',
+      'DMRC PINK LINE (LINE 7) PRIMARY FLEET HQ · 24-TRACK STABLING YARD & WORKSHOPS', '#DB2777', 0.26);
+
+    parent.add(grp);
+    return grp;
+  }
+
+  function buildVinodNagarYardInfrastructure(parent, depotData) {
+    if (!depotData || !depotData.tracks) return null;
+    const m = getMaterials();
+    const g = getSharedStationGeos();
+    const grp = new THREE.Group();
+    const tr = depotData.tracks;
+    const defaultElev = depotData.groundElev || 1.35;
+
+    const toYardSpan = (poly, elev) => {
+      if (!Array.isArray(poly) || poly.length < 2) return null;
+      const pts3 = poly.map((c) => toLocalMeters([c[0], c[1]], Number.isFinite(c[2]) ? c[2] : defaultElev));
+      let acc = 0;
+      const out = [];
+      for (let i = 0; i < pts3.length; i++) {
+        if (i > 0) acc += Math.hypot(pts3[i].x - pts3[i - 1].x, pts3[i].z - pts3[i - 1].z);
+        const prev = pts3[Math.max(0, i - 1)];
+        const next = pts3[Math.min(pts3.length - 1, i + 1)];
+        const tan = new THREE.Vector3(next.x - prev.x, 0, next.z - prev.z);
+        if (tan.lengthSq() < 1e-6) tan.set(1, 0, 0);
+        tan.normalize();
+        out.push({ pos: pts3[i], tan, dist: acc, elev: Number.isFinite(poly[i][2]) ? poly[i][2] : defaultElev });
+      }
+      return out.length >= 2 ? out : null;
+    };
+
+    const turnoutSpans = (tr.turnouts || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    if (turnoutSpans.length) {
+      const ballastProf = [[-2.4, 0.0], [2.4, 0.0], [2.2, 0.22], [-2.2, 0.22]];
+      const bM = buildRibbonFromSpans(turnoutSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.22], [lat + 0.035, 0.22], [lat + 0.035, 0.38], [lat - 0.035, 0.38]];
+        const rM = buildRibbonFromSpans(turnoutSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+    }
+
+    const stablingSpans = (tr.stabling_tracks || []).map((p) => toYardSpan(p, defaultElev)).filter(Boolean);
+    if (stablingSpans.length) {
+      const ballastProf = [[-2.2, 0.0], [2.2, 0.0], [2.0, 0.20], [-2.0, 0.20]];
+      const bM = buildRibbonFromSpans(stablingSpans, ballastProf, m.ballastSleeper, 1.2, false);
+      if (bM) grp.add(bM);
+      [-0.7175, 0.7175].forEach((lat) => {
+        const railProf = [[lat - 0.035, 0.20], [lat + 0.035, 0.20], [lat + 0.035, 0.36], [lat - 0.035, 0.36]];
+        const rM = buildRibbonFromSpans(stablingSpans, railProf, m.steelRail, 1.2, false);
+        if (rM) grp.add(rM);
+      });
+      const wireProf = [[-0.08, 5.6], [0.08, 5.6], [0.08, 5.75], [-0.08, 5.75]];
+      const wM = buildRibbonFromSpans(stablingSpans, wireProf, m.steelDark, 1.2, false);
+      if (wM) grp.add(wM);
+    }
+
+    (depotData.workshops || []).forEach((ws) => {
+      const pos = toLocalMeters(ws.coords, ws.coords[2] || defaultElev);
+      const wsGroup = new THREE.Group();
+      wsGroup.position.set(pos.x, defaultElev, pos.z);
+      if (ws.headingDeg) {
+        wsGroup.rotation.y = THREE.MathUtils.degToRad(-ws.headingDeg);
+      }
+      addBox(wsGroup, ws.widthM, ws.heightM, ws.lengthM, m.concreteLight, 0, ws.heightM * 0.5, 0);
+      addBox(wsGroup, ws.widthM + 1.2, 0.8, ws.lengthM + 1.2, m.pinkRoof, 0, ws.heightM + 0.4, 0);
+      for (let sz = -ws.lengthM * 0.4; sz <= ws.lengthM * 0.4; sz += 20) {
+        addBox(wsGroup, ws.widthM * 0.6, 0.25, 8.0, m.skylightGlass, 0, ws.heightM + 0.85, sz);
+      }
+      if (ws.tracksInside > 0) {
+        const spacing = ws.widthM / (ws.tracksInside + 1);
+        for (let t = 1; t <= ws.tracksInside; t++) {
+          const dx = -ws.widthM * 0.5 + t * spacing;
+          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, ws.lengthM * 0.5);
+          addBox(wsGroup, 4.4, 6.2, 0.4, m.steelDark, dx, 3.1, -ws.lengthM * 0.5);
+        }
+      }
+      grp.add(wsGroup);
+    });
+
+    const anc = depotData.anchors || {};
+    const buildPinkYardTrain = (lonLat, nCars, bearingDeg, isHeadlightsOn = false, elev = defaultElev) => {
+      const trainPos = toLocalMeters(lonLat, elev);
+      const tGrp = new THREE.Group();
+      tGrp.position.set(trainPos.x, trainPos.y + 0.28, trainPos.z);
+      tGrp.rotation.y = Math.PI * 0.5 - (bearingDeg * Math.PI) / 180;
+      const carLen = 17.5;
+      for (let c = 0; c < nCars; c++) {
+        const cx = (c - (nCars - 1) * 0.5) * (carLen + 0.5);
+        const isLeading = (c === nCars - 1);
+        const isTrailing = (c === 0);
+        const car = new THREE.Group();
+        car.position.x = cx;
+        addBox(car, carLen, 2.65, 2.88, m.steelChrome, 0, 1.55, 0);
+        addBox(car, carLen + 0.1, 0.42, 2.92, m.pinkAccent, 0, 1.1, 0);
+        addBox(car, carLen + 0.1, 0.20, 2.92, m.pinkAccent, 0, 2.68, 0);
+        for (let wx = -5.8; wx <= 5.8; wx += 2.4) {
+          addBox(car, 1.8, 0.95, 2.94, m.concourseGlass, wx, 1.85, 0);
+        }
+        if (isLeading) {
+          addBox(car, 2.2, 2.3, 2.80, m.steelChrome, carLen * 0.5 + 1.0, 1.45, 0);
+          addBox(car, 2.22, 0.55, 2.84, m.pinkAccent, carLen * 0.5 + 1.0, 1.1, 0);
+          const headMat = isHeadlightsOn ? m.luminaireGlow : m.lampGlow;
+          addBox(car, 0.2, 0.32, 0.45, headMat, carLen * 0.5 + 2.1, 1.1, 0.82);
+          addBox(car, 0.2, 0.32, 0.45, headMat, carLen * 0.5 + 2.1, 1.1, -0.82);
+          addBox(car, 1.2, 1.05, 2.5, m.slateDark, carLen * 0.5 + 1.25, 1.95, 0);
+        }
+        if (isTrailing) {
+          addBox(car, 2.2, 2.3, 2.80, m.steelChrome, -(carLen * 0.5 + 1.0), 1.45, 0);
+          addBox(car, 2.22, 0.55, 2.84, m.pinkAccent, -(carLen * 0.5 + 1.0), 1.1, 0);
+          addBox(car, 0.2, 0.30, 0.40, m.lampGlow, -(carLen * 0.5 + 2.1), 1.1, 0.82);
+          addBox(car, 0.2, 0.30, 0.40, m.lampGlow, -(carLen * 0.5 + 2.1), 1.1, -0.82);
+        }
+        tGrp.add(car);
+      }
+      grp.add(tGrp);
+    };
+
+    (anc.stabled_rakes || []).forEach((r) => {
+      buildPinkYardTrain(r.centerLL, r.cars || 6, r.bearing || 82.0, r.headlights || false, defaultElev);
+    });
+
+    (anc.floodlight_masts || []).forEach((f) => {
+      const pos = toLocalMeters(f, defaultElev);
+      const mastGrp = new THREE.Group();
+      mastGrp.position.set(pos.x, defaultElev, pos.z);
+      addBox(mastGrp, 0.9, 22.0, 0.9, m.concreteWeb, 0, 11.0, 0);
+      addBox(mastGrp, 4.2, 1.2, 1.8, m.steelDark, 0, 22.2, 0);
+      [-1.4, 0, 1.4].forEach((fx) => {
+        addBox(mastGrp, 0.8, 0.6, 0.4, m.luminaireGlow, fx, 22.2, 0.95);
+        addBox(mastGrp, 0.8, 0.6, 0.4, m.luminaireGlow, fx, 22.2, -0.95);
+      });
+      grp.add(mastGrp);
+    });
+
+    const depotSignPos = toLocalMeters([77.3180, 28.6270], defaultElev);
+    addDwarkaLocalitySign(grp, depotSignPos.x, depotSignPos.y + 12.0, depotSignPos.z, 54, 3.2,
+      'VINOD NAGAR METRO DEPOT & MAINTENANCE FACILITY',
+      'EAST DELHI PINK FLEET STABLING & OVERHAUL DEPOT · GHAZIPUR / IP EXTENSION', '#DB2777', 0.22);
+
+    parent.add(grp);
+    return grp;
+  }
+
   function buildElevatedStation(st, secColor) {
     const m = getMaterials();
     const g = getSharedStationGeos();
@@ -8228,7 +8512,10 @@ window.MetroWebGLLayer = (function () {
     const isModelTown = st.name === 'Model Town';
     const isHeritageRidge = HERITAGE_RIDGE_ELEVATED.has(st.name);
     const isCyberCorridor = CYBER_GURUGRAM_ELEVATED.has(st.name);
-    const hubSpec = interchangeHubsData && interchangeHubsData.hubs && interchangeHubsData.hubs[st.name];
+    const hubSpec = interchangeHubsData && interchangeHubsData.hubs && (
+      interchangeHubsData.hubs[st.name] ||
+      (st.name === 'Anand Vihar' ? interchangeHubsData.hubs['Anand Vihar ISBT'] : null)
+    );
     const isFlatOverStacked = Boolean(hubSpec && hubSpec.flattenLowerCanopy);
     const wingSide = (!isAzadpur && !isHaiderpur && !isSikanderpur && (st.seqIndex % 2 === 1)) ? -1 : 1;
 
@@ -10011,7 +10298,8 @@ window.MetroWebGLLayer = (function () {
         (st.name === 'Janakpuri West' ? interchangeHubsData.hubs['Janak Puri West'] : null) ||
         (st.name === 'Janak Puri West' ? interchangeHubsData.hubs['Janak Puri West'] : null) ||
         (st.name === 'Dwarka Sector 21' ? interchangeHubsData.hubs['Dwarka Sector - 21'] : null) ||
-        (st.name === 'Dwarka Sector - 21' ? interchangeHubsData.hubs['Dwarka Sector - 21'] : null)
+        (st.name === 'Dwarka Sector - 21' ? interchangeHubsData.hubs['Dwarka Sector - 21'] : null) ||
+        (st.name === 'Anand Vihar' ? interchangeHubsData.hubs['Anand Vihar ISBT'] : null)
       );
       if (hubSpec && st.name === 'Dwarka') {
         subtitle = 'BLUE × GREY INTERCHANGE · NAJAFGARH BRANCH';
@@ -10580,7 +10868,6 @@ window.MetroWebGLLayer = (function () {
           classifiedRoadLayers.trunk_primary.push(id);
           map.setPaintProperty(id, 'line-color', '#F7E4A6');
         } else if (id.includes('trunk_primary') && id.includes('casing')) {
-          classifiedRoadLayers.trunk_casing.push(id);
           map.setPaintProperty(id, 'line-color', '#C9B99B');
         } else if (id.includes('secondary_tertiary') && !id.includes('casing')) {
           classifiedRoadLayers.secondary.push(id);
@@ -11408,6 +11695,12 @@ window.MetroWebGLLayer = (function () {
       const pinkSvcPromise = window.__pinkLineServicePromise || (
         window.__pinkLineServicePromise = fetch('src/data/pink_line_service.json').then((r) => r.json()).catch(() => null)
       );
+      const mukundpurYardPromise = window.__mukundpurYardPromise || (
+        window.__mukundpurYardPromise = fetch('src/data/mukundpur_yard_tracks.json').then((r) => r.json()).catch(() => null)
+      );
+      const vinodNagarYardPromise = window.__vinodNagarYardPromise || (
+        window.__vinodNagarYardPromise = fetch('src/data/vinod_nagar_yard_tracks.json').then((r) => r.json()).catch(() => null)
+      );
       const [
         osmData, topoData, svcData,
         blueOsmData, blueSvcData, vaishaliOsmData,
@@ -11417,7 +11710,8 @@ window.MetroWebGLLayer = (function () {
         kalindiDepotJson,
         redOsmData, redSvcData,
         shastriYardJson,
-        pinkOsmData, pinkSvcData
+        pinkOsmData, pinkSvcData,
+        mukundpurYardJson, vinodNagarYardJson
       ] = await Promise.all([
         osmPromise, topoPromise, svcPromise,
         blueOsmPromise, blueSvcPromise, vaishaliOsmPromise,
@@ -11427,11 +11721,14 @@ window.MetroWebGLLayer = (function () {
         kalindiDepotPromise,
         redOsmPromise, redSvcPromise,
         shastriYardPromise,
-        pinkOsmPromise, pinkSvcPromise
+        pinkOsmPromise, pinkSvcPromise,
+        mukundpurYardPromise, vinodNagarYardPromise
       ]);
       yamunaYardData = yamunaYardJson;
       kalindiDepotData = kalindiDepotJson;
       shastriYardData = shastriYardJson;
+      mukundpurYardData = mukundpurYardJson;
+      vinodNagarYardData = vinodNagarYardJson;
       interchangeHubsData = interchangeHubsJson;
       buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData, pinkOsmData, pinkSvcData);
     } catch (err) {
@@ -11475,6 +11772,20 @@ window.MetroWebGLLayer = (function () {
       const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
       const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('shastri');
       shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red' || isDepotFocused) && (spD2 <= yardR2);
+    }
+    if (mukundpurYardGroup && pinkCorridor && pinkCorridor.stationsData) {
+      const mpSt = pinkCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('majlis'));
+      const mpD2 = mpSt ? ((mpSt.pos.x - focusX) * (mpSt.pos.x - focusX) + (mpSt.pos.z - focusZ) * (mpSt.pos.z - focusZ)) : 0;
+      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
+      const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('majlis');
+      mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (mpD2 <= yardR2);
+    }
+    if (vinodNagarYardGroup && pinkCorridor && pinkCorridor.stationsData) {
+      const vnSt = pinkCorridor.stationsData.find((s) => s.name && (s.name.toLowerCase().includes('vinod') || s.name.toLowerCase().includes('ip extension')));
+      const vnD2 = vnSt ? ((vnSt.pos.x - focusX) * (vnSt.pos.x - focusX) + (vnSt.pos.z - focusZ) * (vnSt.pos.z - focusZ)) : 0;
+      const yardR2 = Math.max(visR + 3200, 5500) * Math.max(visR + 3200, 5500);
+      const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('vinod') || selectedStationName.toLowerCase().includes('ip extension'));
+      vinodNagarYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (vnD2 <= yardR2);
     }
 
     const list = allStationsData.length ? allStationsData : stationsData;
@@ -11671,6 +11982,12 @@ window.MetroWebGLLayer = (function () {
     }
     if (shastriYardData) {
       shastriYardGroup = buildShastriParkYardInfrastructure(infraGroup, shastriYardData);
+    }
+    if (mukundpurYardData) {
+      mukundpurYardGroup = buildMukundpurYardInfrastructure(infraGroup, mukundpurYardData);
+    }
+    if (vinodNagarYardData) {
+      vinodNagarYardGroup = buildVinodNagarYardInfrastructure(infraGroup, vinodNagarYardData);
     }
     buildBeautifulDelhiEnvironment(infraGroup);
     buildAllStations(infraGroup, yellowCorridor);
