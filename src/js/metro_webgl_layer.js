@@ -7662,21 +7662,21 @@ window.MetroWebGLLayer = (function () {
     const detail = new THREE.Group();
     const gY = st.elevM || 1.35; // At-grade ground elevation matching Shastri Park Yamuna east bank
 
-    // 1. Station Foundation Apron & Ballast Subgrade (z = -14.0m to +26.0m)
-    addBox(root, 128, 0.22, 40, m.slateCut, 0, gY - 0.11, 6.0);
-    addBox(root, 124, 0.14, 38, m.plazaPave, 0, gY - 0.04, 6.0);
+    // 1. Station Foundation Apron & Ballast Subgrade (z = -16.0m to +26.0m)
+    addBox(root, 128, 0.22, 42, m.slateCut, 0, gY - 0.11, 5.0);
+    addBox(root, 124, 0.14, 40, m.plazaPave, 0, gY - 0.04, 5.0);
 
     const platLen = 112;
-    const platW = 5.2; // 2.30m track centerline to platform edge, platform width 5.2m
-    const platH = 1.15; // Passenger platform deck 1.15m above rail head
+    const platW = 5.6; // 1.80m from track centerline (4.6m) to platform edge (6.4m), platform width 5.6m (outer edge 12.0m)
+    const platH = 1.35; // Passenger platform deck 1.35m above ground (flush with train floor!)
 
     // 2. Dual Side Platforms (North: Platform 1 to Shaheed Sthal, South: Platform 2 to Rithala)
-    // Mainline tracks run through at z = -2.3m and z = +2.3m (centerline at z = 0)
-    // North Platform: z = -5.8m (inner edge at z = -3.20m, leaving clear track envelope)
-    // South Platform: z = +5.8m (inner edge at z = +3.20m, leaving clear track envelope)
+    // Mainline tracks run through at z = -4.6m and z = +4.6m (TRACK_HALF_SEP = 4.6m)
+    // North Platform: center pz = -9.2m (inner coping edge at z = -6.40m, 0.35m from train side at -6.05m)
+    // South Platform: center pz = +9.2m (inner coping edge at z = +6.40m, 0.35m from train side at +6.05m)
     const platformConfigs = [
-      { pz: -5.8, sgn: -1, name: 'PLATFORM 1 · TO SHAHEED STHAL / GHAZIABAD', pIdx: 0 },
-      { pz: 5.8, sgn: 1, name: 'PLATFORM 2 · TO KASHMERE GATE / RITHALA', pIdx: 1 }
+      { pz: -9.2, sgn: -1, name: 'PLATFORM 1 · TO SHAHEED STHAL / GHAZIABAD', pIdx: 0 },
+      { pz: 9.2, sgn: 1, name: 'PLATFORM 2 · TO KASHMERE GATE / RITHALA', pIdx: 1 }
     ];
 
     platformConfigs.forEach((cfg) => {
@@ -7721,7 +7721,7 @@ window.MetroWebGLLayer = (function () {
         [30, gY + platH, pz, cfg.pIdx + 3]
       ]);
 
-      // 3. Vaulted Canopies (Sheltering each platform individually; central 5.6m track zone is completely open to the sky!)
+      // 3. Vaulted Canopies (Sheltering each platform individually; central 12m track zone is completely open to the sky!)
       const canopyW = 6.4;
       const canopyY = gY + platH + 3.8;
       const roofMesh = addBox(root, platLen - 4, 0.24, canopyW, m.redRoof, 0, canopyY + 0.45, pz);
@@ -7736,13 +7736,13 @@ window.MetroWebGLLayer = (function () {
     // 4. Central Glazed Foot Over Bridge (FOB) connecting South Concourse to Both Platforms
     // High clearance at y = gY + 7.6m (clearing OHE wires at 5.8m by 1.8m!)
     const fobY = gY + 7.6;
-    const fobSpanZ = 28.0; // from z = -8.5m (North platform) to z = +19.5m (South concourse)
-    const fobCenterZ = 5.5;
+    const fobSpanZ = 31.5; // from z = -12.0m (North platform) to z = +19.5m (South concourse)
+    const fobCenterZ = 3.75;
     addBox(root, 7.2, 3.2, fobSpanZ, m.concourseGlass, 0, fobY + 1.6, fobCenterZ);
     addBox(root, 7.6, 0.48, fobSpanZ + 0.4, m.concreteLight, 0, fobY, fobCenterZ);
     addBox(root, 8.0, 0.52, fobSpanZ + 0.8, m.redRoof, 0, fobY + 3.2, fobCenterZ);
 
-    [-5.8, 5.8].forEach((pz) => {
+    [-9.2, 9.2].forEach((pz) => {
       addBox(detail, 3.2, fobY - (gY + platH), 3.2, m.concourseGlass, -4.2, (gY + platH + fobY) * 0.5, pz);
       addBox(detail, 3.4, 0.36, 3.4, m.steelDark, -4.2, fobY, pz);
       const esc = addBox(detail, 2.4, 0.8, 12.0, m.escStep, 4.2, (gY + platH + fobY) * 0.5, pz);
@@ -7753,7 +7753,7 @@ window.MetroWebGLLayer = (function () {
     // Located completely to the south at z = +19.5m (ZERO TRACK COLLISION!)
     const concZ = 19.5;
     const concLen = 52;
-    const concW = 16;
+    const concW = 15;
     const concH = 6.4;
     addBox(root, concLen, concH, concW, m.pierCream, 0, gY + concH * 0.5, concZ);
     addBox(root, concLen + 2.0, 0.75, concW + 2.0, m.redRoof, 0, gY + concH + 0.35, concZ);
@@ -7771,7 +7771,7 @@ window.MetroWebGLLayer = (function () {
 
     // Bilingual Illuminated Signboard Meshes
     const signMeshes = [];
-    [-9.0, 27.5].forEach((sz) => {
+    [-12.2, 27.5].forEach((sz) => {
       const sb = new THREE.Mesh(g.box1, m.placeholderSign);
       sb.scale.set(26.0, 3.6, 0.35);
       sb.position.set(0, gY + 5.2, sz);
@@ -7782,6 +7782,7 @@ window.MetroWebGLLayer = (function () {
     });
 
     const pidsMesh = null;
+    root.add(detail);
     return { root, detail, signMeshes, pidsMesh };
   }
 
