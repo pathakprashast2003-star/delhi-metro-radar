@@ -7802,9 +7802,9 @@ window.MetroWebGLLayer = (function () {
     });
 
     // 6. Illuminated 3D DMRC Signboards
-    const mohPos = toLocalMeters([77.2442, 28.6712], 1.35);
-    const dmraPos = toLocalMeters([77.2482, 28.6715], 1.35);
-    const throatPos = toLocalMeters([77.2466, 28.6698], 1.35);
+    const mohPos = toLocalMeters([77.2445, 28.6724], 1.35);
+    const dmraPos = toLocalMeters([77.2488, 28.6725], 1.35);
+    const throatPos = toLocalMeters([77.2480, 28.6698], 1.35);
 
     addDwarkaLocalitySign(grp, throatPos.x, throatPos.y + 7.5, throatPos.z, 56, 3.2,
       'DMRC SHASTRI PARK DEPOT · PRIMARY MAINTENANCE & STABLING YARD',
