@@ -2694,7 +2694,6 @@
         if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.setLineFilter === 'function') {
           window.MetroWebGLLayer.setLineFilter(lineId);
         }
-        syncStationStepper(0);
         if (lineId === 'blue') {
           if (window.MetroWebGLLayer && typeof window.MetroWebGLLayer.flyToStation === 'function') {
             window.MetroWebGLLayer.flyToStation('Dwarka Sector - 21');

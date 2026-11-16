@@ -1274,12 +1274,12 @@ window.MetroWebGLLayer = (function () {
     return sharedGeos;
   }
 
-  function addBox(parent, w, h, d, mat, x, y, z) {
+  function addBox(parent, w, h, d, mat, x, y, z, castShadow = false) {
     const m = new THREE.Mesh(getSharedStationGeos().box1, mat);
     m.scale.set(w, h, d);
     m.position.set(x, y, z);
-    m.frustumCulled = false;
-    m.castShadow = true;
+    m.frustumCulled = true;
+    m.castShadow = castShadow;
     m.receiveShadow = true;
     parent.add(m);
     return m;
@@ -3976,8 +3976,8 @@ window.MetroWebGLLayer = (function () {
     lf.scale.set(s * 0.94, s * 1.06, s * 0.96);
     lf.rotation.y = yaw;
     lf.position.set(x, y + 4.9 * s, z);
-    tr.frustumCulled = lf.frustumCulled = false;
-    tr.castShadow = lf.castShadow = true;
+    tr.frustumCulled = lf.frustumCulled = true;
+    tr.castShadow = lf.castShadow = false;
     lf.receiveShadow = true;
     parent.add(tr, lf);
   }
@@ -3991,7 +3991,7 @@ window.MetroWebGLLayer = (function () {
       body.position.set(cx, cy + 0.78, cz);
       const head = new THREE.Mesh(g.commuterHead, m.commuterSkin);
       head.position.set(cx, cy + 1.72, cz);
-      body.frustumCulled = head.frustumCulled = false;
+      body.frustumCulled = head.frustumCulled = true;
       parent.add(body, head);
     });
   }
@@ -4023,7 +4023,7 @@ window.MetroWebGLLayer = (function () {
         const ring = new THREE.Mesh(g.tbmRib, m.concreteLight);
         ring.rotation.y = Math.PI / 2;
         ring.position.set(xPos - dir * dx, yBase + 0.6, tz);
-        ring.frustumCulled = false;
+        ring.frustumCulled = true;
         parent.add(ring);
       });
       const arch = new THREE.Mesh(g.tbmArch, m.concreteLight);
@@ -4032,7 +4032,7 @@ window.MetroWebGLLayer = (function () {
       const bore = new THREE.Mesh(g.tbmBore, m.slateDark);
       bore.rotation.z = Math.PI / 2;
       bore.position.set(xPos, yBase + 0.6, tz);
-      arch.frustumCulled = bore.frustumCulled = false;
+      arch.frustumCulled = bore.frustumCulled = true;
       parent.add(arch, bore);
     });
   }
@@ -10982,10 +10982,11 @@ window.MetroWebGLLayer = (function () {
       const shadowMeshes = [];
       built.root.traverse((obj) => {
         if (obj.isMesh) {
+          obj.frustumCulled = true;
           const mat = obj.material;
           const isTrans = mat && (mat.transparent || mat === m.shadowDisc || mat === m.viaductShadow);
           if (!isTrans) {
-            obj.castShadow = true;
+            obj.castShadow = false;
             shadowMeshes.push(obj);
           }
           obj.receiveShadow = true;
@@ -11019,7 +11020,7 @@ window.MetroWebGLLayer = (function () {
       st._signSpec = { subtitle, secCss };
       st._signageReady = false;
       st._shadowMeshes = shadowMeshes;
-      st._inShadow = true;
+      st._inShadow = false;
     });
   }
 
@@ -12342,6 +12343,7 @@ window.MetroWebGLLayer = (function () {
 
   let _lastCullX = -999999, _lastCullZ = -999999, _lastCullZoom = -1;
   let _lastCullTime = 0, _lastCullActiveLine = null, _lastCullSelSt = null;
+  let _activeSelectedRing = null;
 
   function updateVisibilityAndCulling(now, dtSec, skipOverviewSync) {
     if (!map || !originMc) return;
@@ -12355,15 +12357,14 @@ window.MetroWebGLLayer = (function () {
                         Math.abs(zoom - _lastCullZoom) > 0.04 ||
                         activeLineId !== _lastCullActiveLine ||
                         selectedStationName !== _lastCullSelSt ||
-                        (now - _lastCullTime > 250);
+                        (now - _lastCullTime > 600);
 
-    // shortcut: narrows street-zoom visR on mobile to 1350m (from 2600m) for multi-line scale; raise if horizon station pop appears
     const mob = isMobileProfile();
-    const visR = zoom >= 17.2 ? (mob ? 1350 : 2100) : (zoom >= 15.2 ? (mob ? 2400 : 3600) : (zoom >= 13.5 ? 7200 : 18000));
+    const visR = zoom >= 16.5 ? (mob ? 1400 : 2000) : (zoom >= 14.8 ? (mob ? 2400 : 3400) : (zoom >= 13.2 ? 4500 : 6500));
     const visR2 = visR * visR;
-    const detailR = zoom >= 15.5 ? (mob ? 850 : 1150) : (zoom >= 13.8 ? (mob ? 1150 : 1600) : 0);
+    const detailR = zoom >= 16.5 ? (mob ? 350 : 500) : (zoom >= 15.2 ? (mob ? 250 : 380) : 0);
     const detailR2 = detailR * detailR;
-    const shadowR2 = 340 * 340;
+    const shadowR2 = 320 * 320;
 
     if (cameraMoved) {
       _lastCullX = focusX;
@@ -12503,7 +12504,10 @@ window.MetroWebGLLayer = (function () {
           const isSel = selectedStationName === st.name && isVis;
           if (st._ring.visible !== isSel) st._ring.visible = isSel;
           if (isSel) {
+            _activeSelectedRing = st._ring;
             st._ring.scale.setScalar(1.14 + Math.sin(now * 0.006) * 0.10);
+          } else if (_activeSelectedRing === st._ring) {
+            _activeSelectedRing = null;
           }
         }
       }
@@ -12754,6 +12758,9 @@ window.MetroWebGLLayer = (function () {
 
       if (isReady) {
         updateVisibilityAndCulling(now, dt, false);
+        if (_activeSelectedRing && _activeSelectedRing.visible) {
+          _activeSelectedRing.scale.setScalar(1.14 + Math.sin(now * 0.006) * 0.10);
+        }
       }
       if (map) map.triggerRepaint();
       requestAnimationFrame(tick);
@@ -13057,7 +13064,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 16.3,
         pitch: 58,
         bearing: -42,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName === 'yamuna bank') {
       map.flyTo({
@@ -13065,7 +13075,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 16.8,
         pitch: 58,
         bearing: -32,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName === 'dhaula kuan') {
       map.flyTo({
@@ -13073,7 +13086,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.5,
         pitch: 58,
         bearing: -32,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName.includes('jasola')) {
       map.flyTo({
@@ -13081,7 +13097,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.1,
         pitch: 60,
         bearing: 38,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName === 'inderlok') {
       map.flyTo({
@@ -13089,7 +13108,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 18.25,
         pitch: 56,
         bearing: -28,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName === 'welcome') {
       map.flyTo({
@@ -13097,7 +13119,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 18.25,
         pitch: 56,
         bearing: -24,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName === 'netaji subhash place') {
       map.flyTo({
@@ -13105,7 +13130,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 18.25,
         pitch: 56,
         bearing: -26,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName.includes('shastri park depot') || normName.includes('shastri depot') || key.includes('shastri park depot') || key.includes('shastri depot')) {
       map.flyTo({
@@ -13113,7 +13141,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.6,
         pitch: 58,
         bearing: -34,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else if (normName === 'shastri park') {
       map.flyTo({
@@ -13121,7 +13152,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.8,
         pitch: 56,
         bearing: -24,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     } else {
       map.flyTo({
@@ -13129,7 +13163,10 @@ window.MetroWebGLLayer = (function () {
         zoom: 18.25,
         pitch: 54,
         bearing: -22,
-        duration: 950
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
       });
     }
   }
@@ -14231,7 +14268,13 @@ window.MetroWebGLLayer = (function () {
         secOfDay: currentSecOfDay,
         nightGlow: Number(currentNightGlow.toFixed(2)),
         undergroundXRay,
-        subwayRailsVisible
+        subwayRailsVisible,
+        renderStats: glRenderer ? {
+          calls: glRenderer.info.render.calls,
+          triangles: glRenderer.info.render.triangles,
+          geometries: glRenderer.info.memory.geometries,
+          textures: glRenderer.info.memory.textures
+        } : null
       };
     },
     getScene() { return scene; },
