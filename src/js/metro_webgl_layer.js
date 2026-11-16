@@ -1612,7 +1612,7 @@ window.MetroWebGLLayer = (function () {
       // - Node 16..28: Ramp down north portal to subway tube (17.5m -> 0.28m)
       // - Node 28..98: Underground cutaway tube: Azadpur (44), Shalimar Bagh (68), Netaji Subhash Place (90) (SUBWAY_Y = 0.28m)
       // - Node 98..108: Ramp up south of NSP to elevated viaduct (0.28m -> 17.5m)
-      // - Node 108..238: Elevated Ring Road viaduct: Shakurpur (115), Punjabi Bagh West (161), ESI (193), Rajouri Garden (+21m over Blue Line at 206), Mayapuri (231)
+      // - Node 108..238: Elevated Ring Road viaduct: Shakurpur (115), Punjabi Bagh West (161), ESI (193), Rajouri Garden (+13.5m station at 206, +11.5m underpass steel span under Blue Line at 208), Mayapuri (231)
       // - Node 238..248: Ramp down to Naraina Vihar subway (17.5m -> 0.28m)
       // - Node 248..268: Naraina Vihar underground cutaway (SUBWAY_Y = 0.28m, station at 258)
       // - Node 268..278: Ramp up to Delhi Cantt elevated viaduct (0.28m -> 17.5m)
@@ -1633,9 +1633,24 @@ window.MetroWebGLLayer = (function () {
           return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth(u);
         }
         if (idxF <= 238) {
-          if (idxF >= 200 && idxF <= 212) {
-            const u = 1.0 - Math.abs(idxF - 206) / 6;
-            return VIADUCT_Y + (21.0 - VIADUCT_Y) * hermiteSmooth(u);
+          if (idxF >= 196 && idxF <= 220) {
+            // Rajouri Garden / Raja Garden crossing:
+            // Pink Line passes UNDER Blue Line viaduct via 60m steel span!
+            // Station at node 206 (elev = 13.5m), crossing under Blue Line at node 208..210 (elev = 11.5m)
+            if (idxF <= 204) {
+              const u = (idxF - 196) / 8.0;
+              return VIADUCT_Y + (13.5 - VIADUCT_Y) * hermiteSmooth(u);
+            } else if (idxF <= 206) {
+              return 13.5;
+            } else if (idxF <= 208) {
+              const u = (idxF - 206) / 2.0;
+              return 13.5 + (11.5 - 13.5) * hermiteSmooth(u);
+            } else if (idxF <= 210) {
+              return 11.5;
+            } else {
+              const u = (idxF - 210) / 10.0;
+              return 11.5 + (VIADUCT_Y - 11.5) * hermiteSmooth(u);
+            }
           }
           return VIADUCT_Y;
         }
@@ -1777,6 +1792,19 @@ window.MetroWebGLLayer = (function () {
         if (idxF <= d21UnderEnd) return SUBWAY_Y;
         if (idxF <= d21RampEnd) {
           return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth((idxF - d21UnderEnd) / (d21RampEnd - d21UnderEnd));
+        }
+        // Rajouri Garden / Raja Garden flyover crossing:
+        // Blue Line climbs over Raja Garden flyover & Ring Road (nodes 192..212, peak at 199..204)
+        if (idxF >= 192 && idxF <= 212) {
+          if (idxF <= 199) {
+            const u = (idxF - 192) / 7.0;
+            return VIADUCT_Y + (19.8 - VIADUCT_Y) * hermiteSmooth(u);
+          } else if (idxF <= 204) {
+            return 19.8;
+          } else {
+            const u = (idxF - 204) / 8.0;
+            return 19.8 + (VIADUCT_Y - 19.8) * hermiteSmooth(u);
+          }
         }
         if (idxF < rampWStart) return VIADUCT_Y;
         if (idxF <= rampWEnd) {
@@ -2389,15 +2417,22 @@ window.MetroWebGLLayer = (function () {
 
     for (let d = 24; d < cLen - 24; d += 44) {
       const smp = sampleAtDist(d, c);
-      if (!smp || smp.elev < VIADUCT_Y - 1.5) continue;
+      if (!smp || smp.elev < 5.0) continue;
       const nearElevSt = cStations.some((st) => st.structure === 'elevated' && Math.abs(st.dist - d) < 46);
-      if (!nearElevSt) pierLocations.push(smp);
+      if (nearElevSt) continue;
+      // Skip piers directly inside Raja Garden crossing (60m clear span under Blue Line / over Ring Road)
+      if (isBlue && Math.abs(smp.dist - 20255) < 24) continue;
+      if (isPink && Math.abs(smp.dist - 11538) < 28) continue;
+      pierLocations.push(smp);
     }
     for (let d = 30; d < cLen - 30; d += 62) {
       const smp = sampleAtDist(d, c);
-      if (!smp || smp.elev < VIADUCT_Y - 1.5) continue;
+      if (!smp || smp.elev < 5.0) continue;
       const nearElevSt = cStations.some((st) => st.structure === 'elevated' && Math.abs(st.dist - d) < 45);
-      if (!nearElevSt) oheLocations.push(smp);
+      if (nearElevSt) continue;
+      // Skip tall OHE portal gantry on Pink Line directly under Blue Line girder (rigid overhead catenary ROCS used in underpass)
+      if (isPink && Math.abs(smp.dist - 11538) < 35) continue;
+      oheLocations.push(smp);
     }
     for (let d = 24; d < cLen - 24; d += 22) {
       const smp = sampleAtDist(d, c);
@@ -10943,7 +10978,7 @@ window.MetroWebGLLayer = (function () {
         else if (st.name === 'Azadpur') subtitle = 'PINK × YELLOW INTERCHANGE · SUBWAY CUTAWAY';
         else if (st.name === 'Netaji Subhash Place') subtitle = 'PINK × RED INTERCHANGE · PACIFIC MALL & SKYWALK HUB';
         else if (st.name === 'Punjabi Bagh West') subtitle = 'PINK × GREEN INTERCHANGE · VIADUCT HALT';
-        else if (st.name === 'Rajouri Garden') subtitle = 'PINK × BLUE INTERCHANGE · UPPER VIADUCT +21M';
+        else if (st.name === 'Rajouri Garden') subtitle = 'PINK × BLUE INTERCHANGE · UNDERPASS STEEL SPAN (+13.5M)';
         else if (st.name === 'Durgabai Deshmukh South Campus') subtitle = 'PINK × AIRPORT EXPRESS · RECORD VIADUCT +23.6M';
         else if (st.name === 'Dilli Haat - INA') subtitle = 'PINK × YELLOW INTERCHANGE · SUBTERRANEAN HUB';
         else if (st.name === 'Lajpat Nagar') subtitle = 'PINK × VIOLET INTERCHANGE · SOUTH DELHI JUNCTION';
@@ -11005,8 +11040,8 @@ window.MetroWebGLLayer = (function () {
       if (st.name === 'Rajouri Garden') {
         st._isSharedDualHub = true;
         subtitle = isPink
-          ? 'PINK × BLUE INTERCHANGE · UPPER VIADUCT +21M & SKYWALK'
-          : 'BLUE × PINK INTERCHANGE · HIGH ELEVATED SKYWALK HUB';
+          ? 'PINK × BLUE INTERCHANGE · UNDERPASS STEEL SPAN (+13.5M) & SKYWALK'
+          : 'BLUE × PINK INTERCHANGE · HIGH ELEVATED OVERPASS (+19.8M) & SKYWALK HUB';
       }
       if (st.name === 'Janakpuri West' || st.name === 'Janak Puri West') {
         st._isSharedDualHub = true;

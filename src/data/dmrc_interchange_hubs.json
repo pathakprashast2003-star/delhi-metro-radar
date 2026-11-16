@@ -1742,8 +1742,8 @@
         {
           "line": "Pink Line",
           "color": "#EC4899",
-          "tier": "elevated_upper",
-          "deckY": 21.5,
+          "tier": "elevated_lower",
+          "deckY": 13.5,
           "platformType": "side",
           "stationLen": 84,
           "platformWidth": 19.6,
@@ -1834,15 +1834,15 @@
         {
           "kind": "skywalk",
           "fromLngLat": [
-            77.122916,
-            28.649241
+            77.122908,
+            28.649214
           ],
-          "fromY": 9.8,
+          "fromY": 13.5,
           "toLngLat": [
-            77.124084,
-            28.651309
+            77.12413,
+            28.651295
           ],
-          "toY": 15.8,
+          "toY": 7.5,
           "width": 6.8,
           "color": "#EC4899"
         }
@@ -2778,8 +2778,8 @@
         {
           "line": "Pink Line",
           "color": "#EC4899",
-          "tier": "elevated_upper",
-          "deckY": 21.5,
+          "tier": "elevated_lower",
+          "deckY": 13.5,
           "platformType": "side",
           "stationLen": 84,
           "platformWidth": 19.6,
