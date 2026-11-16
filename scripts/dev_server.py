@@ -10,10 +10,12 @@ class DevHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
         path = self.path.split('?')[0]
-        if path.endswith(('.jpg', '.png', '.webp', '.woff2', '.json', '.geojson')):
+        if path.endswith(('.jpg', '.png', '.webp', '.woff2')):
             self.send_header('Cache-Control', 'public, max-age=3600')
         else:
-            self.send_header('Cache-Control', 'no-cache, must-revalidate')
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
         super().end_headers()
 
 class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
