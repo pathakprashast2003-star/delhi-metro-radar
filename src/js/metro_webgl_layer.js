@@ -11126,8 +11126,17 @@ window.MetroWebGLLayer = (function () {
                         (activeLineId === 'red' && lineKey === 'red') ||
                         (activeLineId === 'pink' && lineKey === 'pink');
         if (!matches) {
-          if (tr.group.visible) tr.group.visible = false;
-          continue;
+          // Allow connecting interchange trains to render if near camera focus (within 1500m)
+          const sIdxCheck = Math.max(0, Math.min(nLast, Math.round((tr.dist / cLen) * nLast)));
+          const smpCheck = cSamples[sIdxCheck];
+          const spCheck = smpCheck ? smpCheck.pos : null;
+          const dxT = spCheck ? (spCheck.x - focusX) : Infinity;
+          const dzT = spCheck ? (spCheck.z - focusZ) : Infinity;
+          const isNearHub = (dxT * dxT + dzT * dzT < 2250000);
+          if (!isNearHub) {
+            if (tr.group.visible) tr.group.visible = false;
+            continue;
+          }
         }
       }
 
@@ -12358,14 +12367,30 @@ window.MetroWebGLLayer = (function () {
                         (activeLineId === 'magenta' && lk === 'magenta') ||
                         (activeLineId === 'red' && lk === 'red') ||
                         (activeLineId === 'pink' && lk === 'pink');
-        if (corr._trackGroup && corr._trackGroup.visible !== matches) {
-          corr._trackGroup.visible = matches;
+        // Keep connecting interchange line tracks visible if near camera focus (interchange hub area)
+        let isNearInterchange = false;
+        if (!matches && corr.stationsData) {
+          for (let sIdx = 0; sIdx < corr.stationsData.length; sIdx++) {
+            const stObj = corr.stationsData[sIdx];
+            if (stObj.pos) {
+              const dxS = stObj.pos.x - focusX;
+              const dzS = stObj.pos.z - focusZ;
+              if (dxS * dxS + dzS * dzS < 2250000) { // 1500m radius
+                isNearInterchange = true;
+                break;
+              }
+            }
+          }
         }
-        if (corr._subwayGroup && corr._subwayGroup.visible !== matches) {
-          corr._subwayGroup.visible = matches;
+        const showCorr = matches || isNearInterchange;
+        if (corr._trackGroup && corr._trackGroup.visible !== showCorr) {
+          corr._trackGroup.visible = showCorr;
         }
-        if (corr._xrayGroup && corr._xrayGroup.visible !== (matches && undergroundXRay)) {
-          corr._xrayGroup.visible = matches && undergroundXRay;
+        if (corr._subwayGroup && corr._subwayGroup.visible !== showCorr) {
+          corr._subwayGroup.visible = showCorr;
+        }
+        if (corr._xrayGroup && corr._xrayGroup.visible !== (showCorr && undergroundXRay)) {
+          corr._xrayGroup.visible = showCorr && undergroundXRay;
         }
       });
     }
