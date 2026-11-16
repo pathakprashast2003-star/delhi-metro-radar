@@ -640,8 +640,8 @@ window.MetroWebGLLayer = (function () {
     return false;
   }
 
-  // Begin fetching Overture PMTiles header, leaf dir, and hero Qutab tile immediately on script evaluation
-  (function prewarmOverturePMTiles() {
+  // Background-defer Overture PMTiles so it never blocks primary MapLibre & WebGL metro initialization
+  function prewarmOverturePMTiles() {
     try {
       if (ensurePMTilesProtocol() && window.pmtiles && typeof window.pmtiles.PMTiles === 'function') {
         const releaseTag = getPreferredOvertureRelease();
@@ -650,11 +650,17 @@ window.MetroWebGLLayer = (function () {
         window._pmtilesProtocol.add(p);
         primaryOverturePMTiles = p;
         primaryOvertureHttpUrl = httpUrl;
-        // Fetching the initial Samaypur Badli Station #1 hero tile warms PMTiles header + Delhi leaf directory in parallel with basemap init
         prewarmOvertureAtLngLat(77.1383, 28.7446, false);
       }
     } catch (_) { }
-  })();
+  }
+  if (typeof window !== 'undefined') {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(() => setTimeout(prewarmOverturePMTiles, 3500), { timeout: 6000 });
+    } else {
+      setTimeout(prewarmOverturePMTiles, 4000);
+    }
+  }
 
   function initOrigin() {
     if (!window.maplibregl || !window.THREE) return;
@@ -11272,11 +11278,7 @@ window.MetroWebGLLayer = (function () {
   }
 
   function buildCorridorDistanceFilter(clearance, minDistM) {
-    if (!clearance || !clearance.corridorDistanceGeo) return true;
-    const exactCheck = ['>', ['distance', clearance.corridorDistanceGeo], minDistM];
-    return !clearance.corridorGuardGeo
-      ? exactCheck
-      : ['any', ['>', ['distance', clearance.corridorGuardGeo], 260.0], exactCheck];
+    return ['!=', ['get', 'hide_3d'], true];
   }
 
   function buildCorridorClearanceGeoJSON() {
@@ -11581,7 +11583,11 @@ window.MetroWebGLLayer = (function () {
             }
             const mBefore = map.getLayer('ir-rail-ballast') ? 'ir-rail-ballast' : (map.getLayer('building-3d') ? 'building-3d' : undefined);
             const curVis = (subwayRailsVisible || undergroundXRay) ? 'visible' : 'none';
-            const otherLinesFilter = ['!=', ['get', 'line'], 'Blue Line'];
+            const otherLinesFilter = [
+              '!in',
+              ['get', 'line'],
+              ['literal', ['Yellow Line', 'Blue Line', 'Orange Line', 'Magenta Line', 'Red Line', 'Pink Line', 'Airport Express']]
+            ];
             if (!map.getLayer('dmrc-metro-casing')) {
               map.addLayer({
                 id: 'dmrc-metro-casing',
