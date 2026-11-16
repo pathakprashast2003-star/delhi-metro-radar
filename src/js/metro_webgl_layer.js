@@ -1771,7 +1771,8 @@ window.MetroWebGLLayer = (function () {
 
     const curve = new THREE.CatmullRomCurve3(densePts, false, 'centripetal', 0.25);
     const approxLen = curve.getLength();
-    const numSamples = Math.max(1400, Math.ceil(approxLen / 18));
+    const sampleStep = (isPink || isBlue) ? 24 : 18;
+    const numSamples = Math.max(1200, Math.ceil(approxLen / sampleStep));
     const spaced = curve.getSpacedPoints(numSamples);
 
     const cSamples = [];
@@ -2340,13 +2341,37 @@ window.MetroWebGLLayer = (function () {
       const nearUgSt = cStations.some((st) => st.structure !== 'elevated' && Math.abs(st.dist - d) < (st.name === 'Rajiv Chowk' ? 74 : 48));
       if (!nearUgSt) trenchBeamLocations.push(smp);
     }
-    for (let d = 6; d < cLen - 6; d += 1.35) {
-      const nearFocus = cStations.some((st) => Math.abs(st.dist - d) < 220);
-      const smp = sampleAtDist(d, c);
-      if (!smp) continue;
-      if (nearFocus || (smp.elev > SUBWAY_Y + 0.5 && smp.elev < VIADUCT_Y - 0.5)) {
-        if (isOpenCutOrSurfaceDist(smp.dist, smp.elev, 42.0, c)) surfaceSleeperLocations.push(smp);
-        else buriedSleeperLocations.push(smp);
+    // High-performance station-centric sleeper generation:
+    // Focuses sleeper instances precisely along station platforms/throats (±65m) and ramps
+    const sleeperStep = 1.65;
+    const seenDists = new Set();
+    const addSleeperAt = (d) => {
+      const qd = Math.round(d * 10) / 10;
+      if (seenDists.has(qd) || qd < 6 || qd > cLen - 6) return;
+      seenDists.add(qd);
+      const smp = sampleAtDist(qd, c);
+      if (!smp) return;
+      if (isOpenCutOrSurfaceDist(smp.dist, smp.elev, 42.0, c)) surfaceSleeperLocations.push(smp);
+      else buriedSleeperLocations.push(smp);
+    };
+
+    if (cStations && cStations.length) {
+      cStations.forEach((st) => {
+        const spanRadius = (st.name === 'Rajiv Chowk' || st.name.includes('Kashmere') || st.name.includes('Yamuna')) ? 85 : 62;
+        const sStart = Math.max(6, st.dist - spanRadius);
+        const sEnd = Math.min(cLen - 6, st.dist + spanRadius);
+        for (let d = sStart; d <= sEnd; d += sleeperStep) {
+          addSleeperAt(d);
+        }
+      });
+    }
+    // Also include ramp transition zones directly from samples
+    if (cSamples && cSamples.length) {
+      for (let i = 0; i < cSamples.length; i += 3) {
+        const smp = cSamples[i];
+        if (smp && smp.elev > SUBWAY_Y + 0.5 && smp.elev < VIADUCT_Y - 0.5) {
+          addSleeperAt(smp.dist);
+        }
       }
     }
 
@@ -12343,12 +12368,22 @@ window.MetroWebGLLayer = (function () {
     }
   }
 
+  let _lastCullX = -999999, _lastCullZ = -999999, _lastCullZoom = -1;
+  let _lastCullTime = 0, _lastCullActiveLine = null, _lastCullSelSt = null;
+
   function updateVisibilityAndCulling(now, dtSec, skipOverviewSync) {
     if (!map || !originMc) return;
     const centerMc = window.maplibregl.MercatorCoordinate.fromLngLat(map.getCenter(), 0);
     const focusX = (centerMc.x - originMc.x) / meterUnit;
     const focusZ = (centerMc.y - originMc.y) / meterUnit;
     const zoom = map.getZoom();
+
+    const cameraMoved = Math.abs(focusX - _lastCullX) > 4.5 ||
+                        Math.abs(focusZ - _lastCullZ) > 4.5 ||
+                        Math.abs(zoom - _lastCullZoom) > 0.04 ||
+                        activeLineId !== _lastCullActiveLine ||
+                        selectedStationName !== _lastCullSelSt ||
+                        (now - _lastCullTime > 250);
 
     // shortcut: narrows street-zoom visR on mobile to 1350m (from 2600m) for multi-line scale; raise if horizon station pop appears
     const mob = isMobileProfile();
@@ -12358,169 +12393,178 @@ window.MetroWebGLLayer = (function () {
     const detailR2 = detailR * detailR;
     const shadowR2 = 340 * 340;
 
-    // Per-corridor track infrastructure and underground visibility toggling based on activeLineId
-    if (Array.isArray(allCorridors)) {
-      allCorridors.forEach((corr) => {
-        if (!corr) return;
-        const lk = corr.lineKey || corr.lineId;
-        const matches = (activeLineId === 'all') ||
-                        (activeLineId === 'blue' && (lk === 'blue' || lk === 'blue-vaishali')) ||
-                        (activeLineId === 'yellow' && lk === 'yellow') ||
-                        (activeLineId === 'orange' && lk === 'orange') ||
-                        (activeLineId === 'magenta' && lk === 'magenta') ||
-                        (activeLineId === 'red' && lk === 'red') ||
-                        (activeLineId === 'pink' && lk === 'pink');
-        // Keep connecting interchange line tracks visible if near camera focus (interchange hub area)
-        let isNearInterchange = false;
-        if (!matches && corr.stationsData) {
-          for (let sIdx = 0; sIdx < corr.stationsData.length; sIdx++) {
-            const stObj = corr.stationsData[sIdx];
-            if (stObj.pos) {
-              const dxS = stObj.pos.x - focusX;
-              const dzS = stObj.pos.z - focusZ;
-              if (dxS * dxS + dzS * dzS < 2250000) { // 1500m radius
-                isNearInterchange = true;
-                break;
+    if (cameraMoved) {
+      _lastCullX = focusX;
+      _lastCullZ = focusZ;
+      _lastCullZoom = zoom;
+      _lastCullTime = now;
+      _lastCullActiveLine = activeLineId;
+      _lastCullSelSt = selectedStationName;
+
+      // Per-corridor track infrastructure and underground visibility toggling based on activeLineId
+      if (Array.isArray(allCorridors)) {
+        allCorridors.forEach((corr) => {
+          if (!corr) return;
+          const lk = corr.lineKey || corr.lineId;
+          const matches = (activeLineId === 'all') ||
+                          (activeLineId === 'blue' && (lk === 'blue' || lk === 'blue-vaishali')) ||
+                          (activeLineId === 'yellow' && lk === 'yellow') ||
+                          (activeLineId === 'orange' && lk === 'orange') ||
+                          (activeLineId === 'magenta' && lk === 'magenta') ||
+                          (activeLineId === 'red' && lk === 'red') ||
+                          (activeLineId === 'pink' && lk === 'pink');
+          // Keep connecting interchange line tracks visible if near camera focus (interchange hub area)
+          let isNearInterchange = false;
+          if (!matches && corr.stationsData) {
+            for (let sIdx = 0; sIdx < corr.stationsData.length; sIdx++) {
+              const stObj = corr.stationsData[sIdx];
+              if (stObj.pos) {
+                const dxS = stObj.pos.x - focusX;
+                const dzS = stObj.pos.z - focusZ;
+                if (dxS * dxS + dzS * dzS < 2250000) { // 1500m radius
+                  isNearInterchange = true;
+                  break;
+                }
               }
             }
           }
-        }
-        const showCorr = matches || isNearInterchange;
-        if (corr._trackGroup && corr._trackGroup.visible !== showCorr) {
-          corr._trackGroup.visible = showCorr;
-        }
-        if (corr._subwayGroup && corr._subwayGroup.visible !== showCorr) {
-          corr._subwayGroup.visible = showCorr;
-        }
-        if (corr._xrayGroup && corr._xrayGroup.visible !== (showCorr && undergroundXRay)) {
-          corr._xrayGroup.visible = showCorr && undergroundXRay;
-        }
-      });
-    }
-
-    const depotVisR2 = 2500 * 2500; // 2.5km distance limit for heavy rail maintenance yards
-    if (yamunaYardGroup) {
-      const ybSt = blueCorridor && blueCorridor.stationsData ? blueCorridor.stationsData.find((s) => s.name === 'Yamuna Bank') : null;
-      const ybD2 = ybSt ? ((ybSt.pos.x - focusX) * (ybSt.pos.x - focusX) + (ybSt.pos.z - focusZ) * (ybSt.pos.z - focusZ)) : 0;
-      yamunaYardGroup.visible = (activeLineId === 'all' || activeLineId === 'blue') && (ybD2 <= depotVisR2);
-    }
-
-    if (kalindiDepotGroup) {
-      const jkSt = magentaCorridor && magentaCorridor.stationsData ? magentaCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('jasola')) : null;
-      const kkSt = magentaCorridor && magentaCorridor.stationsData ? magentaCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('kalindi')) : null;
-      const refSt = jkSt || kkSt;
-      const kdD2 = refSt ? ((refSt.pos.x - focusX) * (refSt.pos.x - focusX) + (refSt.pos.z - focusZ) * (refSt.pos.z - focusZ)) : 0;
-      kalindiDepotGroup.visible = (activeLineId === 'all' || activeLineId === 'magenta') && (kdD2 <= depotVisR2);
-    }
-    if (shastriYardGroup && redCorridor && redCorridor.stationsData) {
-      const spSt = redCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('shastri park'));
-      const spD2 = spSt ? ((spSt.pos.x - focusX) * (spSt.pos.x - focusX) + (spSt.pos.z - focusZ) * (spSt.pos.z - focusZ)) : 0;
-      const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('shastri');
-      shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red' || isDepotFocused) && (spD2 <= depotVisR2);
-    }
-    if (mukundpurYardGroup && pinkCorridor && pinkCorridor.stationsData) {
-      const mpSt = pinkCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('majlis'));
-      const mpPos = mpSt ? mpSt.pos : toLocalMeters([77.1870, 28.7230], 1.35);
-      const depotCenter = toLocalMeters([77.1870, 28.7230], 1.35);
-      const d1 = (mpPos.x - focusX) * (mpPos.x - focusX) + (mpPos.z - focusZ) * (mpPos.z - focusZ);
-      const d2 = (depotCenter.x - focusX) * (depotCenter.x - focusX) + (depotCenter.z - focusZ) * (depotCenter.z - focusZ);
-      const minD2 = Math.min(d1, d2);
-      const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('majlis') || selectedStationName.toLowerCase().includes('mukundpur'));
-      mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || activeLineId === 'yellow' || activeLineId === 'yellow-line' || isDepotFocused) && (minD2 <= depotVisR2);
-    }
-    if (vinodNagarYardGroup && pinkCorridor && pinkCorridor.stationsData) {
-      const vnSt = pinkCorridor.stationsData.find((s) => s.name && (s.name.toLowerCase().includes('vinod') || s.name.toLowerCase().includes('ip extension')));
-      const vnD2 = vnSt ? ((vnSt.pos.x - focusX) * (vnSt.pos.x - focusX) + (vnSt.pos.z - focusZ) * (vnSt.pos.z - focusZ)) : 0;
-      const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('vinod') || selectedStationName.toLowerCase().includes('ip extension'));
-      vinodNagarYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (vnD2 <= depotVisR2);
-    }
-
-    const list = allStationsData.length ? allStationsData : stationsData;
-    for (let i = 0; i < list.length; i++) {
-      const st = list[i];
-      if (activeLineId !== 'all' && !st._isSharedDualHub) {
-        const stLineKey = st.lineKey || st.lineId || (st.corridor ? (st.corridor.lineKey || st.corridor.lineId) : (st.isBlue ? 'blue' : 'yellow'));
-        const matches = (activeLineId === 'blue' && (stLineKey === 'blue' || stLineKey === 'blue-vaishali')) ||
-                        (activeLineId === 'yellow' && stLineKey === 'yellow') ||
-                        (activeLineId === 'orange' && stLineKey === 'orange') ||
-                        (activeLineId === 'magenta' && stLineKey === 'magenta') ||
-                        (activeLineId === 'red' && stLineKey === 'red') ||
-                        (activeLineId === 'pink' && stLineKey === 'pink');
-        const dxCenter = st.pos.x - focusX;
-        const dzCenter = st.pos.z - focusZ;
-        const isFocusStation = (selectedStationName === st.name) || (dxCenter * dxCenter + dzCenter * dzCenter < 562500); // 750m
-        if (!matches && !isFocusStation) {
-          if (st._group && st._group.visible) st._group.visible = false;
-          if (st._detail && st._detail.visible) st._detail.visible = false;
-          if (st._ring && st._ring.visible) st._ring.visible = false;
-          continue;
-        }
+          const showCorr = matches || isNearInterchange;
+          if (corr._trackGroup && corr._trackGroup.visible !== showCorr) {
+            corr._trackGroup.visible = showCorr;
+          }
+          if (corr._subwayGroup && corr._subwayGroup.visible !== showCorr) {
+            corr._subwayGroup.visible = showCorr;
+          }
+          if (corr._xrayGroup && corr._xrayGroup.visible !== (showCorr && undergroundXRay)) {
+            corr._xrayGroup.visible = showCorr && undergroundXRay;
+          }
+        });
       }
 
-      const dx = st.pos.x - focusX;
-      const dz = st.pos.z - focusZ;
-      const d2 = dx * dx + dz * dz;
-      const isVis = d2 <= visR2;
-
-      if (st._group && st._group.visible !== isVis) {
-        st._group.visible = isVis;
+      const depotVisR2 = 2500 * 2500; // 2.5km distance limit for heavy rail maintenance yards
+      if (yamunaYardGroup) {
+        const ybSt = blueCorridor && blueCorridor.stationsData ? blueCorridor.stationsData.find((s) => s.name === 'Yamuna Bank') : null;
+        const ybD2 = ybSt ? ((ybSt.pos.x - focusX) * (ybSt.pos.x - focusX) + (ybSt.pos.z - focusZ) * (ybSt.pos.z - focusZ)) : 0;
+        yamunaYardGroup.visible = (activeLineId === 'all' || activeLineId === 'blue') && (ybD2 <= depotVisR2);
       }
-      if (isVis) {
-        const showDetail = detailR2 > 0 && d2 <= detailR2;
-        if (!st._signageReady && showDetail) ensureStationSignage(st);
-        if (st._detail && st._detail.visible !== showDetail) {
-          st._detail.visible = showDetail;
-        }
-        const inShadow = d2 <= shadowR2;
-        if (inShadow !== st._inShadow && st._shadowMeshes) {
-          st._inShadow = inShadow;
-          for (let k = 0; k < st._shadowMeshes.length; k++) {
-            st._shadowMeshes[k].castShadow = inShadow;
+
+      if (kalindiDepotGroup) {
+        const jkSt = magentaCorridor && magentaCorridor.stationsData ? magentaCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('jasola')) : null;
+        const kkSt = magentaCorridor && magentaCorridor.stationsData ? magentaCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('kalindi')) : null;
+        const refSt = jkSt || kkSt;
+        const kdD2 = refSt ? ((refSt.pos.x - focusX) * (refSt.pos.x - focusX) + (refSt.pos.z - focusZ) * (refSt.pos.z - focusZ)) : 0;
+        kalindiDepotGroup.visible = (activeLineId === 'all' || activeLineId === 'magenta') && (kdD2 <= depotVisR2);
+      }
+      if (shastriYardGroup && redCorridor && redCorridor.stationsData) {
+        const spSt = redCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('shastri park'));
+        const spD2 = spSt ? ((spSt.pos.x - focusX) * (spSt.pos.x - focusX) + (spSt.pos.z - focusZ) * (spSt.pos.z - focusZ)) : 0;
+        const isDepotFocused = selectedStationName && selectedStationName.toLowerCase().includes('shastri');
+        shastriYardGroup.visible = (activeLineId === 'all' || activeLineId === 'red' || isDepotFocused) && (spD2 <= depotVisR2);
+      }
+      if (mukundpurYardGroup && pinkCorridor && pinkCorridor.stationsData) {
+        const mpSt = pinkCorridor.stationsData.find((s) => s.name && s.name.toLowerCase().includes('majlis'));
+        const mpPos = mpSt ? mpSt.pos : toLocalMeters([77.1870, 28.7230], 1.35);
+        const depotCenter = toLocalMeters([77.1870, 28.7230], 1.35);
+        const d1 = (mpPos.x - focusX) * (mpPos.x - focusX) + (mpPos.z - focusZ) * (mpPos.z - focusZ);
+        const d2 = (depotCenter.x - focusX) * (depotCenter.x - focusX) + (depotCenter.z - focusZ) * (depotCenter.z - focusZ);
+        const minD2 = Math.min(d1, d2);
+        const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('majlis') || selectedStationName.toLowerCase().includes('mukundpur'));
+        mukundpurYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || activeLineId === 'yellow' || activeLineId === 'yellow-line' || isDepotFocused) && (minD2 <= depotVisR2);
+      }
+      if (vinodNagarYardGroup && pinkCorridor && pinkCorridor.stationsData) {
+        const vnSt = pinkCorridor.stationsData.find((s) => s.name && (s.name.toLowerCase().includes('vinod') || s.name.toLowerCase().includes('ip extension')));
+        const vnD2 = vnSt ? ((vnSt.pos.x - focusX) * (vnSt.pos.x - focusX) + (vnSt.pos.z - focusZ) * (vnSt.pos.z - focusZ)) : 0;
+        const isDepotFocused = selectedStationName && (selectedStationName.toLowerCase().includes('vinod') || selectedStationName.toLowerCase().includes('ip extension'));
+        vinodNagarYardGroup.visible = (activeLineId === 'all' || activeLineId === 'pink' || isDepotFocused) && (vnD2 <= depotVisR2);
+      }
+
+      const list = allStationsData.length ? allStationsData : stationsData;
+      for (let i = 0; i < list.length; i++) {
+        const st = list[i];
+        if (activeLineId !== 'all' && !st._isSharedDualHub) {
+          const stLineKey = st.lineKey || st.lineId || (st.corridor ? (st.corridor.lineKey || st.corridor.lineId) : (st.isBlue ? 'blue' : 'yellow'));
+          const matches = (activeLineId === 'blue' && (stLineKey === 'blue' || stLineKey === 'blue-vaishali')) ||
+                          (activeLineId === 'yellow' && stLineKey === 'yellow') ||
+                          (activeLineId === 'orange' && stLineKey === 'orange') ||
+                          (activeLineId === 'magenta' && stLineKey === 'magenta') ||
+                          (activeLineId === 'red' && stLineKey === 'red') ||
+                          (activeLineId === 'pink' && stLineKey === 'pink');
+          const dxCenter = st.pos.x - focusX;
+          const dzCenter = st.pos.z - focusZ;
+          const isFocusStation = (selectedStationName === st.name) || (dxCenter * dxCenter + dzCenter * dzCenter < 562500); // 750m
+          if (!matches && !isFocusStation) {
+            if (st._group && st._group.visible) st._group.visible = false;
+            if (st._detail && st._detail.visible) st._detail.visible = false;
+            if (st._ring && st._ring.visible) st._ring.visible = false;
+            continue;
           }
         }
-      } else {
-        if (st._detail && st._detail.visible) {
-          st._detail.visible = false;
-        }
-      }
 
-      if (st._ring) {
-        const isSel = selectedStationName === st.name && isVis;
-        if (st._ring.visible !== isSel) st._ring.visible = isSel;
-        if (isSel) {
-          st._ring.scale.setScalar(1.14 + Math.sin(now * 0.006) * 0.10);
-        }
-      }
-    }
+        const dx = st.pos.x - focusX;
+        const dz = st.pos.z - focusZ;
+        const d2 = dx * dx + dz * dz;
+        const isVis = d2 <= visR2;
 
-    // Distance & shadow culling for 3D Delhi Hero Landmarks & Indian Railways Stations
-    let lazyMonumentBuiltThisFrame = 0;
-    for (let i = 0; i < monumentGroups.length; i++) {
-      const mon = monumentGroups[i];
-      const dx = mon.x - focusX;
-      const dz = mon.z - focusZ;
-      const d2 = dx * dx + dz * dz;
-      const isVis = d2 <= mon.visR2;
-      if (isVis && !mon.group && mon.buildFn) {
-        if (lazyMonumentBuiltThisFrame < 1) {
-          ensureMonumentBuilt(mon);
-          lazyMonumentBuiltThisFrame++;
+        if (st._group && st._group.visible !== isVis) {
+          st._group.visible = isVis;
         }
-      }
-      if (!mon.group) continue;
-      if (mon.group.visible !== isVis) {
-        mon.group.visible = isVis;
-      }
-      if (isVis) {
-        const inShadow = d2 <= shadowR2;
-        if (inShadow !== mon._inShadow) {
-          mon._inShadow = inShadow;
-          for (let k = 0; k < mon.shadowMeshes.length; k++) {
-            mon.shadowMeshes[k].castShadow = inShadow;
+        if (isVis) {
+          const showDetail = detailR2 > 0 && d2 <= detailR2;
+          if (!st._signageReady && showDetail) ensureStationSignage(st);
+          if (st._detail && st._detail.visible !== showDetail) {
+            st._detail.visible = showDetail;
+          }
+          const inShadow = d2 <= shadowR2;
+          if (inShadow !== st._inShadow && st._shadowMeshes) {
+            st._inShadow = inShadow;
+            for (let k = 0; k < st._shadowMeshes.length; k++) {
+              st._shadowMeshes[k].castShadow = inShadow;
+            }
+          }
+        } else {
+          if (st._detail && st._detail.visible) {
+            st._detail.visible = false;
+          }
+        }
+
+        if (st._ring) {
+          const isSel = selectedStationName === st.name && isVis;
+          if (st._ring.visible !== isSel) st._ring.visible = isSel;
+          if (isSel) {
+            st._ring.scale.setScalar(1.14 + Math.sin(now * 0.006) * 0.10);
           }
         }
       }
-    }
+
+      // Distance & shadow culling for 3D Delhi Hero Landmarks & Indian Railways Stations
+      let lazyMonumentBuiltThisFrame = 0;
+      for (let i = 0; i < monumentGroups.length; i++) {
+        const mon = monumentGroups[i];
+        const dx = mon.x - focusX;
+        const dz = mon.z - focusZ;
+        const d2 = dx * dx + dz * dz;
+        const isVis = d2 <= mon.visR2;
+        if (isVis && !mon.group && mon.buildFn) {
+          if (lazyMonumentBuiltThisFrame < 1) {
+            ensureMonumentBuilt(mon);
+            lazyMonumentBuiltThisFrame++;
+          }
+        }
+        if (!mon.group) continue;
+        if (mon.group.visible !== isVis) {
+          mon.group.visible = isVis;
+        }
+        if (isVis) {
+          const inShadow = d2 <= shadowR2;
+          if (inShadow !== mon._inShadow) {
+            mon._inShadow = inShadow;
+            for (let k = 0; k < mon.shadowMeshes.length; k++) {
+              mon.shadowMeshes[k].castShadow = inShadow;
+            }
+          }
+        }
+      }
+    } // end cameraMoved
 
     if (dtSec > 0) {
       updateFleet(dtSec, focusX, focusZ, visR2, shadowR2);
@@ -13010,7 +13054,18 @@ window.MetroWebGLLayer = (function () {
       'shaheed sthal': 'shaheed',
       'shaheed sthal new bus adda': 'shaheed',
       'shastri park depot': 'shastridepot',
-      'shastri depot': 'shastridepot'
+      'shastri depot': 'shastridepot',
+      'majlis park': 'majlis',
+      'durgabai deshmukh south campus': 'southcampus',
+      'south campus': 'southcampus',
+      'dilli haat ina': 'dhina',
+      'dilli haat - ina': 'dhina',
+      'lajpat nagar': 'lajpat',
+      'mayur vihar 1': 'mayurvihar',
+      'mayur vihar-i': 'mayurvihar',
+      'anand vihar': 'anandvihar',
+      'anand vihar isbt': 'anandvihar',
+      'shiv vihar': 'shivvihar'
     };
     const matchLoc = locMap[normalizeStationName(st.name)];
     document.querySelectorAll('.bookmark-chip').forEach((chip) => {

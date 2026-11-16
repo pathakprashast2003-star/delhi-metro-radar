@@ -2063,7 +2063,14 @@
       welcome: { center: [77.277815, 28.671862], zoom: 18.3, pitch: 56, bearing: -24, duration: 1100 },
       dilshad: { center: [77.321513, 28.675885], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 },
       shaheed: { center: [77.41539, 28.670706], zoom: 18.25, pitch: 54, bearing: -22, duration: 1100 },
-      shastridepot: { center: [77.2450, 28.6708], zoom: 17.6, pitch: 58, bearing: -34, duration: 1100 }
+      shastridepot: { center: [77.2450, 28.6708], zoom: 17.6, pitch: 58, bearing: -34, duration: 1100 },
+      majlis: { center: [77.182109, 28.724086], zoom: 17.8, pitch: 56, bearing: -30, duration: 1100 },
+      southcampus: { center: [77.169477, 28.589301], zoom: 17.8, pitch: 58, bearing: -35, duration: 1100 },
+      dhina: { center: [77.209355, 28.574676], zoom: 18.0, pitch: 58, bearing: -20, duration: 1100 },
+      lajpat: { center: [77.237691, 28.570535], zoom: 17.8, pitch: 56, bearing: -35, duration: 1100 },
+      mayurvihar: { center: [77.294154, 28.604675], zoom: 17.8, pitch: 58, bearing: -55, duration: 1100 },
+      anandvihar: { center: [77.316086, 28.647319], zoom: 17.5, pitch: 58, bearing: -28, duration: 1100 },
+      shivvihar: { center: [77.289414, 28.721428], zoom: 17.8, pitch: 58, bearing: -25, duration: 1100 }
     };
 
     const BOOKMARK_STATION_NAMES = {
@@ -2091,7 +2098,14 @@
       welcome: 'Welcome',
       dilshad: 'Dilshad Garden',
       shaheed: 'Shaheed Sthal',
-      shastridepot: 'Shastri Park Depot'
+      shastridepot: 'Shastri Park Depot',
+      majlis: 'Majlis Park',
+      southcampus: 'Durgabai Deshmukh South Campus',
+      dhina: 'Dilli Haat - INA',
+      lajpat: 'Lajpat Nagar',
+      mayurvihar: 'Mayur Vihar-I',
+      anandvihar: 'Anand Vihar',
+      shivvihar: 'Shiv Vihar'
     };
 
     const BOOKMARK_LINE_MAP = {
@@ -2109,11 +2123,18 @@
       jasolavihar: 'magenta',
       rithala: 'red',
       inderlok: 'red',
-      nsp: 'red',
-      welcome: 'red',
+      nsp: ['red', 'pink'],
+      welcome: ['red', 'pink'],
       dilshad: 'red',
       shaheed: 'red',
       shastridepot: 'red',
+      majlis: 'pink',
+      southcampus: 'pink',
+      dhina: ['pink', 'yellow'],
+      lajpat: 'pink',
+      mayurvihar: 'pink',
+      anandvihar: 'pink',
+      shivvihar: 'pink',
       kashmere: ['yellow', 'red'],
       rajiv: ['yellow', 'blue'],
       hauzkhas: ['yellow', 'magenta'],
@@ -2446,6 +2467,26 @@
         let intBadge = '';
         if (st.name === 'Yamuna Bank') {
           intBadge = '<span class="stepper-badge stepper-badge-fork">NOIDA × VAISHALI FORK</span>';
+        } else if (st.name === 'Majlis Park' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">MUKUNDPUR DEPOT YARD</span>';
+        } else if ((st.name === 'South Campus' || st.name.includes('South Campus')) && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">RECORD +23.6M VIADUCT</span>';
+        } else if (st.name === 'Ashram' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">COMPACT STATION (151M)</span>';
+        } else if ((st.name === 'IP Extension' || st.name.includes('IP Extension')) && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">VINOD NAGAR DEPOT YARD</span>';
+        } else if (st.name === 'Anand Vihar' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">RAILWAY · RRTS · ISBT</span>';
+        } else if (st.name === 'Karkarduma' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">DOUBLE-DECKER (+24.5M)</span>';
+        } else if (st.name === 'Mayur Vihar-I' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">BLUE LINE OVERPASS (+24.5M)</span>';
+        } else if (st.name === 'Rajouri Garden' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">BLUE LINE OVERPASS (+21M)</span>';
+        } else if (st.name === 'Welcome' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">RED LINE OVERPASS (+18.5M)</span>';
+        } else if (st.name === 'Shiv Vihar' && isPink) {
+          intBadge = '<span class="stepper-badge" style="background: rgba(236,72,153,0.22); color: #ec4899; border: 1px solid rgba(236,72,153,0.4);">EAST BUFFER TERMINUS</span>';
         } else if (st.name && st.name.toLowerCase().includes('jasola')) {
           intBadge = '<span class="stepper-badge" style="background: rgba(217,70,239,0.2); color: #d946ef; border: 1px solid rgba(217,70,239,0.4);">ELEVATED DEPOT</span>';
         } else if (st.name && st.name.toLowerCase().includes('kalindi')) {
