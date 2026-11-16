@@ -11302,92 +11302,59 @@ window.MetroWebGLLayer = (function () {
     return out;
   }
 
-  function buildCorridorDistanceFilter(clearance, minDistM) {
-    return ['!=', ['get', 'hide_3d'], true];
+  let cachedClearanceGeoJSON = null;
+
+  function buildCorridorDistanceFilter(clearance, minDistM = 22.0) {
+    const cl = clearance || cachedClearanceGeoJSON;
+    if (!cl || !cl.trackClearanceGeo) return ['!=', ['get', 'hide_3d'], true];
+    return ['>', ['distance', cl.trackClearanceGeo], minDistM];
   }
 
   function buildCorridorClearanceGeoJSON() {
+    if (cachedClearanceGeoJSON) return cachedClearanceGeoJSON;
     const corridors = (allCorridors && allCorridors.length)
       ? allCorridors
-      : [yellowCorridor, blueCorridor].filter(Boolean);
-    const buildingFeatures = [];
-    const guardFeatures = [];
-    const metroFeatures = [];
-    const allStationRings = [];
+      : [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor].filter(Boolean);
 
+    const multiLineCoords = [];
     corridors.forEach((c) => {
       if (!c || !c.samples || !c.samples.length || c.totalLen <= 0) return;
-      const cTrackCoords = [];
-      const stepM = 180;
+      const rawCoords = [];
+      const stepM = 25;
       for (let d = 0; d <= c.totalLen; d += stepM) {
         const smp = sampleAtDist(Math.min(c.totalLen, d), c);
-        if (smp) cTrackCoords.push(localMetersToLngLat(smp.pos));
-      }
-      const lastSmp = c.samples[c.samples.length - 1];
-      if (lastSmp) cTrackCoords.push(localMetersToLngLat(lastSmp.pos));
-
-      if (cTrackCoords.length >= 2) {
-        buildingFeatures.push({ type: 'Feature', geometry: { type: 'LineString', coordinates: cTrackCoords } });
-        metroFeatures.push({ type: 'Feature', geometry: { type: 'LineString', coordinates: cTrackCoords } });
-        const dpTrack = dpSimplifyLngLat(cTrackCoords, 140.0);
-        if (dpTrack.length >= 2) {
-          guardFeatures.push({ type: 'Feature', geometry: { type: 'LineString', coordinates: dpTrack } });
+        if (smp && smp.pos) {
+          rawCoords.push(localMetersToLngLat(smp.pos));
         }
       }
-
-      (c.stationsData || []).forEach((st) => {
-        if (!st.pos || !st.tan) return;
-        const halfLenM = 120.0;
-        const halfWidthM = 48.0;
-        const ring = orientedBoxRing(st.pos.x, st.pos.z, st.tan.x, st.tan.z, halfLenM, halfWidthM);
-        allStationRings.push(ring);
-        buildingFeatures.push({
-          type: 'Feature',
-          geometry: { type: 'Polygon', coordinates: [ring] }
-        });
-      });
+      const lastSmp = c.samples[c.samples.length - 1];
+      if (lastSmp && lastSmp.pos) {
+        rawCoords.push(localMetersToLngLat(lastSmp.pos));
+      }
+      const simp = dpSimplifyLngLat(rawCoords, 10.0);
+      if (simp.length >= 2) {
+        multiLineCoords.push(simp);
+      }
     });
 
     if (interchangeHubsData && interchangeHubsData.hubs) {
       Object.values(interchangeHubsData.hubs).forEach((hubSpec) => {
-        (hubSpec.clearanceBoxes || []).forEach((box) => {
-          if (!box || !box.center) return;
-          const wp = toLocalMeters(box.center, 0);
-          const halfL = (box.length || 60) * 0.5;
-          const halfW = (box.width || 28) * 0.5;
-          const tanX = (box.tangent && box.tangent[0]) || 1;
-          const tanZ = (box.tangent && box.tangent[1]) || 0;
-          allStationRings.push(orientedBoxRing(wp.x, wp.z, tanX, tanZ, halfL, halfW));
-        });
         (hubSpec.links || []).forEach((lnk) => {
-          if ((lnk.kind === 'skywalk' || lnk.kind === 'escalator_bridge' || lnk.kind === 'subsurface_passage') && lnk.fromLngLat && lnk.toLngLat) {
-            const pA = toLocalMeters(lnk.fromLngLat, 0);
-            const pB = toLocalMeters(lnk.toLngLat, 0);
-            const mid = pA.clone().add(pB).multiplyScalar(0.5);
-            const tan = pB.clone().sub(pA);
-            const halfL = Math.max(12, tan.length() * 0.5 + 8);
-            const halfW = (lnk.widthM || 6.0) * 0.5 + 8;
-            allStationRings.push(orientedBoxRing(mid.x, mid.z, tan.x, tan.z, halfL, halfW));
+          if (lnk.fromLngLat && lnk.toLngLat) {
+            multiLineCoords.push([lnk.fromLngLat, lnk.toLngLat]);
           }
         });
       });
     }
 
-    if (allStationRings.length) {
-      const ringPolys = allStationRings.map((r) => [r]);
-      buildingFeatures.push({
-        type: 'Feature',
-        geometry: { type: 'MultiPolygon', coordinates: ringPolys }
-      });
-      guardFeatures.push({
-        type: 'Feature',
-        geometry: { type: 'MultiPolygon', coordinates: ringPolys }
-      });
-    }
-
-    const corridorGuardGeo = guardFeatures.length
-      ? { type: 'FeatureCollection', features: guardFeatures }
-      : null;
+    const trackClearanceGeo = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'MultiLineString',
+        coordinates: multiLineCoords
+      }
+    };
 
     const allStations = allStationsData.length ? allStationsData : stationsData;
     const stationOnlyPointsGeo = {
@@ -11407,13 +11374,18 @@ window.MetroWebGLLayer = (function () {
       }))
     };
 
-    return {
-      corridorDistanceGeo: { type: 'FeatureCollection', features: buildingFeatures },
-      corridorGuardGeo,
-      metroCorridorOnlyGeo: { type: 'FeatureCollection', features: metroFeatures },
+    const res = {
+      trackClearanceGeo,
+      corridorDistanceGeo: trackClearanceGeo,
+      metroCorridorOnlyGeo: trackClearanceGeo,
       stationOnlyPointsGeo,
       monumentPointsGeo
     };
+
+    if (corridors.length >= 6) {
+      cachedClearanceGeoJSON = res;
+    }
+    return res;
   }
 
   function configureMapLibreVisualHarmony() {
@@ -11610,8 +11582,8 @@ window.MetroWebGLLayer = (function () {
             const curVis = (subwayRailsVisible || undergroundXRay) ? 'visible' : 'none';
             const otherLinesFilter = [
               '!in',
-              ['get', 'line'],
-              ['literal', ['Yellow Line', 'Blue Line', 'Orange Line', 'Magenta Line', 'Red Line', 'Pink Line', 'Airport Express']]
+              'line',
+              'Yellow Line', 'Blue Line', 'Orange Line', 'Magenta Line', 'Red Line', 'Pink Line', 'Airport Express'
             ];
             if (!map.getLayer('dmrc-metro-casing')) {
               map.addLayer({
