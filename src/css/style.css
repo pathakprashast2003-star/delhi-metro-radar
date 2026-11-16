@@ -2657,6 +2657,12 @@ a:focus-visible {
   border: 1px solid #FBCFE8;
 }
 
+.interchange-violet {
+  background: #EDE9FE;
+  color: #6D28D9;
+  border: 1px solid #DDD6FE;
+}
+
 .interchange-magenta {
   background: #FAE8FF;
   color: #A21CAF;
@@ -3186,6 +3192,11 @@ a:focus-visible {
   color: #FFFFFF;
 }
 
+.station-step-line-tag.line-violet {
+  background: #8B5CF6;
+  color: #FFFFFF;
+}
+
 #btn-line-yellow.active {
   background: #EAB308 !important;
   color: #0F172A !important;
@@ -3218,6 +3229,12 @@ a:focus-visible {
 
 #btn-line-pink.active {
   background: #EC4899 !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+}
+
+#btn-line-violet.active {
+  background: #8B5CF6 !important;
   color: #FFFFFF !important;
   font-weight: 700;
 }

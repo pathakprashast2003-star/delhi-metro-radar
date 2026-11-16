@@ -1,0 +1,3227 @@
+{
+  "line": "violet",
+  "lineName": "Violet Line (Line 6)",
+  "color": "#8B5CF6",
+  "stations": [
+    {
+      "id": "kashmere_gate_violet",
+      "name": "Kashmere Gate",
+      "hindi": "कश्मीरी गेट",
+      "coords": [
+        77.228075,
+        28.668686
+      ],
+      "trackNodeIndex": 0,
+      "elevM": -16.5,
+      "structure": "underground",
+      "major": true,
+      "terminus": true,
+      "interchanges": [
+        "Red Line",
+        "Yellow Line",
+        "ISBT Kashmere Gate"
+      ],
+      "interchange": "Triple Interchange",
+      "distanceMeters": 0.0,
+      "code": "KG",
+      "dwellSeconds": 90,
+      "index": 0,
+      "isTerminal": true,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "lal_quila",
+      "name": "Lal Quila",
+      "hindi": "लाल क़िला",
+      "coords": [
+        77.236727,
+        28.65748
+      ],
+      "trackNodeIndex": 20,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Red Fort Heritage"
+      ],
+      "interchange": "Red Fort",
+      "distanceMeters": 1560.1,
+      "code": "LQ",
+      "dwellSeconds": 35,
+      "index": 1,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "jama_masjid",
+      "name": "Jama Masjid",
+      "hindi": "जामा मस्जिद",
+      "coords": [
+        77.237686,
+        28.650045
+      ],
+      "trackNodeIndex": 32,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Jama Masjid Heritage"
+      ],
+      "interchange": "Jama Masjid",
+      "distanceMeters": 2420.4,
+      "code": "JM",
+      "dwellSeconds": 35,
+      "index": 2,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "delhi_gate",
+      "name": "Delhi Gate",
+      "hindi": "दिल्ली गेट",
+      "coords": [
+        77.240814,
+        28.639222
+      ],
+      "trackNodeIndex": 49,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Feroz Shah Kotla Ground"
+      ],
+      "interchange": null,
+      "distanceMeters": 3686.5,
+      "code": "DG",
+      "dwellSeconds": 25,
+      "index": 3,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "ito",
+      "name": "ITO",
+      "hindi": "आईटीओ",
+      "coords": [
+        77.241056,
+        28.628192
+      ],
+      "trackNodeIndex": 65,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Pragati Maidan / Income Tax Office"
+      ],
+      "interchange": "ITO",
+      "distanceMeters": 4918.7,
+      "code": "ITO",
+      "dwellSeconds": 35,
+      "index": 4,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "mandi_house_violet",
+      "name": "Mandi House",
+      "hindi": "मण्डी हाउस",
+      "coords": [
+        77.234191,
+        28.625495
+      ],
+      "trackNodeIndex": 76,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Blue Line"
+      ],
+      "interchange": "Blue Line",
+      "distanceMeters": 5725.9,
+      "code": "MDH",
+      "dwellSeconds": 45,
+      "index": 5,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "janpath",
+      "name": "Janpath",
+      "hindi": "जनपथ",
+      "coords": [
+        77.219285,
+        28.624047
+      ],
+      "trackNodeIndex": 98,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Connaught Place South"
+      ],
+      "interchange": null,
+      "distanceMeters": 7379.7,
+      "code": "JNP",
+      "dwellSeconds": 25,
+      "index": 6,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "central_secretariat_violet",
+      "name": "Central Secretariat",
+      "hindi": "केन्द्रीय सचिवालय",
+      "coords": [
+        77.21242,
+        28.615871
+      ],
+      "trackNodeIndex": 115,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Yellow Line",
+        "Kartavya Path"
+      ],
+      "interchange": "Yellow Line",
+      "distanceMeters": 8642.6,
+      "code": "CS",
+      "dwellSeconds": 50,
+      "index": 7,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "khan_market",
+      "name": "Khan Market",
+      "hindi": "ख़ान मार्किट",
+      "coords": [
+        77.229141,
+        28.602264
+      ],
+      "trackNodeIndex": 145,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Lodhi Garden"
+      ],
+      "interchange": null,
+      "distanceMeters": 10912.9,
+      "code": "KM",
+      "dwellSeconds": 25,
+      "index": 8,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "jln_stadium",
+      "name": "Jawaharlal Nehru Stadium",
+      "hindi": "जवाहर लाल नेहरू स्टेडियम",
+      "coords": [
+        77.23386,
+        28.588264
+      ],
+      "trackNodeIndex": 167,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "JLN Sports Complex"
+      ],
+      "interchange": null,
+      "distanceMeters": 12559.3,
+      "code": "JLN",
+      "dwellSeconds": 25,
+      "index": 9,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "jangpura",
+      "name": "Jangpura",
+      "hindi": "जंगपुरा",
+      "coords": [
+        77.239276,
+        28.583037
+      ],
+      "trackNodeIndex": 178,
+      "elevM": -16.0,
+      "structure": "underground",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Delhi-Meerut RRTS Stabling"
+      ],
+      "interchange": null,
+      "distanceMeters": 13360.9,
+      "code": "JGP",
+      "dwellSeconds": 25,
+      "index": 10,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "lajpat_nagar_violet",
+      "name": "Lajpat Nagar",
+      "hindi": "लाजपत नगर",
+      "coords": [
+        77.236418,
+        28.57057
+      ],
+      "trackNodeIndex": 197,
+      "elevM": -18.0,
+      "structure": "underground",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Pink Line"
+      ],
+      "interchange": "Pink Line",
+      "distanceMeters": 14805.6,
+      "code": "LJNR",
+      "dwellSeconds": 45,
+      "index": 11,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "moolchand",
+      "name": "Moolchand",
+      "hindi": "मूलचन्द",
+      "coords": [
+        77.23429,
+        28.564404
+      ],
+      "trackNodeIndex": 207,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Moolchand Medcity"
+      ],
+      "interchange": null,
+      "distanceMeters": 15531.6,
+      "code": "MCH",
+      "dwellSeconds": 25,
+      "index": 12,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "kailash_colony",
+      "name": "Kailash Colony",
+      "hindi": "कैलाश कॉलोनी",
+      "coords": [
+        77.241989,
+        28.555349
+      ],
+      "trackNodeIndex": 225,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "distanceMeters": 16881.4,
+      "code": "KC",
+      "dwellSeconds": 25,
+      "index": 13,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "nehru_place",
+      "name": "Nehru Place",
+      "hindi": "नेहरू प्लेस",
+      "coords": [
+        77.251739,
+        28.551443
+      ],
+      "trackNodeIndex": 239,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Nehru Place IT Hub"
+      ],
+      "interchange": "IT Hub",
+      "distanceMeters": 17967.6,
+      "code": "NP",
+      "dwellSeconds": 35,
+      "index": 14,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "kalkaji_mandir_violet",
+      "name": "Kalkaji Mandir",
+      "hindi": "कालकाजी मंदिर",
+      "coords": [
+        77.259127,
+        28.549507
+      ],
+      "trackNodeIndex": 251,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Magenta Line",
+        "Lotus Temple"
+      ],
+      "interchange": "Magenta Line",
+      "distanceMeters": 18815.0,
+      "code": "KKJM",
+      "dwellSeconds": 45,
+      "index": 15,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "govind_puri",
+      "name": "Govind Puri",
+      "hindi": "गोविन्दपुरी",
+      "coords": [
+        77.264274,
+        28.544379
+      ],
+      "trackNodeIndex": 261,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "distanceMeters": 19595.7,
+      "code": "GVP",
+      "dwellSeconds": 25,
+      "index": 16,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "harkesh_nagar_okhla",
+      "name": "Harkesh Nagar Okhla",
+      "hindi": "हरकेश नगर ओखला",
+      "coords": [
+        77.275669,
+        28.54328
+      ],
+      "trackNodeIndex": 281,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Okhla Phase II"
+      ],
+      "interchange": null,
+      "distanceMeters": 21054.2,
+      "code": "HNO",
+      "dwellSeconds": 25,
+      "index": 17,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "jasola_apollo",
+      "name": "Jasola Apollo",
+      "hindi": "जसोला अपोलो",
+      "coords": [
+        77.283038,
+        28.538425
+      ],
+      "trackNodeIndex": 295,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Indraprastha Apollo Hospital"
+      ],
+      "interchange": null,
+      "distanceMeters": 22098.2,
+      "code": "JA",
+      "dwellSeconds": 25,
+      "index": 18,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "sarita_vihar",
+      "name": "Sarita Vihar",
+      "hindi": "सरिता विहार",
+      "coords": [
+        77.288322,
+        28.528592
+      ],
+      "trackNodeIndex": 311,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Sarita Vihar Depot Throat"
+      ],
+      "interchange": "Depot",
+      "distanceMeters": 23309.2,
+      "code": "SV",
+      "dwellSeconds": 30,
+      "index": 19,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "mohan_estate",
+      "name": "Mohan Estate",
+      "hindi": "मोहन एस्टेट",
+      "coords": [
+        77.294478,
+        28.519724
+      ],
+      "trackNodeIndex": 326,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "distanceMeters": 24478.4,
+      "code": "ME",
+      "dwellSeconds": 25,
+      "index": 20,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "tughlakabad_station",
+      "name": "Tughlakabad Station",
+      "hindi": "तुग़लकाबाद स्टेशन",
+      "coords": [
+        77.299243,
+        28.502359
+      ],
+      "trackNodeIndex": 354,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Tughlakabad Railway Station",
+        "Silver Line (Phase IV)"
+      ],
+      "interchange": "Silver Line",
+      "distanceMeters": 26529.9,
+      "code": "TGB",
+      "dwellSeconds": 30,
+      "index": 21,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "badarpur_border",
+      "name": "Badarpur Border",
+      "hindi": "बदरपुर बॉर्डर",
+      "coords": [
+        77.303024,
+        28.49317
+      ],
+      "trackNodeIndex": 369,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Delhi-Haryana Border"
+      ],
+      "interchange": "Haryana Border",
+      "distanceMeters": 27703.1,
+      "code": "BDP",
+      "dwellSeconds": 35,
+      "index": 22,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "sarai",
+      "name": "Sarai",
+      "hindi": "सराय",
+      "coords": [
+        77.304928,
+        28.477971
+      ],
+      "trackNodeIndex": 392,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Faridabad Entry"
+      ],
+      "interchange": null,
+      "distanceMeters": 29406.1,
+      "code": "SAR",
+      "dwellSeconds": 25,
+      "index": 23,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "nhpc_chowk",
+      "name": "NHPC Chowk",
+      "hindi": "एनएचपीसी चौक",
+      "coords": [
+        77.307392,
+        28.457779
+      ],
+      "trackNodeIndex": 422,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "NHPC Complex"
+      ],
+      "interchange": null,
+      "distanceMeters": 31675.8,
+      "code": "NHPC",
+      "dwellSeconds": 25,
+      "index": 24,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "mewla_maharajpur",
+      "name": "Mewla Maharajpur",
+      "hindi": "मेवला महाराजपुर",
+      "coords": [
+        77.308099,
+        28.44862
+      ],
+      "trackNodeIndex": 436,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "distanceMeters": 32696.6,
+      "code": "MMH",
+      "dwellSeconds": 25,
+      "index": 25,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "sector_28",
+      "name": "Sector 28",
+      "hindi": "सेक्टर 28",
+      "coords": [
+        77.309062,
+        28.43816
+      ],
+      "trackNodeIndex": 451,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [],
+      "interchange": null,
+      "distanceMeters": 33863.6,
+      "code": "S28",
+      "dwellSeconds": 25,
+      "index": 26,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "badkal_mor",
+      "name": "Badkal Mor",
+      "hindi": "बड़कल मोड़",
+      "coords": [
+        77.310377,
+        28.422714
+      ],
+      "trackNodeIndex": 474,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Badkhal Tourist Complex"
+      ],
+      "interchange": null,
+      "distanceMeters": 35585.9,
+      "code": "BKM",
+      "dwellSeconds": 25,
+      "index": 27,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "old_faridabad",
+      "name": "Old Faridabad",
+      "hindi": "ओल्ड फ़रीदाबाद",
+      "coords": [
+        77.311462,
+        28.410836
+      ],
+      "trackNodeIndex": 492,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Old Faridabad Railway Station"
+      ],
+      "interchange": "Railway Station",
+      "distanceMeters": 36911.1,
+      "code": "OFB",
+      "dwellSeconds": 35,
+      "index": 28,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "neelam_chowk_ajronda",
+      "name": "Neelam Chowk Ajronda",
+      "hindi": "नीलम चौक अजरौन्दा",
+      "coords": [
+        77.312435,
+        28.397488
+      ],
+      "trackNodeIndex": 512,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": false,
+      "interchanges": [
+        "Ajronda Depot Throat"
+      ],
+      "interchange": "Ajronda Depot",
+      "distanceMeters": 38398.7,
+      "code": "NCA",
+      "dwellSeconds": 30,
+      "index": 29,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "bata_chowk",
+      "name": "Bata Chowk",
+      "hindi": "बाटा चौक",
+      "coords": [
+        77.313458,
+        28.385836
+      ],
+      "trackNodeIndex": 529,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Bata Industrial Hub"
+      ],
+      "interchange": null,
+      "distanceMeters": 39698.3,
+      "code": "BTC",
+      "dwellSeconds": 25,
+      "index": 30,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "escorts_mujesar",
+      "name": "Escorts Mujesar",
+      "hindi": "एस्कॉर्ट्स मुजेसर",
+      "coords": [
+        77.31492,
+        28.370234
+      ],
+      "trackNodeIndex": 552,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "Escorts Industrial Plant"
+      ],
+      "interchange": null,
+      "distanceMeters": 41439.4,
+      "code": "EM",
+      "dwellSeconds": 25,
+      "index": 31,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "sant_surdas_sihi",
+      "name": "Sant Surdas (Sihi)",
+      "hindi": "संत सूरदास - सिही",
+      "coords": [
+        77.316226,
+        28.354651
+      ],
+      "trackNodeIndex": 576,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": false,
+      "terminus": false,
+      "interchanges": [
+        "NCB Colony"
+      ],
+      "interchange": null,
+      "distanceMeters": 43176.9,
+      "code": "SSS",
+      "dwellSeconds": 25,
+      "index": 32,
+      "isTerminal": false,
+      "isShortTurnTerminal": false
+    },
+    {
+      "id": "raja_nahar_singh",
+      "name": "Raja Nahar Singh (Ballabhgarh)",
+      "hindi": "राजा नाहर सिंह",
+      "coords": [
+        77.316479,
+        28.340005
+      ],
+      "trackNodeIndex": 597,
+      "elevM": 17.5,
+      "structure": "elevated",
+      "major": true,
+      "terminus": true,
+      "interchanges": [
+        "Ballabhgarh Railway Station",
+        "Ballabhgarh Bus Stand"
+      ],
+      "interchange": "Ballabhgarh Hub",
+      "distanceMeters": 44818.3,
+      "code": "RNS",
+      "dwellSeconds": 90,
+      "index": 33,
+      "isTerminal": true,
+      "isShortTurnTerminal": false
+    }
+  ],
+  "centerline": [
+    [
+      77.228075,
+      28.668686
+    ],
+    [
+      77.228494,
+      28.66812
+    ],
+    [
+      77.228912,
+      28.667554
+    ],
+    [
+      77.229331,
+      28.666989
+    ],
+    [
+      77.22975,
+      28.666423
+    ],
+    [
+      77.23014,
+      28.665842
+    ],
+    [
+      77.23053,
+      28.66526
+    ],
+    [
+      77.230919,
+      28.664678
+    ],
+    [
+      77.231309,
+      28.664096
+    ],
+    [
+      77.231822,
+      28.663605
+    ],
+    [
+      77.23243,
+      28.663192
+    ],
+    [
+      77.233038,
+      28.662779
+    ],
+    [
+      77.233647,
+      28.662367
+    ],
+    [
+      77.234255,
+      28.661954
+    ],
+    [
+      77.234862,
+      28.66154
+    ],
+    [
+      77.235467,
+      28.661124
+    ],
+    [
+      77.235914,
+      28.660583
+    ],
+    [
+      77.236296,
+      28.659998
+    ],
+    [
+      77.236584,
+      28.659385
+    ],
+    [
+      77.236682,
+      28.658716
+    ],
+    [
+      77.236745,
+      28.658045
+    ],
+    [
+      77.236723,
+      28.657371
+    ],
+    [
+      77.236683,
+      28.656697
+    ],
+    [
+      77.236557,
+      28.656032
+    ],
+    [
+      77.236481,
+      28.655361
+    ],
+    [
+      77.236423,
+      28.654688
+    ],
+    [
+      77.236366,
+      28.654016
+    ],
+    [
+      77.236321,
+      28.653343
+    ],
+    [
+      77.236363,
+      28.652669
+    ],
+    [
+      77.236524,
+      28.652011
+    ],
+    [
+      77.236738,
+      28.651363
+    ],
+    [
+      77.237131,
+      28.650786
+    ],
+    [
+      77.237553,
+      28.650222
+    ],
+    [
+      77.237977,
+      28.649659
+    ],
+    [
+      77.238418,
+      28.649107
+    ],
+    [
+      77.238913,
+      28.648591
+    ],
+    [
+      77.23929,
+      28.648015
+    ],
+    [
+      77.239486,
+      28.647367
+    ],
+    [
+      77.239573,
+      28.646697
+    ],
+    [
+      77.23966,
+      28.646027
+    ],
+    [
+      77.239746,
+      28.645356
+    ],
+    [
+      77.239833,
+      28.644686
+    ],
+    [
+      77.23992,
+      28.644016
+    ],
+    [
+      77.240007,
+      28.643345
+    ],
+    [
+      77.240093,
+      28.642675
+    ],
+    [
+      77.24018,
+      28.642005
+    ],
+    [
+      77.240267,
+      28.641334
+    ],
+    [
+      77.240383,
+      28.640669
+    ],
+    [
+      77.240587,
+      28.640019
+    ],
+    [
+      77.24077,
+      28.639363
+    ],
+    [
+      77.240974,
+      28.638713
+    ],
+    [
+      77.241169,
+      28.63806
+    ],
+    [
+      77.241281,
+      28.637394
+    ],
+    [
+      77.241292,
+      28.636721
+    ],
+    [
+      77.241278,
+      28.636046
+    ],
+    [
+      77.241261,
+      28.635372
+    ],
+    [
+      77.241243,
+      28.634697
+    ],
+    [
+      77.241225,
+      28.634023
+    ],
+    [
+      77.241208,
+      28.633348
+    ],
+    [
+      77.24119,
+      28.632674
+    ],
+    [
+      77.241172,
+      28.631999
+    ],
+    [
+      77.241155,
+      28.631325
+    ],
+    [
+      77.241137,
+      28.630651
+    ],
+    [
+      77.24112,
+      28.629976
+    ],
+    [
+      77.241102,
+      28.629302
+    ],
+    [
+      77.241084,
+      28.628627
+    ],
+    [
+      77.24104,
+      28.627954
+    ],
+    [
+      77.240714,
+      28.627353
+    ],
+    [
+      77.240183,
+      28.626868
+    ],
+    [
+      77.23959,
+      28.62644
+    ],
+    [
+      77.238957,
+      28.626057
+    ],
+    [
+      77.238304,
+      28.625703
+    ],
+    [
+      77.237584,
+      28.62547
+    ],
+    [
+      77.236822,
+      28.625382
+    ],
+    [
+      77.236055,
+      28.625397
+    ],
+    [
+      77.235288,
+      28.625437
+    ],
+    [
+      77.234521,
+      28.625476
+    ],
+    [
+      77.233754,
+      28.625521
+    ],
+    [
+      77.232987,
+      28.625571
+    ],
+    [
+      77.232221,
+      28.625621
+    ],
+    [
+      77.231454,
+      28.625671
+    ],
+    [
+      77.230688,
+      28.625717
+    ],
+    [
+      77.22992,
+      28.625753
+    ],
+    [
+      77.229153,
+      28.625788
+    ],
+    [
+      77.228385,
+      28.625824
+    ],
+    [
+      77.227617,
+      28.625859
+    ],
+    [
+      77.22685,
+      28.625895
+    ],
+    [
+      77.226082,
+      28.62593
+    ],
+    [
+      77.225315,
+      28.625966
+    ],
+    [
+      77.224547,
+      28.626002
+    ],
+    [
+      77.22378,
+      28.626037
+    ],
+    [
+      77.223012,
+      28.626073
+    ],
+    [
+      77.222245,
+      28.626108
+    ],
+    [
+      77.221477,
+      28.626144
+    ],
+    [
+      77.22071,
+      28.626179
+    ],
+    [
+      77.219942,
+      28.626195
+    ],
+    [
+      77.219434,
+      28.62577
+    ],
+    [
+      77.219343,
+      28.625106
+    ],
+    [
+      77.219308,
+      28.624432
+    ],
+    [
+      77.219267,
+      28.623758
+    ],
+    [
+      77.219217,
+      28.623085
+    ],
+    [
+      77.219168,
+      28.622412
+    ],
+    [
+      77.219118,
+      28.621738
+    ],
+    [
+      77.219069,
+      28.621065
+    ],
+    [
+      77.218974,
+      28.620398
+    ],
+    [
+      77.218622,
+      28.619815
+    ],
+    [
+      77.21795,
+      28.619489
+    ],
+    [
+      77.21726,
+      28.619191
+    ],
+    [
+      77.216571,
+      28.618892
+    ],
+    [
+      77.215882,
+      28.618594
+    ],
+    [
+      77.215193,
+      28.618296
+    ],
+    [
+      77.214503,
+      28.617997
+    ],
+    [
+      77.213814,
+      28.617699
+    ],
+    [
+      77.213159,
+      28.617356
+    ],
+    [
+      77.21276,
+      28.616795
+    ],
+    [
+      77.212446,
+      28.616189
+    ],
+    [
+      77.212391,
+      28.615518
+    ],
+    [
+      77.212452,
+      28.614846
+    ],
+    [
+      77.212772,
+      28.614242
+    ],
+    [
+      77.21335,
+      28.613797
+    ],
+    [
+      77.213928,
+      28.613353
+    ],
+    [
+      77.214506,
+      28.612908
+    ],
+    [
+      77.215084,
+      28.612464
+    ],
+    [
+      77.215662,
+      28.612019
+    ],
+    [
+      77.21624,
+      28.611575
+    ],
+    [
+      77.216818,
+      28.61113
+    ],
+    [
+      77.217396,
+      28.610685
+    ],
+    [
+      77.217974,
+      28.610241
+    ],
+    [
+      77.218552,
+      28.609796
+    ],
+    [
+      77.21913,
+      28.609352
+    ],
+    [
+      77.219708,
+      28.608907
+    ],
+    [
+      77.220286,
+      28.608463
+    ],
+    [
+      77.220864,
+      28.608018
+    ],
+    [
+      77.221442,
+      28.607573
+    ],
+    [
+      77.22202,
+      28.607129
+    ],
+    [
+      77.222598,
+      28.606684
+    ],
+    [
+      77.223176,
+      28.60624
+    ],
+    [
+      77.223754,
+      28.605795
+    ],
+    [
+      77.224332,
+      28.60535
+    ],
+    [
+      77.224935,
+      28.604933
+    ],
+    [
+      77.225558,
+      28.604538
+    ],
+    [
+      77.22618,
+      28.604143
+    ],
+    [
+      77.226803,
+      28.603748
+    ],
+    [
+      77.227426,
+      28.603353
+    ],
+    [
+      77.228049,
+      28.602957
+    ],
+    [
+      77.228672,
+      28.602562
+    ],
+    [
+      77.229294,
+      28.602167
+    ],
+    [
+      77.22991,
+      28.601764
+    ],
+    [
+      77.230265,
+      28.6012
+    ],
+    [
+      77.230428,
+      28.600541
+    ],
+    [
+      77.23059,
+      28.599882
+    ],
+    [
+      77.230753,
+      28.599222
+    ],
+    [
+      77.230916,
+      28.598563
+    ],
+    [
+      77.231079,
+      28.597904
+    ],
+    [
+      77.231241,
+      28.597244
+    ],
+    [
+      77.231404,
+      28.596585
+    ],
+    [
+      77.231567,
+      28.595926
+    ],
+    [
+      77.231736,
+      28.595268
+    ],
+    [
+      77.231945,
+      28.594619
+    ],
+    [
+      77.232155,
+      28.593969
+    ],
+    [
+      77.232364,
+      28.59332
+    ],
+    [
+      77.232574,
+      28.592671
+    ],
+    [
+      77.232783,
+      28.592022
+    ],
+    [
+      77.232992,
+      28.591373
+    ],
+    [
+      77.23319,
+      28.590721
+    ],
+    [
+      77.233355,
+      28.590062
+    ],
+    [
+      77.23352,
+      28.589403
+    ],
+    [
+      77.233684,
+      28.588744
+    ],
+    [
+      77.233916,
+      28.588111
+    ],
+    [
+      77.234349,
+      28.587554
+    ],
+    [
+      77.234928,
+      28.587114
+    ],
+    [
+      77.235523,
+      28.586688
+    ],
+    [
+      77.236119,
+      28.586261
+    ],
+    [
+      77.236714,
+      28.585835
+    ],
+    [
+      77.23731,
+      28.585409
+    ],
+    [
+      77.237905,
+      28.584982
+    ],
+    [
+      77.238373,
+      28.58445
+    ],
+    [
+      77.238814,
+      28.583897
+    ],
+    [
+      77.239251,
+      28.583343
+    ],
+    [
+      77.239304,
+      28.582682
+    ],
+    [
+      77.239225,
+      28.58201
+    ],
+    [
+      77.239147,
+      28.581339
+    ],
+    [
+      77.238958,
+      28.580688
+    ],
+    [
+      77.238824,
+      28.580025
+    ],
+    [
+      77.238778,
+      28.579352
+    ],
+    [
+      77.238767,
+      28.578678
+    ],
+    [
+      77.238755,
+      28.578003
+    ],
+    [
+      77.238744,
+      28.577329
+    ],
+    [
+      77.238746,
+      28.576654
+    ],
+    [
+      77.23878,
+      28.57598
+    ],
+    [
+      77.238815,
+      28.575306
+    ],
+    [
+      77.238709,
+      28.574641
+    ],
+    [
+      77.23846,
+      28.574004
+    ],
+    [
+      77.238101,
+      28.573408
+    ],
+    [
+      77.237743,
+      28.572811
+    ],
+    [
+      77.237384,
+      28.572214
+    ],
+    [
+      77.237026,
+      28.571618
+    ],
+    [
+      77.236673,
+      28.571018
+    ],
+    [
+      77.236329,
+      28.570415
+    ],
+    [
+      77.235977,
+      28.569816
+    ],
+    [
+      77.235612,
+      28.569222
+    ],
+    [
+      77.235246,
+      28.568629
+    ],
+    [
+      77.234975,
+      28.567998
+    ],
+    [
+      77.234743,
+      28.567355
+    ],
+    [
+      77.234591,
+      28.566694
+    ],
+    [
+      77.234463,
+      28.566029
+    ],
+    [
+      77.234351,
+      28.565362
+    ],
+    [
+      77.23429,
+      28.56469
+    ],
+    [
+      77.23429,
+      28.564015
+    ],
+    [
+      77.23431,
+      28.563341
+    ],
+    [
+      77.23438,
+      28.562669
+    ],
+    [
+      77.234481,
+      28.562001
+    ],
+    [
+      77.234657,
+      28.561345
+    ],
+    [
+      77.234979,
+      28.560734
+    ],
+    [
+      77.235408,
+      28.560175
+    ],
+    [
+      77.235926,
+      28.559679
+    ],
+    [
+      77.236536,
+      28.559271
+    ],
+    [
+      77.237212,
+      28.558952
+    ],
+    [
+      77.237922,
+      28.558699
+    ],
+    [
+      77.23865,
+      28.558484
+    ],
+    [
+      77.239314,
+      28.558152
+    ],
+    [
+      77.239876,
+      28.557693
+    ],
+    [
+      77.240342,
+      28.557157
+    ],
+    [
+      77.240807,
+      28.55662
+    ],
+    [
+      77.241273,
+      28.556083
+    ],
+    [
+      77.241752,
+      28.555557
+    ],
+    [
+      77.242295,
+      28.55508
+    ],
+    [
+      77.242889,
+      28.554653
+    ],
+    [
+      77.243485,
+      28.554227
+    ],
+    [
+      77.244081,
+      28.553801
+    ],
+    [
+      77.244676,
+      28.553375
+    ],
+    [
+      77.245286,
+      28.552965
+    ],
+    [
+      77.245937,
+      28.552609
+    ],
+    [
+      77.246603,
+      28.552273
+    ],
+    [
+      77.247267,
+      28.551935
+    ],
+    [
+      77.247978,
+      28.551687
+    ],
+    [
+      77.248728,
+      28.551543
+    ],
+    [
+      77.249494,
+      28.551504
+    ],
+    [
+      77.250262,
+      28.551477
+    ],
+    [
+      77.251029,
+      28.55145
+    ],
+    [
+      77.251797,
+      28.551442
+    ],
+    [
+      77.252563,
+      28.551487
+    ],
+    [
+      77.253322,
+      28.551587
+    ],
+    [
+      77.254076,
+      28.551715
+    ],
+    [
+      77.254823,
+      28.551873
+    ],
+    [
+      77.255583,
+      28.551959
+    ],
+    [
+      77.256344,
+      28.551886
+    ],
+    [
+      77.257065,
+      28.551667
+    ],
+    [
+      77.257687,
+      28.551275
+    ],
+    [
+      77.258212,
+      28.550788
+    ],
+    [
+      77.258604,
+      28.550208
+    ],
+    [
+      77.259011,
+      28.549635
+    ],
+    [
+      77.259488,
+      28.549109
+    ],
+    [
+      77.260009,
+      28.548613
+    ],
+    [
+      77.26057,
+      28.548156
+    ],
+    [
+      77.261182,
+      28.547748
+    ],
+    [
+      77.261798,
+      28.547345
+    ],
+    [
+      77.262431,
+      28.546963
+    ],
+    [
+      77.263045,
+      28.54656
+    ],
+    [
+      77.263554,
+      28.546061
+    ],
+    [
+      77.26385,
+      28.545444
+    ],
+    [
+      77.264099,
+      28.544805
+    ],
+    [
+      77.264359,
+      28.544171
+    ],
+    [
+      77.264641,
+      28.543543
+    ],
+    [
+      77.264923,
+      28.542916
+    ],
+    [
+      77.265206,
+      28.542288
+    ],
+    [
+      77.2655,
+      28.541665
+    ],
+    [
+      77.265928,
+      28.541108
+    ],
+    [
+      77.266514,
+      28.540676
+    ],
+    [
+      77.267202,
+      28.540381
+    ],
+    [
+      77.267952,
+      28.540242
+    ],
+    [
+      77.268717,
+      28.540253
+    ],
+    [
+      77.269447,
+      28.540448
+    ],
+    [
+      77.270132,
+      28.540754
+    ],
+    [
+      77.270819,
+      28.541055
+    ],
+    [
+      77.271519,
+      28.541332
+    ],
+    [
+      77.27222,
+      28.541609
+    ],
+    [
+      77.27292,
+      28.541886
+    ],
+    [
+      77.273604,
+      28.542191
+    ],
+    [
+      77.274261,
+      28.542541
+    ],
+    [
+      77.27492,
+      28.542888
+    ],
+    [
+      77.275578,
+      28.543235
+    ],
+    [
+      77.276246,
+      28.543568
+    ],
+    [
+      77.276969,
+      28.543789
+    ],
+    [
+      77.277731,
+      28.543846
+    ],
+    [
+      77.278485,
+      28.543728
+    ],
+    [
+      77.279194,
+      28.543471
+    ],
+    [
+      77.279771,
+      28.543029
+    ],
+    [
+      77.28026,
+      28.54251
+    ],
+    [
+      77.28068,
+      28.541946
+    ],
+    [
+      77.281102,
+      28.541382
+    ],
+    [
+      77.281544,
+      28.54083
+    ],
+    [
+      77.281984,
+      28.540277
+    ],
+    [
+      77.28231,
+      28.539666
+    ],
+    [
+      77.282658,
+      28.539065
+    ],
+    [
+      77.283013,
+      28.538467
+    ],
+    [
+      77.283365,
+      28.537867
+    ],
+    [
+      77.283716,
+      28.537267
+    ],
+    [
+      77.284068,
+      28.536668
+    ],
+    [
+      77.284423,
+      28.536069
+    ],
+    [
+      77.284779,
+      28.535472
+    ],
+    [
+      77.285135,
+      28.534874
+    ],
+    [
+      77.285492,
+      28.534277
+    ],
+    [
+      77.28584,
+      28.533676
+    ],
+    [
+      77.286143,
+      28.533056
+    ],
+    [
+      77.286418,
+      28.532426
+    ],
+    [
+      77.286694,
+      28.531796
+    ],
+    [
+      77.286967,
+      28.531166
+    ],
+    [
+      77.287241,
+      28.530536
+    ],
+    [
+      77.287522,
+      28.529908
+    ],
+    [
+      77.28785,
+      28.529298
+    ],
+    [
+      77.288232,
+      28.528713
+    ],
+    [
+      77.288653,
+      28.528149
+    ],
+    [
+      77.289126,
+      28.527618
+    ],
+    [
+      77.28964,
+      28.527117
+    ],
+    [
+      77.290173,
+      28.526631
+    ],
+    [
+      77.290706,
+      28.526145
+    ],
+    [
+      77.29124,
+      28.52566
+    ],
+    [
+      77.291731,
+      28.525143
+    ],
+    [
+      77.292132,
+      28.524568
+    ],
+    [
+      77.292444,
+      28.523952
+    ],
+    [
+      77.292746,
+      28.523331
+    ],
+    [
+      77.293043,
+      28.522709
+    ],
+    [
+      77.29334,
+      28.522087
+    ],
+    [
+      77.293637,
+      28.521465
+    ],
+    [
+      77.293933,
+      28.520842
+    ],
+    [
+      77.294231,
+      28.520221
+    ],
+    [
+      77.294539,
+      28.519603
+    ],
+    [
+      77.294841,
+      28.518982
+    ],
+    [
+      77.295125,
+      28.518356
+    ],
+    [
+      77.29539,
+      28.517723
+    ],
+    [
+      77.295652,
+      28.517089
+    ],
+    [
+      77.295909,
+      28.516453
+    ],
+    [
+      77.296163,
+      28.515816
+    ],
+    [
+      77.296429,
+      28.515183
+    ],
+    [
+      77.296705,
+      28.514554
+    ],
+    [
+      77.296972,
+      28.513921
+    ],
+    [
+      77.297235,
+      28.513287
+    ],
+    [
+      77.297498,
+      28.512654
+    ],
+    [
+      77.29776,
+      28.51202
+    ],
+    [
+      77.298023,
+      28.511386
+    ],
+    [
+      77.298286,
+      28.510752
+    ],
+    [
+      77.298548,
+      28.510118
+    ],
+    [
+      77.298809,
+      28.509483
+    ],
+    [
+      77.29907,
+      28.508849
+    ],
+    [
+      77.299346,
+      28.508219
+    ],
+    [
+      77.299629,
+      28.507592
+    ],
+    [
+      77.299912,
+      28.506965
+    ],
+    [
+      77.300187,
+      28.506335
+    ],
+    [
+      77.300335,
+      28.505675
+    ],
+    [
+      77.300302,
+      28.505002
+    ],
+    [
+      77.300076,
+      28.504358
+    ],
+    [
+      77.299814,
+      28.503724
+    ],
+    [
+      77.299547,
+      28.503091
+    ],
+    [
+      77.299281,
+      28.502458
+    ],
+    [
+      77.299036,
+      28.501819
+    ],
+    [
+      77.298794,
+      28.501179
+    ],
+    [
+      77.29872,
+      28.500509
+    ],
+    [
+      77.298838,
+      28.499846
+    ],
+    [
+      77.299141,
+      28.49923
+    ],
+    [
+      77.299611,
+      28.498699
+    ],
+    [
+      77.300209,
+      28.498278
+    ],
+    [
+      77.300828,
+      28.497879
+    ],
+    [
+      77.301436,
+      28.497467
+    ],
+    [
+      77.30193,
+      28.496954
+    ],
+    [
+      77.302272,
+      28.496351
+    ],
+    [
+      77.302463,
+      28.495699
+    ],
+    [
+      77.302607,
+      28.495037
+    ],
+    [
+      77.302752,
+      28.494374
+    ],
+    [
+      77.302901,
+      28.493712
+    ],
+    [
+      77.303051,
+      28.493051
+    ],
+    [
+      77.303202,
+      28.492389
+    ],
+    [
+      77.303353,
+      28.491728
+    ],
+    [
+      77.303503,
+      28.491066
+    ],
+    [
+      77.303654,
+      28.490405
+    ],
+    [
+      77.303805,
+      28.489743
+    ],
+    [
+      77.303944,
+      28.48908
+    ],
+    [
+      77.304028,
+      28.488409
+    ],
+    [
+      77.304089,
+      28.487737
+    ],
+    [
+      77.304153,
+      28.487064
+    ],
+    [
+      77.304221,
+      28.486392
+    ],
+    [
+      77.30429,
+      28.48572
+    ],
+    [
+      77.304374,
+      28.48505
+    ],
+    [
+      77.304467,
+      28.48438
+    ],
+    [
+      77.304551,
+      28.48371
+    ],
+    [
+      77.30461,
+      28.483037
+    ],
+    [
+      77.304669,
+      28.482364
+    ],
+    [
+      77.304717,
+      28.481691
+    ],
+    [
+      77.304753,
+      28.481017
+    ],
+    [
+      77.30479,
+      28.480343
+    ],
+    [
+      77.304826,
+      28.47967
+    ],
+    [
+      77.304863,
+      28.478996
+    ],
+    [
+      77.304899,
+      28.478322
+    ],
+    [
+      77.304955,
+      28.477649
+    ],
+    [
+      77.305032,
+      28.476978
+    ],
+    [
+      77.305108,
+      28.476307
+    ],
+    [
+      77.305168,
+      28.475634
+    ],
+    [
+      77.305199,
+      28.47496
+    ],
+    [
+      77.30522,
+      28.474286
+    ],
+    [
+      77.305295,
+      28.47362
+    ],
+    [
+      77.305561,
+      28.47299
+    ],
+    [
+      77.305902,
+      28.472386
+    ],
+    [
+      77.306197,
+      28.471765
+    ],
+    [
+      77.306318,
+      28.471101
+    ],
+    [
+      77.30637,
+      28.470428
+    ],
+    [
+      77.306414,
+      28.469754
+    ],
+    [
+      77.306449,
+      28.46908
+    ],
+    [
+      77.306484,
+      28.468406
+    ],
+    [
+      77.30653,
+      28.467733
+    ],
+    [
+      77.306589,
+      28.46706
+    ],
+    [
+      77.306648,
+      28.466388
+    ],
+    [
+      77.306707,
+      28.465715
+    ],
+    [
+      77.306766,
+      28.465042
+    ],
+    [
+      77.306825,
+      28.46437
+    ],
+    [
+      77.306884,
+      28.463697
+    ],
+    [
+      77.306943,
+      28.463024
+    ],
+    [
+      77.307002,
+      28.462352
+    ],
+    [
+      77.307061,
+      28.461679
+    ],
+    [
+      77.307121,
+      28.461006
+    ],
+    [
+      77.30718,
+      28.460334
+    ],
+    [
+      77.30723,
+      28.459661
+    ],
+    [
+      77.307282,
+      28.458987
+    ],
+    [
+      77.307344,
+      28.458315
+    ],
+    [
+      77.307404,
+      28.457642
+    ],
+    [
+      77.307458,
+      28.456969
+    ],
+    [
+      77.307512,
+      28.456296
+    ],
+    [
+      77.307566,
+      28.455623
+    ],
+    [
+      77.30762,
+      28.45495
+    ],
+    [
+      77.307674,
+      28.454277
+    ],
+    [
+      77.307726,
+      28.453604
+    ],
+    [
+      77.307779,
+      28.452931
+    ],
+    [
+      77.307831,
+      28.452258
+    ],
+    [
+      77.307884,
+      28.451585
+    ],
+    [
+      77.307935,
+      28.450912
+    ],
+    [
+      77.307982,
+      28.450239
+    ],
+    [
+      77.308029,
+      28.449565
+    ],
+    [
+      77.308076,
+      28.448892
+    ],
+    [
+      77.308133,
+      28.448219
+    ],
+    [
+      77.308194,
+      28.447547
+    ],
+    [
+      77.308239,
+      28.446873
+    ],
+    [
+      77.308308,
+      28.446201
+    ],
+    [
+      77.30838,
+      28.44553
+    ],
+    [
+      77.308451,
+      28.444858
+    ],
+    [
+      77.308522,
+      28.444186
+    ],
+    [
+      77.308594,
+      28.443514
+    ],
+    [
+      77.308647,
+      28.442841
+    ],
+    [
+      77.3087,
+      28.442168
+    ],
+    [
+      77.308753,
+      28.441495
+    ],
+    [
+      77.308805,
+      28.440822
+    ],
+    [
+      77.308865,
+      28.44015
+    ],
+    [
+      77.308932,
+      28.439478
+    ],
+    [
+      77.308999,
+      28.438805
+    ],
+    [
+      77.309065,
+      28.438133
+    ],
+    [
+      77.309115,
+      28.43746
+    ],
+    [
+      77.309165,
+      28.436787
+    ],
+    [
+      77.309215,
+      28.436114
+    ],
+    [
+      77.309264,
+      28.43544
+    ],
+    [
+      77.309314,
+      28.434767
+    ],
+    [
+      77.309364,
+      28.434094
+    ],
+    [
+      77.309416,
+      28.433421
+    ],
+    [
+      77.309473,
+      28.432748
+    ],
+    [
+      77.309529,
+      28.432075
+    ],
+    [
+      77.309586,
+      28.431402
+    ],
+    [
+      77.309642,
+      28.43073
+    ],
+    [
+      77.309698,
+      28.430057
+    ],
+    [
+      77.309755,
+      28.429384
+    ],
+    [
+      77.309813,
+      28.428711
+    ],
+    [
+      77.309876,
+      28.428039
+    ],
+    [
+      77.309939,
+      28.427367
+    ],
+    [
+      77.310002,
+      28.426694
+    ],
+    [
+      77.310066,
+      28.426022
+    ],
+    [
+      77.310129,
+      28.425349
+    ],
+    [
+      77.310192,
+      28.424677
+    ],
+    [
+      77.310256,
+      28.424005
+    ],
+    [
+      77.310319,
+      28.423332
+    ],
+    [
+      77.310382,
+      28.42266
+    ],
+    [
+      77.310439,
+      28.421987
+    ],
+    [
+      77.310497,
+      28.421315
+    ],
+    [
+      77.310555,
+      28.420642
+    ],
+    [
+      77.310613,
+      28.419969
+    ],
+    [
+      77.310671,
+      28.419296
+    ],
+    [
+      77.310728,
+      28.418624
+    ],
+    [
+      77.310786,
+      28.417951
+    ],
+    [
+      77.310844,
+      28.417278
+    ],
+    [
+      77.310902,
+      28.416605
+    ],
+    [
+      77.310954,
+      28.415932
+    ],
+    [
+      77.311007,
+      28.415259
+    ],
+    [
+      77.311095,
+      28.414589
+    ],
+    [
+      77.311181,
+      28.413919
+    ],
+    [
+      77.31125,
+      28.413247
+    ],
+    [
+      77.311308,
+      28.412574
+    ],
+    [
+      77.311368,
+      28.411902
+    ],
+    [
+      77.311427,
+      28.411229
+    ],
+    [
+      77.311487,
+      28.410556
+    ],
+    [
+      77.311543,
+      28.409883
+    ],
+    [
+      77.311588,
+      28.40921
+    ],
+    [
+      77.311633,
+      28.408537
+    ],
+    [
+      77.311699,
+      28.407864
+    ],
+    [
+      77.311711,
+      28.40719
+    ],
+    [
+      77.311706,
+      28.406515
+    ],
+    [
+      77.31174,
+      28.405842
+    ],
+    [
+      77.311796,
+      28.405169
+    ],
+    [
+      77.311851,
+      28.404496
+    ],
+    [
+      77.31191,
+      28.403823
+    ],
+    [
+      77.311971,
+      28.403151
+    ],
+    [
+      77.312033,
+      28.402478
+    ],
+    [
+      77.312094,
+      28.401806
+    ],
+    [
+      77.312151,
+      28.401133
+    ],
+    [
+      77.312203,
+      28.40046
+    ],
+    [
+      77.312256,
+      28.399787
+    ],
+    [
+      77.312308,
+      28.399114
+    ],
+    [
+      77.312361,
+      28.398441
+    ],
+    [
+      77.312413,
+      28.397768
+    ],
+    [
+      77.312467,
+      28.397095
+    ],
+    [
+      77.312523,
+      28.396422
+    ],
+    [
+      77.312578,
+      28.395749
+    ],
+    [
+      77.312634,
+      28.395076
+    ],
+    [
+      77.312689,
+      28.394403
+    ],
+    [
+      77.312745,
+      28.39373
+    ],
+    [
+      77.3128,
+      28.393057
+    ],
+    [
+      77.312855,
+      28.392384
+    ],
+    [
+      77.312911,
+      28.391712
+    ],
+    [
+      77.312968,
+      28.391039
+    ],
+    [
+      77.31303,
+      28.390366
+    ],
+    [
+      77.313091,
+      28.389694
+    ],
+    [
+      77.313152,
+      28.389021
+    ],
+    [
+      77.313214,
+      28.388349
+    ],
+    [
+      77.313278,
+      28.387677
+    ],
+    [
+      77.313345,
+      28.387005
+    ],
+    [
+      77.313412,
+      28.386332
+    ],
+    [
+      77.313474,
+      28.38566
+    ],
+    [
+      77.313521,
+      28.384987
+    ],
+    [
+      77.313569,
+      28.384313
+    ],
+    [
+      77.313616,
+      28.38364
+    ],
+    [
+      77.313664,
+      28.382967
+    ],
+    [
+      77.313716,
+      28.382294
+    ],
+    [
+      77.313785,
+      28.381622
+    ],
+    [
+      77.313854,
+      28.38095
+    ],
+    [
+      77.31392,
+      28.380278
+    ],
+    [
+      77.313974,
+      28.379605
+    ],
+    [
+      77.314029,
+      28.378932
+    ],
+    [
+      77.314083,
+      28.378259
+    ],
+    [
+      77.314138,
+      28.377586
+    ],
+    [
+      77.314204,
+      28.376914
+    ],
+    [
+      77.314273,
+      28.376242
+    ],
+    [
+      77.314348,
+      28.375571
+    ],
+    [
+      77.31447,
+      28.374905
+    ],
+    [
+      77.314574,
+      28.374237
+    ],
+    [
+      77.314631,
+      28.373564
+    ],
+    [
+      77.314689,
+      28.372891
+    ],
+    [
+      77.314748,
+      28.372218
+    ],
+    [
+      77.314808,
+      28.371546
+    ],
+    [
+      77.314867,
+      28.370873
+    ],
+    [
+      77.314923,
+      28.3702
+    ],
+    [
+      77.314974,
+      28.369527
+    ],
+    [
+      77.315026,
+      28.368854
+    ],
+    [
+      77.315077,
+      28.368181
+    ],
+    [
+      77.315144,
+      28.367509
+    ],
+    [
+      77.315213,
+      28.366837
+    ],
+    [
+      77.315268,
+      28.366164
+    ],
+    [
+      77.31532,
+      28.365491
+    ],
+    [
+      77.315372,
+      28.364818
+    ],
+    [
+      77.315424,
+      28.364145
+    ],
+    [
+      77.315479,
+      28.363472
+    ],
+    [
+      77.315538,
+      28.362799
+    ],
+    [
+      77.315598,
+      28.362127
+    ],
+    [
+      77.315656,
+      28.361454
+    ],
+    [
+      77.315711,
+      28.360781
+    ],
+    [
+      77.315766,
+      28.360108
+    ],
+    [
+      77.315824,
+      28.359435
+    ],
+    [
+      77.315883,
+      28.358763
+    ],
+    [
+      77.315941,
+      28.35809
+    ],
+    [
+      77.315998,
+      28.357417
+    ],
+    [
+      77.316053,
+      28.356744
+    ],
+    [
+      77.316109,
+      28.356071
+    ],
+    [
+      77.316164,
+      28.355399
+    ],
+    [
+      77.31622,
+      28.354726
+    ],
+    [
+      77.316274,
+      28.354053
+    ],
+    [
+      77.316329,
+      28.35338
+    ],
+    [
+      77.316383,
+      28.352707
+    ],
+    [
+      77.316438,
+      28.352034
+    ],
+    [
+      77.316501,
+      28.351362
+    ],
+    [
+      77.316565,
+      28.350689
+    ],
+    [
+      77.316532,
+      28.350016
+    ],
+    [
+      77.316376,
+      28.349356
+    ],
+    [
+      77.316216,
+      28.348696
+    ],
+    [
+      77.316139,
+      28.348026
+    ],
+    [
+      77.31615,
+      28.347352
+    ],
+    [
+      77.316198,
+      28.346679
+    ],
+    [
+      77.316251,
+      28.346006
+    ],
+    [
+      77.316313,
+      28.345334
+    ],
+    [
+      77.316383,
+      28.344662
+    ],
+    [
+      77.316485,
+      28.343994
+    ],
+    [
+      77.316662,
+      28.343338
+    ],
+    [
+      77.31683,
+      28.34268
+    ],
+    [
+      77.316817,
+      28.342007
+    ],
+    [
+      77.316712,
+      28.341339
+    ],
+    [
+      77.316596,
+      28.340672
+    ],
+    [
+      77.316479,
+      28.340005
+    ]
+  ],
+  "portalIndices": [
+    202
+  ],
+  "portalCoords": [
+    [
+      77.234975,
+      28.567998
+    ]
+  ],
+  "totalLenMeters": 44818.3
+}

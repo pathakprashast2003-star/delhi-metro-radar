@@ -299,6 +299,7 @@ window.MetroWebGLLayer = (function () {
   let magentaCorridor = null;
   let redCorridor = null;
   let pinkCorridor = null;
+  let violetCorridor = null;
   let yamunaYardData = null;
   let yamunaYardGroup = null;
   let kalindiDepotData = null;
@@ -812,23 +813,28 @@ window.MetroWebGLLayer = (function () {
     ctx.strokeRect(4, 4, 504, 120);
 
     const isPink = lineId === 'pink';
+    const isViolet = lineId === 'violet';
     const isRed = lineId === 'red';
     const isOrange = lineId === 'orange';
     const isMagenta = lineId === 'magenta';
     const isBlue = lineId === 'blue' || lineId === 'blue-vaishali';
-    const headerColor = isPink ? '#EC4899' : (isRed ? '#DC2626' : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : (isBlue ? '#2563EB' : '#EAB308'))));
-    const lineLabel = isPink ? 'PINK LINE (LINE 7)' : (isRed ? 'RED LINE (LINE 1)' : (isOrange ? 'AIRPORT EXPRESS' : (isMagenta ? 'MAGENTA LINE' : (isBlue ? 'BLUE LINE' : 'YELLOW LINE'))));
+    const headerColor = isViolet ? '#8B5CF6' : (isPink ? '#EC4899' : (isRed ? '#DC2626' : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : (isBlue ? '#2563EB' : '#EAB308')))));
+    const lineLabel = isViolet ? 'VIOLET LINE (LINE 6)' : (isPink ? 'PINK LINE (LINE 7)' : (isRed ? 'RED LINE (LINE 1)' : (isOrange ? 'AIRPORT EXPRESS' : (isMagenta ? 'MAGENTA LINE' : (isBlue ? 'BLUE LINE' : 'YELLOW LINE')))));
 
     ctx.fillStyle = headerColor;
     ctx.fillRect(10, 10, 492, 26);
-    ctx.fillStyle = isBlue || isMagenta || isOrange || isRed || isPink ? '#FFFFFF' : '#0F172A';
+    ctx.fillStyle = isBlue || isMagenta || isOrange || isRed || isPink || isViolet ? '#FFFFFF' : '#0F172A';
     ctx.font = '800 17px -apple-system, Inter, sans-serif';
     ctx.textBaseline = 'middle';
     ctx.fillText(`${stName.toUpperCase()}  ·  ${lineLabel} PIDS`, 20, 23);
 
-    ctx.fillStyle = isPink ? '#FBCFE8' : (isRed ? '#FCA5A5' : (isOrange ? '#FDBA74' : (isMagenta ? '#F0ABFC' : (isBlue ? '#93C5FD' : '#FACC15'))));
+    ctx.fillStyle = isViolet ? '#DDD6FE' : (isPink ? '#FBCFE8' : (isRed ? '#FCA5A5' : (isOrange ? '#FDBA74' : (isMagenta ? '#F0ABFC' : (isBlue ? '#93C5FD' : '#FACC15')))));
     ctx.font = '700 22px "SF Mono", Menlo, monospace';
-    if (isPink) {
+    if (isViolet) {
+      ctx.fillText('P1  RAJA NAHAR SINGH (BLB) 02 MIN', 20, 64);
+      ctx.fillStyle = '#EDE9FE';
+      ctx.fillText('P2  KASHMERE GATE (HERITAGE) 03 MIN', 20, 100);
+    } else if (isPink) {
       ctx.fillText('P1  SHIV VIHAR (TERMINUS)  02 MIN', 20, 64);
       ctx.fillStyle = '#FCE7F3';
       ctx.fillText('P2  MAJLIS PARK (CIRCULAR) 03 MIN', 20, 100);
@@ -1132,6 +1138,10 @@ window.MetroWebGLLayer = (function () {
       tactilePink: std(0xEC4899, { emissive: 0xDB2777, emissiveIntensity: 0.25, roughness: 0.44 }),
       roundelPink: std(0xEC4899, { emissive: 0xBE185D, emissiveIntensity: 0.28, roughness: 0.42 }),
       pinkRoof: std(0xDB2777, { roughness: 0.38, metalness: 0.22, envMapIntensity: 0.32, side: THREE.DoubleSide }),
+      violetAccent: new THREE.MeshBasicMaterial({ color: 0x8B5CF6 }),
+      tactileViolet: std(0x8B5CF6, { emissive: 0x7C3AED, emissiveIntensity: 0.25, roughness: 0.44 }),
+      roundelViolet: std(0x8B5CF6, { emissive: 0x6D28D9, emissiveIntensity: 0.28, roughness: 0.42 }),
+      violetRoof: std(0x7C3AED, { roughness: 0.38, metalness: 0.22, envMapIntensity: 0.32, side: THREE.DoubleSide }),
       tactileMagenta: std(0xD946EF, { emissive: 0xC026D3, emissiveIntensity: 0.25, roughness: 0.44 }),
       magentaAccent: new THREE.MeshBasicMaterial({ color: 0xD946EF }),
       dmrcBlueRoof: std(0x0284C7, { roughness: 0.34, metalness: 0.22, envMapIntensity: 0.36, side: THREE.DoubleSide }),
@@ -1302,6 +1312,7 @@ window.MetroWebGLLayer = (function () {
     const isMagenta = lineKey === 'magenta';
     const isRed = lineKey === 'red';
     const isPink = lineKey === 'pink';
+    const isViolet = lineKey === 'violet';
 
     const topoLineKey = isYellow
       ? 'yellow-line'
@@ -1309,39 +1320,49 @@ window.MetroWebGLLayer = (function () {
         ? 'red-line'
         : (isPink
           ? 'pink-line'
-          : (isOrange ? 'airport-express' : (isMagenta ? 'magenta-line' : 'blue-line'))));
+          : (isViolet
+            ? 'violet-line'
+            : (isOrange ? 'airport-express' : (isMagenta ? 'magenta-line' : 'blue-line')))));
     const lineId = isYellow
       ? 'yellow'
       : (isRed
         ? 'red'
         : (isPink
           ? 'pink'
-          : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlueVaishali ? 'blue-vaishali' : 'blue')))));
+          : (isViolet
+            ? 'violet'
+            : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlueVaishali ? 'blue-vaishali' : 'blue'))))));
     const lineName = isYellow
       ? 'Yellow Line (Line 2)'
       : (isRed
         ? 'Red Line (Line 1)'
         : (isPink
           ? 'Pink Line (Line 7)'
-          : (isOrange
-            ? 'Airport Express (Line 10)'
-            : (isMagenta
-              ? 'Magenta Line (Line 8)'
-              : (isBlueVaishali ? 'Blue Line (Vaishali Branch)' : 'Blue Line (Line 3/4)')))));
+          : (isViolet
+            ? 'Violet Line (Line 6)'
+            : (isOrange
+              ? 'Airport Express (Line 10)'
+              : (isMagenta
+                ? 'Magenta Line (Line 8)'
+                : (isBlueVaishali ? 'Blue Line (Vaishali Branch)' : 'Blue Line (Line 3/4)'))))));
     const lineColorNum = isYellow
       ? 0xEAB308
       : (isRed
         ? 0xDC2626
         : (isPink
           ? 0xEC4899
-          : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : 0x2563EB))));
+          : (isViolet
+            ? 0x8B5CF6
+            : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : 0x2563EB)))));
     const lineColorHex = isYellow
       ? '#EAB308'
       : (isRed
         ? '#DC2626'
         : (isPink
           ? '#EC4899'
-          : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : '#2563EB'))));
+          : (isViolet
+            ? '#8B5CF6'
+            : (isOrange ? '#F97316' : (isMagenta ? '#D946EF' : '#2563EB')))));
 
     const rawCoords = osmData.centerline;
     const nTotal = rawCoords.length;
@@ -1679,6 +1700,44 @@ window.MetroWebGLLayer = (function () {
         }
         densePts.push(cur3D);
       }
+    } else if (isViolet) {
+      // Violet Line (Line 6 / Heritage Line, 44.8 km, 34 stations, 599 nodes):
+      // Node 0..199: Continuous subterranean Heritage corridor from Kashmere Gate through
+      //              Lal Quila, Jama Masjid, Delhi Gate, ITO, Mandi House, Janpath,
+      //              Central Secretariat, Khan Market, JLN Stadium, Jangpura to Lajpat Nagar (SUBWAY_Y = 0.28m)
+      // Node 199..205: Smooth ramp up through Lala Lajpat Rai Marg portal to elevated viaduct (0.28m -> 17.5m)
+      // Node 205..598: Continuous elevated South Delhi & Faridabad viaduct (VIADUCT_Y = 17.5m)
+      //                through Moolchand (207) to Raja Nahar Singh (Ballabhgarh 597).
+      const violetElevAt = (idxF) => {
+        if (idxF <= 199) return SUBWAY_Y;
+        if (idxF <= 205) {
+          const u = (idxF - 199) / 6;
+          return SUBWAY_Y + (VIADUCT_Y - SUBWAY_Y) * hermiteSmooth(u);
+        }
+        return VIADUCT_Y;
+      };
+
+      for (let i = 0; i < nTotal; i++) {
+        const p = raw2D[i];
+        const elev = violetElevAt(i);
+        const cur3D = new THREE.Vector3(p.x, elev, p.z);
+
+        if (densePts.length > 0 && i > 0) {
+          const prev3D = densePts[densePts.length - 1];
+          const segD = prev3D.distanceTo(cur3D);
+          const inGradeZone = (i >= 197 && i <= 207);
+          if (segD > 85 || inGradeZone) {
+            const steps = inGradeZone ? 10 : Math.min(8, Math.ceil(segD / 70));
+            for (let s = 1; s < steps; s++) {
+              const f = s / steps;
+              const interp = new THREE.Vector3().lerpVectors(prev3D, cur3D, f);
+              interp.y = violetElevAt((i - 1) + f);
+              densePts.push(interp);
+            }
+          }
+        }
+        densePts.push(cur3D);
+      }
     } else {
       // Blue Line 3D elevation profile:
       // Dwarka Sector - 21 underground terminus & portal transition:
@@ -1771,7 +1830,7 @@ window.MetroWebGLLayer = (function () {
 
     const curve = new THREE.CatmullRomCurve3(densePts, false, 'centripetal', 0.25);
     const approxLen = curve.getLength();
-    const sampleStep = (isPink || isBlue) ? 24 : 18;
+    const sampleStep = (isPink || isBlue || isViolet) ? 24 : 18;
     const numSamples = Math.max(1200, Math.ceil(approxLen / sampleStep));
     const spaced = curve.getSpacedPoints(numSamples);
 
@@ -1879,6 +1938,7 @@ window.MetroWebGLLayer = (function () {
         isMagenta,
         isRed,
         isPink,
+        isViolet,
         lineName,
         lineColorHex,
         lineColorNum,
@@ -1901,7 +1961,7 @@ window.MetroWebGLLayer = (function () {
       ? [osmData.portalNorth, osmData.portalSouth].filter(Boolean)
       : (isOrange
         ? [osmData.portalSouth, osmData.portalNorth].filter(Boolean)
-        : (isMagenta || isPink || isRed
+        : (isMagenta || isPink || isRed || isViolet
           ? (osmData.portalCoords || [])
           : (isBlueVaishali
             ? []
@@ -1931,6 +1991,7 @@ window.MetroWebGLLayer = (function () {
       isMagenta,
       isRed,
       isPink,
+      isViolet,
       colorNum: lineColorNum,
       colorHex: lineColorHex,
       samples: cSamples,
@@ -1956,7 +2017,9 @@ window.MetroWebGLLayer = (function () {
         activeLineId === 'orange' ? orangeCorridor : (
           activeLineId === 'magenta' ? magentaCorridor : (
             activeLineId === 'red' ? redCorridor : (
-              activeLineId === 'pink' ? pinkCorridor : yellowCorridor
+              activeLineId === 'pink' ? pinkCorridor : (
+                activeLineId === 'violet' ? violetCorridor : yellowCorridor
+              )
             )
           )
         )
@@ -2104,8 +2167,9 @@ window.MetroWebGLLayer = (function () {
     const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
     const isRed = Boolean(c && (c.isRed || c.lineId === 'red' || c.lineKey === 'red'));
     const isPink = Boolean(c && (c.isPink || c.lineId === 'pink' || c.lineKey === 'pink'));
-    const spineMat = isPink ? m.tactilePink : (isRed ? m.roundelRed : (isOrange ? m.tactileOrange : (isMagenta ? m.tactileMagenta : (isBlue ? m.tactileBlue : m.tactileYellow))));
-    const guideMat = isPink ? m.pinkAccent : (isRed ? m.redAccent : (isOrange ? m.orangeAccent : (isMagenta ? m.magentaAccent : (isBlue ? m.blueAccent : m.yellowAccent))));
+    const isViolet = Boolean(c && (c.isViolet || c.lineId === 'violet' || c.lineKey === 'violet'));
+    const spineMat = isViolet ? m.tactileViolet : (isPink ? m.tactilePink : (isRed ? m.roundelRed : (isOrange ? m.tactileOrange : (isMagenta ? m.tactileMagenta : (isBlue ? m.tactileBlue : m.tactileYellow)))));
+    const guideMat = isViolet ? m.violetAccent : (isPink ? m.pinkAccent : (isRed ? m.redAccent : (isOrange ? m.orangeAccent : (isMagenta ? m.magentaAccent : (isBlue ? m.blueAccent : m.yellowAccent)))));
 
     const lineTrackGroup = new THREE.Group();
     lineTrackGroup.name = 'trackGroup_' + (c ? (c.lineId || c.lineKey) : 'yellow');
@@ -2730,7 +2794,7 @@ window.MetroWebGLLayer = (function () {
     const curbLProf = [[-4.55, 0.08], [-4.15, 0.08], [-4.15, 0.38], [-4.55, 0.38]];
     const curbRProf = [[4.15, 0.08], [4.55, 0.08], [4.55, 0.38], [4.15, 0.38]];
     const viaductShadowProf = [[-6.8, 0.14], [6.8, 0.14], [6.8, 0.15], [-6.8, 0.15]];
-    const activeElevCorridors = [yellowCorridor, blueCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor].filter(Boolean);
+    const activeElevCorridors = [yellowCorridor, blueCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor, violetCorridor].filter(Boolean);
     activeElevCorridors.forEach((corr) => {
       const cSamples = corr.samples;
       if (!cSamples || !cSamples.length) return;
@@ -4045,18 +4109,21 @@ window.MetroWebGLLayer = (function () {
     const isMagenta = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
     const isRed = st.lineId === 'red' || st.lineKey === 'red' || st.isRed;
     const isPink = st.lineId === 'pink' || st.lineKey === 'pink' || st.isPink;
+    const isViolet = st.lineId === 'violet' || st.lineKey === 'violet' || st.isViolet;
     const isBlue = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.isBlue;
-    const lineHex = isPink
-      ? '#EC4899'
-      : (isRed
-        ? '#DC2626'
-        : (isOrange
-          ? '#F97316'
-          : (isMagenta
-            ? '#D946EF'
-            : (isBlue ? '#2563EB' : '#EAB308'))));
+    const lineHex = isViolet
+      ? '#8B5CF6'
+      : (isPink
+        ? '#EC4899'
+        : (isRed
+          ? '#DC2626'
+          : (isOrange
+            ? '#F97316'
+            : (isMagenta
+              ? '#D946EF'
+              : (isBlue ? '#2563EB' : '#EAB308')))));
     const signTex = makeBilingualSignTex(st.hindi, st.name, subtitle, lineHex, secCss);
-    const lineKeyStr = isPink ? 'pink' : (isRed ? 'red' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow'))));
+    const lineKeyStr = isViolet ? 'violet' : (isPink ? 'pink' : (isRed ? 'red' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow')))));
     const pidsTex = makeMapPIDSTex(st.name, lineKeyStr);
     const signMat = new THREE.MeshBasicMaterial({ map: signTex });
     const pidsMat = new THREE.MeshBasicMaterial({ map: pidsTex });
@@ -9245,7 +9312,7 @@ window.MetroWebGLLayer = (function () {
       addBox(root, 50, 0.8, 15.0, m.redRoof, 0, 5.4, concZ);
     }
 
-    const primaryAccentMat = st.isPink ? m.pinkAccent : (st.isRed ? m.roundelRed : (st.isBlue ? m.blueAccent : m.yellowAccent));
+    const primaryAccentMat = st.isViolet ? m.violetAccent : (st.isPink ? m.pinkAccent : (st.isRed ? m.roundelRed : (st.isBlue ? m.blueAccent : m.yellowAccent)));
 
     // 3. Terrazzo Platforms + Tactile Strips + Glass PSDs + Live Digital PIDS + Benches + Commuters
     if (isIsland) {
@@ -9300,7 +9367,7 @@ window.MetroWebGLLayer = (function () {
     //    (Lower stations directly beneath a +27.8m stacked flyover use a sleek flat pergola so no roof clips the upper deck)
     const archCenterY = yV + 1.8;
     const isNoidaTerminus = (st.name === 'Noida Electronic City');
-    const roofMat = st.isPink ? m.stationRoofSilver : (st.isRed ? m.redRoof : (isNoidaTerminus ? m.concreteLight : m.dmrcBlueRoof));
+    const roofMat = st.isViolet ? m.violetRoof : (st.isPink ? m.stationRoofSilver : (st.isRed ? m.redRoof : (isNoidaTerminus ? m.concreteLight : m.dmrcBlueRoof)));
 
     if (isFlatOverStacked) {
       const pergW = isIsland ? 14.8 : 26.8;
@@ -9356,7 +9423,10 @@ window.MetroWebGLLayer = (function () {
       }
       addBox(detail, 83, 0.45, 0.45, m.steelDark, 0, haunchY, -haunchZ);
       addBox(detail, 83, 0.45, 0.45, m.steelDark, 0, haunchY, haunchZ);
-      if (st.isPink) {
+      if (st.isViolet) {
+        addBox(detail, 83, 0.65, 0.48, m.violetAccent, 0, haunchY + 0.1, -haunchZ);
+        addBox(detail, 83, 0.65, 0.48, m.violetAccent, 0, haunchY + 0.1, haunchZ);
+      } else if (st.isPink) {
         addBox(detail, 83, 0.65, 0.48, m.pinkAccent, 0, haunchY + 0.1, -haunchZ);
         addBox(detail, 83, 0.65, 0.48, m.pinkAccent, 0, haunchY + 0.1, haunchZ);
       }
@@ -9495,7 +9565,7 @@ window.MetroWebGLLayer = (function () {
     const depthM = Math.abs(st.elevM || 18);
     const isDeepCofferdam = depthM >= 25;
     const secMat = secColor ? new THREE.MeshBasicMaterial({ color: secColor }) : null;
-    const ugAccentMat = st.isPink ? m.pinkAccent : (st.isRed ? m.redAccent : (st.isOrange ? m.orangeAccent : (st.isMagenta ? m.magentaAccent : (st.isBlue ? m.blueAccent : m.yellowAccent))));
+    const ugAccentMat = st.isViolet ? m.violetAccent : (st.isPink ? m.pinkAccent : (st.isRed ? m.redAccent : (st.isOrange ? m.orangeAccent : (st.isMagenta ? m.magentaAccent : (st.isBlue ? m.blueAccent : m.yellowAccent)))));
 
     // Chamber lateral spans expand cleanly for Side-Platform stations (tracks run down center!)
     const apronD = isSide ? 32.0 : 27.6;
@@ -10374,12 +10444,14 @@ window.MetroWebGLLayer = (function () {
       // If the line already exists as a full first-class corridor, do not build a duplicate stub arm!
       if (arm.line === 'Red Line' && redCorridor) return;
       if (arm.line === 'Pink Line' && pinkCorridor) return;
+      if (arm.line === 'Violet Line' && violetCorridor) return;
       if (arm.line === 'Magenta Line' && magentaCorridor) return;
       if (arm.line === 'Blue Line' && blueCorridor) return;
       if (arm.line === 'Yellow Line' && yellowCorridor) return;
       if ((arm.line === 'Airport Express' || arm.line === 'Orange Line') && orangeCorridor) return;
       if ((st.isRed && arm.line === 'Red Line') ||
           (st.isPink && arm.line === 'Pink Line') ||
+          (st.isViolet && arm.line === 'Violet Line') ||
           (st.isMagenta && arm.line === 'Magenta Line') ||
           (st.isBlue && arm.line === 'Blue Line') ||
           (st.isYellow && arm.line === 'Yellow Line') ||
@@ -10703,6 +10775,7 @@ window.MetroWebGLLayer = (function () {
                         (hubSpec.primaryLine === 'Airport Express' && st.isOrange) ||
                         (hubSpec.primaryLine === 'Magenta Line' && st.isMagenta) ||
                         (hubSpec.primaryLine === 'Pink Line' && st.isPink) ||
+                        (hubSpec.primaryLine === 'Violet Line' && st.isViolet) ||
                         (hubSpec.primaryLine === 'Red Line' && st.isRed);
       if (!isPrimary && (
         (hubSpec.primaryLine === 'Blue Line' && blueCorridor) ||
@@ -10710,6 +10783,7 @@ window.MetroWebGLLayer = (function () {
         (hubSpec.primaryLine === 'Airport Express' && orangeCorridor) ||
         (hubSpec.primaryLine === 'Magenta Line' && magentaCorridor) ||
         (hubSpec.primaryLine === 'Pink Line' && pinkCorridor) ||
+        (hubSpec.primaryLine === 'Violet Line' && violetCorridor) ||
         (hubSpec.primaryLine === 'Red Line' && redCorridor)
       )) {
         return;
@@ -10826,22 +10900,45 @@ window.MetroWebGLLayer = (function () {
     const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
     const isRed = Boolean(c && (c.isRed || c.lineId === 'red' || c.lineKey === 'red'));
     const isPink = Boolean(c && (c.isPink || c.lineId === 'pink' || c.lineKey === 'pink'));
+    const isViolet = Boolean(c && (c.isViolet || c.lineId === 'violet' || c.lineKey === 'violet'));
 
     stList.forEach((st) => {
       st.corridor = c;
-      if (!st.lineId) st.lineId = isPink ? 'pink' : (isRed ? 'red' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow'))));
+      if (!st.lineId) st.lineId = isViolet ? 'violet' : (isPink ? 'pink' : (isRed ? 'red' : (isOrange ? 'orange' : (isMagenta ? 'magenta' : (isBlue ? 'blue' : 'yellow')))));
       st.isBlue = isBlue;
       st.isOrange = isOrange;
       st.isMagenta = isMagenta;
       st.isRed = isRed;
       st.isPink = isPink;
-      st.isYellow = (!isBlue && !isOrange && !isMagenta && !isRed && !isPink);
+      st.isViolet = isViolet;
+      st.isYellow = (!isBlue && !isOrange && !isMagenta && !isRed && !isPink && !isViolet);
       const secColor = pickInterchangeHex(st);
       const secCss = secColor ? ('#' + secColor.toString(16).padStart(6, '0')) : null;
       const isUgSide = st.structure !== 'elevated' && UNDERGROUND_SIDE_STATIONS.has(st.name);
       const isElIsland = st.structure === 'elevated' && st.name === 'Haiderpur Badli Mor';
       let subtitle;
-      if (isPink) {
+      if (isViolet) {
+        if (st.name === 'Kashmere Gate') subtitle = 'VIOLET × RED × YELLOW TRIPLE INTERCHANGE · HERITAGE LINE START';
+        else if (st.name === 'Lal Quila') subtitle = 'VIOLET LINE · RED FORT HERITAGE STATION (-16M)';
+        else if (st.name === 'Jama Masjid') subtitle = 'VIOLET LINE · OLD DELHI HERITAGE STATION (-16M)';
+        else if (st.name === 'Delhi Gate') subtitle = 'VIOLET LINE · KOTLA & AMBEDKAR STADIUM (-16M)';
+        else if (st.name === 'ITO') subtitle = 'VIOLET LINE · INSTITUTIONAL & MEDIA HUB (-16M)';
+        else if (st.name === 'Mandi House') subtitle = 'VIOLET × BLUE INTERCHANGE · CULTURAL & THEATRE HUB';
+        else if (st.name === 'Janpath') subtitle = 'VIOLET LINE · CP SOUTH HERITAGE & NATIONAL ARCHIVES';
+        else if (st.name === 'Central Secretariat') subtitle = 'VIOLET × YELLOW INTERCHANGE · RAJPATH & PARLIAMENT';
+        else if (st.name === 'Khan Market') subtitle = 'VIOLET LINE · DIPLOMATIC & UPSC PRECINCT (-16M)';
+        else if (st.name === 'Jawaharlal Nehru Stadium') subtitle = 'VIOLET LINE · JLN SPORTS COMPLEX (-16M)';
+        else if (st.name === 'Jangpura') subtitle = 'VIOLET LINE · SOUTH DELHI SUBTERRANEAN (-16M)';
+        else if (st.name === 'Lajpat Nagar') subtitle = 'VIOLET × PINK INTERCHANGE · CENTRAL MARKET (-18M)';
+        else if (st.name === 'Moolchand') subtitle = 'VIOLET LINE · RING ROAD VIADUCT (+17.5M)';
+        else if (st.name === 'Nehru Place') subtitle = 'VIOLET LINE · ASIA LARGEST IT HARDWARE MARKET';
+        else if (st.name === 'Kalkaji Mandir') subtitle = 'VIOLET × MAGENTA INTERCHANGE · LOTUS TEMPLE (+17.5M)';
+        else if (st.name === 'Badarpur Border') subtitle = 'VIOLET LINE · DELHI-HARYANA BORDER INTERCHANGE';
+        else if (st.name === 'Old Faridabad') subtitle = 'VIOLET LINE · INDIAN RAILWAYS MAINLINE CONNECTIVITY';
+        else if (st.name === 'Raja Nahar Singh (Ballabhgarh)') subtitle = 'VIOLET LINE · SOUTHERN TERMINUS · BALLABHGARH RAILWAY';
+        else if (st.terminus) subtitle = `VIOLET LINE · TERMINUS · ${st.structure.toUpperCase()}`;
+        else subtitle = `VIOLET LINE · ${st.structure === 'elevated' ? '+17.5M ELEVATED' : '-16M UNDERGROUND'}`;
+      } else if (isPink) {
         if (st.name === 'Majlis Park') subtitle = 'PINK LINE · NORTH TERMINUS · RING CORRIDOR START';
         else if (st.name === 'Azadpur') subtitle = 'PINK × YELLOW INTERCHANGE · SUBWAY CUTAWAY';
         else if (st.name === 'Netaji Subhash Place') subtitle = 'PINK × RED INTERCHANGE · PACIFIC MALL & SKYWALK HUB';
@@ -11041,12 +11138,15 @@ window.MetroWebGLLayer = (function () {
     const isMagenta = Boolean(c && (c.isMagenta || c.lineId === 'magenta' || c.lineKey === 'magenta'));
     const isRed = Boolean(c && (c.isRed || c.lineId === 'red' || c.lineKey === 'red'));
     const isPink = Boolean(c && (c.isPink || c.lineId === 'pink' || c.lineKey === 'pink'));
-    const lineColor = isPink ? 0xEC4899 : (isRed ? 0xDC2626 : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : (isBlue ? 0x2563EB : 0xEAB308))));
-    const idPrefix = isPink ? 'PK' : (isRed ? 'RL' : (isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL')))));
-    const trainsCount = isPink ? 10 : (isRed ? 8 : (isOrange ? 4 : (isVaishali ? 3 : (isMagenta ? 7 : FLEET_TRAINS_PER_DIR))));
+    const isViolet = Boolean(c && (c.isViolet || c.lineId === 'violet' || c.lineKey === 'violet'));
+    const lineColor = isViolet ? 0x8B5CF6 : (isPink ? 0xEC4899 : (isRed ? 0xDC2626 : (isOrange ? 0xF97316 : (isMagenta ? 0xD946EF : (isBlue ? 0x2563EB : 0xEAB308)))));
+    const idPrefix = isViolet ? 'VT' : (isPink ? 'PK' : (isRed ? 'RL' : (isOrange ? 'OE' : (isMagenta ? 'ML' : (isVaishali ? 'BV' : (isBlue ? 'BL' : 'YL'))))));
+    const trainsCount = isViolet ? 9 : (isPink ? 10 : (isRed ? 8 : (isOrange ? 4 : (isVaishali ? 3 : (isMagenta ? 7 : FLEET_TRAINS_PER_DIR)))));
 
     let heroNames;
-    if (isPink) {
+    if (isViolet) {
+      heroNames = ['Kashmere Gate', 'Lal Quila', 'Delhi Gate', 'Central Secretariat', 'Lajpat Nagar', 'Kalkaji Mandir', 'Badarpur Border', 'Old Faridabad', 'Raja Nahar Singh (Ballabhgarh)'];
+    } else if (isPink) {
       heroNames = ['Majlis Park', 'Netaji Subhash Place', 'Rajouri Garden', 'Durgabai Deshmukh South Campus', 'Dilli Haat - INA', 'Lajpat Nagar', 'Mayur Vihar-I', 'Anand Vihar', 'Welcome', 'Shiv Vihar'];
     } else if (isRed) {
       heroNames = ['Rithala', 'Netaji Subhash Place', 'Inderlok', 'Kashmere Gate', 'Welcome', 'Dilshad Garden', 'Shaheed Sthal'];
@@ -11156,7 +11256,8 @@ window.MetroWebGLLayer = (function () {
                         (activeLineId === 'orange' && lineKey === 'orange') ||
                         (activeLineId === 'magenta' && lineKey === 'magenta') ||
                         (activeLineId === 'red' && lineKey === 'red') ||
-                        (activeLineId === 'pink' && lineKey === 'pink');
+                        (activeLineId === 'pink' && lineKey === 'pink') ||
+                        (activeLineId === 'violet' && lineKey === 'violet');
         if (!matches) {
           // Allow connecting interchange trains to render if near camera focus (within 1500m)
           const sIdxCheck = Math.max(0, Math.min(nLast, Math.round((tr.dist / cLen) * nLast)));
@@ -11584,7 +11685,7 @@ window.MetroWebGLLayer = (function () {
             const otherLinesFilter = [
               '!in',
               'line',
-              'Yellow Line', 'Blue Line', 'Orange Line', 'Magenta Line', 'Red Line', 'Pink Line', 'Airport Express'
+              'Yellow Line', 'Blue Line', 'Orange Line', 'Magenta Line', 'Red Line', 'Pink Line', 'Violet Line', 'Airport Express'
             ];
             if (!map.getLayer('dmrc-metro-casing')) {
               map.addLayer({
@@ -12300,6 +12401,12 @@ window.MetroWebGLLayer = (function () {
       const pinkSvcPromise = window.__pinkLineServicePromise || (
         window.__pinkLineServicePromise = fetch('src/data/pink_line_service.json').then((r) => r.json()).catch(() => null)
       );
+      const violetOsmPromise = window.__violetLineOsmPromise || (
+        window.__violetLineOsmPromise = fetch('src/data/violet_line_accurate_osm.json').then((r) => r.json()).catch(() => null)
+      );
+      const violetSvcPromise = window.__violetLineServicePromise || (
+        window.__violetLineServicePromise = fetch('src/data/violet_line_service.json').then((r) => r.json()).catch(() => null)
+      );
       const mukundpurYardPromise = window.__mukundpurYardPromise || (
         window.__mukundpurYardPromise = fetch('src/data/mukundpur_yard_tracks.json').then((r) => r.json()).catch(() => null)
       );
@@ -12316,7 +12423,8 @@ window.MetroWebGLLayer = (function () {
         redOsmData, redSvcData,
         shastriYardJson,
         pinkOsmData, pinkSvcData,
-        mukundpurYardJson, vinodNagarYardJson
+        mukundpurYardJson, vinodNagarYardJson,
+        violetOsmData, violetSvcData
       ] = await Promise.all([
         osmPromise, topoPromise, svcPromise,
         blueOsmPromise, blueSvcPromise, vaishaliOsmPromise,
@@ -12327,7 +12435,8 @@ window.MetroWebGLLayer = (function () {
         redOsmPromise, redSvcPromise,
         shastriYardPromise,
         pinkOsmPromise, pinkSvcPromise,
-        mukundpurYardPromise, vinodNagarYardPromise
+        mukundpurYardPromise, vinodNagarYardPromise,
+        violetOsmPromise, violetSvcPromise
       ]);
       yamunaYardData = yamunaYardJson;
       kalindiDepotData = kalindiDepotJson;
@@ -12335,7 +12444,7 @@ window.MetroWebGLLayer = (function () {
       mukundpurYardData = mukundpurYardJson;
       vinodNagarYardData = vinodNagarYardJson;
       interchangeHubsData = interchangeHubsJson;
-      buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData, pinkOsmData, pinkSvcData);
+      buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData, pinkOsmData, pinkSvcData, violetOsmData, violetSvcData);
     } catch (err) {
       console.error('MetroWebGLLayer failed to load metro data:', err);
     }
@@ -12385,7 +12494,8 @@ window.MetroWebGLLayer = (function () {
                           (activeLineId === 'orange' && lk === 'orange') ||
                           (activeLineId === 'magenta' && lk === 'magenta') ||
                           (activeLineId === 'red' && lk === 'red') ||
-                          (activeLineId === 'pink' && lk === 'pink');
+                          (activeLineId === 'pink' && lk === 'pink') ||
+                          (activeLineId === 'violet' && lk === 'violet');
           // Keep connecting interchange line tracks visible if near camera focus (interchange hub area)
           let isNearInterchange = false;
           if (!matches && corr.stationsData) {
@@ -12461,7 +12571,8 @@ window.MetroWebGLLayer = (function () {
                           (activeLineId === 'orange' && stLineKey === 'orange') ||
                           (activeLineId === 'magenta' && stLineKey === 'magenta') ||
                           (activeLineId === 'red' && stLineKey === 'red') ||
-                          (activeLineId === 'pink' && stLineKey === 'pink');
+                          (activeLineId === 'pink' && stLineKey === 'pink') ||
+                          (activeLineId === 'violet' && stLineKey === 'violet');
           const dxCenter = st.pos.x - focusX;
           const dzCenter = st.pos.z - focusZ;
           const isFocusStation = (selectedStationName === st.name) || (dxCenter * dxCenter + dzCenter * dzCenter < 562500); // 750m
@@ -12564,7 +12675,7 @@ window.MetroWebGLLayer = (function () {
     }
   }
 
-  function buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData, pinkOsmData, pinkSvcData) {
+  function buildScene(osmData, topoData, svcData, blueOsmData, blueSvcData, vaishaliOsmData, orangeOsmData, orangeSvcData, magentaOsmData, magentaSvcData, redOsmData, redSvcData, pinkOsmData, pinkSvcData, violetOsmData, violetSvcData) {
     if (!scene) return;
     initOrigin();
 
@@ -12593,7 +12704,10 @@ window.MetroWebGLLayer = (function () {
     if (pinkOsmData) {
       pinkCorridor = buildCorridorCurve(pinkOsmData, topoData, pinkSvcData, 'pink');
     }
-    allCorridors = [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor].filter(Boolean);
+    if (violetOsmData) {
+      violetCorridor = buildCorridorCurve(violetOsmData, topoData, violetSvcData, 'violet');
+    }
+    allCorridors = [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor, violetCorridor].filter(Boolean);
     allStationsData = allCorridors.flatMap((c) => (c === vaishaliCorridor ? c.stationsData.filter((s) => s.name !== 'Yamuna Bank') : c.stationsData));
 
     const hemi = new THREE.HemisphereLight(0xF8FAFC, 0x94A3B8, 0.24);
@@ -12646,6 +12760,9 @@ window.MetroWebGLLayer = (function () {
     if (pinkCorridor) {
       buildTrackInfrastructure(infraGroup, pinkCorridor.portalCoords, pinkCorridor);
     }
+    if (violetCorridor) {
+      buildTrackInfrastructure(infraGroup, violetCorridor.portalCoords, violetCorridor);
+    }
     if (yamunaYardData) {
       yamunaYardGroup = buildYamunaYardInfrastructure(infraGroup, yamunaYardData);
       if (yamunaYardGroup) yamunaYardGroup.visible = false;
@@ -12686,6 +12803,9 @@ window.MetroWebGLLayer = (function () {
     if (pinkCorridor) {
       buildAllStations(infraGroup, pinkCorridor);
     }
+    if (violetCorridor) {
+      buildAllStations(infraGroup, violetCorridor);
+    }
     buildFleet(infraGroup, yellowCorridor);
     if (blueCorridor) {
       buildFleet(infraGroup, blueCorridor);
@@ -12704,6 +12824,9 @@ window.MetroWebGLLayer = (function () {
     }
     if (pinkCorridor) {
       buildFleet(infraGroup, pinkCorridor);
+    }
+    if (violetCorridor) {
+      buildFleet(infraGroup, violetCorridor);
     }
 
     scene.add(infraGroup);
@@ -12937,7 +13060,8 @@ window.MetroWebGLLayer = (function () {
                         (activeLineId === 'orange' && stLineKey === 'orange') ||
                         (activeLineId === 'magenta' && stLineKey === 'magenta') ||
                         (activeLineId === 'red' && stLineKey === 'red') ||
-                        (activeLineId === 'pink' && stLineKey === 'pink');
+                        (activeLineId === 'pink' && stLineKey === 'pink') ||
+                        (activeLineId === 'violet' && stLineKey === 'violet');
         if (!matches) continue;
       }
       tmp.set(st.pos.x, st.structure === 'elevated' ? VIADUCT_Y + 3 : 2.5, st.pos.z);
@@ -12967,6 +13091,7 @@ window.MetroWebGLLayer = (function () {
     if (activeLineId === 'magenta' && magentaCorridor) return magentaCorridor.stationsData;
     if (activeLineId === 'red' && redCorridor) return redCorridor.stationsData;
     if (activeLineId === 'pink' && pinkCorridor) return pinkCorridor.stationsData;
+    if (activeLineId === 'violet' && violetCorridor) return violetCorridor.stationsData;
     return allStationsData.length ? allStationsData : stationsData;
   }
 
@@ -13044,7 +13169,12 @@ window.MetroWebGLLayer = (function () {
       'mayur vihar-i': 'mayurvihar',
       'anand vihar': 'anandvihar',
       'anand vihar isbt': 'anandvihar',
-      'shiv vihar': 'shivvihar'
+      'shiv vihar': 'shivvihar',
+      'lal quila': 'lalquila',
+      'kalkaji mandir': 'kalkaji',
+      'badarpur border': 'badarpur',
+      'raja nahar singh (ballabhgarh)': 'ballabhgarh',
+      'raja nahar singh': 'ballabhgarh'
     };
     const matchLoc = locMap[normalizeStationName(st.name)];
     document.querySelectorAll('.bookmark-chip').forEach((chip) => {
@@ -13152,6 +13282,39 @@ window.MetroWebGLLayer = (function () {
         zoom: 17.8,
         pitch: 56,
         bearing: -24,
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
+      });
+    } else if (normName === 'lal quila') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 17.6,
+        pitch: 58,
+        bearing: -28,
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
+      });
+    } else if (normName === 'kalkaji mandir') {
+      map.flyTo({
+        center: st.coords,
+        zoom: 17.5,
+        pitch: 56,
+        bearing: -35,
+        duration: 950,
+        curve: 1.25,
+        speed: 1.35,
+        essential: true
+      });
+    } else if (normName.includes('raja nahar singh')) {
+      map.flyTo({
+        center: st.coords,
+        zoom: 17.6,
+        pitch: 55,
+        bearing: -18,
         duration: 950,
         curve: 1.25,
         speed: 1.35,
@@ -13729,10 +13892,11 @@ window.MetroWebGLLayer = (function () {
         if (!st.major || !st.coords) return;
         const isRedSt = st.lineId === 'red' || st.lineKey === 'red' || st.isRed;
         const isPinkSt = st.lineId === 'pink' || st.lineKey === 'pink' || st.isPink;
+        const isVioletSt = st.lineId === 'violet' || st.lineKey === 'violet' || st.isViolet;
         const isOrangeSt = st.lineId === 'orange' || st.lineKey === 'orange' || st.isOrange;
         const isBlueSt = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.lineKey === 'blue' || st.isBlue;
         const isMagentaSt = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
-        const lineKey = isPinkSt ? 'pink' : (isRedSt ? 'red' : (isOrangeSt ? 'orange' : (isBlueSt ? 'blue' : (isMagentaSt ? 'magenta' : 'yellow'))));
+        const lineKey = isVioletSt ? 'violet' : (isPinkSt ? 'pink' : (isRedSt ? 'red' : (isOrangeSt ? 'orange' : (isBlueSt ? 'blue' : (isMagentaSt ? 'magenta' : 'yellow')))));
         const pillKey = (st.name === 'New Delhi') ? `${st.name}_${lineKey}` : st.name;
         seenStationPills.add(pillKey);
         st._lineKey = lineKey;
@@ -13743,7 +13907,8 @@ window.MetroWebGLLayer = (function () {
         btn.setAttribute('data-station-name', st.name);
 
         let dotColor = '#EAB308';
-        if (isPinkSt) dotColor = '#EC4899';
+        if (isVioletSt) dotColor = '#8B5CF6';
+        else if (isPinkSt) dotColor = '#EC4899';
         else if (isRedSt) dotColor = '#DC2626';
         else if (isOrangeSt) dotColor = '#F97316';
         else if (isMagentaSt) dotColor = '#D946EF';
@@ -14235,6 +14400,8 @@ window.MetroWebGLLayer = (function () {
         activeWalkCorridor = redCorridor;
       } else if (activeLineId === 'pink') {
         activeWalkCorridor = pinkCorridor;
+      } else if (activeLineId === 'violet') {
+        activeWalkCorridor = violetCorridor;
       }
       updateVisibilityAndCulling(performance.now(), 0, false);
       if (typeof window.syncStationStepper === 'function') {
@@ -14242,7 +14409,7 @@ window.MetroWebGLLayer = (function () {
       }
     },
     getActiveLine() { return activeLineId; },
-    getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor, orange: orangeCorridor, magenta: magentaCorridor, red: redCorridor, pink: pinkCorridor }; },
+    getCorridors() { return { yellow: yellowCorridor, blue: blueCorridor, vaishali: vaishaliCorridor, orange: orangeCorridor, magenta: magentaCorridor, red: redCorridor, pink: pinkCorridor, violet: violetCorridor }; },
     getActiveStations: getActiveStationsInternal,
     getStationCount() { return allStationsData.length || stationsData.length; },
     getStations() { return allStationsData.length ? allStationsData : stationsData; },
