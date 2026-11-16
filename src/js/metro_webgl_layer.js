@@ -1612,7 +1612,7 @@ window.MetroWebGLLayer = (function () {
       // - Node 16..28: Ramp down north portal to subway tube (17.5m -> 0.28m)
       // - Node 28..98: Underground cutaway tube: Azadpur (44), Shalimar Bagh (68), Netaji Subhash Place (90) (SUBWAY_Y = 0.28m)
       // - Node 98..108: Ramp up south of NSP to elevated viaduct (0.28m -> 17.5m)
-      // - Node 108..238: Elevated Ring Road viaduct: Shakurpur (115), Punjabi Bagh West (161), ESI (193), Rajouri Garden (+13.5m station at 206, +11.5m underpass steel span under Blue Line at 208), Mayapuri (231)
+      // - Node 108..238: Elevated Ring Road viaduct: Shakurpur (115), Punjabi Bagh West (161), ESI (193), Rajouri Garden (+21m over Blue Line at 206), Mayapuri (231)
       // - Node 238..248: Ramp down to Naraina Vihar subway (17.5m -> 0.28m)
       // - Node 248..268: Naraina Vihar underground cutaway (SUBWAY_Y = 0.28m, station at 258)
       // - Node 268..278: Ramp up to Delhi Cantt elevated viaduct (0.28m -> 17.5m)
