@@ -11002,6 +11002,12 @@ window.MetroWebGLLayer = (function () {
           ? 'MAGENTA × BLUE NOIDA INTERCHANGE · +17M ELEVATED'
           : 'BLUE × MAGENTA NOIDA INTERCHANGE · +15M ELEVATED';
       }
+      if (st.name === 'Rajouri Garden') {
+        st._isSharedDualHub = true;
+        subtitle = isPink
+          ? 'PINK × BLUE INTERCHANGE · UPPER VIADUCT +21M & SKYWALK'
+          : 'BLUE × PINK INTERCHANGE · HIGH ELEVATED SKYWALK HUB';
+      }
       if (st.name === 'Janakpuri West' || st.name === 'Janak Puri West') {
         st._isSharedDualHub = true;
       }
@@ -13801,7 +13807,9 @@ window.MetroWebGLLayer = (function () {
                         (activeLineId === 'yellow' && stLk === 'yellow') ||
                         (activeLineId === 'orange' && stLk === 'orange') ||
                         (activeLineId === 'magenta' && stLk === 'magenta') ||
-                        (activeLineId === 'red' && stLk === 'red');
+                        (activeLineId === 'red' && stLk === 'red') ||
+                        (activeLineId === 'pink' && stLk === 'pink') ||
+                        (activeLineId === 'violet' && stLk === 'violet');
         if (!matches && !sItem.st._isSharedDualHub) show = false;
       } else if (sItem.st.name === 'New Delhi' && stLk === 'yellow') {
         // In all-lines view, prioritize the City Airport Terminal Orange marker at [77.223095, 28.64249]
@@ -13901,7 +13909,7 @@ window.MetroWebGLLayer = (function () {
         const isBlueSt = st.lineId === 'blue' || st.lineId === 'blue-vaishali' || st.lineKey === 'blue' || st.isBlue;
         const isMagentaSt = st.lineId === 'magenta' || st.lineKey === 'magenta' || st.isMagenta;
         const lineKey = isVioletSt ? 'violet' : (isPinkSt ? 'pink' : (isRedSt ? 'red' : (isOrangeSt ? 'orange' : (isBlueSt ? 'blue' : (isMagentaSt ? 'magenta' : 'yellow')))));
-        const pillKey = (st.name === 'New Delhi') ? `${st.name}_${lineKey}` : st.name;
+        const pillKey = (st.name === 'New Delhi' || st.name === 'Rajouri Garden') ? `${st.name}_${lineKey}` : st.name;
         seenStationPills.add(pillKey);
         st._lineKey = lineKey;
 
@@ -13969,6 +13977,9 @@ window.MetroWebGLLayer = (function () {
         } else if (st.name === 'Shastri Park') {
           tag = 'AT-GRADE · DMRC DEPOT HQ & ACADEMY';
           dotColor = '#DC2626';
+        } else if (st.name === 'Rajouri Garden') {
+          tag = isPinkSt ? 'PINK × BLUE SKYWALK HUB' : 'BLUE × PINK SKYWALK HUB';
+          dotColor = isPinkSt ? '#EC4899' : '#3B82F6';
         } else if (st.terminus) {
           tag = 'TERMINUS';
         } else if (st._isSharedDualHub) {
