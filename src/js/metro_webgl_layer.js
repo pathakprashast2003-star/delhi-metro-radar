@@ -11406,23 +11406,27 @@ window.MetroWebGLLayer = (function () {
 
   let cachedClearanceGeoJSON = null;
 
-  function buildCorridorDistanceFilter(clearance, minDistM = 22.0) {
+  function buildCorridorDistanceFilter(clearance, minDistM = 26.0) {
     const cl = clearance || cachedClearanceGeoJSON;
     if (!cl || !cl.trackClearanceGeo) return ['!=', ['get', 'hide_3d'], true];
-    return ['>', ['distance', cl.trackClearanceGeo], minDistM];
+    const filters = [['>', ['distance', cl.trackClearanceGeo], minDistM]];
+    if (cl.stationOnlyPointsGeo && cl.stationOnlyPointsGeo.features && cl.stationOnlyPointsGeo.features.length) {
+      filters.push(['>', ['distance', cl.stationOnlyPointsGeo], 32.0]);
+    }
+    return filters.length === 1 ? filters[0] : ['all', ...filters];
   }
 
   function buildCorridorClearanceGeoJSON() {
     if (cachedClearanceGeoJSON) return cachedClearanceGeoJSON;
     const corridors = (allCorridors && allCorridors.length)
       ? allCorridors
-      : [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor].filter(Boolean);
+      : [yellowCorridor, blueCorridor, vaishaliCorridor, orangeCorridor, magentaCorridor, redCorridor, pinkCorridor, violetCorridor].filter(Boolean);
 
     const multiLineCoords = [];
     corridors.forEach((c) => {
       if (!c || !c.samples || !c.samples.length || c.totalLen <= 0) return;
       const rawCoords = [];
-      const stepM = 25;
+      const stepM = 20;
       for (let d = 0; d <= c.totalLen; d += stepM) {
         const smp = sampleAtDist(Math.min(c.totalLen, d), c);
         if (smp && smp.pos) {
@@ -11433,7 +11437,7 @@ window.MetroWebGLLayer = (function () {
       if (lastSmp && lastSmp.pos) {
         rawCoords.push(localMetersToLngLat(lastSmp.pos));
       }
-      const simp = dpSimplifyLngLat(rawCoords, 10.0);
+      const simp = dpSimplifyLngLat(rawCoords, 3.5);
       if (simp.length >= 2) {
         multiLineCoords.push(simp);
       }
