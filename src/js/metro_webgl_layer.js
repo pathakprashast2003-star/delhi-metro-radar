@@ -11714,8 +11714,7 @@ window.MetroWebGLLayer = (function () {
             '#DAAD98'
           ]
         ]);
-        const hideNativeFallback = wallShadowLayer && wallShadowLayer.lastRenderedTileCount > 0 && map.getZoom() >= 12.6 && wallShadowLayer.wallShade;
-        map.setPaintProperty('building-3d', 'fill-extrusion-opacity', hideNativeFallback ? 0.005 : (undergroundXRay ? 0.24 : 0.94));
+        map.setPaintProperty('building-3d', 'fill-extrusion-opacity', undergroundXRay ? 0.24 : 0.92);
         if (clearance) {
           map.setFilter('building-3d', [
             'all',
@@ -12139,9 +12138,7 @@ window.MetroWebGLLayer = (function () {
           aoIntensity: 0.36,
           aoOffset: [0, -1, 0],
           onRenderTiles(count) {
-            const hideNative = count > 0 && map && map.getZoom() >= 12.6 && wallShadowLayer && wallShadowLayer.wallShade;
-            const baseOp = undergroundXRay ? 0.24 : 0.94;
-            const nextOp = hideNative ? 0.005 : baseOp;
+            const nextOp = undergroundXRay ? 0.24 : 0.92;
             ['overture-buildings-3d', 'building-3d'].forEach((lid) => {
               if (map && map.getLayer(lid)) {
                 const cur = map.getPaintProperty(lid, 'fill-extrusion-opacity');

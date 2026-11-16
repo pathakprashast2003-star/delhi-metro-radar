@@ -9,16 +9,19 @@ os.chdir(ROOT_DIR)
 class DevHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-        self.send_header('Pragma', 'no-cache')
-        self.send_header('Expires', '0')
+        path = self.path.split('?')[0]
+        if path.endswith(('.jpg', '.png', '.webp', '.woff2', '.json', '.geojson')):
+            self.send_header('Cache-Control', 'public, max-age=3600')
+        else:
+            self.send_header('Cache-Control', 'no-cache, must-revalidate')
         super().end_headers()
 
-class ReusableTCPServer(socketserver.TCPServer):
+class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address = True
+    daemon_threads = True
 
 if __name__ == '__main__':
-    with ReusableTCPServer(("", PORT), DevHandler) as httpd:
+    with ThreadingTCPServer(("", PORT), DevHandler) as httpd:
         print(f"Serving HTTP on 0.0.0.0:{PORT} from {ROOT_DIR} ...", flush=True)
         try:
             httpd.serve_forever()
